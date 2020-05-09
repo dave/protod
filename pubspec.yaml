@@ -1,13 +1,14 @@
 name: protod
 description: Protocol Buffer Deltas
 
-version: 1.0.0+1
+version: 0.0.1
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
   protobuf: ^1.0.1
+  fixnum: ^0.10.11
 
 dev_dependencies:
   test: ^1.14.3
