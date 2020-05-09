@@ -69,11 +69,10 @@ type state struct {
 }
 
 type pkgInfo struct {
-	relpath                string
-	protoPkgName           string
-	goPkgPath, goPkgName   string
-	goDefsPath, goDefsName string
-	files                  []*fileInfo
+	relpath              string
+	protoPkgName         string
+	goPkgPath, goPkgName string
+	files                []*fileInfo
 }
 
 type fileInfo struct {
@@ -181,17 +180,12 @@ func (s *state) scanFiles(fpath string, info os.FileInfo, err error) error {
 
 	relpath, err := filepath.Rel(s.protoRoot, dir)
 
-	godefsName := fmt.Sprintf("%s_defs", goPkgName)
-	godefsPath := path.Join(goPkgPath, godefsName)
-
 	if s.packages[pkg.Name] == nil {
 		s.packages[pkg.Name] = &pkgInfo{
 			relpath:      relpath,
 			protoPkgName: pkg.Name,
 			goPkgPath:    goPkgPath,
 			goPkgName:    goPkgName,
-			goDefsPath:   godefsPath,
-			goDefsName:   godefsName,
 		}
 	}
 	s.packages[pkg.Name].files = append(s.packages[pkg.Name].files, &fileInfo{
@@ -203,7 +197,7 @@ func (s *state) scanFiles(fpath string, info os.FileInfo, err error) error {
 		imports:     imports,
 		dartImports: map[string]string{},
 		dartPkg:     path.Join(s.dartPkg, relpath),
-		dartPath:    path.Join(s.dartPkg, relpath, fmt.Sprintf("%s.defs.dart", fname)),
+		dartPath:    path.Join(s.dartPkg, relpath, fmt.Sprintf("%s.def.dart", fname)),
 		dartAlias:   makeAlias(relpath, fname),
 	})
 	return nil
@@ -256,7 +250,7 @@ func (s *state) scanMessages() error {
 							typeName := b.Type[strings.LastIndex(b.Type, ".")+1:]
 							pkg := s.packages[packageName]
 
-							f.goTypePath = pkg.goDefsPath
+							f.goTypePath = pkg.goPkgPath
 
 							//TODO: find file that defines this type for Dart path
 							var remoteFile *fileInfo
@@ -280,7 +274,7 @@ func (s *state) scanMessages() error {
 
 						} else {
 							f.kind = fieldKindLocal
-							f.goTypePath = info.goDefsPath
+							f.goTypePath = info.goPkgPath
 							f.typeName = fmt.Sprintf("%s_type", strings.Title(b.Type))
 						}
 						if b.IsRepeated {
@@ -303,92 +297,92 @@ func (s *state) genGo() error {
 	for _, info := range s.packages {
 		for _, file := range info.files {
 
-			dirOut := filepath.Join(s.outRoot, info.relpath, info.goDefsName)
-			fpathOut := filepath.Join(dirOut, fmt.Sprintf("%s.defs.go", file.fname))
+			dirOut := filepath.Join(s.outRoot, info.relpath)
+			fpathOut := filepath.Join(dirOut, fmt.Sprintf("%s.def.go", file.fname))
 
-			f := jen.NewFilePathName(info.goDefsPath, info.goDefsName)
+			f := jen.NewFilePathName(info.goPkgPath, info.goPkgName)
 
 			f.ImportName("github.com/dave/protod/delta", "delta")
 			for _, p := range s.packages {
-				f.ImportName(p.goDefsPath, p.goDefsName)
+				f.ImportName(p.goPkgPath, p.goPkgName)
 			}
 
-			defsp := "github.com/dave/protod/delta"
+			deltaPath := "github.com/dave/protod/delta"
 			for _, m := range file.messages {
 
-				//func Person() Person_type {
+				//func PersonDef() Person_type {
 				//	return Person_type{}
 				//}
-				f.Func().Id(m.nameCapitalised).Params().Id(m.typeName).Block(
+				f.Func().Id(m.nameCapitalised + "Def").Params().Id(m.typeName).Block(
 					jen.Return(jen.Id(m.typeName).Block()),
 				)
 
 				//type Person_type struct {
-				//	location []defs.Indexer
+				//	location []delta.Indexer
 				//}
 				f.Type().Id(m.typeName).Struct(
-					jen.Id("location").Index().Qual(defsp, "Indexer"),
+					jen.Id("location").Index().Qual(deltaPath, "Indexer"),
 				)
 
-				//func NewPerson_type(l []defs.Indexer) Person_type {
+				//func NewPerson_type(l []delta.Indexer) Person_type {
 				//	return Person_type{location: l}
 				//}
-				f.Func().Id(fmt.Sprintf("New%s", m.typeName)).Params(jen.Id("l").Index().Qual(defsp, "Indexer")).Id(m.typeName).Block(
+				f.Func().Id(fmt.Sprintf("New%s", m.typeName)).Params(jen.Id("l").Index().Qual(deltaPath, "Indexer")).Id(m.typeName).Block(
 					jen.Return(jen.Id(m.typeName).Values(jen.Dict{jen.Id("location"): jen.Id("l")})),
 				)
 
-				//func (b Person_type) Location_get() []defs.Indexer {
+				//func (b Person_type) Location_get() []delta.Indexer {
 				//	return b.location
 				//}
-				f.Func().Params(jen.Id("b").Id(m.typeName)).Id("Location_get").Params().Index().Qual(defsp, "Indexer").Block(
+				f.Func().Params(jen.Id("b").Id(m.typeName)).Id("Location_get").Params().Index().Qual(deltaPath, "Indexer").Block(
 					jen.Return(jen.Id("b").Dot("location")),
 				)
 
 				//type Case_type_repeated struct {
-				//	location []defs.Indexer
+				//	location []delta.Indexer
 				//}
 				f.Type().Id(m.typeNameRepeated).Struct(
-					jen.Id("location").Index().Qual(defsp, "Indexer"),
+					jen.Id("location").Index().Qual(deltaPath, "Indexer"),
 				)
 
-				//func NewCase_type_repeated(l []defs.Indexer) Case_type_repeated {
+				//func NewCase_type_repeated(l []delta.Indexer) Case_type_repeated {
 				//	return Case_type_repeated{location: l}
 				//}
-				f.Func().Id(fmt.Sprintf("New%s", m.typeNameRepeated)).Params(jen.Id("l").Index().Qual(defsp, "Indexer")).Id(m.typeNameRepeated).Block(
+				f.Func().Id(fmt.Sprintf("New%s", m.typeNameRepeated)).Params(jen.Id("l").Index().Qual(deltaPath, "Indexer")).Id(m.typeNameRepeated).Block(
 					jen.Return(jen.Id(m.typeNameRepeated).Values(jen.Dict{jen.Id("location"): jen.Id("l")})),
 				)
 
-				//func (b Case_type_repeated) Location_get() []defs.Indexer {
+				//func (b Case_type_repeated) Location_get() []delta.Indexer {
 				//	return b.location
 				//}
-				f.Func().Params(jen.Id("b").Id(m.typeNameRepeated)).Id("Location_get").Params().Index().Qual(defsp, "Indexer").Block(
+				f.Func().Params(jen.Id("b").Id(m.typeNameRepeated)).Id("Location_get").Params().Index().Qual(deltaPath, "Indexer").Block(
 					jen.Return(jen.Id("b").Dot("location")),
 				)
 
 				//func (b Case_type_repeated) Index(i int) Case_type {
-				//	return NewCase_type(defs.CopyAndAppend(b.location, defs.Index(i)))
+				//	return NewCase_type(delta.CopyAndAppend(b.location, delta.Index(i)))
 				//}
 				f.Func().Params(jen.Id("b").Id(m.typeNameRepeated)).Id("Index").Params(jen.Id("i").Int()).Id(m.typeName).Block(
 					jen.Return(
 						jen.Id(fmt.Sprintf("New%s", m.typeName)).Call(
-							jen.Qual(defsp, "CopyAndAppend").Call(
+							jen.Qual(deltaPath, "CopyAndAppend").Call(
 								jen.Id("b").Dot("location"),
-								jen.Qual(defsp, "IndexIndexer").Call(jen.Id("i")),
+								jen.Qual(deltaPath, "IndexIndexer").Call(jen.Id("i")),
 							),
 						),
 					),
 				)
 
 				for _, field := range m.fields {
-					//func (b Person_type) Name() defs.String_scalar {
-					//	return defs.NewString_scalar(defs.CopyAndAppend(b.location, defs.Field("name")))
+					//func (b Person_type) Name() delta.String_scalar {
+					//	return delta.NewString_scalar(delta.CopyAndAppend(b.location, delta.Field("name")))
 					//}
 					f.Func().Params(jen.Id("b").Id(m.typeName)).Id(field.nameCapitalised).Params().Qual(field.goTypePath, field.typeName).Block(
 						jen.Return(
 							jen.Qual(field.goTypePath, fmt.Sprintf("New%s", field.typeName)).Call(
-								jen.Qual(defsp, "CopyAndAppend").Call(
+								jen.Qual(deltaPath, "CopyAndAppend").Call(
 									jen.Id("b").Dot("location"),
-									jen.Qual(defsp, "FieldIndexer").Call(jen.Lit(field.name), jen.Lit(field.number)),
+									jen.Qual(deltaPath, "FieldIndexer").Call(jen.Lit(field.name), jen.Lit(field.number)),
 								),
 							),
 						),
@@ -418,11 +412,11 @@ func (s *state) genDart() error {
 		for _, file := range info.files {
 
 			dirOut := filepath.Join(s.dartOut, info.relpath)
-			fpathOut := filepath.Join(dirOut, fmt.Sprintf("%s.defs.dart", file.fname))
+			fpathOut := filepath.Join(dirOut, fmt.Sprintf("%s.def.dart", file.fname))
 
 			var sb strings.Builder
 
-			sb.WriteString("import 'package:protod/delta.dart' as defs;\n")
+			sb.WriteString("import 'package:protod/delta.dart' as delta;\n")
 			for dartPath, dartAlias := range file.dartImports {
 
 				importPath, err := s.dartImportPath(file.dartPkg, dartPath)
@@ -435,54 +429,54 @@ func (s *state) genDart() error {
 			sb.WriteString("\n")
 			for _, message := range file.messages {
 				/*
-					Share_type Share() {
+					Share_type ShareDef() {
 					  return Share_type([]);
 					}
 				*/
-				sb.WriteString(fmt.Sprintf("%s %s() {\n", message.typeName, message.nameCapitalised))
+				sb.WriteString(fmt.Sprintf("%s %s() {\n", message.typeName, message.nameCapitalised+"Def"))
 				sb.WriteString(fmt.Sprintf("  return %s([]);\n", message.typeName))
 				sb.WriteString("}\n\n")
 
 				/*
-					class Share_type extends defs.Locator {
-					  Share_type(List<defs.Indexer> location) : super(location);
+					class Share_type extends delta.Locator {
+					  Share_type(List<delta.Indexer> location) : super(location);
 				*/
-				sb.WriteString(fmt.Sprintf("class %s extends defs.Locator {\n", message.typeName))
-				sb.WriteString(fmt.Sprintf("  %s(List<defs.Indexer> location) : super(location);\n\n", message.typeName))
+				sb.WriteString(fmt.Sprintf("class %s extends delta.Locator {\n", message.typeName))
+				sb.WriteString(fmt.Sprintf("  %s(List<delta.Indexer> location) : super(location);\n\n", message.typeName))
 
 				for _, field := range message.fields {
 					var qualifiedTypeName string
 					switch field.kind {
 					case fieldKindScalar:
-						qualifiedTypeName = fmt.Sprintf("defs.%s", field.typeName)
+						qualifiedTypeName = fmt.Sprintf("delta.%s", field.typeName)
 					case fieldKindLocal:
 						qualifiedTypeName = field.typeName
 					case fieldKindRemote:
 						qualifiedTypeName = fmt.Sprintf("%s.%s", file.dartImports[field.dartTypePath], field.typeName)
 					}
 					/*
-						defs.String_scalar Id() {
-						  return defs.String_scalar([...location]..add(defs.Field("id", 1)));
+						delta.String_scalar Id() {
+						  return delta.String_scalar([...location]..add(delta.Field("id", 1)));
 						}
 					*/
 					sb.WriteString(fmt.Sprintf("  %s %s() {\n", qualifiedTypeName, field.nameCapitalised))
-					sb.WriteString(fmt.Sprintf("    return %s([...location]..add(defs.Field(%q, %d)));\n", qualifiedTypeName, field.name, field.number))
+					sb.WriteString(fmt.Sprintf("    return %s([...location]..add(delta.Field(%q, %d)));\n", qualifiedTypeName, field.name, field.number))
 					sb.WriteString("  }\n\n")
 				}
 				sb.WriteString("}\n\n")
 
 				/*
-					class Share_type_repeated extends defs.Locator {
-					  Share_type_repeated(List<defs.Indexer> location) : super(location);
+					class Share_type_repeated extends delta.Locator {
+					  Share_type_repeated(List<delta.Indexer> location) : super(location);
 					  Share_type Index(int i) {
-					    return Share_type([...location]..add(defs.Index(i)));
+					    return Share_type([...location]..add(delta.Index(i)));
 					  }
 					}
 				*/
-				sb.WriteString(fmt.Sprintf("class %s extends defs.Locator {\n", message.typeNameRepeated))
-				sb.WriteString(fmt.Sprintf("  %s(List<defs.Indexer> location) : super(location);\n", message.typeNameRepeated))
+				sb.WriteString(fmt.Sprintf("class %s extends delta.Locator {\n", message.typeNameRepeated))
+				sb.WriteString(fmt.Sprintf("  %s(List<delta.Indexer> location) : super(location);\n", message.typeNameRepeated))
 				sb.WriteString(fmt.Sprintf("  %s Index(int i) {\n", message.typeName))
-				sb.WriteString(fmt.Sprintf("    return %s([...location]..add(defs.Index(i)));\n", message.typeName))
+				sb.WriteString(fmt.Sprintf("    return %s([...location]..add(delta.Index(i)));\n", message.typeName))
 				sb.WriteString(fmt.Sprintf("  }\n"))
 				sb.WriteString(fmt.Sprintf("}\n\n"))
 			}

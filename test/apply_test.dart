@@ -1,7 +1,7 @@
 import 'package:protod/delta.dart' as delta;
 import 'package:test/test.dart';
 
-import 'pb/pb.defs.dart' as pb_defs;
+import 'pb/pb.def.dart';
 import 'pb/pb.pb.dart';
 import 'pb/registry.dart' as registry;
 
@@ -19,28 +19,28 @@ void main() {
       ]);
 
     delta.apply(
-      delta.editValue("spotify", pb_defs.Person().Company().Name()),
+      delta.editValue("spotify", PersonDef().Company().Name()),
       person,
     );
 
     expect(person.company.name, "spotify");
 
     delta.apply(
-      delta.editValue(Company()..name = 'spacex', pb_defs.Person().Company()),
+      delta.editValue(Company()..name = 'spacex', PersonDef().Company()),
       person,
     );
 
     expect(person.company.name, "spacex");
 
     delta.apply(
-      delta.editValue(Case()..name = 'qux', pb_defs.Person().Cases().Index(1)),
+      delta.editValue(Case()..name = 'qux', PersonDef().Cases().Index(1)),
       person,
     );
 
     expect(person.cases[1].name, "qux");
 
     delta.apply(
-      delta.editValue("qaz", pb_defs.Person().Cases().Index(2).Name()),
+      delta.editValue("qaz", PersonDef().Cases().Index(2).Name()),
       person,
     );
 

@@ -1,8 +1,8 @@
-package tests_defs
+package tests
 
 import "github.com/dave/protod/delta"
 
-func Company() Company_type {
+func CompanyDef() Company_type {
 	return Company_type{}
 }
 
@@ -33,7 +33,7 @@ func (b Company_type_repeated) Index(i int) Company_type {
 func (b Company_type) Name() delta.String_scalar {
 	return delta.NewString_scalar(delta.CopyAndAppend(b.location, delta.FieldIndexer("name", 11)))
 }
-func Case() Case_type {
+func CaseDef() Case_type {
 	return Case_type{}
 }
 
@@ -64,7 +64,7 @@ func (b Case_type_repeated) Index(i int) Case_type {
 func (b Case_type) Name() delta.String_scalar {
 	return delta.NewString_scalar(delta.CopyAndAppend(b.location, delta.FieldIndexer("name", 12)))
 }
-func Person() Person_type {
+func PersonDef() Person_type {
 	return Person_type{}
 }
 

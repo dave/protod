@@ -3,7 +3,7 @@ package delta;
 
 import "any.proto";
 
-option go_package = ".;delta";
+option go_package = "github.com/dave/protod/delta;delta";
 
 message Delta {
   enum Type {
