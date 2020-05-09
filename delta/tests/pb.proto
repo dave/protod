@@ -1,0 +1,23 @@
+syntax = "proto3";
+package tests;
+
+option go_package = "github.com/dave/protod/delta/tests;tests";
+
+// [proto:data]
+message Company {
+  string name = 11;
+}
+
+// [proto:data]
+message Case {
+  string name = 12;
+}
+
+// [proto:data]
+message Person {
+  string name = 13;
+  int32 age = 14;
+  repeated Case cases = 15;
+  Company company = 16;
+}
+
