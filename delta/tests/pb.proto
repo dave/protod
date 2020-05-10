@@ -18,6 +18,8 @@ message Person {
   string name = 13;
   int32 age = 14;
   repeated Case cases = 15;
-  Company company = 16;
+  map<string, Case> casesStringMap = 16;
+  map<int32, Case> casesIntMap = 17;
+  Company company = 18;
 }
 

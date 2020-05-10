@@ -6,7 +6,61 @@ import 'pb/pb.pb.dart';
 import 'pb/registry.dart' as registry;
 
 void main() {
-  test('test', () {
+  /*
+  func TestApplyMap(t *testing.T) {
+
+	person := &Person{
+		Name:    "dave",
+		Company: &Company{Name: "cambro"},
+		CasesStringMap: map[string]*Case{
+			"foo": {Name: "foo"},
+		},
+	}
+
+	if err := delta.Apply(delta.EditValue("bar", PersonDef().CasesStringMap().Key("foo").Name()), person); err != nil {
+		t.Fail()
+	}
+
+	if person.CasesStringMap["foo"].Name != "bar" {
+		t.Fail()
+	}
+}
+   */
+  test('test apply map string', () {
+    delta.setDefaultRegistry(registry.types);
+
+    var person = Person()
+      ..name = "dave"
+      ..company = (Company()..name = "cambro")
+      ..casesStringMap['foo'] = (Case()..name = "foo")
+      ..casesStringMap['bar'] = (Case()..name = "bar");
+
+    delta.apply(
+      delta.editValue("baz", PersonDef().CasesStringMap().Key('foo').Name()),
+      person,
+    );
+
+    expect(person.casesStringMap['foo'].name, "baz");
+  });
+
+  test('test apply map int', () {
+    delta.setDefaultRegistry(registry.types);
+
+    var person = Person()
+      ..name = "dave"
+      ..company = (Company()..name = "cambro")
+      ..casesIntMap[1] = (Case()..name = "foo")
+      ..casesIntMap[2] = (Case()..name = "bar");
+
+    delta.apply(
+      delta.editValue("baz", PersonDef().CasesIntMap().Key(2).Name()),
+      person,
+    );
+
+    expect(person.casesIntMap[2].name, "baz");
+  });
+
+  test('test apply', () {
     delta.setDefaultRegistry(registry.types);
 
     var person = Person()

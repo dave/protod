@@ -76,7 +76,9 @@ class Person extends $pb.GeneratedMessage {
     ..aOS(13, 'name')
     ..a<$core.int>(14, 'age', $pb.PbFieldType.O3)
     ..pc<Case>(15, 'cases', $pb.PbFieldType.PM, subBuilder: Case.create)
-    ..aOM<Company>(16, 'company', subBuilder: Company.create)
+    ..m<$core.String, Case>(16, 'casesStringMap', protoName: 'casesStringMap', entryClassName: 'Person.CasesStringMapEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OM, valueCreator: Case.create, packageName: const $pb.PackageName('tests'))
+    ..m<$core.int, Case>(17, 'casesIntMap', protoName: 'casesIntMap', entryClassName: 'Person.CasesIntMapEntry', keyFieldType: $pb.PbFieldType.O3, valueFieldType: $pb.PbFieldType.OM, valueCreator: Case.create, packageName: const $pb.PackageName('tests'))
+    ..aOM<Company>(18, 'company', subBuilder: Company.create)
     ..hasRequiredFields = false
   ;
 
@@ -117,14 +119,20 @@ class Person extends $pb.GeneratedMessage {
   $core.List<Case> get cases => $_getList(2);
 
   @$pb.TagNumber(16)
-  Company get company => $_getN(3);
-  @$pb.TagNumber(16)
-  set company(Company v) { setField(16, v); }
-  @$pb.TagNumber(16)
-  $core.bool hasCompany() => $_has(3);
-  @$pb.TagNumber(16)
-  void clearCompany() => clearField(16);
-  @$pb.TagNumber(16)
-  Company ensureCompany() => $_ensure(3);
+  $core.Map<$core.String, Case> get casesStringMap => $_getMap(3);
+
+  @$pb.TagNumber(17)
+  $core.Map<$core.int, Case> get casesIntMap => $_getMap(4);
+
+  @$pb.TagNumber(18)
+  Company get company => $_getN(5);
+  @$pb.TagNumber(18)
+  set company(Company v) { setField(18, v); }
+  @$pb.TagNumber(18)
+  $core.bool hasCompany() => $_has(5);
+  @$pb.TagNumber(18)
+  void clearCompany() => clearField(18);
+  @$pb.TagNumber(18)
+  Company ensureCompany() => $_ensure(5);
 }
 

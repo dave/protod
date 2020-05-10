@@ -1,9 +1,9 @@
-import 'dart:ffi';
-
-import 'package:fixnum/fixnum.dart';
+import 'package:fixnum/fixnum.dart' as fixnum;
 import 'package:protobuf/protobuf.dart' as protobuf;
 import 'package:protod/any.pb.dart' as any;
 import 'package:protod/delta.pb.dart' as delta;
+
+export 'delta.types.dart';
 
 protobuf.TypeRegistry _defaultTypeRegistry;
 
@@ -33,7 +33,7 @@ apply(delta.Delta d, protobuf.GeneratedMessage m, [protobuf.TypeRegistry r]) {
       current = list[element.index.toInt()];
     } else if (element.hasKey()) {
       final map = current as protobuf.PbMap;
-      current = map[element.key];
+      current = map[getKey(element.key)];
     }
   });
 
@@ -61,7 +61,23 @@ apply(delta.Delta d, protobuf.GeneratedMessage m, [protobuf.TypeRegistry r]) {
     list[last.index.toInt()] = newValue;
   } else if (last.hasKey()) {
     final map = current as protobuf.PbMap;
-    map[last.key] = newValue;
+    map[getKey(last.key)] = newValue;
+  }
+}
+
+dynamic getKey(delta.Key k) {
+  if (k.hasBool_1()) {
+    return k.bool_1;
+  } else if (k.hasInt32()) {
+    return k.int32;
+  } else if (k.hasInt64()) {
+    return k.int64;
+  } else if (k.hasUint32()) {
+    return k.uint32;
+  } else if (k.hasUint64()) {
+    return k.uint64;
+  } else if (k.hasStr()) {
+    return k.str;
   }
 }
 
@@ -118,11 +134,36 @@ delta.Delta editValue(dynamic value, Locator locator) {
         break;
       case Index:
         final index = element as Index;
-        loc.add(delta.Locator()..index = Int64(index.index));
+        loc.add(delta.Locator()..index = fixnum.Int64(index.index));
         break;
       case Key:
         final key = element as Key;
-        loc.add(delta.Locator()..key = key.key);
+        switch (key.key.runtimeType) {
+          case int:
+            final k = key.key as int;
+            loc.add(delta.Locator()..key = (delta.Key()..int32 = k));
+            break;
+          case fixnum.Int32:
+            final k = key.key as fixnum.Int32;
+            loc.add(delta.Locator()..key = (delta.Key()..int32 = k.toInt()));
+            break;
+          case fixnum.Int64:
+            final k = key.key as fixnum.Int64;
+            loc.add(delta.Locator()..key = (delta.Key()..int64 = k));
+            break;
+          case String:
+            final k = key.key as String;
+            loc.add(delta.Locator()..key = (delta.Key()..str = k));
+            break;
+        }
+        break;
+      case KeyUint32:
+        final key = element as KeyUint32;
+        loc.add(delta.Locator()..key = (delta.Key()..uint32 = key.key.toInt()));
+        break;
+      case KeyUint64:
+        final key = element as KeyUint64;
+        loc.add(delta.Locator()..key = (delta.Key()..uint64 = key.key));
         break;
     }
   });
@@ -148,7 +189,7 @@ any.Any toAny(dynamic value) {
         m = delta.Scalar()..double_1 = value;
         break;
       case int:
-        m = delta.Scalar()..int64 = Int64(value);
+        m = delta.Scalar()..int64 = fixnum.Int64(value);
         break;
       case bool:
         m = delta.Scalar()..bool_13 = value;
@@ -166,18 +207,6 @@ abstract class Locator {
   Locator(this.location);
 }
 
-class String_scalar extends Locator {
-  String_scalar(List<Indexer> location) : super(location);
-}
-
-class Int32_scalar extends Locator {
-  Int32_scalar(List<Indexer> location) : super(location);
-}
-
-class Int64_scalar extends Locator {
-  Int64_scalar(List<Indexer> location) : super(location);
-}
-
 abstract class Indexer {}
 
 class Field extends Indexer {
@@ -192,6 +221,16 @@ class Index extends Indexer {
 }
 
 class Key extends Indexer {
-  String key;
+  dynamic key;
   Key(this.key);
+}
+
+class KeyUint32 extends Indexer {
+  fixnum.Int64 key;
+  KeyUint32(this.key);
+}
+
+class KeyUint64 extends Indexer {
+  fixnum.Int64 key;
+  KeyUint64(this.key);
 }

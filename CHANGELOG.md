@@ -6,6 +6,10 @@ First release. Experimental code!
 
 Fixes.
 
-# v0.0.2
+# v0.0.3
 
 Readme.
+
+# v0.0.4
+
+Types for map keys, generating all scalar type variations.

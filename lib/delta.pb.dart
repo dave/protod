@@ -81,7 +81,7 @@ class Locator extends $pb.GeneratedMessage {
     ..oo(0, [1, 2, 3])
     ..aOM<Field>(1, 'field', subBuilder: Field.create)
     ..aInt64(2, 'index')
-    ..aOS(3, 'key')
+    ..aOM<Key>(3, 'key', subBuilder: Key.create)
     ..hasRequiredFields = false
   ;
 
@@ -124,13 +124,119 @@ class Locator extends $pb.GeneratedMessage {
   void clearIndex() => clearField(2);
 
   @$pb.TagNumber(3)
-  $core.String get key => $_getSZ(2);
+  Key get key => $_getN(2);
   @$pb.TagNumber(3)
-  set key($core.String v) { $_setString(2, v); }
+  set key(Key v) { setField(3, v); }
   @$pb.TagNumber(3)
   $core.bool hasKey() => $_has(2);
   @$pb.TagNumber(3)
   void clearKey() => clearField(3);
+  @$pb.TagNumber(3)
+  Key ensureKey() => $_ensure(2);
+}
+
+enum Key_V {
+  bool_1, 
+  int32, 
+  int64, 
+  uint32, 
+  uint64, 
+  str, 
+  notSet
+}
+
+class Key extends $pb.GeneratedMessage {
+  static const $core.Map<$core.int, Key_V> _Key_VByTag = {
+    1 : Key_V.bool_1,
+    2 : Key_V.int32,
+    3 : Key_V.int64,
+    4 : Key_V.uint32,
+    5 : Key_V.uint64,
+    6 : Key_V.str,
+    0 : Key_V.notSet
+  };
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Key', package: const $pb.PackageName('delta'), createEmptyInstance: create)
+    ..oo(0, [1, 2, 3, 4, 5, 6])
+    ..aOB(1, 'bool')
+    ..a<$core.int>(2, 'int32', $pb.PbFieldType.O3)
+    ..aInt64(3, 'int64')
+    ..a<$core.int>(4, 'uint32', $pb.PbFieldType.OU3)
+    ..a<$fixnum.Int64>(5, 'uint64', $pb.PbFieldType.OU6, defaultOrMaker: $fixnum.Int64.ZERO)
+    ..aOS(6, 'str')
+    ..hasRequiredFields = false
+  ;
+
+  Key._() : super();
+  factory Key() => create();
+  factory Key.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory Key.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  Key clone() => Key()..mergeFromMessage(this);
+  Key copyWith(void Function(Key) updates) => super.copyWith((message) => updates(message as Key));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static Key create() => Key._();
+  Key createEmptyInstance() => create();
+  static $pb.PbList<Key> createRepeated() => $pb.PbList<Key>();
+  @$core.pragma('dart2js:noInline')
+  static Key getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Key>(create);
+  static Key _defaultInstance;
+
+  Key_V whichV() => _Key_VByTag[$_whichOneof(0)];
+  void clearV() => clearField($_whichOneof(0));
+
+  @$pb.TagNumber(1)
+  $core.bool get bool_1 => $_getBF(0);
+  @$pb.TagNumber(1)
+  set bool_1($core.bool v) { $_setBool(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasBool_1() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearBool_1() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.int get int32 => $_getIZ(1);
+  @$pb.TagNumber(2)
+  set int32($core.int v) { $_setSignedInt32(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasInt32() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearInt32() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $fixnum.Int64 get int64 => $_getI64(2);
+  @$pb.TagNumber(3)
+  set int64($fixnum.Int64 v) { $_setInt64(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasInt64() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearInt64() => clearField(3);
+
+  @$pb.TagNumber(4)
+  $core.int get uint32 => $_getIZ(3);
+  @$pb.TagNumber(4)
+  set uint32($core.int v) { $_setUnsignedInt32(3, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasUint32() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearUint32() => clearField(4);
+
+  @$pb.TagNumber(5)
+  $fixnum.Int64 get uint64 => $_getI64(4);
+  @$pb.TagNumber(5)
+  set uint64($fixnum.Int64 v) { $_setInt64(4, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasUint64() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearUint64() => clearField(5);
+
+  @$pb.TagNumber(6)
+  $core.String get str => $_getSZ(5);
+  @$pb.TagNumber(6)
+  set str($core.String v) { $_setString(5, v); }
+  @$pb.TagNumber(6)
+  $core.bool hasStr() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearStr() => clearField(6);
 }
 
 class Field extends $pb.GeneratedMessage {
@@ -190,6 +296,7 @@ enum Scalar_V {
   bool_13, 
   str, 
   bytes, 
+  delta, 
   notSet
 }
 
@@ -210,10 +317,11 @@ class Scalar extends $pb.GeneratedMessage {
     13 : Scalar_V.bool_13,
     14 : Scalar_V.str,
     15 : Scalar_V.bytes,
+    16 : Scalar_V.delta,
     0 : Scalar_V.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('Scalar', package: const $pb.PackageName('delta'), createEmptyInstance: create)
-    ..oo(0, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+    ..oo(0, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
     ..a<$core.double>(1, 'double', $pb.PbFieldType.OD)
     ..a<$core.double>(2, 'float', $pb.PbFieldType.OF)
     ..a<$core.int>(3, 'int32', $pb.PbFieldType.O3)
@@ -229,6 +337,7 @@ class Scalar extends $pb.GeneratedMessage {
     ..aOB(13, 'bool')
     ..aOS(14, 'str')
     ..a<$core.List<$core.int>>(15, 'bytes', $pb.PbFieldType.OY)
+    ..aOS(16, 'delta')
     ..hasRequiredFields = false
   ;
 
@@ -384,5 +493,14 @@ class Scalar extends $pb.GeneratedMessage {
   $core.bool hasBytes() => $_has(14);
   @$pb.TagNumber(15)
   void clearBytes() => clearField(15);
+
+  @$pb.TagNumber(16)
+  $core.String get delta => $_getSZ(15);
+  @$pb.TagNumber(16)
+  set delta($core.String v) { $_setString(15, v); }
+  @$pb.TagNumber(16)
+  $core.bool hasDelta() => $_has(15);
+  @$pb.TagNumber(16)
+  void clearDelta() => clearField(16);
 }
 

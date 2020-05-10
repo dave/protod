@@ -101,6 +101,8 @@ type fieldInfo struct {
 	kind                     fieldKind
 	goTypePath, dartTypePath string
 	typeName                 string
+	keyType                  string
+	isRepeated, isMap        bool
 }
 type fieldKind int
 
@@ -227,27 +229,49 @@ func (s *state) scanMessages() error {
 			for _, mi := range file.messages {
 				for _, b := range mi.message.MessageBody {
 					switch b := b.(type) {
-					case *parser.Field:
-						fieldNumber, err := strconv.Atoi(b.FieldNumber)
+					case *parser.Field, *parser.MapField:
+
+						var fieldName string
+						var fieldNumberString string
+						var valueType, keyType string
+						var isRepeated, isMap bool
+						switch b := b.(type) {
+						case *parser.Field:
+							valueType = b.Type
+							isRepeated = b.IsRepeated
+							fieldNumberString = b.FieldNumber
+							fieldName = b.FieldName
+						case *parser.MapField:
+							valueType = b.Type
+							isMap = true
+							fieldNumberString = b.FieldNumber
+							fieldName = b.MapName
+							keyType = b.KeyType
+						}
+
+						fieldNumber, err := strconv.Atoi(fieldNumberString)
 						if err != nil {
 							return fmt.Errorf("parsing field number: %w", err)
 						}
 						f := &fieldInfo{
-							name:            b.FieldName,
-							nameCapitalised: strings.Title(b.FieldName),
+							name:            fieldName,
+							nameCapitalised: strings.Title(fieldName),
 							number:          fieldNumber,
+							keyType:         keyType,
+							isRepeated:      isRepeated,
+							isMap:           isMap,
 						}
 
-						if isScalar(b.Type) {
+						if isScalar(valueType) {
 							f.kind = fieldKindScalar
 							f.goTypePath = "github.com/dave/protod/delta"
 							f.dartTypePath = "package:protod/delta.dart"
-							f.typeName = fmt.Sprintf("%s_scalar", strings.Title(b.Type))
-						} else if strings.Contains(b.Type, ".") {
+							f.typeName = fmt.Sprintf("%s_scalar", strings.Title(valueType))
+						} else if strings.Contains(valueType, ".") {
 							f.kind = fieldKindRemote
 
-							packageName := b.Type[0:strings.LastIndex(b.Type, ".")]
-							typeName := b.Type[strings.LastIndex(b.Type, ".")+1:]
+							packageName := valueType[0:strings.LastIndex(valueType, ".")]
+							typeName := valueType[strings.LastIndex(valueType, ".")+1:]
 							pkg := s.packages[packageName]
 
 							f.goTypePath = pkg.goPkgPath
@@ -275,12 +299,16 @@ func (s *state) scanMessages() error {
 						} else {
 							f.kind = fieldKindLocal
 							f.goTypePath = info.goPkgPath
-							f.typeName = fmt.Sprintf("%s_type", strings.Title(b.Type))
+							f.typeName = fmt.Sprintf("%s_type", strings.Title(valueType))
 						}
-						if b.IsRepeated {
+						if isRepeated {
 							f.typeName += "_repeated"
 						}
+						if isMap {
+							f.typeName += fmt.Sprintf("_%s_map", keyType)
+						}
 						mi.fields = append(mi.fields, f)
+
 					case *parser.Message:
 						// TODO: nested type - recurse?
 					default:
@@ -310,67 +338,73 @@ func (s *state) genGo() error {
 			deltaPath := "github.com/dave/protod/delta"
 			for _, m := range file.messages {
 
+				emitType := func(typeName string, isRepeated, isMap bool, mapKeyType, valueType string) {
+					/*
+						type String_scalar struct {
+							location []Indexer
+						}
+					*/
+					f.Type().Id(typeName).Struct(
+						jen.Id("location").Index().Qual(deltaPath, "Indexer"),
+					)
+					/*
+						func (b String_scalar) Location_get() []Indexer {
+							return b.location
+						}
+					*/
+					f.Func().Params(jen.Id("b").Id(typeName)).Id("Location_get").Params().Index().Qual(deltaPath, "Indexer").Block(
+						jen.Return(jen.Id("b").Dot("location")),
+					)
+					/*
+						func NewString_scalar(l []Indexer) String_scalar {
+							return String_scalar{location: l}
+						}
+					*/
+					f.Func().Id("New" + typeName).Params(jen.Id("l").Index().Qual(deltaPath, "Indexer")).Id(typeName).Block(
+						jen.Return(jen.Id(typeName).Values(jen.Dict{jen.Id("location"): jen.Id("l")})),
+					)
+					if isRepeated {
+						/*
+							func (b Person_type_repeated) Index(i int) Person_type {
+								return NewPerson_type(delta.CopyAndAppend(b.location, delta.IndexIndexer(i)))
+							}
+						*/
+						f.Func().Params(jen.Id("b").Id(typeName)).Id("Index").Params(jen.Id("i").Int()).Id(valueType).Block(
+							jen.Return(jen.Id(fmt.Sprintf("New%s", valueType)).Call(
+								jen.Qual(deltaPath, "CopyAndAppend").Call(
+									jen.Id("b").Dot("location"),
+									jen.Qual(deltaPath, "IndexIndexer").Call(jen.Id("i")),
+								),
+							)),
+						)
+					}
+					if isMap {
+						/*
+							func (b Person_type_repeated) Key(k int32) Person_type {
+								return NewPerson_type(delta.CopyAndAppend(b.location, delta.KeyIndexer(k)))
+							}
+						*/
+						f.Func().Params(jen.Id("b").Id(typeName)).Id("Key").Params(jen.Id("k").Id(mapKeyType)).Id(valueType).Block(
+							jen.Return(jen.Id(fmt.Sprintf("New%s", valueType)).Call(
+								jen.Qual(deltaPath, "CopyAndAppend").Call(
+									jen.Id("b").Dot("location"),
+									jen.Qual(deltaPath, "KeyIndexer").Call(jen.Id("k")),
+								),
+							)),
+						)
+					}
+				}
+				emitType(m.typeName, false, false, "", "")
+				emitType(fmt.Sprintf("%s_repeated", m.typeName), true, false, "", m.typeName)
+				for _, keyType := range mapKeyTypes {
+					emitType(fmt.Sprintf("%s_%s_map", m.typeName, keyType), false, true, keyType, m.typeName)
+				}
+
 				//func PersonDef() Person_type {
 				//	return Person_type{}
 				//}
 				f.Func().Id(m.nameCapitalised + "Def").Params().Id(m.typeName).Block(
 					jen.Return(jen.Id(m.typeName).Block()),
-				)
-
-				//type Person_type struct {
-				//	location []delta.Indexer
-				//}
-				f.Type().Id(m.typeName).Struct(
-					jen.Id("location").Index().Qual(deltaPath, "Indexer"),
-				)
-
-				//func NewPerson_type(l []delta.Indexer) Person_type {
-				//	return Person_type{location: l}
-				//}
-				f.Func().Id(fmt.Sprintf("New%s", m.typeName)).Params(jen.Id("l").Index().Qual(deltaPath, "Indexer")).Id(m.typeName).Block(
-					jen.Return(jen.Id(m.typeName).Values(jen.Dict{jen.Id("location"): jen.Id("l")})),
-				)
-
-				//func (b Person_type) Location_get() []delta.Indexer {
-				//	return b.location
-				//}
-				f.Func().Params(jen.Id("b").Id(m.typeName)).Id("Location_get").Params().Index().Qual(deltaPath, "Indexer").Block(
-					jen.Return(jen.Id("b").Dot("location")),
-				)
-
-				//type Case_type_repeated struct {
-				//	location []delta.Indexer
-				//}
-				f.Type().Id(m.typeNameRepeated).Struct(
-					jen.Id("location").Index().Qual(deltaPath, "Indexer"),
-				)
-
-				//func NewCase_type_repeated(l []delta.Indexer) Case_type_repeated {
-				//	return Case_type_repeated{location: l}
-				//}
-				f.Func().Id(fmt.Sprintf("New%s", m.typeNameRepeated)).Params(jen.Id("l").Index().Qual(deltaPath, "Indexer")).Id(m.typeNameRepeated).Block(
-					jen.Return(jen.Id(m.typeNameRepeated).Values(jen.Dict{jen.Id("location"): jen.Id("l")})),
-				)
-
-				//func (b Case_type_repeated) Location_get() []delta.Indexer {
-				//	return b.location
-				//}
-				f.Func().Params(jen.Id("b").Id(m.typeNameRepeated)).Id("Location_get").Params().Index().Qual(deltaPath, "Indexer").Block(
-					jen.Return(jen.Id("b").Dot("location")),
-				)
-
-				//func (b Case_type_repeated) Index(i int) Case_type {
-				//	return NewCase_type(delta.CopyAndAppend(b.location, delta.Index(i)))
-				//}
-				f.Func().Params(jen.Id("b").Id(m.typeNameRepeated)).Id("Index").Params(jen.Id("i").Int()).Id(m.typeName).Block(
-					jen.Return(
-						jen.Id(fmt.Sprintf("New%s", m.typeName)).Call(
-							jen.Qual(deltaPath, "CopyAndAppend").Call(
-								jen.Id("b").Dot("location"),
-								jen.Qual(deltaPath, "IndexIndexer").Call(jen.Id("i")),
-							),
-						),
-					),
 				)
 
 				for _, field := range m.fields {
@@ -417,6 +451,7 @@ func (s *state) genDart() error {
 			var sb strings.Builder
 
 			sb.WriteString("import 'package:protod/delta.dart' as delta;\n")
+			sb.WriteString("import 'package:fixnum/fixnum.dart' as fixnum;\n")
 			for dartPath, dartAlias := range file.dartImports {
 
 				importPath, err := s.dartImportPath(file.dartPkg, dartPath)
@@ -437,48 +472,84 @@ func (s *state) genDart() error {
 				sb.WriteString(fmt.Sprintf("  return %s([]);\n", message.typeName))
 				sb.WriteString("}\n\n")
 
-				/*
-					class Share_type extends delta.Locator {
-					  Share_type(List<delta.Indexer> location) : super(location);
-				*/
-				sb.WriteString(fmt.Sprintf("class %s extends delta.Locator {\n", message.typeName))
-				sb.WriteString(fmt.Sprintf("  %s(List<delta.Indexer> location) : super(location);\n\n", message.typeName))
+				emitType := func(typeName string, isRepeated, isMap bool, mapKeyType, valueType string) {
 
-				for _, field := range message.fields {
-					var qualifiedTypeName string
-					switch field.kind {
-					case fieldKindScalar:
-						qualifiedTypeName = fmt.Sprintf("delta.%s", field.typeName)
-					case fieldKindLocal:
-						qualifiedTypeName = field.typeName
-					case fieldKindRemote:
-						qualifiedTypeName = fmt.Sprintf("%s.%s", file.dartImports[field.dartTypePath], field.typeName)
-					}
 					/*
-						delta.String_scalar Id() {
-						  return delta.String_scalar([...location]..add(delta.Field("id", 1)));
-						}
+						class Share_type extends delta.Locator {
+						  Share_type(List<delta.Indexer> location) : super(location);
 					*/
-					sb.WriteString(fmt.Sprintf("  %s %s() {\n", qualifiedTypeName, field.nameCapitalised))
-					sb.WriteString(fmt.Sprintf("    return %s([...location]..add(delta.Field(%q, %d)));\n", qualifiedTypeName, field.name, field.number))
-					sb.WriteString("  }\n\n")
-				}
-				sb.WriteString("}\n\n")
+					sb.WriteString(fmt.Sprintf("class %s extends delta.Locator {\n", typeName))
+					sb.WriteString(fmt.Sprintf("  %s(List<delta.Indexer> location) : super(location);\n", typeName))
 
-				/*
-					class Share_type_repeated extends delta.Locator {
-					  Share_type_repeated(List<delta.Indexer> location) : super(location);
-					  Share_type Index(int i) {
-					    return Share_type([...location]..add(delta.Index(i)));
-					  }
+					if isRepeated {
+						/*
+						  Share_type Index(int i) {
+						    return Share_type([...location]..add(delta.Index(i)));
+						  }
+						*/
+						sb.WriteString(fmt.Sprintf("  %s Index(int i) {\n", valueType))
+						sb.WriteString(fmt.Sprintf("    return %s([...location]..add(delta.Index(i)));\n", valueType))
+						sb.WriteString(fmt.Sprintf("  }\n"))
+					} else if isMap {
+						/*
+						  Share_type Key(int32 k) {
+						    return Share_type([...location]..add(delta.Key(k)));
+						  }
+						*/
+
+						var dartKeyType, dartKeyFunction string
+						switch mapKeyType {
+						case "bool":
+							dartKeyType = "bool"
+							dartKeyFunction = "Key"
+						case "int32":
+							dartKeyType = "int"
+							dartKeyFunction = "Key"
+						case "int64":
+							dartKeyType = "fixnum.Int64"
+							dartKeyFunction = "Key"
+						case "uint32":
+							dartKeyType = "fixnum.Int64"
+							dartKeyFunction = "KeyUint32"
+						case "uint64":
+							dartKeyType = "fixnum.Int64"
+							dartKeyFunction = "KeyUint64"
+						case "string":
+							dartKeyType = "String"
+							dartKeyFunction = "Key"
+						}
+						sb.WriteString(fmt.Sprintf("  %s Key(%s k) {\n", valueType, dartKeyType))
+						sb.WriteString(fmt.Sprintf("    return %s([...location]..add(delta.%s(k)));\n", valueType, dartKeyFunction))
+						sb.WriteString(fmt.Sprintf("  }\n"))
+					} else {
+						for _, field := range message.fields {
+							var qualifiedTypeName string
+							switch field.kind {
+							case fieldKindScalar:
+								qualifiedTypeName = fmt.Sprintf("delta.%s", field.typeName)
+							case fieldKindLocal:
+								qualifiedTypeName = field.typeName
+							case fieldKindRemote:
+								qualifiedTypeName = fmt.Sprintf("%s.%s", file.dartImports[field.dartTypePath], field.typeName)
+							}
+							/*
+								delta.String_scalar Id() {
+								  return delta.String_scalar([...location]..add(delta.Field("id", 1)));
+								}
+							*/
+							sb.WriteString(fmt.Sprintf("  %s %s() {\n", qualifiedTypeName, field.nameCapitalised))
+							sb.WriteString(fmt.Sprintf("    return %s([...location]..add(delta.Field(%q, %d)));\n", qualifiedTypeName, field.name, field.number))
+							sb.WriteString("  }\n")
+						}
 					}
-				*/
-				sb.WriteString(fmt.Sprintf("class %s extends delta.Locator {\n", message.typeNameRepeated))
-				sb.WriteString(fmt.Sprintf("  %s(List<delta.Indexer> location) : super(location);\n", message.typeNameRepeated))
-				sb.WriteString(fmt.Sprintf("  %s Index(int i) {\n", message.typeName))
-				sb.WriteString(fmt.Sprintf("    return %s([...location]..add(delta.Index(i)));\n", message.typeName))
-				sb.WriteString(fmt.Sprintf("  }\n"))
-				sb.WriteString(fmt.Sprintf("}\n\n"))
+					sb.WriteString("}\n\n")
+
+				}
+				emitType(message.typeName, false, false, "", "")
+				emitType(fmt.Sprintf("%s_repeated", message.typeName), true, false, "", message.typeName)
+				for _, keyType := range mapKeyTypes {
+					emitType(fmt.Sprintf("%s_%s_map", message.typeName, keyType), false, true, keyType, message.typeName)
+				}
 			}
 
 			if err := os.MkdirAll(dirOut, 0777); err != nil {
@@ -576,4 +647,13 @@ func isScalar(t string) bool {
 
 func camelCase(in string) string {
 	return strings.ToLower(in[0:1]) + in[1:]
+}
+
+var mapKeyTypes = []string{
+	"bool",
+	"int32",
+	"int64",
+	"uint32",
+	"uint64",
+	"string",
 }
