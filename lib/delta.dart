@@ -1,6 +1,6 @@
 import 'package:fixnum/fixnum.dart' as fixnum;
 import 'package:protobuf/protobuf.dart' as protobuf;
-import 'package:protod/delta.pb.dart' as delta;
+import 'package:protod/delta.pb.dart' as pb;
 
 import 'google/protobuf/any.pb.dart' as any;
 
@@ -12,7 +12,7 @@ setDefaultRegistry(protobuf.TypeRegistry r) {
   _defaultTypeRegistry = r;
 }
 
-apply(delta.Delta d, protobuf.GeneratedMessage m, [protobuf.TypeRegistry r]) {
+apply(pb.Delta d, protobuf.GeneratedMessage m, [protobuf.TypeRegistry r]) {
   if (r == null) {
     r = _defaultTypeRegistry;
   }
@@ -66,7 +66,7 @@ apply(delta.Delta d, protobuf.GeneratedMessage m, [protobuf.TypeRegistry r]) {
   }
 }
 
-dynamic getKey(delta.Key k) {
+dynamic getKey(pb.Key k) {
   if (k.hasBool_1()) {
     return k.bool_1;
   } else if (k.hasInt32()) {
@@ -77,8 +77,8 @@ dynamic getKey(delta.Key k) {
     return k.uint32;
   } else if (k.hasUint64()) {
     return k.uint64;
-  } else if (k.hasStr()) {
-    return k.str;
+  } else if (k.hasString()) {
+    return k.string;
   }
 }
 
@@ -86,7 +86,7 @@ dynamic scalarFromAny(any.Any any) {
   if (any.typeUrl != 'type.googleapis.com/delta.Scalar') {
     throw Exception('wrong type ${any.typeUrl}');
   }
-  final s = any.unpackInto(delta.Scalar());
+  final s = any.unpackInto(pb.Scalar());
   if (s.hasBool_13()) {
     return s.bool_13;
   } else if (s.hasBytes()) {
@@ -120,58 +120,11 @@ dynamic scalarFromAny(any.Any any) {
   }
 }
 
-delta.Delta editValue(dynamic value, Locator locator) {
-  List<delta.Locator> loc = [];
-  locator.location.forEach((element) {
-    switch (element.runtimeType) {
-      case Field:
-        final field = element as Field;
-        loc.add(
-          delta.Locator()
-            ..field_1 = (delta.Field()
-              ..name = field.name
-              ..number = field.number),
-        );
-        break;
-      case Index:
-        final index = element as Index;
-        loc.add(delta.Locator()..index = fixnum.Int64(index.index));
-        break;
-      case Key:
-        final key = element as Key;
-        switch (key.key.runtimeType) {
-          case int:
-            final k = key.key as int;
-            loc.add(delta.Locator()..key = (delta.Key()..int32 = k));
-            break;
-          case fixnum.Int32:
-            final k = key.key as fixnum.Int32;
-            loc.add(delta.Locator()..key = (delta.Key()..int32 = k.toInt()));
-            break;
-          case fixnum.Int64:
-            final k = key.key as fixnum.Int64;
-            loc.add(delta.Locator()..key = (delta.Key()..int64 = k));
-            break;
-          case String:
-            final k = key.key as String;
-            loc.add(delta.Locator()..key = (delta.Key()..str = k));
-            break;
-        }
-        break;
-      case KeyUint32:
-        final key = element as KeyUint32;
-        loc.add(delta.Locator()..key = (delta.Key()..uint32 = key.key.toInt()));
-        break;
-      case KeyUint64:
-        final key = element as KeyUint64;
-        loc.add(delta.Locator()..key = (delta.Key()..uint64 = key.key));
-        break;
-    }
-  });
-  return delta.Delta()
-    ..type = delta.Delta_Type.Edit
+pb.Delta edit(dynamic value, Location location) {
+  return pb.Delta()
+    ..type = pb.Delta_Type.Edit
     ..value = toAny(value)
-    ..location.addAll(loc);
+    ..location.addAll(location.location);
 }
 
 any.Any toAny(dynamic value) {
@@ -180,20 +133,20 @@ any.Any toAny(dynamic value) {
   }
   protobuf.GeneratedMessage m;
   if (value is List<int>) {
-    m = delta.Scalar()..bytes = value;
+    m = pb.Scalar()..bytes = value;
   } else {
     switch (value.runtimeType) {
       case String:
-        m = delta.Scalar()..string = value;
+        m = pb.Scalar()..string = value;
         break;
       case double:
-        m = delta.Scalar()..double_1 = value;
+        m = pb.Scalar()..double_1 = value;
         break;
       case int:
-        m = delta.Scalar()..int64 = fixnum.Int64(value);
+        m = pb.Scalar()..int64 = fixnum.Int64(value);
         break;
       case bool:
-        m = delta.Scalar()..bool_13 = value;
+        m = pb.Scalar()..bool_13 = value;
         break;
     }
   }
@@ -203,35 +156,7 @@ any.Any toAny(dynamic value) {
   return any.Any.pack(m);
 }
 
-abstract class Locator {
-  List<Indexer> location;
-  Locator(this.location);
-}
-
-abstract class Indexer {}
-
-class Field extends Indexer {
-  String name;
-  int number;
-  Field(this.name, this.number);
-}
-
-class Index extends Indexer {
-  int index;
-  Index(this.index);
-}
-
-class Key extends Indexer {
-  dynamic key;
-  Key(this.key);
-}
-
-class KeyUint32 extends Indexer {
-  fixnum.Int64 key;
-  KeyUint32(this.key);
-}
-
-class KeyUint64 extends Indexer {
-  fixnum.Int64 key;
-  KeyUint64(this.key);
+abstract class Location {
+  List<pb.Locator> location;
+  Location(this.location);
 }

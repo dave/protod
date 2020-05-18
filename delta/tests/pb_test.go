@@ -16,7 +16,7 @@ func TestApplyMap(t *testing.T) {
 		},
 	}
 
-	if err := delta.Apply(delta.EditValue("bar", PersonDef().CasesStringMap().Key("foo").Name()), person); err != nil {
+	if err := delta.Apply(delta.Edit("bar", PersonDef().CasesStringMap().Key("foo").Name()), person); err != nil {
 		t.Fail()
 	}
 
@@ -47,7 +47,7 @@ func TestApply(t *testing.T) {
 		},
 	}
 
-	if err := delta.Apply(delta.EditValue("spotify", PersonDef().Company().Name()), person); err != nil {
+	if err := delta.Apply(delta.Edit("spotify", PersonDef().Company().Name()), person); err != nil {
 		t.Fail()
 	}
 
@@ -55,7 +55,7 @@ func TestApply(t *testing.T) {
 		t.Fail()
 	}
 
-	if err := delta.Apply(delta.EditValue(&Company{Name: "spacex"}, PersonDef().Company()), person); err != nil {
+	if err := delta.Apply(delta.Edit(&Company{Name: "spacex"}, PersonDef().Company()), person); err != nil {
 		t.Fail()
 	}
 
@@ -63,7 +63,7 @@ func TestApply(t *testing.T) {
 		t.Fail()
 	}
 
-	if err := delta.Apply(delta.EditValue(&Case{Name: "qux"}, PersonDef().Cases().Index(1)), person); err != nil {
+	if err := delta.Apply(delta.Edit(&Case{Name: "qux"}, PersonDef().Cases().Index(1)), person); err != nil {
 		t.Fail()
 	}
 
@@ -71,7 +71,7 @@ func TestApply(t *testing.T) {
 		t.Fail()
 	}
 
-	if err := delta.Apply(delta.EditValue("qaz", PersonDef().Cases().Index(2).Name()), person); err != nil {
+	if err := delta.Apply(delta.Edit("qaz", PersonDef().Cases().Index(2).Name()), person); err != nil {
 		t.Fail()
 	}
 
@@ -79,7 +79,7 @@ func TestApply(t *testing.T) {
 		t.Fail()
 	}
 
-	if err := delta.Apply(delta.EditValue("xxx", PersonDef().CasesStringMap().Key("foo").Name()), person); err != nil {
+	if err := delta.Apply(delta.Edit("xxx", PersonDef().CasesStringMap().Key("foo").Name()), person); err != nil {
 		t.Fail()
 	}
 
@@ -98,9 +98,9 @@ func TestApplyDiff(t *testing.T) {
 		Company: &Company{Name: from},
 	}
 
-	dlt := delta.EditDiff(person.Company.Name, to, PersonDef().Company().Name())
+	dlt := delta.Diff(person.Company.Name, to, PersonDef().Company().Name())
 
-	dltStr := delta.MustUnmarshalAny(dlt.Value).Message.(*delta.Scalar).V.(*delta.Scalar_Delta).Delta
+	dltStr := delta.MustUnmarshalAny(dlt.Value).Message.(*delta.Scalar).V.(*delta.Scalar_Diff).Diff
 
 	if dltStr != "=10\t-5\t+orange\t=17\t-12\t+me" {
 		t.Fail()
@@ -126,9 +126,9 @@ func TestApplyDiff1(t *testing.T) {
 		Company: &Company{Name: from},
 	}
 
-	dlt := delta.EditDiff(person.Company.Name, to, PersonDef().Company().Name())
+	dlt := delta.Diff(person.Company.Name, to, PersonDef().Company().Name())
 
-	dltStr := delta.MustUnmarshalAny(dlt.Value).Message.(*delta.Scalar).V.(*delta.Scalar_Delta).Delta
+	dltStr := delta.MustUnmarshalAny(dlt.Value).Message.(*delta.Scalar).V.(*delta.Scalar_Diff).Diff
 
 	if dltStr != "=6\t-11\t+dolor sit amet\t=1" {
 		t.Fail()

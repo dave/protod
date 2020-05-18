@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/dave/jennifer/jen"
+	"github.com/dave/protod/delta/protodgen/shared"
 	"github.com/yoheimuta/go-protoparser/v4"
 	"github.com/yoheimuta/go-protoparser/v4/parser"
 )
@@ -38,7 +39,7 @@ func Main() error {
 		dartPkg:   *dartpkg,
 		dartOut:   *dart,
 		dartRel:   *reldartpkg,
-		packages:  map[string]*pkgInfo{},
+		packages:  map[string]*shared.PkgInfo{},
 	}
 
 	if err := filepath.Walk(s.protoRoot, s.scanFiles); err != nil {
@@ -65,52 +66,8 @@ func Main() error {
 type state struct {
 	protoRoot, dartPkg, dartOut, outRoot string
 	dartRel                              bool
-	packages                             map[string]*pkgInfo
+	packages                             map[string]*shared.PkgInfo
 }
-
-type pkgInfo struct {
-	relpath              string
-	protoPkgName         string
-	goPkgPath, goPkgName string
-	files                []*fileInfo
-}
-
-type fileInfo struct {
-	fname                        string
-	file                         *parser.Proto
-	pkg                          *parser.Package
-	options                      []*parser.Option
-	messages                     []*messageInfo
-	imports                      []*parser.Import
-	dartImports                  map[string]string
-	dartPkg, dartPath, dartAlias string
-}
-
-type messageInfo struct {
-	message                    *parser.Message
-	name                       string
-	nameCapitalised            string
-	typeName, typeNameRepeated string
-	fields                     []*fieldInfo
-}
-
-type fieldInfo struct {
-	field                    *parser.Field
-	name, nameCapitalised    string
-	number                   int
-	kind                     fieldKind
-	goTypePath, dartTypePath string
-	typeName                 string
-	keyType                  string
-	isRepeated, isMap        bool
-}
-type fieldKind int
-
-const (
-	fieldKindScalar fieldKind = 1
-	fieldKindLocal  fieldKind = 2
-	fieldKindRemote fieldKind = 3
-)
 
 func (s *state) scanFiles(fpath string, info os.FileInfo, err error) error {
 	if !strings.HasSuffix(fpath, ".proto") {
@@ -133,7 +90,7 @@ func (s *state) scanFiles(fpath string, info os.FileInfo, err error) error {
 	var goPkgPath, goPkgName string
 	var pkg *parser.Package
 	var options []*parser.Option
-	var messages []*messageInfo
+	var messages []*shared.MessageInfo
 	var imports []*parser.Import
 	for _, v := range got.ProtoBody {
 		switch v := v.(type) {
@@ -166,12 +123,12 @@ func (s *state) scanFiles(fpath string, info os.FileInfo, err error) error {
 			if !found {
 				continue
 			}
-			mi := &messageInfo{}
-			mi.message = v
-			mi.name = v.MessageName
-			mi.nameCapitalised = strings.Title(mi.name)
-			mi.typeName = fmt.Sprintf("%s_type", mi.nameCapitalised)
-			mi.typeNameRepeated = fmt.Sprintf("%s_type_repeated", mi.nameCapitalised)
+			mi := &shared.MessageInfo{}
+			mi.Message = v
+			mi.Name = v.MessageName
+			mi.NameCapitalised = strings.Title(mi.Name)
+			mi.TypeName = fmt.Sprintf("%s_type", mi.NameCapitalised)
+			mi.TypeNameRepeated = fmt.Sprintf("%s_type_repeated", mi.NameCapitalised)
 			messages = append(messages, mi)
 		case *parser.Import:
 			imports = append(imports, v)
@@ -191,24 +148,24 @@ func (s *state) scanFiles(fpath string, info os.FileInfo, err error) error {
 	relpath, err := filepath.Rel(s.protoRoot, dir)
 
 	if s.packages[pkg.Name] == nil {
-		s.packages[pkg.Name] = &pkgInfo{
-			relpath:      relpath,
-			protoPkgName: pkg.Name,
-			goPkgPath:    goPkgPath,
-			goPkgName:    goPkgName,
+		s.packages[pkg.Name] = &shared.PkgInfo{
+			Relpath:      relpath,
+			ProtoPkgName: pkg.Name,
+			GoPkgPath:    goPkgPath,
+			GoPkgName:    goPkgName,
 		}
 	}
-	s.packages[pkg.Name].files = append(s.packages[pkg.Name].files, &fileInfo{
-		fname:       fname,
-		file:        got,
-		pkg:         pkg,
-		options:     options,
-		messages:    messages,
-		imports:     imports,
-		dartImports: map[string]string{},
-		dartPkg:     path.Join(s.dartPkg, relpath),
-		dartPath:    path.Join(s.dartPkg, relpath, fmt.Sprintf("%s.def.dart", fname)),
-		dartAlias:   makeAlias(relpath, fname),
+	s.packages[pkg.Name].Files = append(s.packages[pkg.Name].Files, &shared.FileInfo{
+		Fname:       fname,
+		File:        got,
+		Pkg:         pkg,
+		Options:     options,
+		Messages:    messages,
+		Imports:     imports,
+		DartImports: map[string]string{},
+		DartPkg:     path.Join(s.dartPkg, relpath),
+		DartPath:    path.Join(s.dartPkg, relpath, fmt.Sprintf("%s.def.dart", fname)),
+		DartAlias:   makeAlias(relpath, fname),
 	})
 	return nil
 }
@@ -233,9 +190,9 @@ func (s *state) dartImportPath(pathCurrent, pathTarget string) (string, error) {
 
 func (s *state) scanMessages() error {
 	for _, info := range s.packages {
-		for _, file := range info.files {
-			for _, mi := range file.messages {
-				for _, b := range mi.message.MessageBody {
+		for _, file := range info.Files {
+			for _, mi := range file.Messages {
+				for _, b := range mi.Message.MessageBody {
 					switch b := b.(type) {
 					case *parser.Field, *parser.MapField:
 
@@ -261,37 +218,37 @@ func (s *state) scanMessages() error {
 						if err != nil {
 							return fmt.Errorf("parsing field number: %w", err)
 						}
-						f := &fieldInfo{
-							name:            fieldName,
-							nameCapitalised: strings.Title(fieldName),
-							number:          fieldNumber,
-							keyType:         keyType,
-							isRepeated:      isRepeated,
-							isMap:           isMap,
+						f := &shared.FieldInfo{
+							Name:            fieldName,
+							NameCapitalised: strings.Title(fieldName),
+							Number:          fieldNumber,
+							KeyType:         keyType,
+							IsRepeated:      isRepeated,
+							IsMap:           isMap,
 						}
 
 						if isScalar(valueType) {
-							f.kind = fieldKindScalar
-							f.goTypePath = "github.com/dave/protod/delta"
-							f.dartTypePath = "package:protod/delta.dart"
-							f.typeName = fmt.Sprintf("%s_scalar", strings.Title(valueType))
+							f.Kind = shared.FieldKindScalar
+							f.GoTypePath = "github.com/dave/protod/delta"
+							f.DartTypePath = "package:protod/delta.dart"
+							f.TypeName = fmt.Sprintf("%s_scalar", strings.Title(valueType))
 						} else if strings.Contains(valueType, ".") {
-							f.kind = fieldKindRemote
+							f.Kind = shared.FieldKindRemote
 
 							packageName := valueType[0:strings.LastIndex(valueType, ".")]
 							typeName := valueType[strings.LastIndex(valueType, ".")+1:]
 							pkg := s.packages[packageName]
 
-							f.goTypePath = pkg.goPkgPath
+							f.GoTypePath = pkg.GoPkgPath
 
 							//TODO: find file that defines this type for Dart path
-							var remoteFile *fileInfo
-							for _, f := range pkg.files {
+							var remoteFile *shared.FileInfo
+							for _, f := range pkg.Files {
 								if remoteFile != nil {
 									break
 								}
-								for _, message := range f.messages {
-									if message.name == typeName {
+								for _, message := range f.Messages {
+									if message.Name == typeName {
 										remoteFile = f
 										break
 									}
@@ -300,22 +257,22 @@ func (s *state) scanMessages() error {
 							if remoteFile == nil {
 								panic("can't find type")
 							}
-							f.dartTypePath = remoteFile.dartPath
-							file.dartImports[f.dartTypePath] = remoteFile.dartAlias
-							f.typeName = fmt.Sprintf("%s_type", strings.Title(typeName))
+							f.DartTypePath = remoteFile.DartPath
+							file.DartImports[f.DartTypePath] = remoteFile.DartAlias
+							f.TypeName = fmt.Sprintf("%s_type", strings.Title(typeName))
 
 						} else {
-							f.kind = fieldKindLocal
-							f.goTypePath = info.goPkgPath
-							f.typeName = fmt.Sprintf("%s_type", strings.Title(valueType))
+							f.Kind = shared.FieldKindLocal
+							f.GoTypePath = info.GoPkgPath
+							f.TypeName = fmt.Sprintf("%s_type", strings.Title(valueType))
 						}
 						if isRepeated {
-							f.typeName += "_repeated"
+							f.TypeName += "_repeated"
 						}
 						if isMap {
-							f.typeName += fmt.Sprintf("_%s_map", keyType)
+							f.TypeName += fmt.Sprintf("_%s_map", keyType)
 						}
-						mi.fields = append(mi.fields, f)
+						mi.Fields = append(mi.Fields, f)
 
 					case *parser.Message:
 						// TODO: nested type - recurse?
@@ -331,100 +288,57 @@ func (s *state) scanMessages() error {
 
 func (s *state) genGo() error {
 	for _, info := range s.packages {
-		for _, file := range info.files {
+		for _, file := range info.Files {
 
-			dirOut := filepath.Join(s.outRoot, info.relpath)
-			fpathOut := filepath.Join(dirOut, fmt.Sprintf("%s.def.go", file.fname))
+			dirOut := filepath.Join(s.outRoot, info.Relpath)
+			fpathOut := filepath.Join(dirOut, fmt.Sprintf("%s.def.go", file.Fname))
 
-			f := jen.NewFilePathName(info.goPkgPath, info.goPkgName)
+			f := jen.NewFilePathName(info.GoPkgPath, info.GoPkgName)
 
 			f.ImportName("github.com/dave/protod/delta", "delta")
 			for _, p := range s.packages {
-				f.ImportName(p.goPkgPath, p.goPkgName)
+				f.ImportName(p.GoPkgPath, p.GoPkgName)
 			}
 
 			deltaPath := "github.com/dave/protod/delta"
-			for _, m := range file.messages {
+			for _, m := range file.Messages {
 
-				emitType := func(typeName string, isRepeated, isMap bool, mapKeyType, valueType string) {
-					/*
-						type String_scalar struct {
-							location []Indexer
-						}
-					*/
-					f.Type().Id(typeName).Struct(
-						jen.Id("location").Index().Qual(deltaPath, "Indexer"),
-					)
-					/*
-						func (b String_scalar) Location_get() []Indexer {
-							return b.location
-						}
-					*/
-					f.Func().Params(jen.Id("b").Id(typeName)).Id("Location_get").Params().Index().Qual(deltaPath, "Indexer").Block(
-						jen.Return(jen.Id("b").Dot("location")),
-					)
-					/*
-						func NewString_scalar(l []Indexer) String_scalar {
-							return String_scalar{location: l}
-						}
-					*/
-					f.Func().Id("New" + typeName).Params(jen.Id("l").Index().Qual(deltaPath, "Indexer")).Id(typeName).Block(
-						jen.Return(jen.Id(typeName).Values(jen.Dict{jen.Id("location"): jen.Id("l")})),
-					)
-					if isRepeated {
-						/*
-							func (b Person_type_repeated) Index(i int) Person_type {
-								return NewPerson_type(delta.CopyAndAppend(b.location, delta.IndexIndexer(i)))
-							}
-						*/
-						f.Func().Params(jen.Id("b").Id(typeName)).Id("Index").Params(jen.Id("i").Int()).Id(valueType).Block(
-							jen.Return(jen.Id(fmt.Sprintf("New%s", valueType)).Call(
-								jen.Qual(deltaPath, "CopyAndAppend").Call(
-									jen.Id("b").Dot("location"),
-									jen.Qual(deltaPath, "IndexIndexer").Call(jen.Id("i")),
-								),
-							)),
-						)
-					}
-					if isMap {
-						/*
-							func (b Person_type_repeated) Key(k int32) Person_type {
-								return NewPerson_type(delta.CopyAndAppend(b.location, delta.KeyIndexer(k)))
-							}
-						*/
-						f.Func().Params(jen.Id("b").Id(typeName)).Id("Key").Params(jen.Id("k").Id(mapKeyType)).Id(valueType).Block(
-							jen.Return(jen.Id(fmt.Sprintf("New%s", valueType)).Call(
-								jen.Qual(deltaPath, "CopyAndAppend").Call(
-									jen.Id("b").Dot("location"),
-									jen.Qual(deltaPath, "KeyIndexer").Call(jen.Id("k")),
-								),
-							)),
-						)
-					}
-				}
-				emitType(m.typeName, false, false, "", "")
-				emitType(fmt.Sprintf("%s_repeated", m.typeName), true, false, "", m.typeName)
+				shared.EmitGoType(f, m.TypeName, false, false, "", "")
+				shared.EmitGoType(f, fmt.Sprintf("%s_repeated", m.TypeName), true, false, "", m.TypeName)
 				for _, keyType := range mapKeyTypes {
-					emitType(fmt.Sprintf("%s_%s_map", m.typeName, keyType), false, true, keyType, m.typeName)
+					shared.EmitGoType(f, fmt.Sprintf("%s_%s_map", m.TypeName, keyType), false, true, keyType, m.TypeName)
 				}
 
 				//func PersonDef() Person_type {
 				//	return Person_type{}
 				//}
-				f.Func().Id(m.nameCapitalised + "Def").Params().Id(m.typeName).Block(
-					jen.Return(jen.Id(m.typeName).Block()),
+				f.Func().Id(m.NameCapitalised + "Def").Params().Id(m.TypeName).Block(
+					jen.Return(jen.Id(m.TypeName).Block()),
 				)
 
-				for _, field := range m.fields {
+				for _, field := range m.Fields {
 					//func (b Person_type) Name() delta.String_scalar {
-					//	return delta.NewString_scalar(delta.CopyAndAppend(b.location, delta.Field("name")))
+					//	return delta.NewString_scalar(
+					//		delta.CopyAndAppend(
+					//			b.location,
+					//			&delta.Locator{V: &delta.Locator_Field{Field: &delta.Field{Name: name, Number: int32(number)}}},
+					//		),
+					//	)
 					//}
-					f.Func().Params(jen.Id("b").Id(m.typeName)).Id(field.nameCapitalised).Params().Qual(field.goTypePath, field.typeName).Block(
+					f.Func().Params(jen.Id("b").Id(m.TypeName)).Id(field.NameCapitalised).Params().Qual(field.GoTypePath, field.TypeName).Block(
 						jen.Return(
-							jen.Qual(field.goTypePath, fmt.Sprintf("New%s", field.typeName)).Call(
+							jen.Qual(field.GoTypePath, fmt.Sprintf("New%s", field.TypeName)).Call(
 								jen.Qual(deltaPath, "CopyAndAppend").Call(
 									jen.Id("b").Dot("location"),
-									jen.Qual(deltaPath, "FieldIndexer").Call(jen.Lit(field.name), jen.Lit(field.number)),
+									//&delta.Locator{V: &delta.Locator_Field{Field: &delta.Field{Name: name, Number: int32(number)}}},
+									jen.Op("&").Qual(deltaPath, "Locator").Values(jen.Dict{
+										jen.Id("V"): jen.Op("&").Qual(deltaPath, "Locator_Field").Values(jen.Dict{
+											jen.Id("Field"): jen.Op("&").Qual(deltaPath, "Field").Values(jen.Dict{
+												jen.Id("Name"):   jen.Lit(field.Name),
+												jen.Id("Number"): jen.Int32().Parens(jen.Lit(field.Number)),
+											}),
+										}),
+									}),
 								),
 							),
 						),
@@ -451,18 +365,19 @@ func (s *state) genGo() error {
 
 func (s *state) genDart() error {
 	for _, info := range s.packages {
-		for _, file := range info.files {
+		for _, file := range info.Files {
 
-			dirOut := filepath.Join(s.dartOut, info.relpath)
-			fpathOut := filepath.Join(dirOut, fmt.Sprintf("%s.def.dart", file.fname))
+			dirOut := filepath.Join(s.dartOut, info.Relpath)
+			fpathOut := filepath.Join(dirOut, fmt.Sprintf("%s.def.dart", file.Fname))
 
 			var sb strings.Builder
 
 			sb.WriteString("import 'package:protod/delta.dart' as delta;\n")
+			sb.WriteString("import 'package:protod/delta.pb.dart' as pb;\n")
 			sb.WriteString("import 'package:fixnum/fixnum.dart' as fixnum;\n")
-			for dartPath, dartAlias := range file.dartImports {
+			for dartPath, dartAlias := range file.DartImports {
 
-				importPath, err := s.dartImportPath(file.dartPkg, dartPath)
+				importPath, err := s.dartImportPath(file.DartPkg, dartPath)
 				if err != nil {
 					return err
 				}
@@ -470,93 +385,20 @@ func (s *state) genDart() error {
 				sb.WriteString(fmt.Sprintf("import '%s' as %s;\n", importPath, dartAlias))
 			}
 			sb.WriteString("\n")
-			for _, message := range file.messages {
+			for _, message := range file.Messages {
 				/*
 					Share_type ShareDef() {
 					  return Share_type([]);
 					}
 				*/
-				sb.WriteString(fmt.Sprintf("%s %s() {\n", message.typeName, message.nameCapitalised+"Def"))
-				sb.WriteString(fmt.Sprintf("  return %s([]);\n", message.typeName))
+				sb.WriteString(fmt.Sprintf("%s %s() {\n", message.TypeName, message.NameCapitalised+"Def"))
+				sb.WriteString(fmt.Sprintf("  return %s([]);\n", message.TypeName))
 				sb.WriteString("}\n\n")
 
-				emitType := func(typeName string, isRepeated, isMap bool, mapKeyType, valueType string) {
-
-					/*
-						class Share_type extends delta.Locator {
-						  Share_type(List<delta.Indexer> location) : super(location);
-					*/
-					sb.WriteString(fmt.Sprintf("class %s extends delta.Locator {\n", typeName))
-					sb.WriteString(fmt.Sprintf("  %s(List<delta.Indexer> location) : super(location);\n", typeName))
-
-					if isRepeated {
-						/*
-						  Share_type Index(int i) {
-						    return Share_type([...location]..add(delta.Index(i)));
-						  }
-						*/
-						sb.WriteString(fmt.Sprintf("  %s Index(int i) {\n", valueType))
-						sb.WriteString(fmt.Sprintf("    return %s([...location]..add(delta.Index(i)));\n", valueType))
-						sb.WriteString(fmt.Sprintf("  }\n"))
-					} else if isMap {
-						/*
-						  Share_type Key(int32 k) {
-						    return Share_type([...location]..add(delta.Key(k)));
-						  }
-						*/
-
-						var dartKeyType, dartKeyFunction string
-						switch mapKeyType {
-						case "bool":
-							dartKeyType = "bool"
-							dartKeyFunction = "Key"
-						case "int32":
-							dartKeyType = "int"
-							dartKeyFunction = "Key"
-						case "int64":
-							dartKeyType = "fixnum.Int64"
-							dartKeyFunction = "Key"
-						case "uint32":
-							dartKeyType = "fixnum.Int64"
-							dartKeyFunction = "KeyUint32"
-						case "uint64":
-							dartKeyType = "fixnum.Int64"
-							dartKeyFunction = "KeyUint64"
-						case "string":
-							dartKeyType = "String"
-							dartKeyFunction = "Key"
-						}
-						sb.WriteString(fmt.Sprintf("  %s Key(%s k) {\n", valueType, dartKeyType))
-						sb.WriteString(fmt.Sprintf("    return %s([...location]..add(delta.%s(k)));\n", valueType, dartKeyFunction))
-						sb.WriteString(fmt.Sprintf("  }\n"))
-					} else {
-						for _, field := range message.fields {
-							var qualifiedTypeName string
-							switch field.kind {
-							case fieldKindScalar:
-								qualifiedTypeName = fmt.Sprintf("delta.%s", field.typeName)
-							case fieldKindLocal:
-								qualifiedTypeName = field.typeName
-							case fieldKindRemote:
-								qualifiedTypeName = fmt.Sprintf("%s.%s", file.dartImports[field.dartTypePath], field.typeName)
-							}
-							/*
-								delta.String_scalar Id() {
-								  return delta.String_scalar([...location]..add(delta.Field("id", 1)));
-								}
-							*/
-							sb.WriteString(fmt.Sprintf("  %s %s() {\n", qualifiedTypeName, field.nameCapitalised))
-							sb.WriteString(fmt.Sprintf("    return %s([...location]..add(delta.Field(%q, %d)));\n", qualifiedTypeName, field.name, field.number))
-							sb.WriteString("  }\n")
-						}
-					}
-					sb.WriteString("}\n\n")
-
-				}
-				emitType(message.typeName, false, false, "", "")
-				emitType(fmt.Sprintf("%s_repeated", message.typeName), true, false, "", message.typeName)
+				shared.EmitDartType(&sb, message.TypeName, false, false, "", "", message, file)
+				shared.EmitDartType(&sb, fmt.Sprintf("%s_repeated", message.TypeName), true, false, "", message.TypeName, message, file)
 				for _, keyType := range mapKeyTypes {
-					emitType(fmt.Sprintf("%s_%s_map", message.typeName, keyType), false, true, keyType, message.typeName)
+					shared.EmitDartType(&sb, fmt.Sprintf("%s_%s_map", message.TypeName, keyType), false, true, keyType, message.TypeName, message, file)
 				}
 			}
 
@@ -576,12 +418,12 @@ func (s *state) genDart() error {
 	//import 'package:protobuf/protobuf.dart';
 	sb.WriteString(fmt.Sprintf("import 'package:protobuf/protobuf.dart';\n"))
 	for _, info := range s.packages {
-		for _, file := range info.files {
-			importPath, err := s.dartImportPath(s.dartPkg, file.dartPkg+"/"+file.fname+".pb.dart")
+		for _, file := range info.Files {
+			importPath, err := s.dartImportPath(s.dartPkg, file.DartPkg+"/"+file.Fname+".pb.dart")
 			if err != nil {
 				return err
 			}
-			sb.WriteString(fmt.Sprintf("import '%s' as %s;\n", importPath, file.dartAlias))
+			sb.WriteString(fmt.Sprintf("import '%s' as %s;\n", importPath, file.DartAlias))
 		}
 	}
 	sb.WriteString("\n")
@@ -594,9 +436,9 @@ func (s *state) genDart() error {
 	*/
 	sb.WriteString(fmt.Sprintf("final types = TypeRegistry([\n"))
 	for _, info := range s.packages {
-		for _, file := range info.files {
-			for _, message := range file.messages {
-				sb.WriteString(fmt.Sprintf("  %s.%s(),\n", file.dartAlias, message.name))
+		for _, file := range info.Files {
+			for _, message := range file.Messages {
+				sb.WriteString(fmt.Sprintf("  %s.%s(),\n", file.DartAlias, message.Name))
 			}
 		}
 	}

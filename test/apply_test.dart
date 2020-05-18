@@ -36,7 +36,7 @@ void main() {
       ..casesStringMap['bar'] = (Case()..name = "bar");
 
     delta.apply(
-      delta.editValue("baz", PersonDef().CasesStringMap().Key('foo').Name()),
+      delta.edit("baz", PersonDef().CasesStringMap().Key('foo').Name()),
       person,
     );
 
@@ -53,7 +53,7 @@ void main() {
       ..casesIntMap[2] = (Case()..name = "bar");
 
     delta.apply(
-      delta.editValue("baz", PersonDef().CasesIntMap().Key(2).Name()),
+      delta.edit("baz", PersonDef().CasesIntMap().Key(2).Name()),
       person,
     );
 
@@ -73,28 +73,28 @@ void main() {
       ]);
 
     delta.apply(
-      delta.editValue("spotify", PersonDef().Company().Name()),
+      delta.edit("spotify", PersonDef().Company().Name()),
       person,
     );
 
     expect(person.company.name, "spotify");
 
     delta.apply(
-      delta.editValue(Company()..name = 'spacex', PersonDef().Company()),
+      delta.edit(Company()..name = 'spacex', PersonDef().Company()),
       person,
     );
 
     expect(person.company.name, "spacex");
 
     delta.apply(
-      delta.editValue(Case()..name = 'qux', PersonDef().Cases().Index(1)),
+      delta.edit(Case()..name = 'qux', PersonDef().Cases().Index(1)),
       person,
     );
 
     expect(person.cases[1].name, "qux");
 
     delta.apply(
-      delta.editValue("qaz", PersonDef().Cases().Index(2).Name()),
+      delta.edit("qaz", PersonDef().Cases().Index(2).Name()),
       person,
     );
 
