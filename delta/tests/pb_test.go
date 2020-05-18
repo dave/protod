@@ -1,11 +1,9 @@
 package tests
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/dave/protod/delta"
-	"github.com/sergi/go-diff/diffmatchpatch"
 )
 
 func TestApplyMap(t *testing.T) {
@@ -88,36 +86,6 @@ func TestApply(t *testing.T) {
 	if person.CasesStringMap["foo"].Name != "xxx" {
 		t.Fail()
 	}
-}
-
-func TestDiff(t *testing.T) {
-
-	text1 := "the quick brown fox jumped over the lazy dog"
-	text2 := "the quick brown bat jumped over the lazy dog"
-
-	dmp := diffmatchpatch.New()
-
-	diffs := dmp.DiffMain(text1, text2, false)
-	dlt := dmp.DiffToDelta(diffs)
-
-	for _, diff := range diffs {
-		fmt.Printf("%d %q\n", diff.Type, diff.Text)
-	}
-	fmt.Printf("%q\n", dlt)
-
-	diffs1, err := dmp.DiffFromDelta(text1, dlt)
-	if err != nil {
-		panic(err)
-	}
-
-	patches := dmp.PatchMake(text1, diffs1)
-
-	text3, applied := dmp.PatchApply(patches, text1)
-
-	fmt.Println(text3)
-
-	fmt.Printf("%#v\n", applied)
-
 }
 
 func TestApplyDiff(t *testing.T) {

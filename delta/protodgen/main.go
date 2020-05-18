@@ -145,8 +145,14 @@ func (s *state) scanFiles(fpath string, info os.FileInfo, err error) error {
 				if err != nil {
 					return fmt.Errorf("unquoting go_package option: %w", err)
 				}
-				goPkgPath = strings.Split(c, ";")[0]
-				goPkgName = strings.Split(c, ";")[1]
+				parts := strings.Split(c, ";")
+				if len(parts) == 1 {
+					goPkgPath = parts[0]
+					goPkgName = ""
+				} else {
+					goPkgPath = strings.Split(c, ";")[0]
+					goPkgName = strings.Split(c, ";")[1]
+				}
 			} else {
 				options = append(options, v)
 			}
@@ -169,6 +175,8 @@ func (s *state) scanFiles(fpath string, info os.FileInfo, err error) error {
 			messages = append(messages, mi)
 		case *parser.Import:
 			imports = append(imports, v)
+		case *parser.Enum:
+			// TODO
 		default:
 			return fmt.Errorf("don't know what to do with %T", v)
 		}

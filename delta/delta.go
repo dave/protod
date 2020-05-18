@@ -63,8 +63,8 @@ func getMapKey(key *Key) protoreflect.MapKey {
 		mapKey = protoreflect.ValueOfUint32(key.Uint32).MapKey()
 	case *Key_Uint64:
 		mapKey = protoreflect.ValueOfUint64(key.Uint64).MapKey()
-	case *Key_Str:
-		mapKey = protoreflect.ValueOfString(key.Str).MapKey()
+	case *Key_String_:
+		mapKey = protoreflect.ValueOfString(key.String_).MapKey()
 	}
 	return mapKey
 }
@@ -88,7 +88,7 @@ func getLoc(location LocatorInterface) []*Locator {
 		case Uint64KeyIndexer:
 			loc = append(loc, &Locator{V: &Locator_Key{Key: &Key{V: &Key_Uint64{Uint64: uint64(indexer)}}}})
 		case StringKeyIndexer:
-			loc = append(loc, &Locator{V: &Locator_Key{Key: &Key{V: &Key_Str{Str: string(indexer)}}}})
+			loc = append(loc, &Locator{V: &Locator_Key{Key: &Key{V: &Key_String_{String_: string(indexer)}}}})
 		}
 	}
 	return loc
@@ -96,7 +96,7 @@ func getLoc(location LocatorInterface) []*Locator {
 
 func EditDiff(from, to string, location LocatorInterface) *Delta {
 	return &Delta{
-		Type:     Delta_EditValue,
+		Type:     Delta_Edit,
 		Location: getLoc(location),
 		Value:    NewAnyDiff(from, to),
 	}
@@ -104,7 +104,7 @@ func EditDiff(from, to string, location LocatorInterface) *Delta {
 
 func EditValue(value interface{}, location LocatorInterface) *Delta {
 	return &Delta{
-		Type:     Delta_EditValue,
+		Type:     Delta_Edit,
 		Location: getLoc(location),
 		Value:    NewAny(value),
 	}
@@ -121,7 +121,7 @@ func NewAny(value interface{}) *anypb.Any {
 	// TODO: create separate functions for sint32, sint64, fixed32, fixed64, sfixed32, sfixed64 if needed
 	switch value := value.(type) {
 	case string:
-		return mustAny(&Scalar{V: &Scalar_Str{Str: value}})
+		return mustAny(&Scalar{V: &Scalar_String_{String_: value}})
 	case float64:
 		return mustAny(&Scalar{V: &Scalar_Double{Double: value}})
 	case float32:
@@ -212,8 +212,8 @@ func getValue(previous protoreflect.Value, a *anypb.Any) (protoreflect.Value, er
 			return protoreflect.ValueOfUint64(value.Uint64), nil
 		case *Scalar_Bool:
 			return protoreflect.ValueOfBool(value.Bool), nil
-		case *Scalar_Str:
-			return protoreflect.ValueOfString(value.Str), nil
+		case *Scalar_String_:
+			return protoreflect.ValueOfString(value.String_), nil
 		case *Scalar_Bytes:
 			return protoreflect.ValueOfBytes(value.Bytes), nil
 		case *Scalar_Delta:
@@ -261,6 +261,10 @@ func FieldIndexer(name string, number int) FieldIndexerStruct {
 	return FieldIndexerStruct{name, number}
 }
 
+func FieldLocator(name string, number int) Locator {
+	return Locator{V: &Locator_Field{Field: &Field{Name: name, Number: int32(number)}}}
+}
+
 type FieldIndexerStruct struct {
 	Name   string
 	Number int
@@ -306,6 +310,13 @@ func (StringKeyIndexer) isIndexer() {}
 
 func CopyAndAppend(in []Indexer, v Indexer) []Indexer {
 	out := make([]Indexer, len(in)+1)
+	copy(out, in)
+	out[len(out)-1] = v
+	return out
+}
+
+func CopyAndAppendLocator(in []Locator, v Locator) []Locator {
+	out := make([]Locator, len(in)+1)
 	copy(out, in)
 	out[len(out)-1] = v
 	return out

@@ -1,24 +1,24 @@
 package delta
 
 type Double_scalar struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Double_scalar) Location_get() []Indexer {
+func (b Double_scalar) Location_get() []Locator {
 	return b.location
 }
-func NewDouble_scalar(l []Indexer) Double_scalar {
+func NewDouble_scalar(l []Locator) Double_scalar {
 	return Double_scalar{location: l}
 }
 
 type Double_scalar_repeated struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Double_scalar_repeated) Location_get() []Indexer {
+func (b Double_scalar_repeated) Location_get() []Locator {
 	return b.location
 }
-func NewDouble_scalar_repeated(l []Indexer) Double_scalar_repeated {
+func NewDouble_scalar_repeated(l []Locator) Double_scalar_repeated {
 	return Double_scalar_repeated{location: l}
 }
 func (b Double_scalar_repeated) Index(i int) Double_scalar {
@@ -26,13 +26,13 @@ func (b Double_scalar_repeated) Index(i int) Double_scalar {
 }
 
 type Double_scalar_bool_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Double_scalar_bool_map) Location_get() []Indexer {
+func (b Double_scalar_bool_map) Location_get() []Locator {
 	return b.location
 }
-func NewDouble_scalar_bool_map(l []Indexer) Double_scalar_bool_map {
+func NewDouble_scalar_bool_map(l []Locator) Double_scalar_bool_map {
 	return Double_scalar_bool_map{location: l}
 }
 func (b Double_scalar_bool_map) Key(k bool) Double_scalar {
@@ -40,13 +40,13 @@ func (b Double_scalar_bool_map) Key(k bool) Double_scalar {
 }
 
 type Double_scalar_int32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Double_scalar_int32_map) Location_get() []Indexer {
+func (b Double_scalar_int32_map) Location_get() []Locator {
 	return b.location
 }
-func NewDouble_scalar_int32_map(l []Indexer) Double_scalar_int32_map {
+func NewDouble_scalar_int32_map(l []Locator) Double_scalar_int32_map {
 	return Double_scalar_int32_map{location: l}
 }
 func (b Double_scalar_int32_map) Key(k int32) Double_scalar {
@@ -54,13 +54,13 @@ func (b Double_scalar_int32_map) Key(k int32) Double_scalar {
 }
 
 type Double_scalar_int64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Double_scalar_int64_map) Location_get() []Indexer {
+func (b Double_scalar_int64_map) Location_get() []Locator {
 	return b.location
 }
-func NewDouble_scalar_int64_map(l []Indexer) Double_scalar_int64_map {
+func NewDouble_scalar_int64_map(l []Locator) Double_scalar_int64_map {
 	return Double_scalar_int64_map{location: l}
 }
 func (b Double_scalar_int64_map) Key(k int64) Double_scalar {
@@ -68,13 +68,13 @@ func (b Double_scalar_int64_map) Key(k int64) Double_scalar {
 }
 
 type Double_scalar_uint32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Double_scalar_uint32_map) Location_get() []Indexer {
+func (b Double_scalar_uint32_map) Location_get() []Locator {
 	return b.location
 }
-func NewDouble_scalar_uint32_map(l []Indexer) Double_scalar_uint32_map {
+func NewDouble_scalar_uint32_map(l []Locator) Double_scalar_uint32_map {
 	return Double_scalar_uint32_map{location: l}
 }
 func (b Double_scalar_uint32_map) Key(k uint32) Double_scalar {
@@ -82,13 +82,13 @@ func (b Double_scalar_uint32_map) Key(k uint32) Double_scalar {
 }
 
 type Double_scalar_uint64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Double_scalar_uint64_map) Location_get() []Indexer {
+func (b Double_scalar_uint64_map) Location_get() []Locator {
 	return b.location
 }
-func NewDouble_scalar_uint64_map(l []Indexer) Double_scalar_uint64_map {
+func NewDouble_scalar_uint64_map(l []Locator) Double_scalar_uint64_map {
 	return Double_scalar_uint64_map{location: l}
 }
 func (b Double_scalar_uint64_map) Key(k uint64) Double_scalar {
@@ -96,13 +96,13 @@ func (b Double_scalar_uint64_map) Key(k uint64) Double_scalar {
 }
 
 type Double_scalar_string_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Double_scalar_string_map) Location_get() []Indexer {
+func (b Double_scalar_string_map) Location_get() []Locator {
 	return b.location
 }
-func NewDouble_scalar_string_map(l []Indexer) Double_scalar_string_map {
+func NewDouble_scalar_string_map(l []Locator) Double_scalar_string_map {
 	return Double_scalar_string_map{location: l}
 }
 func (b Double_scalar_string_map) Key(k string) Double_scalar {
@@ -110,24 +110,24 @@ func (b Double_scalar_string_map) Key(k string) Double_scalar {
 }
 
 type Float_scalar struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Float_scalar) Location_get() []Indexer {
+func (b Float_scalar) Location_get() []Locator {
 	return b.location
 }
-func NewFloat_scalar(l []Indexer) Float_scalar {
+func NewFloat_scalar(l []Locator) Float_scalar {
 	return Float_scalar{location: l}
 }
 
 type Float_scalar_repeated struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Float_scalar_repeated) Location_get() []Indexer {
+func (b Float_scalar_repeated) Location_get() []Locator {
 	return b.location
 }
-func NewFloat_scalar_repeated(l []Indexer) Float_scalar_repeated {
+func NewFloat_scalar_repeated(l []Locator) Float_scalar_repeated {
 	return Float_scalar_repeated{location: l}
 }
 func (b Float_scalar_repeated) Index(i int) Float_scalar {
@@ -135,13 +135,13 @@ func (b Float_scalar_repeated) Index(i int) Float_scalar {
 }
 
 type Float_scalar_bool_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Float_scalar_bool_map) Location_get() []Indexer {
+func (b Float_scalar_bool_map) Location_get() []Locator {
 	return b.location
 }
-func NewFloat_scalar_bool_map(l []Indexer) Float_scalar_bool_map {
+func NewFloat_scalar_bool_map(l []Locator) Float_scalar_bool_map {
 	return Float_scalar_bool_map{location: l}
 }
 func (b Float_scalar_bool_map) Key(k bool) Float_scalar {
@@ -149,13 +149,13 @@ func (b Float_scalar_bool_map) Key(k bool) Float_scalar {
 }
 
 type Float_scalar_int32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Float_scalar_int32_map) Location_get() []Indexer {
+func (b Float_scalar_int32_map) Location_get() []Locator {
 	return b.location
 }
-func NewFloat_scalar_int32_map(l []Indexer) Float_scalar_int32_map {
+func NewFloat_scalar_int32_map(l []Locator) Float_scalar_int32_map {
 	return Float_scalar_int32_map{location: l}
 }
 func (b Float_scalar_int32_map) Key(k int32) Float_scalar {
@@ -163,13 +163,13 @@ func (b Float_scalar_int32_map) Key(k int32) Float_scalar {
 }
 
 type Float_scalar_int64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Float_scalar_int64_map) Location_get() []Indexer {
+func (b Float_scalar_int64_map) Location_get() []Locator {
 	return b.location
 }
-func NewFloat_scalar_int64_map(l []Indexer) Float_scalar_int64_map {
+func NewFloat_scalar_int64_map(l []Locator) Float_scalar_int64_map {
 	return Float_scalar_int64_map{location: l}
 }
 func (b Float_scalar_int64_map) Key(k int64) Float_scalar {
@@ -177,13 +177,13 @@ func (b Float_scalar_int64_map) Key(k int64) Float_scalar {
 }
 
 type Float_scalar_uint32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Float_scalar_uint32_map) Location_get() []Indexer {
+func (b Float_scalar_uint32_map) Location_get() []Locator {
 	return b.location
 }
-func NewFloat_scalar_uint32_map(l []Indexer) Float_scalar_uint32_map {
+func NewFloat_scalar_uint32_map(l []Locator) Float_scalar_uint32_map {
 	return Float_scalar_uint32_map{location: l}
 }
 func (b Float_scalar_uint32_map) Key(k uint32) Float_scalar {
@@ -191,13 +191,13 @@ func (b Float_scalar_uint32_map) Key(k uint32) Float_scalar {
 }
 
 type Float_scalar_uint64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Float_scalar_uint64_map) Location_get() []Indexer {
+func (b Float_scalar_uint64_map) Location_get() []Locator {
 	return b.location
 }
-func NewFloat_scalar_uint64_map(l []Indexer) Float_scalar_uint64_map {
+func NewFloat_scalar_uint64_map(l []Locator) Float_scalar_uint64_map {
 	return Float_scalar_uint64_map{location: l}
 }
 func (b Float_scalar_uint64_map) Key(k uint64) Float_scalar {
@@ -205,13 +205,13 @@ func (b Float_scalar_uint64_map) Key(k uint64) Float_scalar {
 }
 
 type Float_scalar_string_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Float_scalar_string_map) Location_get() []Indexer {
+func (b Float_scalar_string_map) Location_get() []Locator {
 	return b.location
 }
-func NewFloat_scalar_string_map(l []Indexer) Float_scalar_string_map {
+func NewFloat_scalar_string_map(l []Locator) Float_scalar_string_map {
 	return Float_scalar_string_map{location: l}
 }
 func (b Float_scalar_string_map) Key(k string) Float_scalar {
@@ -219,24 +219,24 @@ func (b Float_scalar_string_map) Key(k string) Float_scalar {
 }
 
 type Int32_scalar struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Int32_scalar) Location_get() []Indexer {
+func (b Int32_scalar) Location_get() []Locator {
 	return b.location
 }
-func NewInt32_scalar(l []Indexer) Int32_scalar {
+func NewInt32_scalar(l []Locator) Int32_scalar {
 	return Int32_scalar{location: l}
 }
 
 type Int32_scalar_repeated struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Int32_scalar_repeated) Location_get() []Indexer {
+func (b Int32_scalar_repeated) Location_get() []Locator {
 	return b.location
 }
-func NewInt32_scalar_repeated(l []Indexer) Int32_scalar_repeated {
+func NewInt32_scalar_repeated(l []Locator) Int32_scalar_repeated {
 	return Int32_scalar_repeated{location: l}
 }
 func (b Int32_scalar_repeated) Index(i int) Int32_scalar {
@@ -244,13 +244,13 @@ func (b Int32_scalar_repeated) Index(i int) Int32_scalar {
 }
 
 type Int32_scalar_bool_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Int32_scalar_bool_map) Location_get() []Indexer {
+func (b Int32_scalar_bool_map) Location_get() []Locator {
 	return b.location
 }
-func NewInt32_scalar_bool_map(l []Indexer) Int32_scalar_bool_map {
+func NewInt32_scalar_bool_map(l []Locator) Int32_scalar_bool_map {
 	return Int32_scalar_bool_map{location: l}
 }
 func (b Int32_scalar_bool_map) Key(k bool) Int32_scalar {
@@ -258,13 +258,13 @@ func (b Int32_scalar_bool_map) Key(k bool) Int32_scalar {
 }
 
 type Int32_scalar_int32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Int32_scalar_int32_map) Location_get() []Indexer {
+func (b Int32_scalar_int32_map) Location_get() []Locator {
 	return b.location
 }
-func NewInt32_scalar_int32_map(l []Indexer) Int32_scalar_int32_map {
+func NewInt32_scalar_int32_map(l []Locator) Int32_scalar_int32_map {
 	return Int32_scalar_int32_map{location: l}
 }
 func (b Int32_scalar_int32_map) Key(k int32) Int32_scalar {
@@ -272,13 +272,13 @@ func (b Int32_scalar_int32_map) Key(k int32) Int32_scalar {
 }
 
 type Int32_scalar_int64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Int32_scalar_int64_map) Location_get() []Indexer {
+func (b Int32_scalar_int64_map) Location_get() []Locator {
 	return b.location
 }
-func NewInt32_scalar_int64_map(l []Indexer) Int32_scalar_int64_map {
+func NewInt32_scalar_int64_map(l []Locator) Int32_scalar_int64_map {
 	return Int32_scalar_int64_map{location: l}
 }
 func (b Int32_scalar_int64_map) Key(k int64) Int32_scalar {
@@ -286,13 +286,13 @@ func (b Int32_scalar_int64_map) Key(k int64) Int32_scalar {
 }
 
 type Int32_scalar_uint32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Int32_scalar_uint32_map) Location_get() []Indexer {
+func (b Int32_scalar_uint32_map) Location_get() []Locator {
 	return b.location
 }
-func NewInt32_scalar_uint32_map(l []Indexer) Int32_scalar_uint32_map {
+func NewInt32_scalar_uint32_map(l []Locator) Int32_scalar_uint32_map {
 	return Int32_scalar_uint32_map{location: l}
 }
 func (b Int32_scalar_uint32_map) Key(k uint32) Int32_scalar {
@@ -300,13 +300,13 @@ func (b Int32_scalar_uint32_map) Key(k uint32) Int32_scalar {
 }
 
 type Int32_scalar_uint64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Int32_scalar_uint64_map) Location_get() []Indexer {
+func (b Int32_scalar_uint64_map) Location_get() []Locator {
 	return b.location
 }
-func NewInt32_scalar_uint64_map(l []Indexer) Int32_scalar_uint64_map {
+func NewInt32_scalar_uint64_map(l []Locator) Int32_scalar_uint64_map {
 	return Int32_scalar_uint64_map{location: l}
 }
 func (b Int32_scalar_uint64_map) Key(k uint64) Int32_scalar {
@@ -314,13 +314,13 @@ func (b Int32_scalar_uint64_map) Key(k uint64) Int32_scalar {
 }
 
 type Int32_scalar_string_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Int32_scalar_string_map) Location_get() []Indexer {
+func (b Int32_scalar_string_map) Location_get() []Locator {
 	return b.location
 }
-func NewInt32_scalar_string_map(l []Indexer) Int32_scalar_string_map {
+func NewInt32_scalar_string_map(l []Locator) Int32_scalar_string_map {
 	return Int32_scalar_string_map{location: l}
 }
 func (b Int32_scalar_string_map) Key(k string) Int32_scalar {
@@ -328,24 +328,24 @@ func (b Int32_scalar_string_map) Key(k string) Int32_scalar {
 }
 
 type Int64_scalar struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Int64_scalar) Location_get() []Indexer {
+func (b Int64_scalar) Location_get() []Locator {
 	return b.location
 }
-func NewInt64_scalar(l []Indexer) Int64_scalar {
+func NewInt64_scalar(l []Locator) Int64_scalar {
 	return Int64_scalar{location: l}
 }
 
 type Int64_scalar_repeated struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Int64_scalar_repeated) Location_get() []Indexer {
+func (b Int64_scalar_repeated) Location_get() []Locator {
 	return b.location
 }
-func NewInt64_scalar_repeated(l []Indexer) Int64_scalar_repeated {
+func NewInt64_scalar_repeated(l []Locator) Int64_scalar_repeated {
 	return Int64_scalar_repeated{location: l}
 }
 func (b Int64_scalar_repeated) Index(i int) Int64_scalar {
@@ -353,13 +353,13 @@ func (b Int64_scalar_repeated) Index(i int) Int64_scalar {
 }
 
 type Int64_scalar_bool_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Int64_scalar_bool_map) Location_get() []Indexer {
+func (b Int64_scalar_bool_map) Location_get() []Locator {
 	return b.location
 }
-func NewInt64_scalar_bool_map(l []Indexer) Int64_scalar_bool_map {
+func NewInt64_scalar_bool_map(l []Locator) Int64_scalar_bool_map {
 	return Int64_scalar_bool_map{location: l}
 }
 func (b Int64_scalar_bool_map) Key(k bool) Int64_scalar {
@@ -367,13 +367,13 @@ func (b Int64_scalar_bool_map) Key(k bool) Int64_scalar {
 }
 
 type Int64_scalar_int32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Int64_scalar_int32_map) Location_get() []Indexer {
+func (b Int64_scalar_int32_map) Location_get() []Locator {
 	return b.location
 }
-func NewInt64_scalar_int32_map(l []Indexer) Int64_scalar_int32_map {
+func NewInt64_scalar_int32_map(l []Locator) Int64_scalar_int32_map {
 	return Int64_scalar_int32_map{location: l}
 }
 func (b Int64_scalar_int32_map) Key(k int32) Int64_scalar {
@@ -381,13 +381,13 @@ func (b Int64_scalar_int32_map) Key(k int32) Int64_scalar {
 }
 
 type Int64_scalar_int64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Int64_scalar_int64_map) Location_get() []Indexer {
+func (b Int64_scalar_int64_map) Location_get() []Locator {
 	return b.location
 }
-func NewInt64_scalar_int64_map(l []Indexer) Int64_scalar_int64_map {
+func NewInt64_scalar_int64_map(l []Locator) Int64_scalar_int64_map {
 	return Int64_scalar_int64_map{location: l}
 }
 func (b Int64_scalar_int64_map) Key(k int64) Int64_scalar {
@@ -395,13 +395,13 @@ func (b Int64_scalar_int64_map) Key(k int64) Int64_scalar {
 }
 
 type Int64_scalar_uint32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Int64_scalar_uint32_map) Location_get() []Indexer {
+func (b Int64_scalar_uint32_map) Location_get() []Locator {
 	return b.location
 }
-func NewInt64_scalar_uint32_map(l []Indexer) Int64_scalar_uint32_map {
+func NewInt64_scalar_uint32_map(l []Locator) Int64_scalar_uint32_map {
 	return Int64_scalar_uint32_map{location: l}
 }
 func (b Int64_scalar_uint32_map) Key(k uint32) Int64_scalar {
@@ -409,13 +409,13 @@ func (b Int64_scalar_uint32_map) Key(k uint32) Int64_scalar {
 }
 
 type Int64_scalar_uint64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Int64_scalar_uint64_map) Location_get() []Indexer {
+func (b Int64_scalar_uint64_map) Location_get() []Locator {
 	return b.location
 }
-func NewInt64_scalar_uint64_map(l []Indexer) Int64_scalar_uint64_map {
+func NewInt64_scalar_uint64_map(l []Locator) Int64_scalar_uint64_map {
 	return Int64_scalar_uint64_map{location: l}
 }
 func (b Int64_scalar_uint64_map) Key(k uint64) Int64_scalar {
@@ -423,13 +423,13 @@ func (b Int64_scalar_uint64_map) Key(k uint64) Int64_scalar {
 }
 
 type Int64_scalar_string_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Int64_scalar_string_map) Location_get() []Indexer {
+func (b Int64_scalar_string_map) Location_get() []Locator {
 	return b.location
 }
-func NewInt64_scalar_string_map(l []Indexer) Int64_scalar_string_map {
+func NewInt64_scalar_string_map(l []Locator) Int64_scalar_string_map {
 	return Int64_scalar_string_map{location: l}
 }
 func (b Int64_scalar_string_map) Key(k string) Int64_scalar {
@@ -437,24 +437,24 @@ func (b Int64_scalar_string_map) Key(k string) Int64_scalar {
 }
 
 type Uint32_scalar struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Uint32_scalar) Location_get() []Indexer {
+func (b Uint32_scalar) Location_get() []Locator {
 	return b.location
 }
-func NewUint32_scalar(l []Indexer) Uint32_scalar {
+func NewUint32_scalar(l []Locator) Uint32_scalar {
 	return Uint32_scalar{location: l}
 }
 
 type Uint32_scalar_repeated struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Uint32_scalar_repeated) Location_get() []Indexer {
+func (b Uint32_scalar_repeated) Location_get() []Locator {
 	return b.location
 }
-func NewUint32_scalar_repeated(l []Indexer) Uint32_scalar_repeated {
+func NewUint32_scalar_repeated(l []Locator) Uint32_scalar_repeated {
 	return Uint32_scalar_repeated{location: l}
 }
 func (b Uint32_scalar_repeated) Index(i int) Uint32_scalar {
@@ -462,13 +462,13 @@ func (b Uint32_scalar_repeated) Index(i int) Uint32_scalar {
 }
 
 type Uint32_scalar_bool_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Uint32_scalar_bool_map) Location_get() []Indexer {
+func (b Uint32_scalar_bool_map) Location_get() []Locator {
 	return b.location
 }
-func NewUint32_scalar_bool_map(l []Indexer) Uint32_scalar_bool_map {
+func NewUint32_scalar_bool_map(l []Locator) Uint32_scalar_bool_map {
 	return Uint32_scalar_bool_map{location: l}
 }
 func (b Uint32_scalar_bool_map) Key(k bool) Uint32_scalar {
@@ -476,13 +476,13 @@ func (b Uint32_scalar_bool_map) Key(k bool) Uint32_scalar {
 }
 
 type Uint32_scalar_int32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Uint32_scalar_int32_map) Location_get() []Indexer {
+func (b Uint32_scalar_int32_map) Location_get() []Locator {
 	return b.location
 }
-func NewUint32_scalar_int32_map(l []Indexer) Uint32_scalar_int32_map {
+func NewUint32_scalar_int32_map(l []Locator) Uint32_scalar_int32_map {
 	return Uint32_scalar_int32_map{location: l}
 }
 func (b Uint32_scalar_int32_map) Key(k int32) Uint32_scalar {
@@ -490,13 +490,13 @@ func (b Uint32_scalar_int32_map) Key(k int32) Uint32_scalar {
 }
 
 type Uint32_scalar_int64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Uint32_scalar_int64_map) Location_get() []Indexer {
+func (b Uint32_scalar_int64_map) Location_get() []Locator {
 	return b.location
 }
-func NewUint32_scalar_int64_map(l []Indexer) Uint32_scalar_int64_map {
+func NewUint32_scalar_int64_map(l []Locator) Uint32_scalar_int64_map {
 	return Uint32_scalar_int64_map{location: l}
 }
 func (b Uint32_scalar_int64_map) Key(k int64) Uint32_scalar {
@@ -504,13 +504,13 @@ func (b Uint32_scalar_int64_map) Key(k int64) Uint32_scalar {
 }
 
 type Uint32_scalar_uint32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Uint32_scalar_uint32_map) Location_get() []Indexer {
+func (b Uint32_scalar_uint32_map) Location_get() []Locator {
 	return b.location
 }
-func NewUint32_scalar_uint32_map(l []Indexer) Uint32_scalar_uint32_map {
+func NewUint32_scalar_uint32_map(l []Locator) Uint32_scalar_uint32_map {
 	return Uint32_scalar_uint32_map{location: l}
 }
 func (b Uint32_scalar_uint32_map) Key(k uint32) Uint32_scalar {
@@ -518,13 +518,13 @@ func (b Uint32_scalar_uint32_map) Key(k uint32) Uint32_scalar {
 }
 
 type Uint32_scalar_uint64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Uint32_scalar_uint64_map) Location_get() []Indexer {
+func (b Uint32_scalar_uint64_map) Location_get() []Locator {
 	return b.location
 }
-func NewUint32_scalar_uint64_map(l []Indexer) Uint32_scalar_uint64_map {
+func NewUint32_scalar_uint64_map(l []Locator) Uint32_scalar_uint64_map {
 	return Uint32_scalar_uint64_map{location: l}
 }
 func (b Uint32_scalar_uint64_map) Key(k uint64) Uint32_scalar {
@@ -532,13 +532,13 @@ func (b Uint32_scalar_uint64_map) Key(k uint64) Uint32_scalar {
 }
 
 type Uint32_scalar_string_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Uint32_scalar_string_map) Location_get() []Indexer {
+func (b Uint32_scalar_string_map) Location_get() []Locator {
 	return b.location
 }
-func NewUint32_scalar_string_map(l []Indexer) Uint32_scalar_string_map {
+func NewUint32_scalar_string_map(l []Locator) Uint32_scalar_string_map {
 	return Uint32_scalar_string_map{location: l}
 }
 func (b Uint32_scalar_string_map) Key(k string) Uint32_scalar {
@@ -546,24 +546,24 @@ func (b Uint32_scalar_string_map) Key(k string) Uint32_scalar {
 }
 
 type Uint64_scalar struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Uint64_scalar) Location_get() []Indexer {
+func (b Uint64_scalar) Location_get() []Locator {
 	return b.location
 }
-func NewUint64_scalar(l []Indexer) Uint64_scalar {
+func NewUint64_scalar(l []Locator) Uint64_scalar {
 	return Uint64_scalar{location: l}
 }
 
 type Uint64_scalar_repeated struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Uint64_scalar_repeated) Location_get() []Indexer {
+func (b Uint64_scalar_repeated) Location_get() []Locator {
 	return b.location
 }
-func NewUint64_scalar_repeated(l []Indexer) Uint64_scalar_repeated {
+func NewUint64_scalar_repeated(l []Locator) Uint64_scalar_repeated {
 	return Uint64_scalar_repeated{location: l}
 }
 func (b Uint64_scalar_repeated) Index(i int) Uint64_scalar {
@@ -571,13 +571,13 @@ func (b Uint64_scalar_repeated) Index(i int) Uint64_scalar {
 }
 
 type Uint64_scalar_bool_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Uint64_scalar_bool_map) Location_get() []Indexer {
+func (b Uint64_scalar_bool_map) Location_get() []Locator {
 	return b.location
 }
-func NewUint64_scalar_bool_map(l []Indexer) Uint64_scalar_bool_map {
+func NewUint64_scalar_bool_map(l []Locator) Uint64_scalar_bool_map {
 	return Uint64_scalar_bool_map{location: l}
 }
 func (b Uint64_scalar_bool_map) Key(k bool) Uint64_scalar {
@@ -585,13 +585,13 @@ func (b Uint64_scalar_bool_map) Key(k bool) Uint64_scalar {
 }
 
 type Uint64_scalar_int32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Uint64_scalar_int32_map) Location_get() []Indexer {
+func (b Uint64_scalar_int32_map) Location_get() []Locator {
 	return b.location
 }
-func NewUint64_scalar_int32_map(l []Indexer) Uint64_scalar_int32_map {
+func NewUint64_scalar_int32_map(l []Locator) Uint64_scalar_int32_map {
 	return Uint64_scalar_int32_map{location: l}
 }
 func (b Uint64_scalar_int32_map) Key(k int32) Uint64_scalar {
@@ -599,13 +599,13 @@ func (b Uint64_scalar_int32_map) Key(k int32) Uint64_scalar {
 }
 
 type Uint64_scalar_int64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Uint64_scalar_int64_map) Location_get() []Indexer {
+func (b Uint64_scalar_int64_map) Location_get() []Locator {
 	return b.location
 }
-func NewUint64_scalar_int64_map(l []Indexer) Uint64_scalar_int64_map {
+func NewUint64_scalar_int64_map(l []Locator) Uint64_scalar_int64_map {
 	return Uint64_scalar_int64_map{location: l}
 }
 func (b Uint64_scalar_int64_map) Key(k int64) Uint64_scalar {
@@ -613,13 +613,13 @@ func (b Uint64_scalar_int64_map) Key(k int64) Uint64_scalar {
 }
 
 type Uint64_scalar_uint32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Uint64_scalar_uint32_map) Location_get() []Indexer {
+func (b Uint64_scalar_uint32_map) Location_get() []Locator {
 	return b.location
 }
-func NewUint64_scalar_uint32_map(l []Indexer) Uint64_scalar_uint32_map {
+func NewUint64_scalar_uint32_map(l []Locator) Uint64_scalar_uint32_map {
 	return Uint64_scalar_uint32_map{location: l}
 }
 func (b Uint64_scalar_uint32_map) Key(k uint32) Uint64_scalar {
@@ -627,13 +627,13 @@ func (b Uint64_scalar_uint32_map) Key(k uint32) Uint64_scalar {
 }
 
 type Uint64_scalar_uint64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Uint64_scalar_uint64_map) Location_get() []Indexer {
+func (b Uint64_scalar_uint64_map) Location_get() []Locator {
 	return b.location
 }
-func NewUint64_scalar_uint64_map(l []Indexer) Uint64_scalar_uint64_map {
+func NewUint64_scalar_uint64_map(l []Locator) Uint64_scalar_uint64_map {
 	return Uint64_scalar_uint64_map{location: l}
 }
 func (b Uint64_scalar_uint64_map) Key(k uint64) Uint64_scalar {
@@ -641,13 +641,13 @@ func (b Uint64_scalar_uint64_map) Key(k uint64) Uint64_scalar {
 }
 
 type Uint64_scalar_string_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Uint64_scalar_string_map) Location_get() []Indexer {
+func (b Uint64_scalar_string_map) Location_get() []Locator {
 	return b.location
 }
-func NewUint64_scalar_string_map(l []Indexer) Uint64_scalar_string_map {
+func NewUint64_scalar_string_map(l []Locator) Uint64_scalar_string_map {
 	return Uint64_scalar_string_map{location: l}
 }
 func (b Uint64_scalar_string_map) Key(k string) Uint64_scalar {
@@ -655,24 +655,24 @@ func (b Uint64_scalar_string_map) Key(k string) Uint64_scalar {
 }
 
 type Sint32_scalar struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sint32_scalar) Location_get() []Indexer {
+func (b Sint32_scalar) Location_get() []Locator {
 	return b.location
 }
-func NewSint32_scalar(l []Indexer) Sint32_scalar {
+func NewSint32_scalar(l []Locator) Sint32_scalar {
 	return Sint32_scalar{location: l}
 }
 
 type Sint32_scalar_repeated struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sint32_scalar_repeated) Location_get() []Indexer {
+func (b Sint32_scalar_repeated) Location_get() []Locator {
 	return b.location
 }
-func NewSint32_scalar_repeated(l []Indexer) Sint32_scalar_repeated {
+func NewSint32_scalar_repeated(l []Locator) Sint32_scalar_repeated {
 	return Sint32_scalar_repeated{location: l}
 }
 func (b Sint32_scalar_repeated) Index(i int) Sint32_scalar {
@@ -680,13 +680,13 @@ func (b Sint32_scalar_repeated) Index(i int) Sint32_scalar {
 }
 
 type Sint32_scalar_bool_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sint32_scalar_bool_map) Location_get() []Indexer {
+func (b Sint32_scalar_bool_map) Location_get() []Locator {
 	return b.location
 }
-func NewSint32_scalar_bool_map(l []Indexer) Sint32_scalar_bool_map {
+func NewSint32_scalar_bool_map(l []Locator) Sint32_scalar_bool_map {
 	return Sint32_scalar_bool_map{location: l}
 }
 func (b Sint32_scalar_bool_map) Key(k bool) Sint32_scalar {
@@ -694,13 +694,13 @@ func (b Sint32_scalar_bool_map) Key(k bool) Sint32_scalar {
 }
 
 type Sint32_scalar_int32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sint32_scalar_int32_map) Location_get() []Indexer {
+func (b Sint32_scalar_int32_map) Location_get() []Locator {
 	return b.location
 }
-func NewSint32_scalar_int32_map(l []Indexer) Sint32_scalar_int32_map {
+func NewSint32_scalar_int32_map(l []Locator) Sint32_scalar_int32_map {
 	return Sint32_scalar_int32_map{location: l}
 }
 func (b Sint32_scalar_int32_map) Key(k int32) Sint32_scalar {
@@ -708,13 +708,13 @@ func (b Sint32_scalar_int32_map) Key(k int32) Sint32_scalar {
 }
 
 type Sint32_scalar_int64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sint32_scalar_int64_map) Location_get() []Indexer {
+func (b Sint32_scalar_int64_map) Location_get() []Locator {
 	return b.location
 }
-func NewSint32_scalar_int64_map(l []Indexer) Sint32_scalar_int64_map {
+func NewSint32_scalar_int64_map(l []Locator) Sint32_scalar_int64_map {
 	return Sint32_scalar_int64_map{location: l}
 }
 func (b Sint32_scalar_int64_map) Key(k int64) Sint32_scalar {
@@ -722,13 +722,13 @@ func (b Sint32_scalar_int64_map) Key(k int64) Sint32_scalar {
 }
 
 type Sint32_scalar_uint32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sint32_scalar_uint32_map) Location_get() []Indexer {
+func (b Sint32_scalar_uint32_map) Location_get() []Locator {
 	return b.location
 }
-func NewSint32_scalar_uint32_map(l []Indexer) Sint32_scalar_uint32_map {
+func NewSint32_scalar_uint32_map(l []Locator) Sint32_scalar_uint32_map {
 	return Sint32_scalar_uint32_map{location: l}
 }
 func (b Sint32_scalar_uint32_map) Key(k uint32) Sint32_scalar {
@@ -736,13 +736,13 @@ func (b Sint32_scalar_uint32_map) Key(k uint32) Sint32_scalar {
 }
 
 type Sint32_scalar_uint64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sint32_scalar_uint64_map) Location_get() []Indexer {
+func (b Sint32_scalar_uint64_map) Location_get() []Locator {
 	return b.location
 }
-func NewSint32_scalar_uint64_map(l []Indexer) Sint32_scalar_uint64_map {
+func NewSint32_scalar_uint64_map(l []Locator) Sint32_scalar_uint64_map {
 	return Sint32_scalar_uint64_map{location: l}
 }
 func (b Sint32_scalar_uint64_map) Key(k uint64) Sint32_scalar {
@@ -750,13 +750,13 @@ func (b Sint32_scalar_uint64_map) Key(k uint64) Sint32_scalar {
 }
 
 type Sint32_scalar_string_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sint32_scalar_string_map) Location_get() []Indexer {
+func (b Sint32_scalar_string_map) Location_get() []Locator {
 	return b.location
 }
-func NewSint32_scalar_string_map(l []Indexer) Sint32_scalar_string_map {
+func NewSint32_scalar_string_map(l []Locator) Sint32_scalar_string_map {
 	return Sint32_scalar_string_map{location: l}
 }
 func (b Sint32_scalar_string_map) Key(k string) Sint32_scalar {
@@ -764,24 +764,24 @@ func (b Sint32_scalar_string_map) Key(k string) Sint32_scalar {
 }
 
 type Sint64_scalar struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sint64_scalar) Location_get() []Indexer {
+func (b Sint64_scalar) Location_get() []Locator {
 	return b.location
 }
-func NewSint64_scalar(l []Indexer) Sint64_scalar {
+func NewSint64_scalar(l []Locator) Sint64_scalar {
 	return Sint64_scalar{location: l}
 }
 
 type Sint64_scalar_repeated struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sint64_scalar_repeated) Location_get() []Indexer {
+func (b Sint64_scalar_repeated) Location_get() []Locator {
 	return b.location
 }
-func NewSint64_scalar_repeated(l []Indexer) Sint64_scalar_repeated {
+func NewSint64_scalar_repeated(l []Locator) Sint64_scalar_repeated {
 	return Sint64_scalar_repeated{location: l}
 }
 func (b Sint64_scalar_repeated) Index(i int) Sint64_scalar {
@@ -789,13 +789,13 @@ func (b Sint64_scalar_repeated) Index(i int) Sint64_scalar {
 }
 
 type Sint64_scalar_bool_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sint64_scalar_bool_map) Location_get() []Indexer {
+func (b Sint64_scalar_bool_map) Location_get() []Locator {
 	return b.location
 }
-func NewSint64_scalar_bool_map(l []Indexer) Sint64_scalar_bool_map {
+func NewSint64_scalar_bool_map(l []Locator) Sint64_scalar_bool_map {
 	return Sint64_scalar_bool_map{location: l}
 }
 func (b Sint64_scalar_bool_map) Key(k bool) Sint64_scalar {
@@ -803,13 +803,13 @@ func (b Sint64_scalar_bool_map) Key(k bool) Sint64_scalar {
 }
 
 type Sint64_scalar_int32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sint64_scalar_int32_map) Location_get() []Indexer {
+func (b Sint64_scalar_int32_map) Location_get() []Locator {
 	return b.location
 }
-func NewSint64_scalar_int32_map(l []Indexer) Sint64_scalar_int32_map {
+func NewSint64_scalar_int32_map(l []Locator) Sint64_scalar_int32_map {
 	return Sint64_scalar_int32_map{location: l}
 }
 func (b Sint64_scalar_int32_map) Key(k int32) Sint64_scalar {
@@ -817,13 +817,13 @@ func (b Sint64_scalar_int32_map) Key(k int32) Sint64_scalar {
 }
 
 type Sint64_scalar_int64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sint64_scalar_int64_map) Location_get() []Indexer {
+func (b Sint64_scalar_int64_map) Location_get() []Locator {
 	return b.location
 }
-func NewSint64_scalar_int64_map(l []Indexer) Sint64_scalar_int64_map {
+func NewSint64_scalar_int64_map(l []Locator) Sint64_scalar_int64_map {
 	return Sint64_scalar_int64_map{location: l}
 }
 func (b Sint64_scalar_int64_map) Key(k int64) Sint64_scalar {
@@ -831,13 +831,13 @@ func (b Sint64_scalar_int64_map) Key(k int64) Sint64_scalar {
 }
 
 type Sint64_scalar_uint32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sint64_scalar_uint32_map) Location_get() []Indexer {
+func (b Sint64_scalar_uint32_map) Location_get() []Locator {
 	return b.location
 }
-func NewSint64_scalar_uint32_map(l []Indexer) Sint64_scalar_uint32_map {
+func NewSint64_scalar_uint32_map(l []Locator) Sint64_scalar_uint32_map {
 	return Sint64_scalar_uint32_map{location: l}
 }
 func (b Sint64_scalar_uint32_map) Key(k uint32) Sint64_scalar {
@@ -845,13 +845,13 @@ func (b Sint64_scalar_uint32_map) Key(k uint32) Sint64_scalar {
 }
 
 type Sint64_scalar_uint64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sint64_scalar_uint64_map) Location_get() []Indexer {
+func (b Sint64_scalar_uint64_map) Location_get() []Locator {
 	return b.location
 }
-func NewSint64_scalar_uint64_map(l []Indexer) Sint64_scalar_uint64_map {
+func NewSint64_scalar_uint64_map(l []Locator) Sint64_scalar_uint64_map {
 	return Sint64_scalar_uint64_map{location: l}
 }
 func (b Sint64_scalar_uint64_map) Key(k uint64) Sint64_scalar {
@@ -859,13 +859,13 @@ func (b Sint64_scalar_uint64_map) Key(k uint64) Sint64_scalar {
 }
 
 type Sint64_scalar_string_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sint64_scalar_string_map) Location_get() []Indexer {
+func (b Sint64_scalar_string_map) Location_get() []Locator {
 	return b.location
 }
-func NewSint64_scalar_string_map(l []Indexer) Sint64_scalar_string_map {
+func NewSint64_scalar_string_map(l []Locator) Sint64_scalar_string_map {
 	return Sint64_scalar_string_map{location: l}
 }
 func (b Sint64_scalar_string_map) Key(k string) Sint64_scalar {
@@ -873,24 +873,24 @@ func (b Sint64_scalar_string_map) Key(k string) Sint64_scalar {
 }
 
 type Fixed32_scalar struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Fixed32_scalar) Location_get() []Indexer {
+func (b Fixed32_scalar) Location_get() []Locator {
 	return b.location
 }
-func NewFixed32_scalar(l []Indexer) Fixed32_scalar {
+func NewFixed32_scalar(l []Locator) Fixed32_scalar {
 	return Fixed32_scalar{location: l}
 }
 
 type Fixed32_scalar_repeated struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Fixed32_scalar_repeated) Location_get() []Indexer {
+func (b Fixed32_scalar_repeated) Location_get() []Locator {
 	return b.location
 }
-func NewFixed32_scalar_repeated(l []Indexer) Fixed32_scalar_repeated {
+func NewFixed32_scalar_repeated(l []Locator) Fixed32_scalar_repeated {
 	return Fixed32_scalar_repeated{location: l}
 }
 func (b Fixed32_scalar_repeated) Index(i int) Fixed32_scalar {
@@ -898,13 +898,13 @@ func (b Fixed32_scalar_repeated) Index(i int) Fixed32_scalar {
 }
 
 type Fixed32_scalar_bool_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Fixed32_scalar_bool_map) Location_get() []Indexer {
+func (b Fixed32_scalar_bool_map) Location_get() []Locator {
 	return b.location
 }
-func NewFixed32_scalar_bool_map(l []Indexer) Fixed32_scalar_bool_map {
+func NewFixed32_scalar_bool_map(l []Locator) Fixed32_scalar_bool_map {
 	return Fixed32_scalar_bool_map{location: l}
 }
 func (b Fixed32_scalar_bool_map) Key(k bool) Fixed32_scalar {
@@ -912,13 +912,13 @@ func (b Fixed32_scalar_bool_map) Key(k bool) Fixed32_scalar {
 }
 
 type Fixed32_scalar_int32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Fixed32_scalar_int32_map) Location_get() []Indexer {
+func (b Fixed32_scalar_int32_map) Location_get() []Locator {
 	return b.location
 }
-func NewFixed32_scalar_int32_map(l []Indexer) Fixed32_scalar_int32_map {
+func NewFixed32_scalar_int32_map(l []Locator) Fixed32_scalar_int32_map {
 	return Fixed32_scalar_int32_map{location: l}
 }
 func (b Fixed32_scalar_int32_map) Key(k int32) Fixed32_scalar {
@@ -926,13 +926,13 @@ func (b Fixed32_scalar_int32_map) Key(k int32) Fixed32_scalar {
 }
 
 type Fixed32_scalar_int64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Fixed32_scalar_int64_map) Location_get() []Indexer {
+func (b Fixed32_scalar_int64_map) Location_get() []Locator {
 	return b.location
 }
-func NewFixed32_scalar_int64_map(l []Indexer) Fixed32_scalar_int64_map {
+func NewFixed32_scalar_int64_map(l []Locator) Fixed32_scalar_int64_map {
 	return Fixed32_scalar_int64_map{location: l}
 }
 func (b Fixed32_scalar_int64_map) Key(k int64) Fixed32_scalar {
@@ -940,13 +940,13 @@ func (b Fixed32_scalar_int64_map) Key(k int64) Fixed32_scalar {
 }
 
 type Fixed32_scalar_uint32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Fixed32_scalar_uint32_map) Location_get() []Indexer {
+func (b Fixed32_scalar_uint32_map) Location_get() []Locator {
 	return b.location
 }
-func NewFixed32_scalar_uint32_map(l []Indexer) Fixed32_scalar_uint32_map {
+func NewFixed32_scalar_uint32_map(l []Locator) Fixed32_scalar_uint32_map {
 	return Fixed32_scalar_uint32_map{location: l}
 }
 func (b Fixed32_scalar_uint32_map) Key(k uint32) Fixed32_scalar {
@@ -954,13 +954,13 @@ func (b Fixed32_scalar_uint32_map) Key(k uint32) Fixed32_scalar {
 }
 
 type Fixed32_scalar_uint64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Fixed32_scalar_uint64_map) Location_get() []Indexer {
+func (b Fixed32_scalar_uint64_map) Location_get() []Locator {
 	return b.location
 }
-func NewFixed32_scalar_uint64_map(l []Indexer) Fixed32_scalar_uint64_map {
+func NewFixed32_scalar_uint64_map(l []Locator) Fixed32_scalar_uint64_map {
 	return Fixed32_scalar_uint64_map{location: l}
 }
 func (b Fixed32_scalar_uint64_map) Key(k uint64) Fixed32_scalar {
@@ -968,13 +968,13 @@ func (b Fixed32_scalar_uint64_map) Key(k uint64) Fixed32_scalar {
 }
 
 type Fixed32_scalar_string_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Fixed32_scalar_string_map) Location_get() []Indexer {
+func (b Fixed32_scalar_string_map) Location_get() []Locator {
 	return b.location
 }
-func NewFixed32_scalar_string_map(l []Indexer) Fixed32_scalar_string_map {
+func NewFixed32_scalar_string_map(l []Locator) Fixed32_scalar_string_map {
 	return Fixed32_scalar_string_map{location: l}
 }
 func (b Fixed32_scalar_string_map) Key(k string) Fixed32_scalar {
@@ -982,24 +982,24 @@ func (b Fixed32_scalar_string_map) Key(k string) Fixed32_scalar {
 }
 
 type Fixed64_scalar struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Fixed64_scalar) Location_get() []Indexer {
+func (b Fixed64_scalar) Location_get() []Locator {
 	return b.location
 }
-func NewFixed64_scalar(l []Indexer) Fixed64_scalar {
+func NewFixed64_scalar(l []Locator) Fixed64_scalar {
 	return Fixed64_scalar{location: l}
 }
 
 type Fixed64_scalar_repeated struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Fixed64_scalar_repeated) Location_get() []Indexer {
+func (b Fixed64_scalar_repeated) Location_get() []Locator {
 	return b.location
 }
-func NewFixed64_scalar_repeated(l []Indexer) Fixed64_scalar_repeated {
+func NewFixed64_scalar_repeated(l []Locator) Fixed64_scalar_repeated {
 	return Fixed64_scalar_repeated{location: l}
 }
 func (b Fixed64_scalar_repeated) Index(i int) Fixed64_scalar {
@@ -1007,13 +1007,13 @@ func (b Fixed64_scalar_repeated) Index(i int) Fixed64_scalar {
 }
 
 type Fixed64_scalar_bool_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Fixed64_scalar_bool_map) Location_get() []Indexer {
+func (b Fixed64_scalar_bool_map) Location_get() []Locator {
 	return b.location
 }
-func NewFixed64_scalar_bool_map(l []Indexer) Fixed64_scalar_bool_map {
+func NewFixed64_scalar_bool_map(l []Locator) Fixed64_scalar_bool_map {
 	return Fixed64_scalar_bool_map{location: l}
 }
 func (b Fixed64_scalar_bool_map) Key(k bool) Fixed64_scalar {
@@ -1021,13 +1021,13 @@ func (b Fixed64_scalar_bool_map) Key(k bool) Fixed64_scalar {
 }
 
 type Fixed64_scalar_int32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Fixed64_scalar_int32_map) Location_get() []Indexer {
+func (b Fixed64_scalar_int32_map) Location_get() []Locator {
 	return b.location
 }
-func NewFixed64_scalar_int32_map(l []Indexer) Fixed64_scalar_int32_map {
+func NewFixed64_scalar_int32_map(l []Locator) Fixed64_scalar_int32_map {
 	return Fixed64_scalar_int32_map{location: l}
 }
 func (b Fixed64_scalar_int32_map) Key(k int32) Fixed64_scalar {
@@ -1035,13 +1035,13 @@ func (b Fixed64_scalar_int32_map) Key(k int32) Fixed64_scalar {
 }
 
 type Fixed64_scalar_int64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Fixed64_scalar_int64_map) Location_get() []Indexer {
+func (b Fixed64_scalar_int64_map) Location_get() []Locator {
 	return b.location
 }
-func NewFixed64_scalar_int64_map(l []Indexer) Fixed64_scalar_int64_map {
+func NewFixed64_scalar_int64_map(l []Locator) Fixed64_scalar_int64_map {
 	return Fixed64_scalar_int64_map{location: l}
 }
 func (b Fixed64_scalar_int64_map) Key(k int64) Fixed64_scalar {
@@ -1049,13 +1049,13 @@ func (b Fixed64_scalar_int64_map) Key(k int64) Fixed64_scalar {
 }
 
 type Fixed64_scalar_uint32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Fixed64_scalar_uint32_map) Location_get() []Indexer {
+func (b Fixed64_scalar_uint32_map) Location_get() []Locator {
 	return b.location
 }
-func NewFixed64_scalar_uint32_map(l []Indexer) Fixed64_scalar_uint32_map {
+func NewFixed64_scalar_uint32_map(l []Locator) Fixed64_scalar_uint32_map {
 	return Fixed64_scalar_uint32_map{location: l}
 }
 func (b Fixed64_scalar_uint32_map) Key(k uint32) Fixed64_scalar {
@@ -1063,13 +1063,13 @@ func (b Fixed64_scalar_uint32_map) Key(k uint32) Fixed64_scalar {
 }
 
 type Fixed64_scalar_uint64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Fixed64_scalar_uint64_map) Location_get() []Indexer {
+func (b Fixed64_scalar_uint64_map) Location_get() []Locator {
 	return b.location
 }
-func NewFixed64_scalar_uint64_map(l []Indexer) Fixed64_scalar_uint64_map {
+func NewFixed64_scalar_uint64_map(l []Locator) Fixed64_scalar_uint64_map {
 	return Fixed64_scalar_uint64_map{location: l}
 }
 func (b Fixed64_scalar_uint64_map) Key(k uint64) Fixed64_scalar {
@@ -1077,13 +1077,13 @@ func (b Fixed64_scalar_uint64_map) Key(k uint64) Fixed64_scalar {
 }
 
 type Fixed64_scalar_string_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Fixed64_scalar_string_map) Location_get() []Indexer {
+func (b Fixed64_scalar_string_map) Location_get() []Locator {
 	return b.location
 }
-func NewFixed64_scalar_string_map(l []Indexer) Fixed64_scalar_string_map {
+func NewFixed64_scalar_string_map(l []Locator) Fixed64_scalar_string_map {
 	return Fixed64_scalar_string_map{location: l}
 }
 func (b Fixed64_scalar_string_map) Key(k string) Fixed64_scalar {
@@ -1091,24 +1091,24 @@ func (b Fixed64_scalar_string_map) Key(k string) Fixed64_scalar {
 }
 
 type Sfixed32_scalar struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sfixed32_scalar) Location_get() []Indexer {
+func (b Sfixed32_scalar) Location_get() []Locator {
 	return b.location
 }
-func NewSfixed32_scalar(l []Indexer) Sfixed32_scalar {
+func NewSfixed32_scalar(l []Locator) Sfixed32_scalar {
 	return Sfixed32_scalar{location: l}
 }
 
 type Sfixed32_scalar_repeated struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sfixed32_scalar_repeated) Location_get() []Indexer {
+func (b Sfixed32_scalar_repeated) Location_get() []Locator {
 	return b.location
 }
-func NewSfixed32_scalar_repeated(l []Indexer) Sfixed32_scalar_repeated {
+func NewSfixed32_scalar_repeated(l []Locator) Sfixed32_scalar_repeated {
 	return Sfixed32_scalar_repeated{location: l}
 }
 func (b Sfixed32_scalar_repeated) Index(i int) Sfixed32_scalar {
@@ -1116,13 +1116,13 @@ func (b Sfixed32_scalar_repeated) Index(i int) Sfixed32_scalar {
 }
 
 type Sfixed32_scalar_bool_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sfixed32_scalar_bool_map) Location_get() []Indexer {
+func (b Sfixed32_scalar_bool_map) Location_get() []Locator {
 	return b.location
 }
-func NewSfixed32_scalar_bool_map(l []Indexer) Sfixed32_scalar_bool_map {
+func NewSfixed32_scalar_bool_map(l []Locator) Sfixed32_scalar_bool_map {
 	return Sfixed32_scalar_bool_map{location: l}
 }
 func (b Sfixed32_scalar_bool_map) Key(k bool) Sfixed32_scalar {
@@ -1130,13 +1130,13 @@ func (b Sfixed32_scalar_bool_map) Key(k bool) Sfixed32_scalar {
 }
 
 type Sfixed32_scalar_int32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sfixed32_scalar_int32_map) Location_get() []Indexer {
+func (b Sfixed32_scalar_int32_map) Location_get() []Locator {
 	return b.location
 }
-func NewSfixed32_scalar_int32_map(l []Indexer) Sfixed32_scalar_int32_map {
+func NewSfixed32_scalar_int32_map(l []Locator) Sfixed32_scalar_int32_map {
 	return Sfixed32_scalar_int32_map{location: l}
 }
 func (b Sfixed32_scalar_int32_map) Key(k int32) Sfixed32_scalar {
@@ -1144,13 +1144,13 @@ func (b Sfixed32_scalar_int32_map) Key(k int32) Sfixed32_scalar {
 }
 
 type Sfixed32_scalar_int64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sfixed32_scalar_int64_map) Location_get() []Indexer {
+func (b Sfixed32_scalar_int64_map) Location_get() []Locator {
 	return b.location
 }
-func NewSfixed32_scalar_int64_map(l []Indexer) Sfixed32_scalar_int64_map {
+func NewSfixed32_scalar_int64_map(l []Locator) Sfixed32_scalar_int64_map {
 	return Sfixed32_scalar_int64_map{location: l}
 }
 func (b Sfixed32_scalar_int64_map) Key(k int64) Sfixed32_scalar {
@@ -1158,13 +1158,13 @@ func (b Sfixed32_scalar_int64_map) Key(k int64) Sfixed32_scalar {
 }
 
 type Sfixed32_scalar_uint32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sfixed32_scalar_uint32_map) Location_get() []Indexer {
+func (b Sfixed32_scalar_uint32_map) Location_get() []Locator {
 	return b.location
 }
-func NewSfixed32_scalar_uint32_map(l []Indexer) Sfixed32_scalar_uint32_map {
+func NewSfixed32_scalar_uint32_map(l []Locator) Sfixed32_scalar_uint32_map {
 	return Sfixed32_scalar_uint32_map{location: l}
 }
 func (b Sfixed32_scalar_uint32_map) Key(k uint32) Sfixed32_scalar {
@@ -1172,13 +1172,13 @@ func (b Sfixed32_scalar_uint32_map) Key(k uint32) Sfixed32_scalar {
 }
 
 type Sfixed32_scalar_uint64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sfixed32_scalar_uint64_map) Location_get() []Indexer {
+func (b Sfixed32_scalar_uint64_map) Location_get() []Locator {
 	return b.location
 }
-func NewSfixed32_scalar_uint64_map(l []Indexer) Sfixed32_scalar_uint64_map {
+func NewSfixed32_scalar_uint64_map(l []Locator) Sfixed32_scalar_uint64_map {
 	return Sfixed32_scalar_uint64_map{location: l}
 }
 func (b Sfixed32_scalar_uint64_map) Key(k uint64) Sfixed32_scalar {
@@ -1186,13 +1186,13 @@ func (b Sfixed32_scalar_uint64_map) Key(k uint64) Sfixed32_scalar {
 }
 
 type Sfixed32_scalar_string_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sfixed32_scalar_string_map) Location_get() []Indexer {
+func (b Sfixed32_scalar_string_map) Location_get() []Locator {
 	return b.location
 }
-func NewSfixed32_scalar_string_map(l []Indexer) Sfixed32_scalar_string_map {
+func NewSfixed32_scalar_string_map(l []Locator) Sfixed32_scalar_string_map {
 	return Sfixed32_scalar_string_map{location: l}
 }
 func (b Sfixed32_scalar_string_map) Key(k string) Sfixed32_scalar {
@@ -1200,24 +1200,24 @@ func (b Sfixed32_scalar_string_map) Key(k string) Sfixed32_scalar {
 }
 
 type Sfixed64_scalar struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sfixed64_scalar) Location_get() []Indexer {
+func (b Sfixed64_scalar) Location_get() []Locator {
 	return b.location
 }
-func NewSfixed64_scalar(l []Indexer) Sfixed64_scalar {
+func NewSfixed64_scalar(l []Locator) Sfixed64_scalar {
 	return Sfixed64_scalar{location: l}
 }
 
 type Sfixed64_scalar_repeated struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sfixed64_scalar_repeated) Location_get() []Indexer {
+func (b Sfixed64_scalar_repeated) Location_get() []Locator {
 	return b.location
 }
-func NewSfixed64_scalar_repeated(l []Indexer) Sfixed64_scalar_repeated {
+func NewSfixed64_scalar_repeated(l []Locator) Sfixed64_scalar_repeated {
 	return Sfixed64_scalar_repeated{location: l}
 }
 func (b Sfixed64_scalar_repeated) Index(i int) Sfixed64_scalar {
@@ -1225,13 +1225,13 @@ func (b Sfixed64_scalar_repeated) Index(i int) Sfixed64_scalar {
 }
 
 type Sfixed64_scalar_bool_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sfixed64_scalar_bool_map) Location_get() []Indexer {
+func (b Sfixed64_scalar_bool_map) Location_get() []Locator {
 	return b.location
 }
-func NewSfixed64_scalar_bool_map(l []Indexer) Sfixed64_scalar_bool_map {
+func NewSfixed64_scalar_bool_map(l []Locator) Sfixed64_scalar_bool_map {
 	return Sfixed64_scalar_bool_map{location: l}
 }
 func (b Sfixed64_scalar_bool_map) Key(k bool) Sfixed64_scalar {
@@ -1239,13 +1239,13 @@ func (b Sfixed64_scalar_bool_map) Key(k bool) Sfixed64_scalar {
 }
 
 type Sfixed64_scalar_int32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sfixed64_scalar_int32_map) Location_get() []Indexer {
+func (b Sfixed64_scalar_int32_map) Location_get() []Locator {
 	return b.location
 }
-func NewSfixed64_scalar_int32_map(l []Indexer) Sfixed64_scalar_int32_map {
+func NewSfixed64_scalar_int32_map(l []Locator) Sfixed64_scalar_int32_map {
 	return Sfixed64_scalar_int32_map{location: l}
 }
 func (b Sfixed64_scalar_int32_map) Key(k int32) Sfixed64_scalar {
@@ -1253,13 +1253,13 @@ func (b Sfixed64_scalar_int32_map) Key(k int32) Sfixed64_scalar {
 }
 
 type Sfixed64_scalar_int64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sfixed64_scalar_int64_map) Location_get() []Indexer {
+func (b Sfixed64_scalar_int64_map) Location_get() []Locator {
 	return b.location
 }
-func NewSfixed64_scalar_int64_map(l []Indexer) Sfixed64_scalar_int64_map {
+func NewSfixed64_scalar_int64_map(l []Locator) Sfixed64_scalar_int64_map {
 	return Sfixed64_scalar_int64_map{location: l}
 }
 func (b Sfixed64_scalar_int64_map) Key(k int64) Sfixed64_scalar {
@@ -1267,13 +1267,13 @@ func (b Sfixed64_scalar_int64_map) Key(k int64) Sfixed64_scalar {
 }
 
 type Sfixed64_scalar_uint32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sfixed64_scalar_uint32_map) Location_get() []Indexer {
+func (b Sfixed64_scalar_uint32_map) Location_get() []Locator {
 	return b.location
 }
-func NewSfixed64_scalar_uint32_map(l []Indexer) Sfixed64_scalar_uint32_map {
+func NewSfixed64_scalar_uint32_map(l []Locator) Sfixed64_scalar_uint32_map {
 	return Sfixed64_scalar_uint32_map{location: l}
 }
 func (b Sfixed64_scalar_uint32_map) Key(k uint32) Sfixed64_scalar {
@@ -1281,13 +1281,13 @@ func (b Sfixed64_scalar_uint32_map) Key(k uint32) Sfixed64_scalar {
 }
 
 type Sfixed64_scalar_uint64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sfixed64_scalar_uint64_map) Location_get() []Indexer {
+func (b Sfixed64_scalar_uint64_map) Location_get() []Locator {
 	return b.location
 }
-func NewSfixed64_scalar_uint64_map(l []Indexer) Sfixed64_scalar_uint64_map {
+func NewSfixed64_scalar_uint64_map(l []Locator) Sfixed64_scalar_uint64_map {
 	return Sfixed64_scalar_uint64_map{location: l}
 }
 func (b Sfixed64_scalar_uint64_map) Key(k uint64) Sfixed64_scalar {
@@ -1295,13 +1295,13 @@ func (b Sfixed64_scalar_uint64_map) Key(k uint64) Sfixed64_scalar {
 }
 
 type Sfixed64_scalar_string_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Sfixed64_scalar_string_map) Location_get() []Indexer {
+func (b Sfixed64_scalar_string_map) Location_get() []Locator {
 	return b.location
 }
-func NewSfixed64_scalar_string_map(l []Indexer) Sfixed64_scalar_string_map {
+func NewSfixed64_scalar_string_map(l []Locator) Sfixed64_scalar_string_map {
 	return Sfixed64_scalar_string_map{location: l}
 }
 func (b Sfixed64_scalar_string_map) Key(k string) Sfixed64_scalar {
@@ -1309,24 +1309,24 @@ func (b Sfixed64_scalar_string_map) Key(k string) Sfixed64_scalar {
 }
 
 type Bool_scalar struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Bool_scalar) Location_get() []Indexer {
+func (b Bool_scalar) Location_get() []Locator {
 	return b.location
 }
-func NewBool_scalar(l []Indexer) Bool_scalar {
+func NewBool_scalar(l []Locator) Bool_scalar {
 	return Bool_scalar{location: l}
 }
 
 type Bool_scalar_repeated struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Bool_scalar_repeated) Location_get() []Indexer {
+func (b Bool_scalar_repeated) Location_get() []Locator {
 	return b.location
 }
-func NewBool_scalar_repeated(l []Indexer) Bool_scalar_repeated {
+func NewBool_scalar_repeated(l []Locator) Bool_scalar_repeated {
 	return Bool_scalar_repeated{location: l}
 }
 func (b Bool_scalar_repeated) Index(i int) Bool_scalar {
@@ -1334,13 +1334,13 @@ func (b Bool_scalar_repeated) Index(i int) Bool_scalar {
 }
 
 type Bool_scalar_bool_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Bool_scalar_bool_map) Location_get() []Indexer {
+func (b Bool_scalar_bool_map) Location_get() []Locator {
 	return b.location
 }
-func NewBool_scalar_bool_map(l []Indexer) Bool_scalar_bool_map {
+func NewBool_scalar_bool_map(l []Locator) Bool_scalar_bool_map {
 	return Bool_scalar_bool_map{location: l}
 }
 func (b Bool_scalar_bool_map) Key(k bool) Bool_scalar {
@@ -1348,13 +1348,13 @@ func (b Bool_scalar_bool_map) Key(k bool) Bool_scalar {
 }
 
 type Bool_scalar_int32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Bool_scalar_int32_map) Location_get() []Indexer {
+func (b Bool_scalar_int32_map) Location_get() []Locator {
 	return b.location
 }
-func NewBool_scalar_int32_map(l []Indexer) Bool_scalar_int32_map {
+func NewBool_scalar_int32_map(l []Locator) Bool_scalar_int32_map {
 	return Bool_scalar_int32_map{location: l}
 }
 func (b Bool_scalar_int32_map) Key(k int32) Bool_scalar {
@@ -1362,13 +1362,13 @@ func (b Bool_scalar_int32_map) Key(k int32) Bool_scalar {
 }
 
 type Bool_scalar_int64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Bool_scalar_int64_map) Location_get() []Indexer {
+func (b Bool_scalar_int64_map) Location_get() []Locator {
 	return b.location
 }
-func NewBool_scalar_int64_map(l []Indexer) Bool_scalar_int64_map {
+func NewBool_scalar_int64_map(l []Locator) Bool_scalar_int64_map {
 	return Bool_scalar_int64_map{location: l}
 }
 func (b Bool_scalar_int64_map) Key(k int64) Bool_scalar {
@@ -1376,13 +1376,13 @@ func (b Bool_scalar_int64_map) Key(k int64) Bool_scalar {
 }
 
 type Bool_scalar_uint32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Bool_scalar_uint32_map) Location_get() []Indexer {
+func (b Bool_scalar_uint32_map) Location_get() []Locator {
 	return b.location
 }
-func NewBool_scalar_uint32_map(l []Indexer) Bool_scalar_uint32_map {
+func NewBool_scalar_uint32_map(l []Locator) Bool_scalar_uint32_map {
 	return Bool_scalar_uint32_map{location: l}
 }
 func (b Bool_scalar_uint32_map) Key(k uint32) Bool_scalar {
@@ -1390,13 +1390,13 @@ func (b Bool_scalar_uint32_map) Key(k uint32) Bool_scalar {
 }
 
 type Bool_scalar_uint64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Bool_scalar_uint64_map) Location_get() []Indexer {
+func (b Bool_scalar_uint64_map) Location_get() []Locator {
 	return b.location
 }
-func NewBool_scalar_uint64_map(l []Indexer) Bool_scalar_uint64_map {
+func NewBool_scalar_uint64_map(l []Locator) Bool_scalar_uint64_map {
 	return Bool_scalar_uint64_map{location: l}
 }
 func (b Bool_scalar_uint64_map) Key(k uint64) Bool_scalar {
@@ -1404,13 +1404,13 @@ func (b Bool_scalar_uint64_map) Key(k uint64) Bool_scalar {
 }
 
 type Bool_scalar_string_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Bool_scalar_string_map) Location_get() []Indexer {
+func (b Bool_scalar_string_map) Location_get() []Locator {
 	return b.location
 }
-func NewBool_scalar_string_map(l []Indexer) Bool_scalar_string_map {
+func NewBool_scalar_string_map(l []Locator) Bool_scalar_string_map {
 	return Bool_scalar_string_map{location: l}
 }
 func (b Bool_scalar_string_map) Key(k string) Bool_scalar {
@@ -1418,24 +1418,24 @@ func (b Bool_scalar_string_map) Key(k string) Bool_scalar {
 }
 
 type String_scalar struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b String_scalar) Location_get() []Indexer {
+func (b String_scalar) Location_get() []Locator {
 	return b.location
 }
-func NewString_scalar(l []Indexer) String_scalar {
+func NewString_scalar(l []Locator) String_scalar {
 	return String_scalar{location: l}
 }
 
 type String_scalar_repeated struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b String_scalar_repeated) Location_get() []Indexer {
+func (b String_scalar_repeated) Location_get() []Locator {
 	return b.location
 }
-func NewString_scalar_repeated(l []Indexer) String_scalar_repeated {
+func NewString_scalar_repeated(l []Locator) String_scalar_repeated {
 	return String_scalar_repeated{location: l}
 }
 func (b String_scalar_repeated) Index(i int) String_scalar {
@@ -1443,13 +1443,13 @@ func (b String_scalar_repeated) Index(i int) String_scalar {
 }
 
 type String_scalar_bool_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b String_scalar_bool_map) Location_get() []Indexer {
+func (b String_scalar_bool_map) Location_get() []Locator {
 	return b.location
 }
-func NewString_scalar_bool_map(l []Indexer) String_scalar_bool_map {
+func NewString_scalar_bool_map(l []Locator) String_scalar_bool_map {
 	return String_scalar_bool_map{location: l}
 }
 func (b String_scalar_bool_map) Key(k bool) String_scalar {
@@ -1457,13 +1457,13 @@ func (b String_scalar_bool_map) Key(k bool) String_scalar {
 }
 
 type String_scalar_int32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b String_scalar_int32_map) Location_get() []Indexer {
+func (b String_scalar_int32_map) Location_get() []Locator {
 	return b.location
 }
-func NewString_scalar_int32_map(l []Indexer) String_scalar_int32_map {
+func NewString_scalar_int32_map(l []Locator) String_scalar_int32_map {
 	return String_scalar_int32_map{location: l}
 }
 func (b String_scalar_int32_map) Key(k int32) String_scalar {
@@ -1471,13 +1471,13 @@ func (b String_scalar_int32_map) Key(k int32) String_scalar {
 }
 
 type String_scalar_int64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b String_scalar_int64_map) Location_get() []Indexer {
+func (b String_scalar_int64_map) Location_get() []Locator {
 	return b.location
 }
-func NewString_scalar_int64_map(l []Indexer) String_scalar_int64_map {
+func NewString_scalar_int64_map(l []Locator) String_scalar_int64_map {
 	return String_scalar_int64_map{location: l}
 }
 func (b String_scalar_int64_map) Key(k int64) String_scalar {
@@ -1485,13 +1485,13 @@ func (b String_scalar_int64_map) Key(k int64) String_scalar {
 }
 
 type String_scalar_uint32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b String_scalar_uint32_map) Location_get() []Indexer {
+func (b String_scalar_uint32_map) Location_get() []Locator {
 	return b.location
 }
-func NewString_scalar_uint32_map(l []Indexer) String_scalar_uint32_map {
+func NewString_scalar_uint32_map(l []Locator) String_scalar_uint32_map {
 	return String_scalar_uint32_map{location: l}
 }
 func (b String_scalar_uint32_map) Key(k uint32) String_scalar {
@@ -1499,13 +1499,13 @@ func (b String_scalar_uint32_map) Key(k uint32) String_scalar {
 }
 
 type String_scalar_uint64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b String_scalar_uint64_map) Location_get() []Indexer {
+func (b String_scalar_uint64_map) Location_get() []Locator {
 	return b.location
 }
-func NewString_scalar_uint64_map(l []Indexer) String_scalar_uint64_map {
+func NewString_scalar_uint64_map(l []Locator) String_scalar_uint64_map {
 	return String_scalar_uint64_map{location: l}
 }
 func (b String_scalar_uint64_map) Key(k uint64) String_scalar {
@@ -1513,13 +1513,13 @@ func (b String_scalar_uint64_map) Key(k uint64) String_scalar {
 }
 
 type String_scalar_string_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b String_scalar_string_map) Location_get() []Indexer {
+func (b String_scalar_string_map) Location_get() []Locator {
 	return b.location
 }
-func NewString_scalar_string_map(l []Indexer) String_scalar_string_map {
+func NewString_scalar_string_map(l []Locator) String_scalar_string_map {
 	return String_scalar_string_map{location: l}
 }
 func (b String_scalar_string_map) Key(k string) String_scalar {
@@ -1527,24 +1527,24 @@ func (b String_scalar_string_map) Key(k string) String_scalar {
 }
 
 type Bytes_scalar struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Bytes_scalar) Location_get() []Indexer {
+func (b Bytes_scalar) Location_get() []Locator {
 	return b.location
 }
-func NewBytes_scalar(l []Indexer) Bytes_scalar {
+func NewBytes_scalar(l []Locator) Bytes_scalar {
 	return Bytes_scalar{location: l}
 }
 
 type Bytes_scalar_repeated struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Bytes_scalar_repeated) Location_get() []Indexer {
+func (b Bytes_scalar_repeated) Location_get() []Locator {
 	return b.location
 }
-func NewBytes_scalar_repeated(l []Indexer) Bytes_scalar_repeated {
+func NewBytes_scalar_repeated(l []Locator) Bytes_scalar_repeated {
 	return Bytes_scalar_repeated{location: l}
 }
 func (b Bytes_scalar_repeated) Index(i int) Bytes_scalar {
@@ -1552,13 +1552,13 @@ func (b Bytes_scalar_repeated) Index(i int) Bytes_scalar {
 }
 
 type Bytes_scalar_bool_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Bytes_scalar_bool_map) Location_get() []Indexer {
+func (b Bytes_scalar_bool_map) Location_get() []Locator {
 	return b.location
 }
-func NewBytes_scalar_bool_map(l []Indexer) Bytes_scalar_bool_map {
+func NewBytes_scalar_bool_map(l []Locator) Bytes_scalar_bool_map {
 	return Bytes_scalar_bool_map{location: l}
 }
 func (b Bytes_scalar_bool_map) Key(k bool) Bytes_scalar {
@@ -1566,13 +1566,13 @@ func (b Bytes_scalar_bool_map) Key(k bool) Bytes_scalar {
 }
 
 type Bytes_scalar_int32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Bytes_scalar_int32_map) Location_get() []Indexer {
+func (b Bytes_scalar_int32_map) Location_get() []Locator {
 	return b.location
 }
-func NewBytes_scalar_int32_map(l []Indexer) Bytes_scalar_int32_map {
+func NewBytes_scalar_int32_map(l []Locator) Bytes_scalar_int32_map {
 	return Bytes_scalar_int32_map{location: l}
 }
 func (b Bytes_scalar_int32_map) Key(k int32) Bytes_scalar {
@@ -1580,13 +1580,13 @@ func (b Bytes_scalar_int32_map) Key(k int32) Bytes_scalar {
 }
 
 type Bytes_scalar_int64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Bytes_scalar_int64_map) Location_get() []Indexer {
+func (b Bytes_scalar_int64_map) Location_get() []Locator {
 	return b.location
 }
-func NewBytes_scalar_int64_map(l []Indexer) Bytes_scalar_int64_map {
+func NewBytes_scalar_int64_map(l []Locator) Bytes_scalar_int64_map {
 	return Bytes_scalar_int64_map{location: l}
 }
 func (b Bytes_scalar_int64_map) Key(k int64) Bytes_scalar {
@@ -1594,13 +1594,13 @@ func (b Bytes_scalar_int64_map) Key(k int64) Bytes_scalar {
 }
 
 type Bytes_scalar_uint32_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Bytes_scalar_uint32_map) Location_get() []Indexer {
+func (b Bytes_scalar_uint32_map) Location_get() []Locator {
 	return b.location
 }
-func NewBytes_scalar_uint32_map(l []Indexer) Bytes_scalar_uint32_map {
+func NewBytes_scalar_uint32_map(l []Locator) Bytes_scalar_uint32_map {
 	return Bytes_scalar_uint32_map{location: l}
 }
 func (b Bytes_scalar_uint32_map) Key(k uint32) Bytes_scalar {
@@ -1608,13 +1608,13 @@ func (b Bytes_scalar_uint32_map) Key(k uint32) Bytes_scalar {
 }
 
 type Bytes_scalar_uint64_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Bytes_scalar_uint64_map) Location_get() []Indexer {
+func (b Bytes_scalar_uint64_map) Location_get() []Locator {
 	return b.location
 }
-func NewBytes_scalar_uint64_map(l []Indexer) Bytes_scalar_uint64_map {
+func NewBytes_scalar_uint64_map(l []Locator) Bytes_scalar_uint64_map {
 	return Bytes_scalar_uint64_map{location: l}
 }
 func (b Bytes_scalar_uint64_map) Key(k uint64) Bytes_scalar {
@@ -1622,13 +1622,13 @@ func (b Bytes_scalar_uint64_map) Key(k uint64) Bytes_scalar {
 }
 
 type Bytes_scalar_string_map struct {
-	location []Indexer
+	location []Locator
 }
 
-func (b Bytes_scalar_string_map) Location_get() []Indexer {
+func (b Bytes_scalar_string_map) Location_get() []Locator {
 	return b.location
 }
-func NewBytes_scalar_string_map(l []Indexer) Bytes_scalar_string_map {
+func NewBytes_scalar_string_map(l []Locator) Bytes_scalar_string_map {
 	return Bytes_scalar_string_map{location: l}
 }
 func (b Bytes_scalar_string_map) Key(k string) Bytes_scalar {

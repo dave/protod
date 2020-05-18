@@ -1,7 +1,8 @@
 import 'package:fixnum/fixnum.dart' as fixnum;
 import 'package:protobuf/protobuf.dart' as protobuf;
-import 'package:protod/any.pb.dart' as any;
 import 'package:protod/delta.pb.dart' as delta;
+
+import 'google/protobuf/any.pb.dart' as any;
 
 export 'delta.types.dart';
 
@@ -110,8 +111,8 @@ dynamic scalarFromAny(any.Any any) {
     return s.sint32;
   } else if (s.hasSint64()) {
     return s.sint64;
-  } else if (s.hasStr()) {
-    return s.str;
+  } else if (s.hasString()) {
+    return s.string;
   } else if (s.hasUint32()) {
     return s.uint32;
   } else if (s.hasUint64()) {
@@ -168,7 +169,7 @@ delta.Delta editValue(dynamic value, Locator locator) {
     }
   });
   return delta.Delta()
-    ..type = delta.Delta_Type.EditValue
+    ..type = delta.Delta_Type.Edit
     ..value = toAny(value)
     ..location.addAll(loc);
 }
@@ -183,7 +184,7 @@ any.Any toAny(dynamic value) {
   } else {
     switch (value.runtimeType) {
       case String:
-        m = delta.Scalar()..str = value;
+        m = delta.Scalar()..string = value;
         break;
       case double:
         m = delta.Scalar()..double_1 = value;
