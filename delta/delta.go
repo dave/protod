@@ -12,7 +12,7 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
-func Apply(delta *Delta, input proto2.Message) error {
+func Apply(delta *Op, input proto2.Message) error {
 
 	getValue := func(previous protoreflect.Value, a *anypb.Any) (protoreflect.Value, error) {
 		da := MustUnmarshalAny(a)
@@ -59,7 +59,6 @@ func Apply(delta *Delta, input proto2.Message) error {
 			value := protoreflect.ValueOfMessage(proto.MessageReflect(da.Message))
 			return value, nil
 		}
-
 	}
 
 	var locPath []*Locator
@@ -118,17 +117,17 @@ func getMapKey(key *Key) protoreflect.MapKey {
 	return mapKey
 }
 
-func Diff(from, to string, location Location) *Delta {
-	return &Delta{
-		Type:     Delta_Edit,
+func Diff(from, to string, location Location) *Op {
+	return &Op{
+		Type:     Op_Edit,
 		Location: location.Location_get(),
 		Value:    NewAnyDiff(from, to),
 	}
 }
 
-func Edit(value interface{}, location Location) *Delta {
-	return &Delta{
-		Type:     Delta_Edit,
+func Edit(value interface{}, location Location) *Op {
+	return &Op{
+		Type:     Op_Edit,
 		Location: location.Location_get(),
 		Value:    NewAny(value),
 	}

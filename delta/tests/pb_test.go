@@ -29,6 +29,7 @@ func TestApply(t *testing.T) {
 
 	person := &Person{
 		Name:    "dave",
+		Age:     20,
 		Company: &Company{Name: "cambro"},
 		Cases: []*Case{
 			{Name: "foo"},

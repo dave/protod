@@ -23,7 +23,7 @@ const Person$json = const {
   '1': 'Person',
   '2': const [
     const {'1': 'name', '3': 13, '4': 1, '5': 9, '10': 'name'},
-    const {'1': 'age', '3': 14, '4': 1, '5': 5, '10': 'age'},
+    const {'1': 'age', '3': 14, '4': 1, '5': 13, '10': 'age'},
     const {'1': 'cases', '3': 15, '4': 3, '5': 11, '6': '.tests.Case', '10': 'cases'},
     const {'1': 'casesStringMap', '3': 16, '4': 3, '5': 11, '6': '.tests.Person.CasesStringMapEntry', '10': 'casesStringMap'},
     const {'1': 'casesIntMap', '3': 17, '4': 3, '5': 11, '6': '.tests.Person.CasesIntMapEntry', '10': 'casesIntMap'},

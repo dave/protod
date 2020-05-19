@@ -74,7 +74,7 @@ class Case extends $pb.GeneratedMessage {
 class Person extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('Person', package: const $pb.PackageName('tests'), createEmptyInstance: create)
     ..aOS(13, 'name')
-    ..a<$core.int>(14, 'age', $pb.PbFieldType.O3)
+    ..a<$core.int>(14, 'age', $pb.PbFieldType.OU3)
     ..pc<Case>(15, 'cases', $pb.PbFieldType.PM, subBuilder: Case.create)
     ..m<$core.String, Case>(16, 'casesStringMap', protoName: 'casesStringMap', entryClassName: 'Person.CasesStringMapEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OM, valueCreator: Case.create, packageName: const $pb.PackageName('tests'))
     ..m<$core.int, Case>(17, 'casesIntMap', protoName: 'casesIntMap', entryClassName: 'Person.CasesIntMapEntry', keyFieldType: $pb.PbFieldType.O3, valueFieldType: $pb.PbFieldType.OM, valueCreator: Case.create, packageName: const $pb.PackageName('tests'))
@@ -109,7 +109,7 @@ class Person extends $pb.GeneratedMessage {
   @$pb.TagNumber(14)
   $core.int get age => $_getIZ(1);
   @$pb.TagNumber(14)
-  set age($core.int v) { $_setSignedInt32(1, v); }
+  set age($core.int v) { $_setUnsignedInt32(1, v); }
   @$pb.TagNumber(14)
   $core.bool hasAge() => $_has(1);
   @$pb.TagNumber(14)

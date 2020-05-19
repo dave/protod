@@ -12,7 +12,7 @@ setDefaultRegistry(protobuf.TypeRegistry r) {
   _defaultTypeRegistry = r;
 }
 
-apply(pb.Delta d, protobuf.GeneratedMessage m, [protobuf.TypeRegistry r]) {
+apply(pb.Op d, protobuf.GeneratedMessage m, [protobuf.TypeRegistry r]) {
   if (r == null) {
     r = _defaultTypeRegistry;
   }
@@ -120,9 +120,9 @@ dynamic scalarFromAny(any.Any any) {
   }
 }
 
-pb.Delta edit(dynamic value, Location location) {
-  return pb.Delta()
-    ..type = pb.Delta_Type.Edit
+pb.Op edit(dynamic value, Location location) {
+  return pb.Op()
+    ..type = pb.Op_Type.Edit
     ..value = toAny(value)
     ..location.addAll(location.location);
 }

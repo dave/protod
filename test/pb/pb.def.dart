@@ -149,8 +149,8 @@ class Person_type extends delta.Location {
   delta.String_scalar Name() {
     return delta.String_scalar([...location]..add(pb.Locator()..field_1 = (pb.Field()..name = "name"..number = 13)));
   }
-  delta.Int32_scalar Age() {
-    return delta.Int32_scalar([...location]..add(pb.Locator()..field_1 = (pb.Field()..name = "age"..number = 14)));
+  delta.Uint32_scalar Age() {
+    return delta.Uint32_scalar([...location]..add(pb.Locator()..field_1 = (pb.Field()..name = "age"..number = 14)));
   }
   Case_type_repeated Cases() {
     return Case_type_repeated([...location]..add(pb.Locator()..field_1 = (pb.Field()..name = "cases"..number = 15)));

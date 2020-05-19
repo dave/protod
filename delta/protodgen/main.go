@@ -335,7 +335,7 @@ func (s *state) genGo() error {
 										jen.Id("V"): jen.Op("&").Qual(deltaPath, "Locator_Field").Values(jen.Dict{
 											jen.Id("Field"): jen.Op("&").Qual(deltaPath, "Field").Values(jen.Dict{
 												jen.Id("Name"):   jen.Lit(field.Name),
-												jen.Id("Number"): jen.Int32().Parens(jen.Lit(field.Number)),
+												jen.Id("Number"): jen.Lit(field.Number),
 											}),
 										}),
 									}),

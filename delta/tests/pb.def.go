@@ -131,7 +131,7 @@ func CompanyDef() Company_type {
 func (b Company_type) Name() delta.String_scalar {
 	return delta.NewString_scalar(delta.CopyAndAppend(b.location, &delta.Locator{V: &delta.Locator_Field{Field: &delta.Field{
 		Name:   "name",
-		Number: int32(11),
+		Number: 11,
 	}}}))
 }
 
@@ -264,7 +264,7 @@ func CaseDef() Case_type {
 func (b Case_type) Name() delta.String_scalar {
 	return delta.NewString_scalar(delta.CopyAndAppend(b.location, &delta.Locator{V: &delta.Locator_Field{Field: &delta.Field{
 		Name:   "name",
-		Number: int32(12),
+		Number: 12,
 	}}}))
 }
 
@@ -397,36 +397,36 @@ func PersonDef() Person_type {
 func (b Person_type) Name() delta.String_scalar {
 	return delta.NewString_scalar(delta.CopyAndAppend(b.location, &delta.Locator{V: &delta.Locator_Field{Field: &delta.Field{
 		Name:   "name",
-		Number: int32(13),
+		Number: 13,
 	}}}))
 }
-func (b Person_type) Age() delta.Int32_scalar {
-	return delta.NewInt32_scalar(delta.CopyAndAppend(b.location, &delta.Locator{V: &delta.Locator_Field{Field: &delta.Field{
+func (b Person_type) Age() delta.Uint32_scalar {
+	return delta.NewUint32_scalar(delta.CopyAndAppend(b.location, &delta.Locator{V: &delta.Locator_Field{Field: &delta.Field{
 		Name:   "age",
-		Number: int32(14),
+		Number: 14,
 	}}}))
 }
 func (b Person_type) Cases() Case_type_repeated {
 	return NewCase_type_repeated(delta.CopyAndAppend(b.location, &delta.Locator{V: &delta.Locator_Field{Field: &delta.Field{
 		Name:   "cases",
-		Number: int32(15),
+		Number: 15,
 	}}}))
 }
 func (b Person_type) CasesStringMap() Case_type_string_map {
 	return NewCase_type_string_map(delta.CopyAndAppend(b.location, &delta.Locator{V: &delta.Locator_Field{Field: &delta.Field{
 		Name:   "casesStringMap",
-		Number: int32(16),
+		Number: 16,
 	}}}))
 }
 func (b Person_type) CasesIntMap() Case_type_int32_map {
 	return NewCase_type_int32_map(delta.CopyAndAppend(b.location, &delta.Locator{V: &delta.Locator_Field{Field: &delta.Field{
 		Name:   "casesIntMap",
-		Number: int32(17),
+		Number: 17,
 	}}}))
 }
 func (b Person_type) Company() Company_type {
 	return NewCompany_type(delta.CopyAndAppend(b.location, &delta.Locator{V: &delta.Locator_Field{Field: &delta.Field{
 		Name:   "company",
-		Number: int32(18),
+		Number: 18,
 	}}}))
 }
