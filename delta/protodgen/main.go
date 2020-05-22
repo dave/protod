@@ -196,7 +196,7 @@ func (s *state) scanMessages() error {
 					switch b := b.(type) {
 					case *parser.Field, *parser.MapField:
 
-						var fieldName string
+						var fieldName, fieldNameOutput string
 						var fieldNumberString string
 						var valueType, keyType string
 						var isRepeated, isMap bool
@@ -206,25 +206,33 @@ func (s *state) scanMessages() error {
 							isRepeated = b.IsRepeated
 							fieldNumberString = b.FieldNumber
 							fieldName = b.FieldName
+							fieldNameOutput = strings.Title(b.FieldName)
 						case *parser.MapField:
 							valueType = b.Type
 							isMap = true
 							fieldNumberString = b.FieldNumber
 							fieldName = b.MapName
 							keyType = b.KeyType
+							fieldNameOutput = strings.Title(b.MapName)
 						}
+
+						// reserved method names
+						//switch fieldNameOutput {
+						//case "Edit", "Insert", "Delete", "Move", "Diff":
+						//	fieldNameOutput += "_"
+						//}
 
 						fieldNumber, err := strconv.Atoi(fieldNumberString)
 						if err != nil {
 							return fmt.Errorf("parsing field number: %w", err)
 						}
 						f := &shared.FieldInfo{
-							Name:            fieldName,
-							NameCapitalised: strings.Title(fieldName),
-							Number:          fieldNumber,
-							KeyType:         keyType,
-							IsRepeated:      isRepeated,
-							IsMap:           isMap,
+							Name:       fieldName,
+							NameOutput: fieldNameOutput,
+							Number:     fieldNumber,
+							KeyType:    keyType,
+							IsRepeated: isRepeated,
+							IsMap:      isMap,
 						}
 
 						if isScalar(valueType) {
@@ -325,7 +333,7 @@ func (s *state) genGo() error {
 					//		),
 					//	)
 					//}
-					f.Func().Params(jen.Id("b").Id(m.TypeName)).Id(field.NameCapitalised).Params().Qual(field.GoTypePath, field.TypeName).Block(
+					f.Func().Params(jen.Id("b").Id(m.TypeName)).Id(field.NameOutput).Params().Qual(field.GoTypePath, field.TypeName).Block(
 						jen.Return(
 							jen.Qual(field.GoTypePath, fmt.Sprintf("New%s", field.TypeName)).Call(
 								jen.Qual(deltaPath, "CopyAndAppend").Call(

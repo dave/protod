@@ -1,6 +1,7 @@
 import 'package:fixnum/fixnum.dart' as fixnum;
 import 'package:protobuf/protobuf.dart' as protobuf;
 import 'package:protod/delta.pb.dart' as pb;
+import 'package:quill_delta/quill_delta.dart' as quill;
 
 import 'google/protobuf/any.pb.dart' as any;
 
@@ -12,61 +13,259 @@ setDefaultRegistry(protobuf.TypeRegistry r) {
   _defaultTypeRegistry = r;
 }
 
-apply(pb.Op d, protobuf.GeneratedMessage m, [protobuf.TypeRegistry r]) {
-  if (r == null) {
-    r = _defaultTypeRegistry;
-  }
-  final last = d.location.removeLast();
-
-  dynamic current = m;
-
-  d.location.forEach((element) {
-    if (element.hasField_1()) {
-      final message = current as protobuf.GeneratedMessage;
-      final number = message.getTagNumber(element.field_1.name);
-      if (number != element.field_1.number) {
-        throw Exception(
-            'protobuf field name / number mismatch ${element.field_1.name}/${element.field_1.number} but ${number}.');
-      }
-      current = message.getField(number);
-    } else if (element.hasIndex()) {
-      final list = current as protobuf.PbList;
-      current = list[element.index.toInt()];
-    } else if (element.hasKey()) {
-      final map = current as protobuf.PbMap;
-      current = map[getKey(element.key)];
-    }
-  });
-
-  dynamic newValue;
-  if (d.value.typeUrl == 'type.googleapis.com/delta.Scalar') {
-    newValue = scalarFromAny(d.value);
-  } else {
-    final builderInfo = r.lookup(d.value.typeUrl.substring(20));
-    if (builderInfo == null) {
-      throw Exception('no builderinfo for ${d.value.typeUrl}');
-    }
-    newValue = d.value.unpackInto(builderInfo.createEmptyInstance());
-  }
-
-  if (last.hasField_1()) {
-    final message = current as protobuf.GeneratedMessage;
-    final number = message.getTagNumber(last.field_1.name);
-    if (number != last.field_1.number) {
-      throw Exception(
-          'protobuf field name / number mismatch ${last.field_1.name}/${last.field_1.number} but ${number}.');
-    }
-    message.setField(number, newValue);
-  } else if (last.hasIndex()) {
-    final list = current as protobuf.PbList;
-    list[last.index.toInt()] = newValue;
-  } else if (last.hasKey()) {
-    final map = current as protobuf.PbMap;
-    map[getKey(last.key)] = newValue;
+apply(pb.Op op, protobuf.GeneratedMessage m, [protobuf.TypeRegistry r]) {
+  switch (op.type) {
+    case pb.Op_Type.Edit:
+      applyEdit(op, m, r);
+      break;
+    case pb.Op_Type.Insert:
+      applyInsert(op, m, r);
+      break;
+    case pb.Op_Type.Move:
+      applyMove(op, m, r);
+      break;
+    case pb.Op_Type.Delete:
+      applyDelete(op, m, r);
+      break;
   }
 }
 
-dynamic getKey(pb.Key k) {
+int getFieldNumber(protobuf.GeneratedMessage message, pb.Field field) {
+  final number = message.getTagNumber(field.name);
+  if (number != field.number) {
+    throw Exception('field name / number mismatch');
+  }
+  return number;
+}
+
+getLocation(protobuf.GeneratedMessage m, List<pb.Locator> location) {
+  dynamic current = m;
+  location.forEach((locator) {
+    if (locator.hasField_1()) {
+      if (current is protobuf.GeneratedMessage) {
+        current = current.getField(getFieldNumber(current, locator.field_1));
+      } else {
+        throw Exception(
+            'field locator expected to find message, got ${current.runtimeType}');
+      }
+    } else if (locator.hasIndex()) {
+      if (current is protobuf.PbList) {
+        current = current[locator.index.toInt()];
+      } else {
+        throw Exception(
+            'index locator expected to find list, got ${current.runtimeType}');
+      }
+    } else if (locator.hasKey()) {
+      if (current is protobuf.PbMap) {
+        current = current[valueFromKey(locator.key)];
+      } else {
+        throw Exception(
+            'key locator expected to find map, got ${current.runtimeType}');
+      }
+    }
+  });
+  return current;
+}
+
+dynamic getValue(dynamic previous, pb.Op op, protobuf.TypeRegistry r) {
+  if (op.hasScalar()) {
+    final scalar = op.scalar;
+    if (scalar.hasFloat()) {
+      return scalar.float;
+    } else if (scalar.hasDouble_1()) {
+      return scalar.double_1;
+    } else if (scalar.hasInt32()) {
+      return scalar.int32;
+    } else if (scalar.hasInt64()) {
+      return scalar.int64;
+    } else if (scalar.hasUint32()) {
+      return scalar.uint32;
+    } else if (scalar.hasUint64()) {
+      return scalar.uint64;
+    } else if (scalar.hasBool_13()) {
+      return scalar.bool_13;
+    } else if (scalar.hasString()) {
+      return scalar.string;
+    } else if (scalar.hasBytes()) {
+      return scalar.bytes;
+    } else {
+      //			//case *Scalar_Sint32, *Scalar_Sint64:
+      //			//case *Scalar_Fixed32, *Scalar_Fixed64:
+      //			//case *Scalar_Sfixed32, *Scalar_Sfixed64:
+      throw Exception('unsupported scalar ${scalar.runtimeType} in getValue');
+    }
+  } else if (op.hasDelta()) {
+    final prevString = previous as String;
+    var dlt = quill.Delta();
+    op.delta.ops.forEach((q) {
+      if (q.hasInsert()) {
+        dlt.insert(q.insert);
+      } else if (q.hasRetain()) {
+        dlt.retain(q.retain.toInt());
+      } else if (q.hasDelete()) {
+        dlt.delete(q.delete.toInt());
+      }
+    });
+    final prevDelta = quill.Delta()..insert(prevString);
+    final out = prevDelta.compose(dlt);
+    String outString;
+    out.toList().forEach((op) {
+      // TODO: Is there a better way of applying the delta to prevString?
+      if (!op.isInsert) {
+        throw new Exception('non insert operation found after applying delta');
+      }
+      outString += op.data;
+    });
+    return outString;
+  } else if (op.hasMessage()) {
+    final info = r.lookup(op.message.typeUrl.substring(20));
+    if (info == null) {
+      throw Exception('no type registered for ${op.message.typeUrl}');
+    }
+    return op.message.unpackInto(info.createEmptyInstance());
+  } else {
+    //	*Op_Index
+    //	*Op_Key
+    throw Exception('invalid operation ${op.runtimeType}');
+  }
+}
+
+applyEdit(pb.Op op, protobuf.GeneratedMessage input,
+    [protobuf.TypeRegistry r]) {
+  if (r == null) {
+    r = _defaultTypeRegistry;
+  }
+  final itemLocator = op.location.removeLast();
+  final parentLocator = op.location;
+  final parent = getLocation(input, parentLocator);
+  if (itemLocator.hasField_1()) {
+    if (parent is protobuf.GeneratedMessage) {
+      final field = getFieldNumber(parent, itemLocator.field_1);
+      final value = getValue(parent.getField(field), op, r);
+      parent.setField(field, value);
+    } else {
+      throw Exception("can't apply field locator to ${parent.runtimeType}");
+    }
+  } else if (itemLocator.hasIndex()) {
+    if (parent is protobuf.PbList) {
+      final index = itemLocator.index.toInt();
+      final value = getValue(parent[index], op, r);
+      parent[index] = value;
+    } else {
+      throw Exception("can't apply list locator to ${parent.runtimeType}");
+    }
+  } else if (itemLocator.hasKey()) {
+    if (parent is protobuf.PbMap) {
+      final key = valueFromKey(itemLocator.key);
+      final value = getValue(parent[key], op, r);
+      parent[key] = value;
+    } else {
+      throw Exception("can't apply map locator to ${parent.runtimeType}");
+    }
+  }
+}
+
+applyInsert(pb.Op op, protobuf.GeneratedMessage input,
+    [protobuf.TypeRegistry r]) {
+  if (r == null) {
+    r = _defaultTypeRegistry;
+  }
+  final itemLocator = op.location.removeLast();
+  final parentLocator = op.location;
+  final parent = getLocation(input, parentLocator);
+  if (itemLocator.hasField_1()) {
+    throw Exception("can't insert with a field locator");
+  } else if (itemLocator.hasIndex()) {
+    if (parent is protobuf.PbList) {
+      final index = itemLocator.index.toInt();
+      final value = getValue(parent[index], op, r);
+      parent.insert(index, value);
+    } else {
+      throw Exception(
+          "can't insert with list locator in ${parent.runtimeType}");
+    }
+  } else if (itemLocator.hasKey()) {
+    if (parent is protobuf.PbMap) {
+      final key = valueFromKey(itemLocator.key);
+      final value = getValue(parent[key], op, r);
+      parent[key] = value;
+    } else {
+      throw Exception("can't insert with map locator in ${parent.runtimeType}");
+    }
+  }
+}
+
+applyMove(pb.Op op, protobuf.GeneratedMessage input,
+    [protobuf.TypeRegistry r]) {
+  if (r == null) {
+    r = _defaultTypeRegistry;
+  }
+  final itemLocator = op.location.removeLast();
+  final parentLocator = op.location;
+  final parent = getLocation(input, parentLocator);
+  if (itemLocator.hasField_1()) {
+    throw Exception("can't move with a field locator");
+  } else if (itemLocator.hasIndex()) {
+    if (parent is protobuf.PbList) {
+      final from = itemLocator.index.toInt();
+      if (!op.hasIndex()) {
+        throw Exception("can't move in list with ${op.runtimeType} value");
+      }
+      final to = op.index.toInt();
+      final item = parent.removeAt(from);
+      parent.insert(to, item);
+    } else {
+      throw Exception(
+          "can't insert with list locator in ${parent.runtimeType}");
+    }
+  } else if (itemLocator.hasKey()) {
+    if (parent is protobuf.PbMap) {
+      final from = valueFromKey(itemLocator.key);
+      if (!op.hasKey()) {
+        throw Exception("can't move in map with ${op.runtimeType} value");
+      }
+      final to = op.key;
+      final item = parent.remove(from);
+      parent[to] = item;
+    } else {
+      throw Exception("can't insert with map locator in ${parent.runtimeType}");
+    }
+  }
+}
+
+applyDelete(pb.Op op, protobuf.GeneratedMessage input,
+    [protobuf.TypeRegistry r]) {
+  if (r == null) {
+    r = _defaultTypeRegistry;
+  }
+  final itemLocator = op.location.removeLast();
+  final parentLocator = op.location;
+  final parent = getLocation(input, parentLocator);
+  if (itemLocator.hasField_1()) {
+    if (parent is protobuf.GeneratedMessage) {
+      final field = getFieldNumber(parent, itemLocator.field_1);
+      parent.clearField(field);
+    } else {
+      throw Exception("can't delete field locator from ${parent.runtimeType}");
+    }
+  } else if (itemLocator.hasIndex()) {
+    if (parent is protobuf.PbList) {
+      final index = itemLocator.index.toInt();
+      parent.removeAt(index);
+    } else {
+      throw Exception("can't delete list locator from ${parent.runtimeType}");
+    }
+  } else if (itemLocator.hasKey()) {
+    if (parent is protobuf.PbMap) {
+      final key = valueFromKey(itemLocator.key);
+      parent.remove(key);
+    } else {
+      throw Exception("can't delete map locator from ${parent.runtimeType}");
+    }
+  }
+}
+
+dynamic valueFromKey(pb.Key k) {
   if (k.hasBool_1()) {
     return k.bool_1;
   } else if (k.hasInt32()) {
@@ -82,11 +281,75 @@ dynamic getKey(pb.Key k) {
   }
 }
 
-dynamic scalarFromAny(any.Any any) {
-  if (any.typeUrl != 'type.googleapis.com/delta.Scalar') {
-    throw Exception('wrong type ${any.typeUrl}');
+pb.Op edit(Location location, dynamic value) {
+  var op = pb.Op()
+    ..type = pb.Op_Type.Edit
+    ..location.addAll(location.location);
+
+  if (isScalar(value)) {
+    op.scalar = getScalar(value);
+  } else if (value is protobuf.GeneratedMessage) {
+    op.message = any.Any.pack(value);
+  } else {
+    throw Exception('invalid type ${value.runtimeType} in edit');
   }
-  final s = any.unpackInto(pb.Scalar());
+
+  return op;
+}
+
+pb.Op insert(Location location, dynamic value) {
+  var op = pb.Op()
+    ..type = pb.Op_Type.Insert
+    ..location.addAll(location.location);
+
+  if (isScalar(value)) {
+    op.scalar = getScalar(value);
+  } else if (value is protobuf.GeneratedMessage) {
+    op.message = any.Any.pack(value);
+  } else {
+    throw Exception('invalid type ${value.runtimeType} in insert');
+  }
+
+  return op;
+}
+
+bool isScalar(dynamic v) {
+  return v is int ||
+      v is fixnum.Int32 ||
+      v is fixnum.Int64 ||
+      v is String ||
+      v is double ||
+      v is bool ||
+      v is List<int>;
+}
+
+pb.Scalar getScalar(dynamic v) {
+  if (v is int) {
+    return pb.Scalar()..int64 = fixnum.Int64(v);
+  } else if (v is fixnum.Int32) {
+    return pb.Scalar()..int32 = v.toInt();
+  } else if (v is fixnum.Int64) {
+    return pb.Scalar()..int64 = v;
+  } else if (v is String) {
+    return pb.Scalar()..string = v;
+  } else if (v is double) {
+    return pb.Scalar()..double_1 = v;
+  } else if (v is bool) {
+    return pb.Scalar()..bool_13 = v;
+  } else if (v is List<int>) {
+    return pb.Scalar()..bytes = v;
+  } else {
+    throw Exception('invalid type for scalar ${v.runtimeType}');
+  }
+  ;
+}
+
+abstract class Location {
+  List<pb.Locator> location;
+  Location(this.location);
+}
+
+dynamic valueFromScalar(pb.Scalar s) {
   if (s.hasBool_13()) {
     return s.bool_13;
   } else if (s.hasBytes()) {
@@ -118,45 +381,4 @@ dynamic scalarFromAny(any.Any any) {
   } else if (s.hasUint64()) {
     return s.uint64;
   }
-}
-
-pb.Op edit(dynamic value, Location location) {
-  return pb.Op()
-    ..type = pb.Op_Type.Edit
-    ..value = toAny(value)
-    ..location.addAll(location.location);
-}
-
-any.Any toAny(dynamic value) {
-  if (value is protobuf.GeneratedMessage) {
-    return any.Any.pack(value);
-  }
-  protobuf.GeneratedMessage m;
-  if (value is List<int>) {
-    m = pb.Scalar()..bytes = value;
-  } else {
-    switch (value.runtimeType) {
-      case String:
-        m = pb.Scalar()..string = value;
-        break;
-      case double:
-        m = pb.Scalar()..double_1 = value;
-        break;
-      case int:
-        m = pb.Scalar()..int64 = fixnum.Int64(value);
-        break;
-      case bool:
-        m = pb.Scalar()..bool_13 = value;
-        break;
-    }
-  }
-  if (m == null) {
-    throw new Exception('unknown type ${value.runtimeType}');
-  }
-  return any.Any.pack(m);
-}
-
-abstract class Location {
-  List<pb.Locator> location;
-  Location(this.location);
 }

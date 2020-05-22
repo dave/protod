@@ -36,7 +36,7 @@ type MessageInfo struct {
 
 type FieldInfo struct {
 	Field                    *parser.Field
-	Name, NameCapitalised    string
+	Name, NameOutput         string
 	Number                   int
 	Kind                     FieldKind
 	GoTypePath, DartTypePath string
@@ -141,7 +141,7 @@ func EmitDartType(sb *strings.Builder, typeName string, isRepeated, isMap bool, 
 				  return delta.String_scalar([...location]..add(pb.Locator()..field_1 = (pb.Field()..name = "id"..number = 1)));
 				}
 			*/
-			sb.WriteString(fmt.Sprintf("  %s %s() {\n", qualifiedTypeName, field.NameCapitalised))
+			sb.WriteString(fmt.Sprintf("  %s %s() {\n", qualifiedTypeName, field.NameOutput))
 			sb.WriteString(fmt.Sprintf("    return %s([...location]..add(pb.Locator()..field_1 = (pb.Field()..name = %q..number = %d)));\n", qualifiedTypeName, field.Name, field.Number))
 			sb.WriteString("  }\n")
 		}
@@ -272,4 +272,5 @@ func EmitGoType(f *jen.File, typeName string, isRepeated, isMap bool, mapKeyType
 			mapMethod("", jen.Id(mapKeyType), jen.Id("k"))
 		}
 	}
+
 }

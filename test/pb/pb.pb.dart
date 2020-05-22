@@ -7,11 +7,75 @@
 
 import 'dart:core' as $core;
 
+import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:protobuf/protobuf.dart' as $pb;
+
+class Person extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Person', package: const $pb.PackageName('tests'), createEmptyInstance: create)
+    ..aOS(1, 'name')
+    ..a<$core.int>(2, 'age', $pb.PbFieldType.OU3)
+    ..m<$core.String, Case>(4, 'cases', entryClassName: 'Person.CasesEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OM, valueCreator: Case.create, packageName: const $pb.PackageName('tests'))
+    ..aOM<Company>(5, 'company', subBuilder: Company.create)
+    ..pPS(6, 'alias')
+    ..hasRequiredFields = false
+  ;
+
+  Person._() : super();
+  factory Person() => create();
+  factory Person.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory Person.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  Person clone() => Person()..mergeFromMessage(this);
+  Person copyWith(void Function(Person) updates) => super.copyWith((message) => updates(message as Person));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static Person create() => Person._();
+  Person createEmptyInstance() => create();
+  static $pb.PbList<Person> createRepeated() => $pb.PbList<Person>();
+  @$core.pragma('dart2js:noInline')
+  static Person getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Person>(create);
+  static Person _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get name => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set name($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasName() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearName() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.int get age => $_getIZ(1);
+  @$pb.TagNumber(2)
+  set age($core.int v) { $_setUnsignedInt32(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasAge() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearAge() => clearField(2);
+
+  @$pb.TagNumber(4)
+  $core.Map<$core.String, Case> get cases => $_getMap(2);
+
+  @$pb.TagNumber(5)
+  Company get company => $_getN(3);
+  @$pb.TagNumber(5)
+  set company(Company v) { setField(5, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasCompany() => $_has(3);
+  @$pb.TagNumber(5)
+  void clearCompany() => clearField(5);
+  @$pb.TagNumber(5)
+  Company ensureCompany() => $_ensure(3);
+
+  @$pb.TagNumber(6)
+  $core.List<$core.String> get alias => $_getList(4);
+}
 
 class Company extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('Company', package: const $pb.PackageName('tests'), createEmptyInstance: create)
     ..aOS(11, 'name')
+    ..a<$core.double>(12, 'revenue', $pb.PbFieldType.OF)
+    ..m<$fixnum.Int64, $core.String>(13, 'flags', entryClassName: 'Company.FlagsEntry', keyFieldType: $pb.PbFieldType.O6, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('tests'))
     ..hasRequiredFields = false
   ;
 
@@ -38,11 +102,24 @@ class Company extends $pb.GeneratedMessage {
   $core.bool hasName() => $_has(0);
   @$pb.TagNumber(11)
   void clearName() => clearField(11);
+
+  @$pb.TagNumber(12)
+  $core.double get revenue => $_getN(1);
+  @$pb.TagNumber(12)
+  set revenue($core.double v) { $_setFloat(1, v); }
+  @$pb.TagNumber(12)
+  $core.bool hasRevenue() => $_has(1);
+  @$pb.TagNumber(12)
+  void clearRevenue() => clearField(12);
+
+  @$pb.TagNumber(13)
+  $core.Map<$fixnum.Int64, $core.String> get flags => $_getMap(2);
 }
 
 class Case extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('Case', package: const $pb.PackageName('tests'), createEmptyInstance: create)
-    ..aOS(12, 'name')
+    ..aOS(21, 'name')
+    ..pc<Item>(22, 'items', $pb.PbFieldType.PM, subBuilder: Item.create)
     ..hasRequiredFields = false
   ;
 
@@ -61,78 +138,57 @@ class Case extends $pb.GeneratedMessage {
   static Case getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Case>(create);
   static Case _defaultInstance;
 
-  @$pb.TagNumber(12)
+  @$pb.TagNumber(21)
   $core.String get name => $_getSZ(0);
-  @$pb.TagNumber(12)
+  @$pb.TagNumber(21)
   set name($core.String v) { $_setString(0, v); }
-  @$pb.TagNumber(12)
+  @$pb.TagNumber(21)
   $core.bool hasName() => $_has(0);
-  @$pb.TagNumber(12)
-  void clearName() => clearField(12);
+  @$pb.TagNumber(21)
+  void clearName() => clearField(21);
+
+  @$pb.TagNumber(22)
+  $core.List<Item> get items => $_getList(1);
 }
 
-class Person extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Person', package: const $pb.PackageName('tests'), createEmptyInstance: create)
-    ..aOS(13, 'name')
-    ..a<$core.int>(14, 'age', $pb.PbFieldType.OU3)
-    ..pc<Case>(15, 'cases', $pb.PbFieldType.PM, subBuilder: Case.create)
-    ..m<$core.String, Case>(16, 'casesStringMap', protoName: 'casesStringMap', entryClassName: 'Person.CasesStringMapEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OM, valueCreator: Case.create, packageName: const $pb.PackageName('tests'))
-    ..m<$core.int, Case>(17, 'casesIntMap', protoName: 'casesIntMap', entryClassName: 'Person.CasesIntMapEntry', keyFieldType: $pb.PbFieldType.O3, valueFieldType: $pb.PbFieldType.OM, valueCreator: Case.create, packageName: const $pb.PackageName('tests'))
-    ..aOM<Company>(18, 'company', subBuilder: Company.create)
+class Item extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Item', package: const $pb.PackageName('tests'), createEmptyInstance: create)
+    ..aOS(31, 'title')
+    ..aOB(34, 'done')
     ..hasRequiredFields = false
   ;
 
-  Person._() : super();
-  factory Person() => create();
-  factory Person.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory Person.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
-  Person clone() => Person()..mergeFromMessage(this);
-  Person copyWith(void Function(Person) updates) => super.copyWith((message) => updates(message as Person));
+  Item._() : super();
+  factory Item() => create();
+  factory Item.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory Item.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  Item clone() => Item()..mergeFromMessage(this);
+  Item copyWith(void Function(Item) updates) => super.copyWith((message) => updates(message as Item));
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
-  static Person create() => Person._();
-  Person createEmptyInstance() => create();
-  static $pb.PbList<Person> createRepeated() => $pb.PbList<Person>();
+  static Item create() => Item._();
+  Item createEmptyInstance() => create();
+  static $pb.PbList<Item> createRepeated() => $pb.PbList<Item>();
   @$core.pragma('dart2js:noInline')
-  static Person getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Person>(create);
-  static Person _defaultInstance;
+  static Item getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Item>(create);
+  static Item _defaultInstance;
 
-  @$pb.TagNumber(13)
-  $core.String get name => $_getSZ(0);
-  @$pb.TagNumber(13)
-  set name($core.String v) { $_setString(0, v); }
-  @$pb.TagNumber(13)
-  $core.bool hasName() => $_has(0);
-  @$pb.TagNumber(13)
-  void clearName() => clearField(13);
+  @$pb.TagNumber(31)
+  $core.String get title => $_getSZ(0);
+  @$pb.TagNumber(31)
+  set title($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(31)
+  $core.bool hasTitle() => $_has(0);
+  @$pb.TagNumber(31)
+  void clearTitle() => clearField(31);
 
-  @$pb.TagNumber(14)
-  $core.int get age => $_getIZ(1);
-  @$pb.TagNumber(14)
-  set age($core.int v) { $_setUnsignedInt32(1, v); }
-  @$pb.TagNumber(14)
-  $core.bool hasAge() => $_has(1);
-  @$pb.TagNumber(14)
-  void clearAge() => clearField(14);
-
-  @$pb.TagNumber(15)
-  $core.List<Case> get cases => $_getList(2);
-
-  @$pb.TagNumber(16)
-  $core.Map<$core.String, Case> get casesStringMap => $_getMap(3);
-
-  @$pb.TagNumber(17)
-  $core.Map<$core.int, Case> get casesIntMap => $_getMap(4);
-
-  @$pb.TagNumber(18)
-  Company get company => $_getN(5);
-  @$pb.TagNumber(18)
-  set company(Company v) { setField(18, v); }
-  @$pb.TagNumber(18)
-  $core.bool hasCompany() => $_has(5);
-  @$pb.TagNumber(18)
-  void clearCompany() => clearField(18);
-  @$pb.TagNumber(18)
-  Company ensureCompany() => $_ensure(5);
+  @$pb.TagNumber(34)
+  $core.bool get done => $_getBF(1);
+  @$pb.TagNumber(34)
+  set done($core.bool v) { $_setBool(1, v); }
+  @$pb.TagNumber(34)
+  $core.bool hasDone() => $_has(1);
+  @$pb.TagNumber(34)
+  void clearDone() => clearField(34);
 }
 

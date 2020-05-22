@@ -2,8 +2,11 @@ package delta
 
 import (
 	"fmt"
+	"reflect"
+	"strings"
 	"time"
 
+	quill "github.com/fmpwizard/go-quilljs-delta/delta"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/sergi/go-diff/diffmatchpatch"
@@ -12,90 +15,412 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
-func Apply(delta *Op, input proto2.Message) error {
+//quill "github.com/fmpwizard/go-quilljs-delta/delta"
 
-	getValue := func(previous protoreflect.Value, a *anypb.Any) (protoreflect.Value, error) {
-		da := MustUnmarshalAny(a)
-		switch message := da.Message.(type) {
-		case *Scalar:
-			switch value := message.V.(type) {
-			case *Scalar_Float:
-				return protoreflect.ValueOfFloat32(value.Float), nil
-			case *Scalar_Double:
-				return protoreflect.ValueOfFloat64(value.Double), nil
-			case *Scalar_Int32:
-				return protoreflect.ValueOfInt32(value.Int32), nil
-			case *Scalar_Int64:
-				return protoreflect.ValueOfInt64(value.Int64), nil
-			case *Scalar_Uint32:
-				return protoreflect.ValueOfUint32(value.Uint32), nil
-			case *Scalar_Uint64:
-				return protoreflect.ValueOfUint64(value.Uint64), nil
-			case *Scalar_Bool:
-				return protoreflect.ValueOfBool(value.Bool), nil
-			case *Scalar_String_:
-				return protoreflect.ValueOfString(value.String_), nil
-			case *Scalar_Bytes:
-				return protoreflect.ValueOfBytes(value.Bytes), nil
-			case *Scalar_Diff:
-				prevString := previous.String()
-				dmp := diffmatchpatch.New()
-				diffs, err := dmp.DiffFromDelta(prevString, value.Diff)
-				if err != nil {
-					return protoreflect.Value{}, fmt.Errorf("error parsing delta: %w", err)
-				}
-				newString := dmp.DiffText2(diffs)
-				return protoreflect.ValueOfString(newString), nil
-			case *Scalar_Sint32, *Scalar_Sint64:
-				panic("unsupported type in value")
-			case *Scalar_Fixed32, *Scalar_Fixed64:
-				panic("unsupported type in value")
-			case *Scalar_Sfixed32, *Scalar_Sfixed64:
-				panic("unsupported type in value")
-			default:
-				panic("unknown type")
-			}
-		default:
-			value := protoreflect.ValueOfMessage(proto.MessageReflect(da.Message))
-			return value, nil
-		}
-	}
+func Transform(op1, op2 *Op) (*Op, *Op, error) {
+	//  Op_Edit / Op_Edit
+	//	Op_Insert / Op_Insert
+	//	Op_Move / Op_Move
+	//	Op_Delete / Op_Delete
 
-	var locPath []*Locator
-	if len(delta.Location) > 1 {
-		locPath = delta.Location[0 : len(delta.Location)-1]
+	//	Op_Edit / Op_Insert
+	//  Op_Insert / Op_Edit
+
+	//	Op_Edit / Op_Move
+	//  Op_Move / Op_Edit
+
+	//	Op_Edit / Op_Delete
+	//  Op_Delete / Op_Edit
+
+	//	Op_Insert / Op_Move
+	//	Op_Move / Op_Insert
+
+	//	Op_Insert / Op_Delete
+	//	Op_Delete / Op_Insert
+
+	//	Op_Move / Op_Delete
+	//	Op_Delete / Op_Move
+
+	switch {
+	case op1.Type == Op_Insert && op2.Type == Op_Insert:
+		return transformInsertInsert(op1, op2)
+	case op1.Type == Op_Insert && op2.Type == Op_Delete:
+		return transformInsertDelete(op1, op2)
+	case op1.Type == Op_Delete && op2.Type == Op_Insert:
+		op2x, op1x, err := transformInsertDelete(op2, op1)
+		return op1x, op2x, err
 	}
-	locLast := delta.Location[len(delta.Location)-1]
-	val := getLocation(input.ProtoReflect(), locPath)
-	switch val := val.(type) {
-	case protoreflect.Message:
-		field := val.Descriptor().Fields().ByNumber(protoreflect.FieldNumber(locLast.V.(*Locator_Field).Field.Number))
-		if string(field.Name()) != locLast.V.(*Locator_Field).Field.Name {
-			panic("field name / number mismatch")
+	return nil, nil, fmt.Errorf("invalid operation combination %s and %s")
+}
+
+func transformInsertInsert(in1, in2 *Op) (*Op, *Op, error) {
+	return nil, nil, nil
+}
+
+func transformInsertDelete(in, de *Op) (*Op, *Op, error) {
+	return nil, nil, nil
+}
+
+func Apply(op *Op, input proto2.Message) error {
+	switch op.Type {
+	case Op_Edit:
+		return ApplyEdit(op, input)
+	case Op_Insert:
+		return ApplyInsert(op, input)
+	case Op_Move:
+		return ApplyMove(op, input)
+	case Op_Delete:
+		return ApplyDelete(op, input)
+	}
+	return fmt.Errorf("unknown op type %v", op.Type)
+}
+
+func ApplyEdit(op *Op, input proto2.Message) error {
+	parentLocator, itemLocator := pop(op.Location)
+	parent := getLocation(input.ProtoReflect(), parentLocator)
+	switch locator := itemLocator.V.(type) {
+	case *Locator_Field:
+		parent, ok := parent.(protoreflect.Message)
+		if !ok {
+			return fmt.Errorf("can't apply field locator to %T", parent)
 		}
-		newValue, err := getValue(val.Get(field), delta.Value)
-		if err != nil {
-			return fmt.Errorf("getting value: %w", err)
+		field := getField(locator, parent)
+		value := getValueField(parent, field, parent.Get(field), op.Value)
+		parent.Set(field, value)
+		// ...
+	case *Locator_Index:
+		parent, ok := parent.(protoreflect.List)
+		if !ok {
+			return fmt.Errorf("can't apply list locator to %T", parent)
 		}
-		val.Set(field, newValue)
-	case protoreflect.List:
-		idx := int(locLast.V.(*Locator_Index).Index)
-		newVaue, err := getValue(val.Get(idx), delta.Value)
-		if err != nil {
-			return fmt.Errorf("getting value: %w", err)
+		index := int(locator.Index)
+		value := getValue(parent.Get(index), op.Value)
+		parent.Set(index, value)
+	case *Locator_Key:
+		parent, ok := parent.(protoreflect.Map)
+		if !ok {
+			return fmt.Errorf("can't apply map locator to %T", parent)
 		}
-		val.Set(idx, newVaue)
-	case protoreflect.Map:
-		key := getMapKey(locLast.V.(*Locator_Key).Key)
-		newValue, err := getValue(val.Get(key), delta.Value)
-		if err != nil {
-			return fmt.Errorf("getting value: %w", err)
-		}
-		val.Set(key, newValue)
-	default:
-		panic(fmt.Sprintf("unknown val type %T", val))
+		key := getMapKey(locator.Key)
+		value := getValue(parent.Get(key), op.Value)
+		parent.Set(key, value)
 	}
 	return nil
+}
+
+func ApplyInsert(op *Op, input proto2.Message) error {
+	parentLocator, itemLocator := pop(op.Location)
+	parent := getLocation(input.ProtoReflect(), parentLocator)
+	switch locator := itemLocator.V.(type) {
+	case *Locator_Field:
+		return fmt.Errorf("can't insert with a field locator")
+	case *Locator_Index:
+		parent, ok := parent.(protoreflect.List)
+		if !ok {
+			return fmt.Errorf("can't insert with list locator in %T", parent)
+		}
+		value := getValue(protoreflect.Value{}, op.Value)
+		index := int(locator.Index)
+		length := parent.Len()
+		if index == length {
+			parent.Append(value)
+			return nil
+		}
+		parent.Append(parent.Get(length - 1))
+		for i := length - 1; i > index; i-- {
+			parent.Set(i, parent.Get(i-1))
+		}
+		parent.Set(index, value)
+	case *Locator_Key:
+		parent, ok := parent.(protoreflect.Map)
+		if !ok {
+			return fmt.Errorf("can't insert map locator from %T", parent)
+		}
+		value := getValue(protoreflect.Value{}, op.Value)
+		key := getMapKey(locator.Key)
+		parent.Set(key, value)
+	}
+	return nil
+}
+
+func ApplyMove(op *Op, input proto2.Message) error {
+	parentLocator, itemLocator := pop(op.Location)
+	parent := getLocation(input.ProtoReflect(), parentLocator)
+	switch locator := itemLocator.V.(type) {
+	case *Locator_Field:
+		return fmt.Errorf("can't move with a field locator")
+	case *Locator_Index:
+		parent, ok := parent.(protoreflect.List)
+		if !ok {
+			return fmt.Errorf("can't move with list locator in %T", parent)
+		}
+		value, ok := op.Value.(*Op_Index)
+		if !ok {
+			return fmt.Errorf("can't move in list with %T value", op.Value)
+		}
+		from := int(locator.Index)
+		to := int(value.Index)
+		if from == to {
+			return nil
+		}
+		item := parent.Get(from)
+		if from > to {
+			for i := from; i > to; i-- {
+				parent.Set(i, parent.Get(i-1))
+			}
+		} else {
+			for i := from; i < to; i++ {
+				parent.Set(i, parent.Get(i+1))
+			}
+		}
+		parent.Set(to, item)
+	case *Locator_Key:
+		parent, ok := parent.(protoreflect.Map)
+		if !ok {
+			return fmt.Errorf("can't delete map locator from %T", parent)
+		}
+		value, ok := op.Value.(*Op_Key)
+		if !ok {
+			return fmt.Errorf("can't move in list with %T value", op.Value)
+		}
+		from := getMapKey(locator.Key)
+		to := getMapKey(value.Key)
+		parent.Set(to, parent.Get(from))
+		parent.Clear(from)
+	}
+	return nil
+}
+
+func ApplyDelete(op *Op, input proto2.Message) error {
+	parentLocator, itemLocator := pop(op.Location)
+	parent := getLocation(input.ProtoReflect(), parentLocator)
+	switch locator := itemLocator.V.(type) {
+	case *Locator_Field:
+		parent, ok := parent.(protoreflect.Message)
+		if !ok {
+			return fmt.Errorf("can't delete field locator from %T", parent)
+		}
+		field := getField(locator, parent)
+		parent.Clear(field)
+	case *Locator_Index:
+		parent, ok := parent.(protoreflect.List)
+		if !ok {
+			return fmt.Errorf("can't delete list locator from %T", parent)
+		}
+		index := int(locator.Index)
+		length := parent.Len()
+		for i := index; i < length-1; i++ {
+			parent.Set(i, parent.Get(i+1))
+		}
+		parent.Truncate(length - 1)
+	case *Locator_Key:
+		parent, ok := parent.(protoreflect.Map)
+		if !ok {
+			return fmt.Errorf("can't delete map locator from %T", parent)
+		}
+		key := getMapKey(locator.Key)
+		parent.Clear(key)
+	}
+	return nil
+}
+
+func reflectValueOfScalar(scalar *Scalar) protoreflect.Value {
+	switch value := scalar.V.(type) {
+	case *Scalar_Float:
+		return protoreflect.ValueOfFloat32(value.Float)
+	case *Scalar_Double:
+		return protoreflect.ValueOfFloat64(value.Double)
+	case *Scalar_Int32:
+		return protoreflect.ValueOfInt32(value.Int32)
+	case *Scalar_Int64:
+		return protoreflect.ValueOfInt64(value.Int64)
+	case *Scalar_Uint32:
+		return protoreflect.ValueOfUint32(value.Uint32)
+	case *Scalar_Uint64:
+		return protoreflect.ValueOfUint64(value.Uint64)
+	case *Scalar_Bool:
+		return protoreflect.ValueOfBool(value.Bool)
+	case *Scalar_String_:
+		return protoreflect.ValueOfString(value.String_)
+	case *Scalar_Bytes:
+		return protoreflect.ValueOfBytes(value.Bytes)
+	default:
+		//case *Scalar_Sint32, *Scalar_Sint64:
+		//case *Scalar_Fixed32, *Scalar_Fixed64:
+		//case *Scalar_Sfixed32, *Scalar_Sfixed64:
+		panic(fmt.Sprintf("unsupported scalar %T in getValue", value))
+	}
+}
+
+func valueOfScalar(scalar *Scalar) interface{} {
+	switch value := scalar.V.(type) {
+	case *Scalar_Float:
+		return value.Float
+	case *Scalar_Double:
+		return value.Double
+	case *Scalar_Int32:
+		return value.Int32
+	case *Scalar_Int64:
+		return value.Int64
+	case *Scalar_Uint32:
+		return value.Uint32
+	case *Scalar_Uint64:
+		return value.Uint64
+	case *Scalar_Bool:
+		return value.Bool
+	case *Scalar_String_:
+		return value.String_
+	case *Scalar_Bytes:
+		return value.Bytes
+	default:
+		panic(fmt.Sprintf("unsupported scalar %T in valueOfScalar", value))
+	}
+}
+
+func getValue(current protoreflect.Value, value isOp_Value) protoreflect.Value {
+	return getValueField(nil, nil, current, value)
+}
+
+func getValueField(parent protoreflect.Message, field protoreflect.FieldDescriptor, current protoreflect.Value, value isOp_Value) protoreflect.Value {
+	switch value := value.(type) {
+	case *Op_Scalar:
+		switch value := value.Scalar.V.(type) {
+		case *Scalar_Float:
+			return protoreflect.ValueOfFloat32(value.Float)
+		case *Scalar_Double:
+			return protoreflect.ValueOfFloat64(value.Double)
+		case *Scalar_Int32:
+			return protoreflect.ValueOfInt32(value.Int32)
+		case *Scalar_Int64:
+			return protoreflect.ValueOfInt64(value.Int64)
+		case *Scalar_Uint32:
+			return protoreflect.ValueOfUint32(value.Uint32)
+		case *Scalar_Uint64:
+			return protoreflect.ValueOfUint64(value.Uint64)
+		case *Scalar_Bool:
+			return protoreflect.ValueOfBool(value.Bool)
+		case *Scalar_String_:
+			return protoreflect.ValueOfString(value.String_)
+		case *Scalar_Bytes:
+			return protoreflect.ValueOfBytes(value.Bytes)
+		default:
+			//case *Scalar_Sint32, *Scalar_Sint64:
+			//case *Scalar_Fixed32, *Scalar_Fixed64:
+			//case *Scalar_Sfixed32, *Scalar_Sfixed64:
+			panic(fmt.Sprintf("unsupported scalar %T in getValue", value))
+		}
+	case *Op_Delta:
+		intPointer := func(i int) *int { return &i }
+		prevString := current.String()
+		ops := make([]quill.Op, len(value.Delta.Ops))
+
+		for i, q := range value.Delta.Ops {
+			switch op := q.V.(type) {
+			case *Quill_Insert:
+				ops[i] = quill.Op{Insert: []rune(op.Insert)}
+			case *Quill_Retain:
+				ops[i] = quill.Op{Retain: intPointer(int(op.Retain))}
+			case *Quill_Delete:
+				ops[i] = quill.Op{Delete: intPointer(int(op.Delete))}
+			}
+		}
+		dlt := quill.New(ops)
+
+		// TODO: Is there a better way of applying the delta to prevString?
+		out := quill.New(nil).Insert(prevString, nil).Compose(*dlt)
+		var sb strings.Builder
+		for _, o := range out.Ops {
+			if len(o.Insert) == 0 {
+				panic("non insert operation found after applying delta")
+			}
+			sb.WriteString(string(o.Insert))
+		}
+		return protoreflect.ValueOfString(sb.String())
+	case *Op_Message:
+		dynamicAny := MustUnmarshalAny(value.Message)
+		reflectMessage := proto.MessageReflect(dynamicAny.Message)
+		return protoreflect.ValueOfMessage(reflectMessage)
+	case *Op_Object:
+		return fromObject(parent, field, value.Object)
+	default:
+		//	*Op_Index
+		//	*Op_Key
+		// TODO: add these?
+		panic(fmt.Sprintf("can't get value of %T", value))
+	}
+}
+
+func fromObject(parent protoreflect.Message, field protoreflect.FieldDescriptor, object *Object) protoreflect.Value {
+	switch value := object.V.(type) {
+	case *Object_Scalar:
+		return reflectValueOfScalar(value.Scalar)
+	case *Object_Message:
+		dynamicAny := MustUnmarshalAny(value.Message)
+		reflectMessage := proto.MessageReflect(dynamicAny.Message)
+		return protoreflect.ValueOfMessage(reflectMessage)
+	case *Object_List:
+		list := parent.NewField(field).List()
+		for _, o := range value.List.List {
+			list.Append(fromObject(nil, nil, o))
+		}
+		return protoreflect.ValueOfList(list)
+	case *Object_MapBool:
+		m := parent.NewField(field).Map()
+		for k, o := range value.MapBool.Map {
+			m.Set(protoreflect.ValueOfBool(k).MapKey(), fromObject(nil, nil, o))
+		}
+		return protoreflect.ValueOfMap(m)
+	case *Object_MapInt32:
+		m := parent.NewField(field).Map()
+		for k, o := range value.MapInt32.Map {
+			m.Set(protoreflect.ValueOfInt32(k).MapKey(), fromObject(nil, nil, o))
+		}
+		return protoreflect.ValueOfMap(m)
+	case *Object_MapInt64:
+		m := parent.NewField(field).Map()
+		for k, o := range value.MapInt64.Map {
+			m.Set(protoreflect.ValueOfInt64(k).MapKey(), fromObject(nil, nil, o))
+		}
+		return protoreflect.ValueOfMap(m)
+	case *Object_MapUint32:
+		m := parent.NewField(field).Map()
+		for k, o := range value.MapUint32.Map {
+			m.Set(protoreflect.ValueOfUint32(k).MapKey(), fromObject(nil, nil, o))
+		}
+		return protoreflect.ValueOfMap(m)
+	case *Object_MapUint64:
+		m := parent.NewField(field).Map()
+		for k, o := range value.MapUint64.Map {
+			m.Set(protoreflect.ValueOfUint64(k).MapKey(), fromObject(nil, nil, o))
+		}
+		return protoreflect.ValueOfMap(m)
+	case *Object_MapString:
+		m := parent.NewField(field).Map()
+		for k, o := range value.MapString.Map {
+			m.Set(protoreflect.ValueOfString(k).MapKey(), fromObject(nil, nil, o))
+		}
+		return protoreflect.ValueOfMap(m)
+	default:
+		panic(fmt.Sprintf("invalid type in fromObject %T", value))
+	}
+}
+
+func getField(locator *Locator_Field, message protoreflect.Message) protoreflect.FieldDescriptor {
+	field := message.Descriptor().Fields().ByNumber(protoreflect.FieldNumber(locator.Field.Number))
+	if string(field.Name()) != locator.Field.Name {
+		panic("field name / number mismatch")
+	}
+	return field
+}
+
+func pop(in []*Locator) ([]*Locator, *Locator) {
+	if len(in) == 0 {
+		return nil, nil
+	}
+	if len(in) == 1 {
+		return nil, in[0]
+	}
+	return in[0 : len(in)-1], in[len(in)-1]
 }
 
 func getMapKey(key *Key) protoreflect.MapKey {
@@ -117,59 +442,245 @@ func getMapKey(key *Key) protoreflect.MapKey {
 	return mapKey
 }
 
-func Diff(from, to string, location Location) *Op {
+func Diff(location Location, from, to string) *Op {
+	dmp := diffmatchpatch.New()
+	dmp.DiffTimeout = time.Millisecond * 100
+	diffs := dmp.DiffCleanupSemantic(dmp.DiffMain(from, to, false))
+	d := &Delta{}
+	for _, diff := range diffs {
+		switch diff.Type {
+		case diffmatchpatch.DiffDelete:
+			d.Ops = append(d.Ops, &Quill{V: &Quill_Delete{Delete: int64(len([]rune(diff.Text)))}})
+		case diffmatchpatch.DiffEqual:
+			d.Ops = append(d.Ops, &Quill{V: &Quill_Retain{Retain: int64(len([]rune(diff.Text)))}})
+		case diffmatchpatch.DiffInsert:
+			d.Ops = append(d.Ops, &Quill{V: &Quill_Insert{Insert: diff.Text}})
+		}
+	}
 	return &Op{
 		Type:     Op_Edit,
 		Location: location.Location_get(),
-		Value:    NewAnyDiff(from, to),
+		Value:    &Op_Delta{Delta: d},
 	}
 }
 
-func Edit(value interface{}, location Location) *Op {
+func Delete(location Location) *Op {
+	return &Op{
+		Type:     Op_Delete,
+		Location: location.Location_get(),
+	}
+}
+
+func Move(location Location, to interface{}) *Op {
+	_, item := pop(location.Location_get())
+	var value isOp_Value
+	switch item.V.(type) {
+	case *Locator_Key:
+		value = opKey(to)
+	case *Locator_Index:
+		value = opIndex(to)
+	default:
+		panic(fmt.Sprintf("can't create move operation with %T item", item.V))
+	}
+	return &Op{
+		Type:     Op_Move,
+		Location: location.Location_get(),
+		Value:    value,
+	}
+}
+
+func Insert(location Location, value interface{}) *Op {
+	return &Op{
+		Type:     Op_Insert,
+		Location: location.Location_get(),
+		Value:    opValue(value),
+	}
+}
+
+func Edit(location Location, value interface{}) *Op {
 	return &Op{
 		Type:     Op_Edit,
 		Location: location.Location_get(),
-		Value:    NewAny(value),
+		Value:    opValue(value),
+	}
+}
+
+func opIndex(value interface{}) isOp_Value {
+	switch value := value.(type) {
+	case int:
+		return &Op_Index{Index: int64(value)}
+	case int64:
+		return &Op_Index{Index: value}
+	default:
+		panic(fmt.Sprintf("can't make list index from %T", value))
+	}
+}
+
+func opKey(value interface{}) isOp_Value {
+	switch value := value.(type) {
+	case int:
+		// default for int -> Key_Int64
+		return &Op_Key{Key: &Key{V: &Key_Int64{Int64: int64(value)}}}
+	case bool:
+		return &Op_Key{Key: &Key{V: &Key_Bool{Bool: value}}}
+	case int32:
+		return &Op_Key{Key: &Key{V: &Key_Int32{Int32: value}}}
+	case int64:
+		return &Op_Key{Key: &Key{V: &Key_Int64{Int64: value}}}
+	case uint32:
+		return &Op_Key{Key: &Key{V: &Key_Uint32{Uint32: value}}}
+	case uint64:
+		return &Op_Key{Key: &Key{V: &Key_Uint64{Uint64: value}}}
+	case string:
+		return &Op_Key{Key: &Key{V: &Key_String_{String_: value}}}
+	default:
+		panic(fmt.Sprintf("can't make map key from %T", value))
+	}
+}
+
+func opValue(value interface{}) isOp_Value {
+	switch value := value.(type) {
+	case int, string, float64, float32, int64, int32, uint64, uint32, bool, []byte:
+		return &Op_Scalar{Scalar: getScalar(value)}
+	case proto.Message:
+		return &Op_Message{Message: MustMarshalAny(value)}
+	default:
+		return &Op_Object{Object: NewObject(value)}
+	}
+}
+
+func NewObject(value interface{}) *Object {
+	return newObject(reflect.ValueOf(value))
+}
+
+func newObject(value reflect.Value) *Object {
+	switch value.Kind() {
+	case reflect.Bool,
+		reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
+		reflect.Float32, reflect.Float64,
+		reflect.String:
+		return &Object{V: &Object_Scalar{Scalar: getScalar(value.Interface())}}
+
+	case reflect.Array, reflect.Slice:
+		if value.Kind() == reflect.Slice && value.Type().Elem().Kind() == reflect.Uint8 {
+			// special case for []byte
+			return &Object{V: &Object_Scalar{Scalar: getScalar(value.Interface())}}
+		}
+		list := make([]*Object, value.Len())
+		for i := 0; i < value.Len(); i++ {
+			list[i] = newObject(value.Index(i))
+		}
+		return &Object{V: &Object_List{List: &List{List: list}}}
+	case reflect.Map:
+		switch value.Type().Key().Kind() {
+		case reflect.Bool:
+			m := make(map[bool]*Object, value.Len())
+			for _, v := range value.MapKeys() {
+				m[v.Bool()] = newObject(value.MapIndex(v))
+			}
+			return &Object{V: &Object_MapBool{MapBool: &MapBool{Map: m}}}
+		case reflect.Int8, reflect.Int16, reflect.Int32:
+			m := make(map[int32]*Object, value.Len())
+			for _, v := range value.MapKeys() {
+				m[int32(v.Int())] = newObject(value.MapIndex(v))
+			}
+			return &Object{V: &Object_MapInt32{MapInt32: &MapInt32{Map: m}}}
+		case reflect.Int, reflect.Int64:
+			m := make(map[int64]*Object, value.Len())
+			for _, v := range value.MapKeys() {
+				m[v.Int()] = newObject(value.MapIndex(v))
+			}
+			return &Object{V: &Object_MapInt64{MapInt64: &MapInt64{Map: m}}}
+		case reflect.Uint8, reflect.Uint16, reflect.Uint32:
+			m := make(map[uint32]*Object, value.Len())
+			for _, v := range value.MapKeys() {
+				m[uint32(v.Uint())] = newObject(value.MapIndex(v))
+			}
+			return &Object{V: &Object_MapUint32{MapUint32: &MapUint32{Map: m}}}
+		case reflect.Uint, reflect.Uint64:
+			m := make(map[uint64]*Object, value.Len())
+			for _, v := range value.MapKeys() {
+				m[v.Uint()] = newObject(value.MapIndex(v))
+			}
+			return &Object{V: &Object_MapUint64{MapUint64: &MapUint64{Map: m}}}
+		case reflect.String:
+			m := make(map[string]*Object, value.Len())
+			for _, v := range value.MapKeys() {
+				m[v.String()] = newObject(value.MapIndex(v))
+			}
+			return &Object{V: &Object_MapString{MapString: &MapString{Map: m}}}
+
+		default:
+			panic(fmt.Sprintf("invalid map key type %s", value.Type().Key().String()))
+		}
+
+	case reflect.Struct:
+		if m, ok := value.Interface().(proto.Message); ok {
+			return &Object{V: &Object_Message{Message: MustMarshalAny(m)}}
+		}
+		if m, ok := value.Addr().Interface().(proto.Message); ok {
+			return &Object{V: &Object_Message{Message: MustMarshalAny(m)}}
+		}
+		panic(fmt.Sprintf("invalid type %T", value))
+
+	case reflect.Interface, reflect.Ptr:
+		if m, ok := value.Interface().(proto.Message); ok {
+			return &Object{V: &Object_Message{Message: MustMarshalAny(m)}}
+		}
+		return newObject(value.Elem())
+
+	default:
+		// reflect.Uintptr, reflect.Complex64, reflect.Complex128, reflect.Chan, reflect.Func, reflect.UnsafePointer
+		panic(fmt.Sprintf("invalid type %T", value))
+	}
+}
+
+func getScalar(value interface{}) *Scalar {
+	switch value := value.(type) {
+	case bool:
+		return &Scalar{V: &Scalar_Bool{Bool: value}}
+
+	case int:
+		return &Scalar{V: &Scalar_Int64{Int64: int64(value)}}
+	case int8:
+		return &Scalar{V: &Scalar_Int32{Int32: int32(value)}}
+	case int16:
+		return &Scalar{V: &Scalar_Int32{Int32: int32(value)}}
+	case int32:
+		return &Scalar{V: &Scalar_Int32{Int32: value}}
+	case int64:
+		return &Scalar{V: &Scalar_Int64{Int64: value}}
+
+	case uint:
+		return &Scalar{V: &Scalar_Uint64{Uint64: uint64(value)}}
+	case uint8:
+		return &Scalar{V: &Scalar_Uint32{Uint32: uint32(value)}}
+	case uint16:
+		return &Scalar{V: &Scalar_Uint32{Uint32: uint32(value)}}
+	case uint32:
+		return &Scalar{V: &Scalar_Uint32{Uint32: value}}
+	case uint64:
+		return &Scalar{V: &Scalar_Uint64{Uint64: value}}
+
+	case float32:
+		return &Scalar{V: &Scalar_Float{Float: value}}
+	case float64:
+		return &Scalar{V: &Scalar_Double{Double: value}}
+
+	case string:
+		return &Scalar{V: &Scalar_String_{String_: value}}
+
+	case []byte:
+		return &Scalar{V: &Scalar_Bytes{Bytes: value}}
+
+	default:
+		panic(fmt.Sprintf("invalid type %T for scalar", value))
 	}
 }
 
 type Location interface {
 	Location_get() []*Locator
-}
-
-func NewAnyDiff(from, to string) *anypb.Any {
-	dmp := diffmatchpatch.New()
-	dmp.DiffTimeout = time.Millisecond * 100
-	dlt := dmp.DiffToDelta(dmp.DiffCleanupSemantic(dmp.DiffMain(from, to, false)))
-	return MustMarshalAny(&Scalar{V: &Scalar_Diff{Diff: dlt}})
-}
-
-func NewAny(value interface{}) *anypb.Any {
-	// TODO: create separate functions for sint32, sint64, fixed32, fixed64, sfixed32, sfixed64 if needed
-	switch value := value.(type) {
-	case string:
-		return MustMarshalAny(&Scalar{V: &Scalar_String_{String_: value}})
-	case float64:
-		return MustMarshalAny(&Scalar{V: &Scalar_Double{Double: value}})
-	case float32:
-		return MustMarshalAny(&Scalar{V: &Scalar_Float{Float: value}})
-	case int64:
-		return MustMarshalAny(&Scalar{V: &Scalar_Int64{Int64: value}})
-	case int32:
-		return MustMarshalAny(&Scalar{V: &Scalar_Int32{Int32: value}})
-	case uint64:
-		return MustMarshalAny(&Scalar{V: &Scalar_Uint64{Uint64: value}})
-	case uint32:
-		return MustMarshalAny(&Scalar{V: &Scalar_Uint32{Uint32: value}})
-	case bool:
-		return MustMarshalAny(&Scalar{V: &Scalar_Bool{Bool: value}})
-	case []byte:
-		return MustMarshalAny(&Scalar{V: &Scalar_Bytes{Bytes: value}})
-	case proto.Message:
-		return MustMarshalAny(value)
-	default:
-		panic("unknown type in changeValue")
-	}
 }
 
 func getLocation(m protoreflect.Message, loc []*Locator) interface{} {
@@ -178,15 +689,23 @@ func getLocation(m protoreflect.Message, loc []*Locator) interface{} {
 		var value protoreflect.Value
 		switch c := current.(type) {
 		case protoreflect.Message:
-			fieldDescriptor := c.Descriptor().Fields().ByNumber(protoreflect.FieldNumber(sel.V.(*Locator_Field).Field.Number))
-			if string(fieldDescriptor.Name()) != sel.V.(*Locator_Field).Field.Name {
-				panic("field name / number mismatch")
+			field, ok := sel.V.(*Locator_Field)
+			if !ok {
+				panic(fmt.Sprintf("field locator expected to find message, got %T", sel.V))
 			}
-			value = c.Get(fieldDescriptor)
+			value = c.Get(getField(field, c))
 		case protoreflect.List:
-			value = c.Get(int(sel.V.(*Locator_Index).Index))
+			index, ok := sel.V.(*Locator_Index)
+			if !ok {
+				panic(fmt.Sprintf("index locator expected to find list, got %T", sel.V))
+			}
+			value = c.Get(int(index.Index))
 		case protoreflect.Map:
-			value = c.Get(getMapKey(sel.V.(*Locator_Key).Key))
+			key, ok := sel.V.(*Locator_Key)
+			if !ok {
+				panic(fmt.Sprintf("key locator expected to find map, got %T", sel.V))
+			}
+			value = c.Get(getMapKey(key.Key))
 		default:
 			panic(fmt.Sprintf("unknown locator %T", current))
 		}

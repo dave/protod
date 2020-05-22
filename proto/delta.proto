@@ -8,14 +8,20 @@ option go_package = "github.com/dave/protod/delta;delta";
 message Op {
   enum Type {
     Edit = 0;   // edit the value or create a new value when the value is null
-    Append = 1; // append to the end of a list
-    Insert = 2; // insert at a specific location in a list or map
-    Move = 3;   // move in a list or change the key in a map
-    Delete = 4; // delete from a list or map, or make the value null
+    Insert = 1; // insert at a specific location in a list or map
+    Move = 2;   // move in a list or change the key in a map
+    Delete = 3; // delete from a list or map, or unset the value
   }
   Type type = 1;
   repeated Locator location = 2;
-  google.protobuf.Any value = 3;
+  oneof value {
+    Scalar scalar = 3;               // new value [Edit, Insert]
+    Delta delta = 4;                 // quill text delta [Edit, Insert]
+    google.protobuf.Any message = 5; // new value [Edit, Insert]
+    Object object = 6;               // new value [Edit, Insert]
+    int64 index = 7;                 // destination index [Move]
+    Key key = 8;                     // destination key [Move]
+  }
 }
 
 message Locator {
@@ -59,6 +65,54 @@ message Scalar {
     bool bool = 13;
     string string = 14;
     bytes bytes = 15;
-    string diff = 16;
   }
+}
+
+message Delta {
+  repeated Quill ops = 1;
+}
+
+message Quill {
+  oneof v {
+    string insert = 1; // text inserted (utf-8)
+    int64 retain = 2;  // length of text retained - note: this counts unicode codepoints, not bytes or grapheme clusters TODO: check this works cross platform
+    int64 delete = 3;  // length of text deleted - note: this counts unicode codepoints, not bytes or grapheme clusters TODO: check this works cross platform
+  }
+  Object attributes = 4;
+}
+
+message Object {
+  oneof v {
+    Scalar scalar = 1;
+    google.protobuf.Any message = 2;
+    List list = 3;
+    MapBool mapBool = 4;
+    MapInt32 mapInt32 = 5;
+    MapInt64 mapInt64 = 6;
+    MapUint32 mapUint32 = 7;
+    MapUint64 mapUint64 = 8;
+    MapString mapString = 9;
+  }
+}
+
+message MapBool {
+  map<bool, Object> map = 1;
+}
+message MapInt32 {
+  map<int32, Object> map = 1;
+}
+message MapInt64 {
+  map<int64, Object> map = 1;
+}
+message MapUint32 {
+  map<uint32, Object> map = 1;
+}
+message MapUint64 {
+  map<uint64, Object> map = 1;
+}
+message MapString {
+  map<string, Object> map = 1;
+}
+message List {
+  repeated Object list = 1;
 }

@@ -10,19 +10,26 @@ const Op$json = const {
   '2': const [
     const {'1': 'type', '3': 1, '4': 1, '5': 14, '6': '.delta.Op.Type', '10': 'type'},
     const {'1': 'location', '3': 2, '4': 3, '5': 11, '6': '.delta.Locator', '10': 'location'},
-    const {'1': 'value', '3': 3, '4': 1, '5': 11, '6': '.google.protobuf.Any', '10': 'value'},
+    const {'1': 'scalar', '3': 3, '4': 1, '5': 11, '6': '.delta.Scalar', '9': 0, '10': 'scalar'},
+    const {'1': 'delta', '3': 4, '4': 1, '5': 11, '6': '.delta.Delta', '9': 0, '10': 'delta'},
+    const {'1': 'message', '3': 5, '4': 1, '5': 11, '6': '.google.protobuf.Any', '9': 0, '10': 'message'},
+    const {'1': 'object', '3': 6, '4': 1, '5': 11, '6': '.delta.Object', '9': 0, '10': 'object'},
+    const {'1': 'index', '3': 7, '4': 1, '5': 3, '9': 0, '10': 'index'},
+    const {'1': 'key', '3': 8, '4': 1, '5': 11, '6': '.delta.Key', '9': 0, '10': 'key'},
   ],
   '4': const [Op_Type$json],
+  '8': const [
+    const {'1': 'value'},
+  ],
 };
 
 const Op_Type$json = const {
   '1': 'Type',
   '2': const [
     const {'1': 'Edit', '2': 0},
-    const {'1': 'Append', '2': 1},
-    const {'1': 'Insert', '2': 2},
-    const {'1': 'Move', '2': 3},
-    const {'1': 'Delete', '2': 4},
+    const {'1': 'Insert', '2': 1},
+    const {'1': 'Move', '2': 2},
+    const {'1': 'Delete', '2': 3},
   ],
 };
 
@@ -79,10 +86,156 @@ const Scalar$json = const {
     const {'1': 'bool', '3': 13, '4': 1, '5': 8, '9': 0, '10': 'bool'},
     const {'1': 'string', '3': 14, '4': 1, '5': 9, '9': 0, '10': 'string'},
     const {'1': 'bytes', '3': 15, '4': 1, '5': 12, '9': 0, '10': 'bytes'},
-    const {'1': 'diff', '3': 16, '4': 1, '5': 9, '9': 0, '10': 'diff'},
   ],
   '8': const [
     const {'1': 'v'},
+  ],
+};
+
+const Delta$json = const {
+  '1': 'Delta',
+  '2': const [
+    const {'1': 'ops', '3': 1, '4': 3, '5': 11, '6': '.delta.Quill', '10': 'ops'},
+  ],
+};
+
+const Quill$json = const {
+  '1': 'Quill',
+  '2': const [
+    const {'1': 'insert', '3': 1, '4': 1, '5': 9, '9': 0, '10': 'insert'},
+    const {'1': 'retain', '3': 2, '4': 1, '5': 3, '9': 0, '10': 'retain'},
+    const {'1': 'delete', '3': 3, '4': 1, '5': 3, '9': 0, '10': 'delete'},
+    const {'1': 'attributes', '3': 4, '4': 1, '5': 11, '6': '.delta.Object', '10': 'attributes'},
+  ],
+  '8': const [
+    const {'1': 'v'},
+  ],
+};
+
+const Object$json = const {
+  '1': 'Object',
+  '2': const [
+    const {'1': 'scalar', '3': 1, '4': 1, '5': 11, '6': '.delta.Scalar', '9': 0, '10': 'scalar'},
+    const {'1': 'message', '3': 2, '4': 1, '5': 11, '6': '.google.protobuf.Any', '9': 0, '10': 'message'},
+    const {'1': 'list', '3': 3, '4': 1, '5': 11, '6': '.delta.List', '9': 0, '10': 'list'},
+    const {'1': 'mapBool', '3': 4, '4': 1, '5': 11, '6': '.delta.MapBool', '9': 0, '10': 'mapBool'},
+    const {'1': 'mapInt32', '3': 5, '4': 1, '5': 11, '6': '.delta.MapInt32', '9': 0, '10': 'mapInt32'},
+    const {'1': 'mapInt64', '3': 6, '4': 1, '5': 11, '6': '.delta.MapInt64', '9': 0, '10': 'mapInt64'},
+    const {'1': 'mapUint32', '3': 7, '4': 1, '5': 11, '6': '.delta.MapUint32', '9': 0, '10': 'mapUint32'},
+    const {'1': 'mapUint64', '3': 8, '4': 1, '5': 11, '6': '.delta.MapUint64', '9': 0, '10': 'mapUint64'},
+    const {'1': 'mapString', '3': 9, '4': 1, '5': 11, '6': '.delta.MapString', '9': 0, '10': 'mapString'},
+  ],
+  '8': const [
+    const {'1': 'v'},
+  ],
+};
+
+const MapBool$json = const {
+  '1': 'MapBool',
+  '2': const [
+    const {'1': 'map', '3': 1, '4': 3, '5': 11, '6': '.delta.MapBool.MapEntry', '10': 'map'},
+  ],
+  '3': const [MapBool_MapEntry$json],
+};
+
+const MapBool_MapEntry$json = const {
+  '1': 'MapEntry',
+  '2': const [
+    const {'1': 'key', '3': 1, '4': 1, '5': 8, '10': 'key'},
+    const {'1': 'value', '3': 2, '4': 1, '5': 11, '6': '.delta.Object', '10': 'value'},
+  ],
+  '7': const {'7': true},
+};
+
+const MapInt32$json = const {
+  '1': 'MapInt32',
+  '2': const [
+    const {'1': 'map', '3': 1, '4': 3, '5': 11, '6': '.delta.MapInt32.MapEntry', '10': 'map'},
+  ],
+  '3': const [MapInt32_MapEntry$json],
+};
+
+const MapInt32_MapEntry$json = const {
+  '1': 'MapEntry',
+  '2': const [
+    const {'1': 'key', '3': 1, '4': 1, '5': 5, '10': 'key'},
+    const {'1': 'value', '3': 2, '4': 1, '5': 11, '6': '.delta.Object', '10': 'value'},
+  ],
+  '7': const {'7': true},
+};
+
+const MapInt64$json = const {
+  '1': 'MapInt64',
+  '2': const [
+    const {'1': 'map', '3': 1, '4': 3, '5': 11, '6': '.delta.MapInt64.MapEntry', '10': 'map'},
+  ],
+  '3': const [MapInt64_MapEntry$json],
+};
+
+const MapInt64_MapEntry$json = const {
+  '1': 'MapEntry',
+  '2': const [
+    const {'1': 'key', '3': 1, '4': 1, '5': 3, '10': 'key'},
+    const {'1': 'value', '3': 2, '4': 1, '5': 11, '6': '.delta.Object', '10': 'value'},
+  ],
+  '7': const {'7': true},
+};
+
+const MapUint32$json = const {
+  '1': 'MapUint32',
+  '2': const [
+    const {'1': 'map', '3': 1, '4': 3, '5': 11, '6': '.delta.MapUint32.MapEntry', '10': 'map'},
+  ],
+  '3': const [MapUint32_MapEntry$json],
+};
+
+const MapUint32_MapEntry$json = const {
+  '1': 'MapEntry',
+  '2': const [
+    const {'1': 'key', '3': 1, '4': 1, '5': 13, '10': 'key'},
+    const {'1': 'value', '3': 2, '4': 1, '5': 11, '6': '.delta.Object', '10': 'value'},
+  ],
+  '7': const {'7': true},
+};
+
+const MapUint64$json = const {
+  '1': 'MapUint64',
+  '2': const [
+    const {'1': 'map', '3': 1, '4': 3, '5': 11, '6': '.delta.MapUint64.MapEntry', '10': 'map'},
+  ],
+  '3': const [MapUint64_MapEntry$json],
+};
+
+const MapUint64_MapEntry$json = const {
+  '1': 'MapEntry',
+  '2': const [
+    const {'1': 'key', '3': 1, '4': 1, '5': 4, '10': 'key'},
+    const {'1': 'value', '3': 2, '4': 1, '5': 11, '6': '.delta.Object', '10': 'value'},
+  ],
+  '7': const {'7': true},
+};
+
+const MapString$json = const {
+  '1': 'MapString',
+  '2': const [
+    const {'1': 'map', '3': 1, '4': 3, '5': 11, '6': '.delta.MapString.MapEntry', '10': 'map'},
+  ],
+  '3': const [MapString_MapEntry$json],
+};
+
+const MapString_MapEntry$json = const {
+  '1': 'MapEntry',
+  '2': const [
+    const {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
+    const {'1': 'value', '3': 2, '4': 1, '5': 11, '6': '.delta.Object', '10': 'value'},
+  ],
+  '7': const {'7': true},
+};
+
+const List_$json = const {
+  '1': 'List',
+  '2': const [
+    const {'1': 'list', '3': 1, '4': 3, '5': 11, '6': '.delta.Object', '10': 'list'},
   ],
 };
 
