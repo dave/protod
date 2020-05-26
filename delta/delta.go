@@ -442,7 +442,7 @@ func getMapKey(key *Key) protoreflect.MapKey {
 	return mapKey
 }
 
-func Diff(location Location, from, to string) *Op {
+func Edit(location []*Locator, from, to string) *Op {
 	dmp := diffmatchpatch.New()
 	dmp.DiffTimeout = time.Millisecond * 100
 	diffs := dmp.DiffCleanupSemantic(dmp.DiffMain(from, to, false))
@@ -459,20 +459,20 @@ func Diff(location Location, from, to string) *Op {
 	}
 	return &Op{
 		Type:     Op_Edit,
-		Location: location.Location_get(),
+		Location: location,
 		Value:    &Op_Delta{Delta: d},
 	}
 }
 
-func Delete(location Location) *Op {
+func Delete(location []*Locator) *Op {
 	return &Op{
 		Type:     Op_Delete,
-		Location: location.Location_get(),
+		Location: location,
 	}
 }
 
-func Move(location Location, to interface{}) *Op {
-	_, item := pop(location.Location_get())
+func Move(location []*Locator, to interface{}) *Op {
+	_, item := pop(location)
 	var value isOp_Value
 	switch item.V.(type) {
 	case *Locator_Key:
@@ -484,23 +484,23 @@ func Move(location Location, to interface{}) *Op {
 	}
 	return &Op{
 		Type:     Op_Move,
-		Location: location.Location_get(),
+		Location: location,
 		Value:    value,
 	}
 }
 
-func Insert(location Location, value interface{}) *Op {
+func Insert(location []*Locator, value interface{}) *Op {
 	return &Op{
 		Type:     Op_Insert,
-		Location: location.Location_get(),
+		Location: location,
 		Value:    opValue(value),
 	}
 }
 
-func Edit(location Location, value interface{}) *Op {
+func Replace(location []*Locator, value interface{}) *Op {
 	return &Op{
 		Type:     Op_Edit,
-		Location: location.Location_get(),
+		Location: location,
 		Value:    opValue(value),
 	}
 }
@@ -679,10 +679,6 @@ func getScalar(value interface{}) *Scalar {
 	}
 }
 
-type Location interface {
-	Location_get() []*Locator
-}
-
 func getLocation(m protoreflect.Message, loc []*Locator) interface{} {
 	var current interface{} = m
 	for _, sel := range loc {
@@ -748,4 +744,54 @@ func CopyAndAppend(in []*Locator, v *Locator) []*Locator {
 	copy(out, in)
 	out[len(out)-1] = v
 	return out
+}
+
+func CopyAndAppendField(in []*Locator, name string, number int32) []*Locator {
+	return CopyAndAppend(in, NewLocatorField(name, number))
+}
+func CopyAndAppendIndex(in []*Locator, index int64) []*Locator {
+	return CopyAndAppend(in, NewLocatorIndex(index))
+}
+func CopyAndAppendKeyString(in []*Locator, key string) []*Locator {
+	return CopyAndAppend(in, NewLocatorKeyString(key))
+}
+func CopyAndAppendKeyBool(in []*Locator, key bool) []*Locator {
+	return CopyAndAppend(in, NewLocatorKeyBool(key))
+}
+func CopyAndAppendKeyInt32(in []*Locator, key int32) []*Locator {
+	return CopyAndAppend(in, NewLocatorKeyInt32(key))
+}
+func CopyAndAppendKeyInt64(in []*Locator, key int64) []*Locator {
+	return CopyAndAppend(in, NewLocatorKeyInt64(key))
+}
+func CopyAndAppendKeyUint32(in []*Locator, key uint32) []*Locator {
+	return CopyAndAppend(in, NewLocatorKeyUint32(key))
+}
+func CopyAndAppendKeyUint64(in []*Locator, key uint64) []*Locator {
+	return CopyAndAppend(in, NewLocatorKeyUint64(key))
+}
+
+func NewLocatorField(name string, number int32) *Locator {
+	return &Locator{V: &Locator_Field{Field: &Field{Name: name, Number: number}}}
+}
+func NewLocatorIndex(index int64) *Locator {
+	return &Locator{V: &Locator_Index{Index: index}}
+}
+func NewLocatorKeyString(key string) *Locator {
+	return &Locator{V: &Locator_Key{Key: &Key{V: &Key_String_{String_: key}}}}
+}
+func NewLocatorKeyBool(key bool) *Locator {
+	return &Locator{V: &Locator_Key{Key: &Key{V: &Key_Bool{Bool: key}}}}
+}
+func NewLocatorKeyInt32(key int32) *Locator {
+	return &Locator{V: &Locator_Key{Key: &Key{V: &Key_Int32{Int32: key}}}}
+}
+func NewLocatorKeyInt64(key int64) *Locator {
+	return &Locator{V: &Locator_Key{Key: &Key{V: &Key_Int64{Int64: key}}}}
+}
+func NewLocatorKeyUint32(key uint32) *Locator {
+	return &Locator{V: &Locator_Key{Key: &Key{V: &Key_Uint32{Uint32: key}}}}
+}
+func NewLocatorKeyUint64(key uint64) *Locator {
+	return &Locator{V: &Locator_Key{Key: &Key{V: &Key_Uint64{Uint64: key}}}}
 }
