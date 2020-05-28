@@ -192,3 +192,28 @@ class Item extends $pb.GeneratedMessage {
   void clearDone() => clearField(34);
 }
 
+class Holder extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Holder', package: const $pb.PackageName('tests'), createEmptyInstance: create)
+    ..m<$core.String, $core.int>(1, 'numbers', entryClassName: 'Holder.NumbersEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.O3, packageName: const $pb.PackageName('tests'))
+    ..hasRequiredFields = false
+  ;
+
+  Holder._() : super();
+  factory Holder() => create();
+  factory Holder.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory Holder.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  Holder clone() => Holder()..mergeFromMessage(this);
+  Holder copyWith(void Function(Holder) updates) => super.copyWith((message) => updates(message as Holder));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static Holder create() => Holder._();
+  Holder createEmptyInstance() => create();
+  static $pb.PbList<Holder> createRepeated() => $pb.PbList<Holder>();
+  @$core.pragma('dart2js:noInline')
+  static Holder getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Holder>(create);
+  static Holder _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.Map<$core.String, $core.int> get numbers => $_getMap(0);
+}
+

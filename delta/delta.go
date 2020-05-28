@@ -17,7 +17,7 @@ import (
 
 //quill "github.com/fmpwizard/go-quilljs-delta/delta"
 
-func Transform(op1, op2 *Op) (*Op, *Op, error) {
+func Transform(op1, op2 *Op) (op1x *Op, op2x *Op, err error) {
 	//  Op_Edit / Op_Edit
 	//	Op_Insert / Op_Insert
 	//	Op_Move / Op_Move
@@ -53,8 +53,14 @@ func Transform(op1, op2 *Op) (*Op, *Op, error) {
 	return nil, nil, fmt.Errorf("invalid operation combination %s and %s")
 }
 
-func transformInsertInsert(in1, in2 *Op) (*Op, *Op, error) {
+func transformInsertInsert(in1, in2 *Op) (in1x *Op, in2x *Op, err error) {
+	if isIndependentInserts(in1, in2) {
+		return in1, in2, nil
+	}
 	return nil, nil, nil
+}
+func isIndependentInserts(in1, in2 *Op) bool {
+	return true
 }
 
 func transformInsertDelete(in, de *Op) (*Op, *Op, error) {
@@ -77,7 +83,7 @@ func Apply(op *Op, input proto2.Message) error {
 
 func ApplyEdit(op *Op, input proto2.Message) error {
 	parentLocator, itemLocator := pop(op.Location)
-	parent := getLocation(input.ProtoReflect(), parentLocator)
+	parent, _ := getLocation(input.ProtoReflect(), parentLocator)
 	switch locator := itemLocator.V.(type) {
 	case *Locator_Field:
 		parent, ok := parent.(protoreflect.Message)
@@ -110,7 +116,7 @@ func ApplyEdit(op *Op, input proto2.Message) error {
 
 func ApplyInsert(op *Op, input proto2.Message) error {
 	parentLocator, itemLocator := pop(op.Location)
-	parent := getLocation(input.ProtoReflect(), parentLocator)
+	parent, setter := getLocation(input.ProtoReflect(), parentLocator)
 	switch locator := itemLocator.V.(type) {
 	case *Locator_Field:
 		return fmt.Errorf("can't insert with a field locator")
@@ -124,6 +130,7 @@ func ApplyInsert(op *Op, input proto2.Message) error {
 		length := parent.Len()
 		if index == length {
 			parent.Append(value)
+			setter(protoreflect.ValueOfList(parent)) // must use parent setter in case of mutating operation
 			return nil
 		}
 		parent.Append(parent.Get(length - 1))
@@ -131,6 +138,7 @@ func ApplyInsert(op *Op, input proto2.Message) error {
 			parent.Set(i, parent.Get(i-1))
 		}
 		parent.Set(index, value)
+		setter(protoreflect.ValueOfList(parent)) // must use parent setter in case of mutating operation
 	case *Locator_Key:
 		parent, ok := parent.(protoreflect.Map)
 		if !ok {
@@ -145,7 +153,7 @@ func ApplyInsert(op *Op, input proto2.Message) error {
 
 func ApplyMove(op *Op, input proto2.Message) error {
 	parentLocator, itemLocator := pop(op.Location)
-	parent := getLocation(input.ProtoReflect(), parentLocator)
+	parent, _ := getLocation(input.ProtoReflect(), parentLocator)
 	switch locator := itemLocator.V.(type) {
 	case *Locator_Field:
 		return fmt.Errorf("can't move with a field locator")
@@ -193,7 +201,7 @@ func ApplyMove(op *Op, input proto2.Message) error {
 
 func ApplyDelete(op *Op, input proto2.Message) error {
 	parentLocator, itemLocator := pop(op.Location)
-	parent := getLocation(input.ProtoReflect(), parentLocator)
+	parent, setter := getLocation(input.ProtoReflect(), parentLocator)
 	switch locator := itemLocator.V.(type) {
 	case *Locator_Field:
 		parent, ok := parent.(protoreflect.Message)
@@ -213,6 +221,7 @@ func ApplyDelete(op *Op, input proto2.Message) error {
 			parent.Set(i, parent.Get(i+1))
 		}
 		parent.Truncate(length - 1)
+		setter(protoreflect.ValueOfList(parent)) // must use parent setter in case of mutating operation
 	case *Locator_Key:
 		parent, ok := parent.(protoreflect.Map)
 		if !ok {
@@ -248,7 +257,7 @@ func reflectValueOfScalar(scalar *Scalar) protoreflect.Value {
 		//case *Scalar_Sint32, *Scalar_Sint64:
 		//case *Scalar_Fixed32, *Scalar_Fixed64:
 		//case *Scalar_Sfixed32, *Scalar_Sfixed64:
-		panic(fmt.Sprintf("unsupported scalar %T in getValue", value))
+		panic(fmt.Sprintf("unsupported scalar %T in reflectValueOfScalar", value))
 	}
 }
 
@@ -284,31 +293,7 @@ func getValue(current protoreflect.Value, value isOp_Value) protoreflect.Value {
 func getValueField(parent protoreflect.Message, field protoreflect.FieldDescriptor, current protoreflect.Value, value isOp_Value) protoreflect.Value {
 	switch value := value.(type) {
 	case *Op_Scalar:
-		switch value := value.Scalar.V.(type) {
-		case *Scalar_Float:
-			return protoreflect.ValueOfFloat32(value.Float)
-		case *Scalar_Double:
-			return protoreflect.ValueOfFloat64(value.Double)
-		case *Scalar_Int32:
-			return protoreflect.ValueOfInt32(value.Int32)
-		case *Scalar_Int64:
-			return protoreflect.ValueOfInt64(value.Int64)
-		case *Scalar_Uint32:
-			return protoreflect.ValueOfUint32(value.Uint32)
-		case *Scalar_Uint64:
-			return protoreflect.ValueOfUint64(value.Uint64)
-		case *Scalar_Bool:
-			return protoreflect.ValueOfBool(value.Bool)
-		case *Scalar_String_:
-			return protoreflect.ValueOfString(value.String_)
-		case *Scalar_Bytes:
-			return protoreflect.ValueOfBytes(value.Bytes)
-		default:
-			//case *Scalar_Sint32, *Scalar_Sint64:
-			//case *Scalar_Fixed32, *Scalar_Fixed64:
-			//case *Scalar_Sfixed32, *Scalar_Sfixed64:
-			panic(fmt.Sprintf("unsupported scalar %T in getValue", value))
-		}
+		return reflectValueOfScalar(value.Scalar)
 	case *Op_Delta:
 		intPointer := func(i int) *int { return &i }
 		prevString := current.String()
@@ -679,8 +664,9 @@ func getScalar(value interface{}) *Scalar {
 	}
 }
 
-func getLocation(m protoreflect.Message, loc []*Locator) interface{} {
+func getLocation(m protoreflect.Message, loc []*Locator) (interface{}, func(protoreflect.Value)) {
 	var current interface{} = m
+	var setter func(protoreflect.Value)
 	for _, sel := range loc {
 		var value protoreflect.Value
 		switch c := current.(type) {
@@ -689,26 +675,43 @@ func getLocation(m protoreflect.Message, loc []*Locator) interface{} {
 			if !ok {
 				panic(fmt.Sprintf("field locator expected to find message, got %T", sel.V))
 			}
-			value = c.Get(getField(field, c))
+			fieldDescriptor := getField(field, c)
+			value = c.Get(fieldDescriptor)
+
+			if !c.Has(fieldDescriptor) {
+				// avoid assignment to nil maps or pointers
+				value = c.NewField(fieldDescriptor)
+				c.Set(fieldDescriptor, value)
+			}
+			setter = func(value protoreflect.Value) {
+				c.Set(fieldDescriptor, value)
+			}
+
 		case protoreflect.List:
 			index, ok := sel.V.(*Locator_Index)
 			if !ok {
 				panic(fmt.Sprintf("index locator expected to find list, got %T", sel.V))
 			}
-			value = c.Get(int(index.Index))
+			indexInt := int(index.Index)
+			value = c.Get(indexInt)
+			setter = func(value protoreflect.Value) {
+				c.Set(indexInt, value)
+			}
 		case protoreflect.Map:
 			key, ok := sel.V.(*Locator_Key)
 			if !ok {
 				panic(fmt.Sprintf("key locator expected to find map, got %T", sel.V))
 			}
-			value = c.Get(getMapKey(key.Key))
+			mapKey := getMapKey(key.Key)
+			value = c.Get(mapKey)
+			setter = func(value protoreflect.Value) {
+				c.Set(mapKey, value)
+			}
 		default:
 			panic(fmt.Sprintf("unknown locator %T", current))
 		}
 
 		switch valueInterface := value.Interface().(type) {
-		case proto2.Message:
-			current = valueInterface.ProtoReflect()
 		case protoreflect.Message:
 			current = valueInterface
 		case protoreflect.List:
@@ -719,7 +722,7 @@ func getLocation(m protoreflect.Message, loc []*Locator) interface{} {
 			current = value
 		}
 	}
-	return current
+	return current, setter
 }
 
 func MustMarshalAny(m proto.Message) *anypb.Any {

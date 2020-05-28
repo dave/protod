@@ -10,6 +10,79 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+func TestTransform(t *testing.T) {
+	type itemType struct {
+		solo     bool
+		name     string
+		op1      *delta.Op
+		op2      *delta.Op
+		data     proto.Message
+		expected proto.Message
+	}
+	items := []itemType{
+		{
+			name:     "identical inserts",
+			op1:      Op().Person().Company().Flags().Insert(1, "a"),
+			op2:      Op().Person().Alias().Insert(0, "b"),
+			data:     &Person{},
+			expected: &Person{Company: &Company{Flags: map[int64]string{1: "a"}}, Alias: []string{"b"}},
+		},
+	}
+	var solo bool
+	for _, item := range items {
+		if item.solo {
+			solo = true
+			break
+		}
+	}
+	for _, item := range items {
+		if solo && !item.solo {
+			continue
+		}
+		t.Run(item.name, func(t *testing.T) {
+			op1x, op2x, err := delta.Transform(item.op1, item.op2)
+			if err != nil {
+				t.Fatal(err)
+			}
+			data1 := proto.Clone(item.data)
+			if err := delta.Apply(item.op1, data1); err != nil {
+				t.Fatal(err)
+			}
+			if err := delta.Apply(op2x, data1); err != nil {
+				t.Fatal(err)
+			}
+			data2 := proto.Clone(item.data)
+			if err := delta.Apply(item.op2, data2); err != nil {
+				t.Fatal(err)
+			}
+			if err := delta.Apply(op1x, data2); err != nil {
+				t.Fatal(err)
+			}
+			result1, err := protojson.Marshal(data1)
+			if err != nil {
+				t.Fatal(err)
+			}
+			result2, err := protojson.Marshal(data2)
+			if err != nil {
+				t.Fatal(err)
+			}
+			expected, err := protojson.Marshal(item.expected)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !compareJson(string(result1), string(expected)) {
+				t.Fatalf("\nresult1:  %s\nexpected: %s", string(result1), string(expected))
+			}
+			if !compareJson(string(result2), string(expected)) {
+				t.Fatalf("\nresult2:  %s\nexpected: %s", string(result2), string(expected))
+			}
+		})
+	}
+	if solo {
+		t.Fatal("tests skipped")
+	}
+}
+
 func TestApply(t *testing.T) {
 	type itemType struct {
 		solo     bool
@@ -20,6 +93,30 @@ func TestApply(t *testing.T) {
 		expected proto.Message
 	}
 	items := []itemType{
+		{
+			name:     "empty list",
+			op:       Op().Person().Alias().Insert(0, "b"),
+			data:     &Person{Alias: []string{}},
+			expected: &Person{Alias: []string{"b"}},
+		},
+		{
+			name:     "nil list",
+			op:       Op().Person().Alias().Insert(0, "b"),
+			data:     &Person{},
+			expected: &Person{Alias: []string{"b"}},
+		},
+		{
+			name:     "empty map",
+			op:       Op().Company().Flags().Insert(1, "a"),
+			data:     &Company{Flags: map[int64]string{}},
+			expected: &Company{Flags: map[int64]string{1: "a"}},
+		},
+		{
+			name:     "nil map",
+			op:       Op().Company().Flags().Insert(1, "a"),
+			data:     &Company{},
+			expected: &Company{Flags: map[int64]string{1: "a"}},
+		},
 		{
 			name:     "insert: list scalar 0",
 			op:       Op().Person().Alias().Insert(0, "x"),

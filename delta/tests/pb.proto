@@ -31,3 +31,6 @@ message Item {
   bool done = 34;
 }
 
+message Holder {
+  map<string, int32> numbers = 1;
+}

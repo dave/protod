@@ -61,3 +61,20 @@ const Item$json = const {
   ],
 };
 
+const Holder$json = const {
+  '1': 'Holder',
+  '2': const [
+    const {'1': 'numbers', '3': 1, '4': 3, '5': 11, '6': '.tests.Holder.NumbersEntry', '10': 'numbers'},
+  ],
+  '3': const [Holder_NumbersEntry$json],
+};
+
+const Holder_NumbersEntry$json = const {
+  '1': 'NumbersEntry',
+  '2': const [
+    const {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
+    const {'1': 'value', '3': 2, '4': 1, '5': 5, '10': 'value'},
+  ],
+  '7': const {'7': true},
+};
+

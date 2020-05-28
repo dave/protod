@@ -16,8 +16,10 @@ class testInfo {
   final pb.Op op;
   final protobuf.GeneratedMessage data;
   final protobuf.GeneratedMessage expected;
+  final bool solo;
 
   testInfo({
+    this.solo,
     this.name,
     this.op,
     this.data,
@@ -28,6 +30,31 @@ class testInfo {
 
 void main() {
   List<testInfo> tests = [
+    testInfo(
+      // TODO: failing test
+      name: "nil map",
+      op: Op().Company().Flags().Insert(1, "b"),
+      data: Company(),
+      expected: Company()..flags[fixnum.Int64(1)] = "b",
+    ),
+    testInfo(
+      name: "empty map",
+      op: Op().Company().Flags().Insert(1, "b"),
+      data: Company()..flags.clear(),
+      expected: Company()..flags[fixnum.Int64(1)] = "b",
+    ),
+    testInfo(
+      name: "nil list",
+      op: Op().Person().Alias().Insert(0, "b"),
+      data: Person(),
+      expected: Person()..alias.addAll(["b"]),
+    ),
+    testInfo(
+      name: "empty list",
+      op: Op().Person().Alias().Insert(0, "b"),
+      data: Person()..alias.clear(),
+      expected: Person()..alias.addAll(["b"]),
+    ),
     testInfo(
       name: "insert: list scalar 0",
       op: Op().Person().Alias().Insert(0, "x"),
@@ -389,8 +416,9 @@ void main() {
     ),
   ];
   delta.setDefaultRegistry(registry.types);
+  final solo = tests.any((info) => info.solo ?? false);
   tests.forEach((info) {
-    if (info.name == null) {
+    if (solo && !(info.solo ?? false)) {
       return;
     }
     test(info.name, () {

@@ -44,7 +44,18 @@ getLocation(protobuf.GeneratedMessage m, List<pb.Locator> location) {
   location.forEach((locator) {
     if (locator.hasField_1()) {
       if (current is protobuf.GeneratedMessage) {
-        current = current.getField(getFieldNumber(current, locator.field_1));
+        final msg = current as protobuf.GeneratedMessage;
+        final fieldNumber = getFieldNumber(msg, locator.field_1);
+//        if (msg.getFieldOrNull(fieldNumber) == null) {
+//          var fld = msg.getField(fieldNumber);
+//          (fld as protobuf.PbMap).clear();
+//          //msg.getFieldOrNull(fieldNumber)
+//          //current =
+//          //  msg.createMapField(fieldNumber, msg.info_.fieldInfo[fieldNumber]);
+//
+//          //msg.setField(fieldNumber, current);
+//        } else {}
+        current = msg.getField(fieldNumber);
       } else {
         throw Exception(
             'field locator expected to find message, got ${current.runtimeType}');

@@ -169,11 +169,10 @@ type state struct {
 	packages  map[string]*Package
 }
 
-func (s *state) scanFiles(fname string, info os.FileInfo, err error) error {
-	if !strings.HasSuffix(fname, ".proto") {
+func (s *state) scanFiles(fpath string, info os.FileInfo, err error) error {
+	if !strings.HasSuffix(fpath, ".proto") {
 		return nil
 	}
-	fpath := filepath.Join(s.protoRoot, fname)
 
 	f := &File{}
 
