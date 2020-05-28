@@ -31,7 +31,7 @@ class testInfo {
 void main() {
   List<testInfo> tests = [
     testInfo(
-      // TODO: failing test
+      // TODO: failing test because of: https://github.com/dart-lang/protobuf/issues/373
       name: "nil map",
       op: Op().Company().Flags().Insert(1, "b"),
       data: Company(),

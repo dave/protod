@@ -21,7 +21,7 @@ func TestTransform(t *testing.T) {
 	}
 	items := []itemType{
 		{
-			name:     "identical inserts",
+			name:     "independent inserts",
 			op1:      Op().Person().Company().Flags().Insert(1, "a"),
 			op2:      Op().Person().Alias().Insert(0, "b"),
 			data:     &Person{},
