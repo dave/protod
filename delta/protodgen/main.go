@@ -15,11 +15,6 @@ import (
 	"github.com/yoheimuta/go-protoparser/v4/parser"
 )
 
-// generate tests task:
-// package path: github.com/dave/protod/delta/protodgen
-// working dir: /Users/dave/src/protod/delta/tests
-// program arguments: -in=. -go-root=. -dart-root=../../test/pb -dart-pkg=protod/test/pb -dart-pkg-rel -dart-types-root=../../lib/ -go-types-root=../
-
 func main() {
 	if err := run(); err != nil {
 		fmt.Printf("%+v\n", err)
@@ -34,8 +29,8 @@ func run() error {
 	dartRoot := flag.String("dart-root", "", "dart output root")
 	dartPkg := flag.String("dart-pkg", "", "dart package - e.g. 'groupshare/pb'")
 	dartPkgRel := flag.Bool("dart-pkg-rel", false, "use relative dart packages (for packages in test dir)")
-	goTypesRoot := flag.String("go-types-root", "", "types go output root")
-	dartTypesRoot := flag.String("dart-types-root", "", "types dart output root")
+	goTypesRoot := flag.String("go-types-root", "", "types go output root (only needed if developing the protod library)")
+	dartTypesRoot := flag.String("dart-types-root", "", "types dart output root (only needed if developing the protod library)")
 
 	flag.Parse()
 
