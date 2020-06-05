@@ -14,12 +14,14 @@ class Op_Type extends $pb.ProtobufEnum {
   static const Op_Type Insert = Op_Type._(1, 'Insert');
   static const Op_Type Move = Op_Type._(2, 'Move');
   static const Op_Type Delete = Op_Type._(3, 'Delete');
+  static const Op_Type Compound = Op_Type._(4, 'Compound');
 
   static const $core.List<Op_Type> values = <Op_Type> [
     Edit,
     Insert,
     Move,
     Delete,
+    Compound,
   ];
 
   static final $core.Map<$core.int, Op_Type> _byValue = $pb.ProtobufEnum.initByValue(values);

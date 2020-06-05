@@ -10,12 +10,13 @@ const Op$json = const {
   '2': const [
     const {'1': 'type', '3': 1, '4': 1, '5': 14, '6': '.delta.Op.Type', '10': 'type'},
     const {'1': 'location', '3': 2, '4': 3, '5': 11, '6': '.delta.Locator', '10': 'location'},
-    const {'1': 'scalar', '3': 3, '4': 1, '5': 11, '6': '.delta.Scalar', '9': 0, '10': 'scalar'},
-    const {'1': 'delta', '3': 4, '4': 1, '5': 11, '6': '.delta.Delta', '9': 0, '10': 'delta'},
-    const {'1': 'message', '3': 5, '4': 1, '5': 11, '6': '.google.protobuf.Any', '9': 0, '10': 'message'},
-    const {'1': 'object', '3': 6, '4': 1, '5': 11, '6': '.delta.Object', '9': 0, '10': 'object'},
-    const {'1': 'index', '3': 7, '4': 1, '5': 3, '9': 0, '10': 'index'},
-    const {'1': 'key', '3': 8, '4': 1, '5': 11, '6': '.delta.Key', '9': 0, '10': 'key'},
+    const {'1': 'ops', '3': 3, '4': 3, '5': 11, '6': '.delta.Op', '10': 'ops'},
+    const {'1': 'scalar', '3': 4, '4': 1, '5': 11, '6': '.delta.Scalar', '9': 0, '10': 'scalar'},
+    const {'1': 'delta', '3': 5, '4': 1, '5': 11, '6': '.delta.Delta', '9': 0, '10': 'delta'},
+    const {'1': 'message', '3': 6, '4': 1, '5': 11, '6': '.google.protobuf.Any', '9': 0, '10': 'message'},
+    const {'1': 'object', '3': 7, '4': 1, '5': 11, '6': '.delta.Object', '9': 0, '10': 'object'},
+    const {'1': 'index', '3': 8, '4': 1, '5': 3, '9': 0, '10': 'index'},
+    const {'1': 'key', '3': 9, '4': 1, '5': 11, '6': '.delta.Key', '9': 0, '10': 'key'},
   ],
   '4': const [Op_Type$json],
   '8': const [
@@ -30,6 +31,7 @@ const Op_Type$json = const {
     const {'1': 'Insert', '2': 1},
     const {'1': 'Move', '2': 2},
     const {'1': 'Delete', '2': 3},
+    const {'1': 'Compound', '2': 4},
   ],
 };
 

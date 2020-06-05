@@ -2,6 +2,7 @@ package tests
 
 import (
 	"encoding/json"
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -21,6 +22,203 @@ func TestTransform(t *testing.T) {
 	}
 	items := []itemType{
 		{
+			name:     "move edit 1",
+			op1:      Op().Person().Alias().Move(0, 2),
+			op2:      Op().Person().Alias().Index(0).Delete(),
+			data:     &Person{Alias: []string{"a", "b", "c"}},
+			expected: &Person{Alias: []string{"b", "c"}},
+		},
+		{
+			name:     "move edit 2",
+			op1:      Op().Company().Flags().Move(2, 1),
+			op2:      Op().Company().Flags().Key(1).Edit("a", "c"),
+			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected: &Company{Flags: map[int64]string{1: "b"}},
+		},
+		{
+			name:     "chained move 1",
+			op1:      Op().Company().Flags().Move(1, 2),
+			op2:      Op().Company().Flags().Move(2, 3),
+			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected: &Company{Flags: map[int64]string{2: "a"}},
+		},
+		{
+			name:     "chained move 1a",
+			op1:      Op().Company().Flags().Move(1, 2),
+			op2:      Op().Company().Flags().Move(2, 3),
+			data:     &Company{Flags: map[int64]string{1: "a", 2: "b", 3: "c"}},
+			expected: &Company{Flags: map[int64]string{2: "a"}},
+		},
+		{
+			name:     "chained move 2",
+			op1:      Op().Company().Flags().Move(2, 3),
+			op2:      Op().Company().Flags().Move(1, 2),
+			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected: &Company{Flags: map[int64]string{2: "a"}},
+		},
+		{
+			name:     "chained move 3",
+			op1:      Op().Company().Flags().Move(2, 1),
+			op2:      Op().Company().Flags().Move(1, 2),
+			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected: &Company{Flags: map[int64]string{}}, // TODO ??? ugh
+		},
+		{
+			name:     "conflicting map move and edit",
+			op1:      Op().Company().Flags().Move(2, 3),
+			op2:      Op().Company().Flags().Key(2).Edit("b", "c"),
+			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected: &Company{Flags: map[int64]string{1: "a", 3: "c"}},
+		},
+		{
+			name:     "conflicting map insert and delete 1",
+			op1:      Op().Company().Flags().Key(3).Delete(),
+			op2:      Op().Company().Flags().Insert(3, "c"),
+			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected: &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+		},
+		{
+			name:     "conflicting map insert and delete 2",
+			op1:      Op().Company().Flags().Insert(3, "c"),
+			op2:      Op().Company().Flags().Key(3).Delete(),
+			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected: &Company{Flags: map[int64]string{1: "a", 2: "b", 3: "c"}},
+		},
+		{
+			name:     "conflicting deletes",
+			op1:      Op().Person().Alias().Index(0).Delete(),
+			op2:      Op().Person().Alias().Index(0).Delete(),
+			data:     &Person{Alias: []string{"a", "b", "c"}},
+			expected: &Person{Alias: []string{"b", "c"}},
+		},
+		{
+			name:     "two deletes",
+			op1:      Op().Person().Alias().Index(0).Delete(),
+			op2:      Op().Person().Alias().Index(1).Delete(),
+			data:     &Person{Alias: []string{"a", "b", "c"}},
+			expected: &Person{Alias: []string{"c"}},
+		},
+		{
+			name:     "delete move",
+			op1:      Op().Person().Alias().Move(0, 1),
+			op2:      Op().Person().Alias().Index(0).Delete(),
+			data:     &Person{Alias: []string{"a", "b", "c"}},
+			expected: &Person{Alias: []string{"b", "c"}},
+		},
+		{
+			name:     "conflicting replace",
+			op1:      Op().Person().Company().Replace(&Company{Name: "bar"}),
+			op2:      Op().Person().Company().Replace(&Company{Name: "baz"}),
+			data:     &Person{Company: &Company{Name: "foo"}},
+			expected: &Person{Company: &Company{Name: "bar"}},
+		},
+		{
+			name:     "operation inside replace 1",
+			op1:      Op().Person().Company().Replace(&Company{Name: "bar"}),
+			op2:      Op().Person().Company().Name().Replace("baz"),
+			data:     &Person{Company: &Company{Name: "foo"}},
+			expected: &Person{Company: &Company{Name: "bar"}},
+		},
+		{
+			name:     "operation inside replace 2",
+			op1:      Op().Person().Company().Name().Replace("baz"),
+			op2:      Op().Person().Company().Replace(&Company{Name: "bar"}),
+			data:     &Person{Company: &Company{Name: "foo"}},
+			expected: &Person{Company: &Company{Name: "bar"}},
+		},
+		{
+			name:     "conflicting diffs",
+			op1:      Op().Person().Name().Edit("foo bar", "foo bar baz"),
+			op2:      Op().Person().Name().Edit("foo bar", "foo bar qux"),
+			data:     &Person{Name: "foo bar"},
+			expected: &Person{Name: "foo bar baz qux"},
+		},
+		{
+			name:     "transform diffs",
+			op1:      Op().Person().Name().Edit("foo bar", "foo bar baz"),
+			op2:      Op().Person().Name().Edit("foo bar", "foo qux bar"),
+			data:     &Person{Name: "foo bar"},
+			expected: &Person{Name: "foo qux bar baz"},
+		},
+		{
+			name:     "move then edit 0 to 1",
+			op1:      Op().Person().Alias().Move(0, 1),
+			op2:      Op().Person().Alias().Index(0).Replace("x"),
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"b", "x", "c", "d"}},
+		},
+		{
+			name:     "move then edit 0 to 2",
+			op1:      Op().Person().Alias().Move(0, 2),
+			op2:      Op().Person().Alias().Index(0).Replace("x"),
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"b", "c", "x", "d"}},
+		},
+		{
+			name:     "move then edit 0 to 3",
+			op1:      Op().Person().Alias().Move(0, 3),
+			op2:      Op().Person().Alias().Index(0).Replace("x"),
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"b", "c", "d", "x"}},
+		},
+		{
+			name:     "move then edit 3 to 0",
+			op1:      Op().Person().Alias().Move(3, 0),
+			op2:      Op().Person().Alias().Index(3).Replace("x"),
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"x", "a", "b", "c"}},
+		},
+		{
+			name:     "move then edit 3 to 1",
+			op1:      Op().Person().Alias().Move(3, 1),
+			op2:      Op().Person().Alias().Index(3).Replace("x"),
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"a", "x", "b", "c"}},
+		},
+		{
+			name:     "move then edit 3 to 2",
+			op1:      Op().Person().Alias().Move(3, 2),
+			op2:      Op().Person().Alias().Index(3).Replace("x"),
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"a", "b", "x", "c"}},
+		},
+		{
+			name:     "move then edit 3 to 3",
+			op1:      Op().Person().Alias().Move(3, 3),
+			op2:      Op().Person().Alias().Index(3).Replace("x"),
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"a", "b", "c", "x"}},
+		},
+		{
+			name:     "identical map inserts",
+			op1:      Op().Company().Flags().Insert(1, "a"),
+			op2:      Op().Company().Flags().Insert(1, "b"),
+			data:     &Company{},
+			expected: &Company{Flags: map[int64]string{1: "a"}},
+		},
+		{
+			name:     "insert delete",
+			op1:      Op().Person().Alias().Insert(0, "x"),
+			op2:      Op().Person().Alias().Index(0).Delete(),
+			data:     &Person{Alias: []string{"a"}},
+			expected: &Person{Alias: []string{"x"}},
+		},
+		{
+			name:     "identical list inserts",
+			op1:      Op().Person().Alias().Insert(0, "x"),
+			op2:      Op().Person().Alias().Insert(0, "y"),
+			data:     &Person{},
+			expected: &Person{Alias: []string{"x", "y"}},
+		},
+		{
+			name:     "double inserts",
+			op1:      Op().Person().Alias().Insert(0, "x"),
+			op2:      Op().Person().Alias().Insert(1, "y"),
+			data:     &Person{Alias: []string{"a", "b"}},
+			expected: &Person{Alias: []string{"x", "a", "y", "b"}},
+		},
+		{
+			//solo:     true,
 			name:     "independent inserts",
 			op1:      Op().Person().Company().Flags().Insert(1, "a"),
 			op2:      Op().Person().Alias().Insert(0, "b"),
@@ -40,10 +238,12 @@ func TestTransform(t *testing.T) {
 			continue
 		}
 		t.Run(item.name, func(t *testing.T) {
-			op1x, op2x, err := delta.Transform(item.op1, item.op2)
+
+			op1x, op2x, err := delta.Transform(item.op1, item.op2, true)
 			if err != nil {
 				t.Fatal(err)
 			}
+
 			data1 := proto.Clone(item.data)
 			if err := delta.Apply(item.op1, data1); err != nil {
 				t.Fatal(err)
@@ -51,6 +251,7 @@ func TestTransform(t *testing.T) {
 			if err := delta.Apply(op2x, data1); err != nil {
 				t.Fatal(err)
 			}
+
 			data2 := proto.Clone(item.data)
 			if err := delta.Apply(item.op2, data2); err != nil {
 				t.Fatal(err)
@@ -58,23 +259,33 @@ func TestTransform(t *testing.T) {
 			if err := delta.Apply(op1x, data2); err != nil {
 				t.Fatal(err)
 			}
+
 			result1, err := protojson.Marshal(data1)
 			if err != nil {
 				t.Fatal(err)
 			}
+
 			result2, err := protojson.Marshal(data2)
 			if err != nil {
 				t.Fatal(err)
 			}
+
+			input, err := protojson.Marshal(item.data)
+			if err != nil {
+				t.Fatal(err)
+			}
+
 			expected, err := protojson.Marshal(item.expected)
 			if err != nil {
 				t.Fatal(err)
 			}
-			if !compareJson(string(result1), string(expected)) {
-				t.Fatalf("\nresult1:  %s\nexpected: %s", string(result1), string(expected))
-			}
-			if !compareJson(string(result2), string(expected)) {
-				t.Fatalf("\nresult2:  %s\nexpected: %s", string(result2), string(expected))
+
+			if !compareJson(string(result1), string(expected)) || !compareJson(string(result2), string(expected)) {
+				fmt.Println("op1", item.op1)
+				fmt.Println("op2x", op2x)
+				fmt.Println("op2", item.op2)
+				fmt.Println("op1x", op1x)
+				t.Fatalf("\ndata:     %s\nresult1:  %s\nresult2:  %s\nexpected: %s", string(input), string(result1), string(result2), string(expected))
 			}
 		})
 	}

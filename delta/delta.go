@@ -17,58 +17,40 @@ import (
 
 //quill "github.com/fmpwizard/go-quilljs-delta/delta"
 
-func Transform(op1, op2 *Op) (op1x *Op, op2x *Op, err error) {
-	//  Op_Edit / Op_Edit
-	//	Op_Insert / Op_Insert
-	//	Op_Move / Op_Move
-	//	Op_Delete / Op_Delete
-
-	//	Op_Edit / Op_Insert
-	//  Op_Insert / Op_Edit
-
-	//	Op_Edit / Op_Move
-	//  Op_Move / Op_Edit
-
-	//	Op_Edit / Op_Delete
-	//  Op_Delete / Op_Edit
-
-	//	Op_Insert / Op_Move
-	//	Op_Move / Op_Insert
-
-	//	Op_Insert / Op_Delete
-	//	Op_Delete / Op_Insert
-
-	//	Op_Move / Op_Delete
-	//	Op_Delete / Op_Move
-
-	switch {
-	case op1.Type == Op_Insert && op2.Type == Op_Insert:
-		return transformInsertInsert(op1, op2)
-	case op1.Type == Op_Insert && op2.Type == Op_Delete:
-		return transformInsertDelete(op1, op2)
-	case op1.Type == Op_Delete && op2.Type == Op_Insert:
-		op2x, op1x, err := transformInsertDelete(op2, op1)
-		return op1x, op2x, err
+func Transform(op1, op2 *Op, op1priority bool) (op1x *Op, op2x *Op, err error) {
+	if op1 == nil && op2 == nil {
+		return nil, nil, nil
 	}
-	return nil, nil, fmt.Errorf("invalid operation combination %s and %s")
-}
-
-func transformInsertInsert(in1, in2 *Op) (in1x *Op, in2x *Op, err error) {
-	if isIndependentInserts(in1, in2) {
-		return in1, in2, nil
+	if op1 == nil {
+		return nil, proto.Clone(op2).(*Op), nil
 	}
-	return nil, nil, nil
-}
-func isIndependentInserts(in1, in2 *Op) bool {
-	return true
-}
+	if op2 == nil {
+		return proto.Clone(op1).(*Op), nil, nil
+	}
 
-func transformInsertDelete(in, de *Op) (*Op, *Op, error) {
-	return nil, nil, nil
+	op2x = op1.Transform(op2, op1priority)
+	op1x = op2.Transform(op1, !op1priority)
+
+	//op1Transformer := op1.Transformer(op1priority)
+	//op2x = op1Transformer.Transform(op2)
+	//op2Transformer := op2.Transformer(!op1priority)
+	//op1x = op2Transformer.Transform(op1)
+
+	return op1x, op2x, nil
 }
 
 func Apply(op *Op, input proto2.Message) error {
+	if op == nil {
+		return nil
+	}
 	switch op.Type {
+	case Op_Compound:
+		for _, o := range op.Ops {
+			if err := Apply(o, input); err != nil {
+				return err
+			}
+		}
+		return nil
 	case Op_Edit:
 		return ApplyEdit(op, input)
 	case Op_Insert:
@@ -191,10 +173,17 @@ func ApplyMove(op *Op, input proto2.Message) error {
 		if !ok {
 			return fmt.Errorf("can't move in list with %T value", op.Value)
 		}
+		if proto.Equal(locator.Key, value.Key) {
+			return nil
+		}
 		from := getMapKey(locator.Key)
 		to := getMapKey(value.Key)
-		parent.Set(to, parent.Get(from))
+
+		v := parent.Get(from)
+
+		parent.Set(to, v)
 		parent.Clear(from)
+
 	}
 	return nil
 }
@@ -295,21 +284,8 @@ func getValueField(parent protoreflect.Message, field protoreflect.FieldDescript
 	case *Op_Scalar:
 		return reflectValueOfScalar(value.Scalar)
 	case *Op_Delta:
-		intPointer := func(i int) *int { return &i }
 		prevString := current.String()
-		ops := make([]quill.Op, len(value.Delta.Ops))
-
-		for i, q := range value.Delta.Ops {
-			switch op := q.V.(type) {
-			case *Quill_Insert:
-				ops[i] = quill.Op{Insert: []rune(op.Insert)}
-			case *Quill_Retain:
-				ops[i] = quill.Op{Retain: intPointer(int(op.Retain))}
-			case *Quill_Delete:
-				ops[i] = quill.Op{Delete: intPointer(int(op.Delete))}
-			}
-		}
-		dlt := quill.New(ops)
+		dlt := value.Delta.Quill()
 
 		// TODO: Is there a better way of applying the delta to prevString?
 		out := quill.New(nil).Insert(prevString, nil).Compose(*dlt)
@@ -398,7 +374,14 @@ func getField(locator *Locator_Field, message protoreflect.Message) protoreflect
 	return field
 }
 
-func pop(in []*Locator) ([]*Locator, *Locator) {
+func (o *Op) Pop() (path []*Locator, value *Locator) {
+	if o.Type == Op_Compound {
+		panic("Pop called on Op_Compound")
+	}
+	return pop(o.Location)
+}
+
+func pop(in []*Locator) (path []*Locator, value *Locator) {
 	if len(in) == 0 {
 		return nil, nil
 	}
@@ -458,19 +441,21 @@ func Delete(location []*Locator) *Op {
 
 func Move(location []*Locator, to interface{}) *Op {
 	_, item := pop(location)
-	var value isOp_Value
 	switch item.V.(type) {
 	case *Locator_Key:
-		value = opKey(to)
+		return &Op{
+			Type:     Op_Move,
+			Location: location,
+			Value:    opKey(to),
+		}
 	case *Locator_Index:
-		value = opIndex(to)
+		return &Op{
+			Type:     Op_Move,
+			Location: location,
+			Value:    opIndex(to),
+		}
 	default:
 		panic(fmt.Sprintf("can't create move operation with %T item", item.V))
-	}
-	return &Op{
-		Type:     Op_Move,
-		Location: location,
-		Value:    value,
 	}
 }
 
@@ -501,26 +486,34 @@ func opIndex(value interface{}) isOp_Value {
 	}
 }
 
-func opKey(value interface{}) isOp_Value {
+func getKey(value interface{}) *Key {
 	switch value := value.(type) {
 	case int:
 		// default for int -> Key_Int64
-		return &Op_Key{Key: &Key{V: &Key_Int64{Int64: int64(value)}}}
+		return &Key{V: &Key_Int64{Int64: int64(value)}}
 	case bool:
-		return &Op_Key{Key: &Key{V: &Key_Bool{Bool: value}}}
+		return &Key{V: &Key_Bool{Bool: value}}
 	case int32:
-		return &Op_Key{Key: &Key{V: &Key_Int32{Int32: value}}}
+		return &Key{V: &Key_Int32{Int32: value}}
 	case int64:
-		return &Op_Key{Key: &Key{V: &Key_Int64{Int64: value}}}
+		return &Key{V: &Key_Int64{Int64: value}}
 	case uint32:
-		return &Op_Key{Key: &Key{V: &Key_Uint32{Uint32: value}}}
+		return &Key{V: &Key_Uint32{Uint32: value}}
 	case uint64:
-		return &Op_Key{Key: &Key{V: &Key_Uint64{Uint64: value}}}
+		return &Key{V: &Key_Uint64{Uint64: value}}
 	case string:
-		return &Op_Key{Key: &Key{V: &Key_String_{String_: value}}}
+		return &Key{V: &Key_String_{String_: value}}
 	default:
 		panic(fmt.Sprintf("can't make map key from %T", value))
 	}
+}
+
+func opKey(value interface{}) isOp_Value {
+	return &Op_Key{Key: getKey(value)}
+}
+
+func locKey(value interface{}) isLocator_V {
+	return &Locator_Key{Key: getKey(value)}
 }
 
 func opValue(value interface{}) isOp_Value {
@@ -797,4 +790,97 @@ func NewLocatorKeyUint32(key uint32) *Locator {
 }
 func NewLocatorKeyUint64(key uint64) *Locator {
 	return &Locator{V: &Locator_Key{Key: &Key{V: &Key_Uint64{Uint64: key}}}}
+}
+
+type TreeRelationshipType int
+
+const (
+	TREE_NONE       TreeRelationshipType = 0
+	TREE_EQUAL      TreeRelationshipType = 1
+	TREE_ANCESTOR   TreeRelationshipType = 2
+	TREE_DESCENDENT TreeRelationshipType = 3
+)
+
+func TreeRelationship(p1, p2 []*Locator) TreeRelationshipType {
+	ancestor := isAncestor(p1, p2)
+	descendent := isAncestor(p2, p1)
+	switch {
+	case ancestor && descendent:
+		return TREE_EQUAL
+	case ancestor:
+		return TREE_ANCESTOR
+	case descendent:
+		return TREE_DESCENDENT
+	default:
+		return TREE_NONE
+	}
+}
+
+func isAncestor(ancestor, descendent []*Locator) bool {
+	if len(ancestor) > len(descendent) {
+		return false
+	}
+	for i, al := range ancestor {
+		dl := descendent[i]
+		if !proto.Equal(al, dl) {
+			return false
+		}
+	}
+	return true
+}
+
+func (o *Op) To() []*Locator {
+	if o.Type != Op_Move {
+		return []*Locator{}
+	}
+	path, value := o.Pop()
+	switch value.V.(type) {
+	case *Locator_Index:
+		return append(
+			append([]*Locator(nil), path...),
+			&Locator{V: &Locator_Index{Index: o.Value.(*Op_Index).Index}},
+		)
+	case *Locator_Key:
+		return append(
+			append([]*Locator(nil), path...),
+			&Locator{V: &Locator_Key{Key: o.Value.(*Op_Key).Key}},
+		)
+	default:
+		panic(fmt.Sprintf("invalid location %T in To()", value.V))
+	}
+}
+
+func DeltaFromQuill(qd *quill.Delta) *Delta {
+	delta := &Delta{}
+	delta.Ops = make([]*Quill, len(qd.Ops))
+	for i, op := range qd.Ops {
+		switch {
+		case len(op.Insert) > 0:
+			delta.Ops[i] = &Quill{V: &Quill_Insert{Insert: string(op.Insert)}}
+		case op.Delete != nil:
+			delta.Ops[i] = &Quill{V: &Quill_Delete{Delete: int64(*op.Delete)}}
+		case op.Retain != nil:
+			delta.Ops[i] = &Quill{V: &Quill_Retain{Retain: int64(*op.Retain)}}
+		default:
+			panic("invalid op in DeltaFromQuill")
+		}
+	}
+	return delta
+}
+
+func (d *Delta) Quill() *quill.Delta {
+	ptr := func(i int) *int { return &i }
+	ops := make([]quill.Op, len(d.Ops))
+
+	for i, q := range d.Ops {
+		switch op := q.V.(type) {
+		case *Quill_Insert:
+			ops[i] = quill.Op{Insert: []rune(op.Insert)}
+		case *Quill_Retain:
+			ops[i] = quill.Op{Retain: ptr(int(op.Retain))}
+		case *Quill_Delete:
+			ops[i] = quill.Op{Delete: ptr(int(op.Delete))}
+		}
+	}
+	return quill.New(ops)
 }
