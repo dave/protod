@@ -580,6 +580,9 @@ class Item_type extends delta.Location {
   delta.Bool_scalar Done() {
     return delta.Bool_scalar(delta.copyAndAppendField(location, "done", 34));
   }
+  delta.String_scalar_list Flags() {
+    return delta.String_scalar_list(delta.copyAndAppendField(location, "flags", 35));
+  }
   delta.Op Delete() {
     return delta.delete(location);
   }

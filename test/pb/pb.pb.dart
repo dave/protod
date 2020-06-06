@@ -155,6 +155,7 @@ class Item extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('Item', package: const $pb.PackageName('tests'), createEmptyInstance: create)
     ..aOS(31, 'title')
     ..aOB(34, 'done')
+    ..pPS(35, 'flags')
     ..hasRequiredFields = false
   ;
 
@@ -190,6 +191,9 @@ class Item extends $pb.GeneratedMessage {
   $core.bool hasDone() => $_has(1);
   @$pb.TagNumber(34)
   void clearDone() => clearField(34);
+
+  @$pb.TagNumber(35)
+  $core.List<$core.String> get flags => $_getList(2);
 }
 
 class Holder extends $pb.GeneratedMessage {

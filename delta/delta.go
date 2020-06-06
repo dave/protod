@@ -39,7 +39,7 @@ func Transform(op1, op2 *Op, op1priority bool) (op1x *Op, op2x *Op, err error) {
 	return op1x, op2x, nil
 }
 
-func Apply(op *Op, input proto2.Message) error {
+func Apply(op *Op, input *proto2.Message) error {
 	if op == nil {
 		return nil
 	}
@@ -54,16 +54,23 @@ func Apply(op *Op, input proto2.Message) error {
 	case Op_Edit:
 		return ApplyEdit(op, input)
 	case Op_Insert:
-		return ApplyInsert(op, input)
+		return ApplyInsert(op, *input)
 	case Op_Move:
-		return ApplyMove(op, input)
+		return ApplyMove(op, *input)
 	case Op_Delete:
 		return ApplyDelete(op, input)
 	}
 	return fmt.Errorf("unknown op type %v", op.Type)
 }
 
-func ApplyEdit(op *Op, input proto2.Message) error {
+func ApplyEdit(op *Op, inputAddr *proto2.Message) error {
+	if op.Location == nil {
+		// root
+		v := getValue(protoreflect.ValueOfMessage((*inputAddr).ProtoReflect()), op.Value)
+		*inputAddr = v.Message().Interface()
+		return nil
+	}
+	input := *inputAddr
 	parentLocator, itemLocator := pop(op.Location)
 	parent, _ := getLocation(input.ProtoReflect(), parentLocator)
 	switch locator := itemLocator.V.(type) {
@@ -188,7 +195,13 @@ func ApplyMove(op *Op, input proto2.Message) error {
 	return nil
 }
 
-func ApplyDelete(op *Op, input proto2.Message) error {
+func ApplyDelete(op *Op, inputAddr *proto2.Message) error {
+	if op.Location == nil {
+		// root
+		*inputAddr = nil
+		return nil
+	}
+	input := *inputAddr
 	parentLocator, itemLocator := pop(op.Location)
 	parent, setter := getLocation(input.ProtoReflect(), parentLocator)
 	switch locator := itemLocator.V.(type) {

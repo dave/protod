@@ -6,7 +6,7 @@ import (
 	"github.com/golang/protobuf/proto"
 )
 
-func (transformer *Op) Transform(op *Op, priority bool) *Op {
+func (transformer *Op) TransformTemp(op *Op, priority bool) *Op {
 	if transformer == nil || op == nil {
 		return nil
 	}

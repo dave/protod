@@ -664,6 +664,9 @@ func (b Item_type) Title() delta.String_scalar {
 func (b Item_type) Done() delta.Bool_scalar {
 	return delta.NewBool_scalar(delta.CopyAndAppendField(b.location, "done", 34))
 }
+func (b Item_type) Flags() delta.String_scalar_list {
+	return delta.NewString_scalar_list(delta.CopyAndAppendField(b.location, "flags", 35))
+}
 func (b Item_type) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }

@@ -29,6 +29,7 @@ message Case {
 message Item {
   string title = 31;
   bool done = 34;
+  repeated string flags = 35;
 }
 
 message Holder {
