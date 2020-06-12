@@ -387,6 +387,22 @@ func getField(locator *Locator_Field, message protoreflect.Message) protoreflect
 	return field
 }
 
+func (o *Op) Item() *Locator {
+	if o.Type == Op_Compound {
+		panic("Pop called on Op_Compound")
+	}
+	_, item := pop(o.Location)
+	return item
+}
+
+func (o *Op) Parent() []*Locator {
+	if o.Type == Op_Compound {
+		panic("Pop called on Op_Compound")
+	}
+	parent, _ := pop(o.Location)
+	return parent
+}
+
 func (o *Op) Pop() (path []*Locator, value *Locator) {
 	if o.Type == Op_Compound {
 		panic("Pop called on Op_Compound")
@@ -396,7 +412,9 @@ func (o *Op) Pop() (path []*Locator, value *Locator) {
 
 func pop(in []*Locator) (path []*Locator, value *Locator) {
 	if len(in) == 0 {
-		return nil, nil
+		// TODO: work out if this breaks anything. In order for operations that act on the root node to be transformed
+		// TODO: correctly, we need to consider them as Field locations. We must be able to do a type switch on item.V
+		return nil, &Locator{V: &Locator_Field{}}
 	}
 	if len(in) == 1 {
 		return nil, in[0]
@@ -840,6 +858,24 @@ func isAncestor(ancestor, descendent []*Locator) bool {
 		}
 	}
 	return true
+}
+
+// IsNullMove returns true if o is an Op_Move and the from and to locations are the same.
+func (o *Op) IsNullMove() bool {
+	if o.Type != Op_Move {
+		return false
+	}
+	from := o.Item()
+	to := o.Value
+	switch fromValue := from.V.(type) {
+	case *Locator_Index:
+		toValue := to.(*Op_Index)
+		return fromValue.Index == toValue.Index
+	case *Locator_Key:
+		toValue := to.(*Op_Key)
+		return proto.Equal(fromValue.Key, toValue.Key)
+	}
+	panic("")
 }
 
 func (o *Op) To() []*Locator {
