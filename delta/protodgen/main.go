@@ -190,6 +190,11 @@ func (s *state) scanFiles(fpath string, info os.FileInfo, err error) error {
 	var pkg *parser.Package
 	var options []*parser.Option
 	var imports []*parser.Import
+	scope := &Scope{
+		Prefix: "",
+		Types:  map[string]*Type{},
+		Scopes: map[string]*Scope{},
+	}
 	for _, v := range parsedFile.ProtoBody {
 		switch v := v.(type) {
 		case *parser.Package:
@@ -212,47 +217,11 @@ func (s *state) scanFiles(fpath string, info os.FileInfo, err error) error {
 				options = append(options, v)
 			}
 		case *parser.Message:
-			var found bool
-			for _, comment := range v.Comments {
-				if strings.Contains(comment.Raw, "[proto:data]") {
-					found = true
-				}
-			}
-			if !found {
-				continue
-			}
-			addType := func(ct CollectionType, key string) {
-				t := &Type{
-					File:           f,
-					ValueType:      MESSAGE,
-					CollectionType: ct,
-					Key:            key,
-					Value:          v.MessageName,
-					ValueName:      strings.Title(v.MessageName),
-					Message:        v,
-				}
-				switch ct {
-				case BASE:
-					t.LocatorName = fmt.Sprintf("%s_type", t.Value)
-					t.ValueLocatorName = fmt.Sprintf("%s_type", t.Value)
-				case LIST:
-					t.LocatorName = fmt.Sprintf("%s_type_list", t.Value)
-					t.ValueLocatorName = fmt.Sprintf("%s_type", t.Value)
-				case MAP:
-					t.LocatorName = fmt.Sprintf("%s_type_%s_map", t.Value, key)
-					t.ValueLocatorName = fmt.Sprintf("%s_type", t.Value)
-				}
-				f.Types = append(f.Types, t)
-			}
-			addType(BASE, "")
-			addType(LIST, "")
-			for _, keyType := range ProtoKeyTypes {
-				addType(MAP, keyType)
-			}
+			s.scanMessage(scope, v, f)
+		case *parser.Enum:
+			s.scanEnum(scope, v, f)
 		case *parser.Import:
 			imports = append(imports, v)
-		case *parser.Enum:
-			// TODO
 		default:
 			return fmt.Errorf("don't know what to do with %T", v)
 		}
@@ -289,6 +258,25 @@ func (s *state) scanFiles(fpath string, info os.FileInfo, err error) error {
 	}
 	p = s.packages[pkg.Name]
 	p.Files = append(p.Files, f)
+	if p.Scope == nil {
+		p.Scope = scope
+	} else {
+		// merge scope
+		for name, typ := range scope.Types {
+			_, found := p.Scope.Types[name]
+			if found {
+				return fmt.Errorf("duplicate type name %q", name)
+			}
+			p.Scope.Types[name] = typ
+		}
+		for name, s := range scope.Scopes {
+			_, found := p.Scope.Scopes[name]
+			if found {
+				return fmt.Errorf("duplicate scope name %q", name)
+			}
+			p.Scope.Scopes[name] = s
+		}
+	}
 
 	f.Package = p
 	for _, t := range f.Types {
@@ -297,6 +285,100 @@ func (s *state) scanFiles(fpath string, info os.FileInfo, err error) error {
 	}
 
 	return nil
+}
+
+func (s *state) scanEnum(scope *Scope, v *parser.Enum, f *File) {
+	addEnum := func(ct CollectionType, key string) {
+		t := &Type{
+			Scope:          scope,
+			File:           f,
+			ValueType:      ENUM,
+			CollectionType: ct,
+			Key:            key,
+			Value:          scope.Prefix + v.EnumName,
+			ValueName:      scope.Prefix + strings.Title(v.EnumName),
+			Enum:           v,
+		}
+		switch ct {
+		case BASE:
+			t.LocatorName = fmt.Sprintf("%s_type", t.ValueName)
+			t.ValueLocatorName = fmt.Sprintf("%s_type", t.ValueName)
+		case LIST:
+			t.LocatorName = fmt.Sprintf("%s_type_list", t.ValueName)
+			t.ValueLocatorName = fmt.Sprintf("%s_type", t.ValueName)
+		case MAP:
+			t.LocatorName = fmt.Sprintf("%s_type_%s_map", t.ValueName, key)
+			t.ValueLocatorName = fmt.Sprintf("%s_type", t.ValueName)
+		}
+		f.Types = append(f.Types, t)
+		scope.Types[v.EnumName] = t
+	}
+	addEnum(BASE, "")
+	addEnum(LIST, "")
+	for _, keyType := range ProtoKeyTypes {
+		addEnum(MAP, keyType)
+	}
+}
+
+func (s *state) scanMessage(scope *Scope, v *parser.Message, f *File) {
+	var found bool
+	for _, comment := range v.Comments {
+		if strings.Contains(comment.Raw, "[proto:data]") {
+			found = true
+		}
+	}
+	if !found {
+		return
+	}
+	innerScope := &Scope{
+		Parent: scope,
+		Prefix: fmt.Sprintf("%s_%s", strings.Title(v.MessageName), scope.Prefix),
+		Types:  map[string]*Type{},
+		Scopes: map[string]*Scope{},
+	}
+	scope.Scopes[v.MessageName] = innerScope
+	addType := func(ct CollectionType, key string) {
+		t := &Type{
+			Scope:          innerScope,
+			File:           f,
+			ValueType:      MESSAGE,
+			CollectionType: ct,
+			Key:            key,
+			Value:          scope.Prefix + v.MessageName,
+			ValueName:      scope.Prefix + strings.Title(v.MessageName),
+			Message:        v,
+		}
+		switch ct {
+		case BASE:
+			t.LocatorName = fmt.Sprintf("%s_type", t.ValueName)
+			t.ValueLocatorName = fmt.Sprintf("%s_type", t.ValueName)
+		case LIST:
+			t.LocatorName = fmt.Sprintf("%s_type_list", t.ValueName)
+			t.ValueLocatorName = fmt.Sprintf("%s_type", t.ValueName)
+		case MAP:
+			t.LocatorName = fmt.Sprintf("%s_type_%s_map", t.ValueName, key)
+			t.ValueLocatorName = fmt.Sprintf("%s_type", t.ValueName)
+		}
+		f.Types = append(f.Types, t)
+		if ct == BASE {
+			scope.Types[v.MessageName] = t
+		}
+	}
+	addType(BASE, "")
+	addType(LIST, "")
+	for _, keyType := range ProtoKeyTypes {
+		addType(MAP, keyType)
+	}
+
+	for _, visitee := range v.MessageBody {
+		switch vv := visitee.(type) {
+		case *parser.Message:
+			s.scanMessage(innerScope, vv, f)
+		case *parser.Enum:
+			s.scanEnum(innerScope, vv, f)
+		}
+	}
+
 }
 
 func makeAlias(relDir, pkgName string) string {
@@ -321,6 +403,9 @@ func (s *state) scanMessages() error {
 	for _, pkg := range s.packages {
 		for _, file := range pkg.Files {
 			for _, typ := range file.Types {
+				if typ.ValueType == ENUM {
+					continue
+				}
 				for _, protoField := range typ.Message.MessageBody {
 					switch protoField := protoField.(type) {
 					case *parser.Field, *parser.MapField:
@@ -371,24 +456,32 @@ func (s *state) scanMessages() error {
 						} else if strings.Contains(valueRaw, ".") {
 							packageName := valueRaw[0:strings.LastIndex(valueRaw, ".")]
 							typeName := valueRaw[strings.LastIndex(valueRaw, ".")+1:]
-							field.ValueType = MESSAGE
+							valuePkg := s.packages[packageName]
+							t := valuePkg.Scope.Lookup(typeName)
+							if t == nil {
+								return fmt.Errorf("can't find %q in package %q", valueRaw, valuePkg.ProtoName)
+							}
+							field.ValueType = t.ValueType
 							field.Value = typeName
 							field.ValueProtoPackage = packageName
-							valuePkg := s.packages[packageName]
 							field.ValueGoPackage = valuePkg.GoPackagePath
 							field.ValueDartPackage = valuePkg.DartLocatorsFilePath
 							field.ValueDartAlias = valuePkg.DartPackageAlias
 							pkg.DartImports[valuePkg.DartLocatorsFilePath] = valuePkg.DartPackageAlias
-							field.ValueLocator = fmt.Sprintf("%s_type", strings.Title(field.Value))
+							field.ValueLocator = fmt.Sprintf("%s_type", t.ValueName)
 
 						} else {
-							field.ValueType = MESSAGE
+							t := typ.Scope.Lookup(valueRaw)
+							if t == nil {
+								return fmt.Errorf("can't find %q in scope", valueRaw)
+							}
+							field.ValueType = t.ValueType
 							field.Value = valueRaw
 							field.ValueProtoPackage = pkg.ProtoName
 							field.ValueGoPackage = pkg.GoPackagePath
 							field.ValueDartPackage = pkg.DartPackagePath
 							field.ValueDartAlias = ""
-							field.ValueLocator = fmt.Sprintf("%s_type", strings.Title(field.Value))
+							field.ValueLocator = fmt.Sprintf("%s_type", t.ValueName)
 						}
 						switch field.CollectionType {
 						case LIST:
@@ -400,6 +493,8 @@ func (s *state) scanMessages() error {
 
 					case *parser.Message:
 						// TODO: nested type - recurse?
+					case *parser.Enum:
+						// TODO: enums?
 					default:
 						return fmt.Errorf("unknown type %T", protoField)
 					}
@@ -752,6 +847,7 @@ type ValueType int
 
 const MESSAGE ValueType = 1
 const SCALAR ValueType = 2
+const ENUM ValueType = 3
 
 type CollectionType int
 
@@ -760,7 +856,8 @@ const LIST CollectionType = 2
 const MAP CollectionType = 3
 
 type Package struct {
-	Root                 bool   // emit the root type and Op() func
+	Root                 bool // emit the root type and Op() func
+	Scope                *Scope
 	ProtoName            string // proto name
 	ProtoDir             string
 	GoDir                string
@@ -802,16 +899,18 @@ type File struct {
 	ValueLocatorName: "String_scalar"
 */
 type Type struct {
+	Scope            *Scope
 	File             *File
 	ValueType        ValueType
 	CollectionType   CollectionType
 	Key              string // only for CollectionType == MAP
-	Value            string
-	ValueName        string // capitalised version of Value
+	Value            string // name WITHOUT SCOPE PREFIX
+	ValueName        string // capitalised version of Value WITH SCOPE PREFIX
 	LocatorName      string
 	ValueLocatorName string
 	Fields           []*Field // only for ValueType == MESSAGE
 	Message          *parser.Message
+	Enum             *parser.Enum
 }
 
 type Field struct {
@@ -1022,8 +1121,10 @@ func (t *Type) EmitGo(f *jen.File) {
 func (t *Type) GoValueType() jen.Code {
 	if t.ValueType == SCALAR {
 		return GoTypesConvenience[t.Value]
+	} else if t.ValueType == ENUM {
+		return jen.Id(t.ValueName)
 	} else {
-		return jen.Op("*").Id(t.Value)
+		return jen.Op("*").Id(t.ValueName)
 	}
 }
 
@@ -1043,8 +1144,10 @@ func (t *Type) GoCollectionType() jen.Code {
 		} else {
 			valueType = GoTypesActual[t.Value]
 		}
+	} else if t.ValueType == ENUM {
+		return jen.Id(t.ValueName)
 	} else {
-		valueType = jen.Op("*").Id(t.Value)
+		valueType = jen.Op("*").Id(t.ValueName)
 	}
 	switch t.CollectionType {
 	case LIST:
@@ -1073,7 +1176,7 @@ func (t *Type) DartValueType() string {
 	if t.ValueType == SCALAR {
 		return DartTypesConvenience[t.Value]
 	} else {
-		return fmt.Sprintf("pb.%s", t.Value)
+		return fmt.Sprintf("pb.%s", t.ValueName)
 	}
 }
 
@@ -1094,7 +1197,7 @@ func (t *Type) DartCollectionType() string {
 			valueType = DartTypesActual[t.Value]
 		}
 	} else {
-		valueType = fmt.Sprintf("pb.%s", t.Value)
+		valueType = fmt.Sprintf("pb.%s", t.ValueName)
 	}
 	switch t.CollectionType {
 	case LIST:
@@ -1282,3 +1385,20 @@ var DartScalarFields = map[string]string{
 }
 
 const deltaPath = "github.com/dave/protod/delta"
+
+type Scope struct {
+	Parent *Scope
+	Prefix string
+	Types  map[string]*Type
+	Scopes map[string]*Scope
+}
+
+func (s *Scope) Lookup(name string) *Type {
+	if t, ok := s.Types[name]; ok {
+		return t
+	}
+	if s.Parent == nil {
+		return nil
+	}
+	return s.Parent.Lookup(name)
+}

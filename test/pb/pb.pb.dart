@@ -10,6 +10,41 @@ import 'dart:core' as $core;
 import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:protobuf/protobuf.dart' as $pb;
 
+import 'pb.pbenum.dart';
+
+export 'pb.pbenum.dart';
+
+class Person_Embed extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Person.Embed', package: const $pb.PackageName('tests'), createEmptyInstance: create)
+    ..aOS(1, 'name')
+    ..hasRequiredFields = false
+  ;
+
+  Person_Embed._() : super();
+  factory Person_Embed() => create();
+  factory Person_Embed.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory Person_Embed.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  Person_Embed clone() => Person_Embed()..mergeFromMessage(this);
+  Person_Embed copyWith(void Function(Person_Embed) updates) => super.copyWith((message) => updates(message as Person_Embed));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static Person_Embed create() => Person_Embed._();
+  Person_Embed createEmptyInstance() => create();
+  static $pb.PbList<Person_Embed> createRepeated() => $pb.PbList<Person_Embed>();
+  @$core.pragma('dart2js:noInline')
+  static Person_Embed getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Person_Embed>(create);
+  static Person_Embed _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get name => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set name($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasName() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearName() => clearField(1);
+}
+
 class Person extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('Person', package: const $pb.PackageName('tests'), createEmptyInstance: create)
     ..aOS(1, 'name')
@@ -17,6 +52,10 @@ class Person extends $pb.GeneratedMessage {
     ..m<$core.String, Case>(4, 'cases', entryClassName: 'Person.CasesEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OM, valueCreator: Case.create, packageName: const $pb.PackageName('tests'))
     ..aOM<Company>(5, 'company', subBuilder: Company.create)
     ..pPS(6, 'alias')
+    ..e<Person_Type>(7, 'type', $pb.PbFieldType.OE, defaultOrMaker: Person_Type.Alpha, valueOf: Person_Type.valueOf, enumValues: Person_Type.values)
+    ..pc<Person_Type>(8, 'typeList', $pb.PbFieldType.PE, protoName: 'typeList', valueOf: Person_Type.valueOf, enumValues: Person_Type.values)
+    ..m<$core.String, Person_Type>(9, 'typeMap', protoName: 'typeMap', entryClassName: 'Person.TypeMapEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OE, valueOf: Person_Type.valueOf, enumValues: Person_Type.values, packageName: const $pb.PackageName('tests'))
+    ..aOM<Person_Embed>(10, 'embedded', subBuilder: Person_Embed.create)
     ..hasRequiredFields = false
   ;
 
@@ -69,6 +108,32 @@ class Person extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(6)
   $core.List<$core.String> get alias => $_getList(4);
+
+  @$pb.TagNumber(7)
+  Person_Type get type => $_getN(5);
+  @$pb.TagNumber(7)
+  set type(Person_Type v) { setField(7, v); }
+  @$pb.TagNumber(7)
+  $core.bool hasType() => $_has(5);
+  @$pb.TagNumber(7)
+  void clearType() => clearField(7);
+
+  @$pb.TagNumber(8)
+  $core.List<Person_Type> get typeList => $_getList(6);
+
+  @$pb.TagNumber(9)
+  $core.Map<$core.String, Person_Type> get typeMap => $_getMap(7);
+
+  @$pb.TagNumber(10)
+  Person_Embed get embedded => $_getN(8);
+  @$pb.TagNumber(10)
+  set embedded(Person_Embed v) { setField(10, v); }
+  @$pb.TagNumber(10)
+  $core.bool hasEmbedded() => $_has(8);
+  @$pb.TagNumber(10)
+  void clearEmbedded() => clearField(10);
+  @$pb.TagNumber(10)
+  Person_Embed ensureEmbedded() => $_ensure(8);
 }
 
 class Company extends $pb.GeneratedMessage {
@@ -219,5 +284,197 @@ class Holder extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(1)
   $core.Map<$core.String, $core.int> get numbers => $_getMap(0);
+}
+
+class Embedded extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Embedded', package: const $pb.PackageName('tests'), createEmptyInstance: create)
+    ..aOS(1, 'embeddedLevel0', protoName: 'embeddedLevel0')
+    ..hasRequiredFields = false
+  ;
+
+  Embedded._() : super();
+  factory Embedded() => create();
+  factory Embedded.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory Embedded.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  Embedded clone() => Embedded()..mergeFromMessage(this);
+  Embedded copyWith(void Function(Embedded) updates) => super.copyWith((message) => updates(message as Embedded));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static Embedded create() => Embedded._();
+  Embedded createEmptyInstance() => create();
+  static $pb.PbList<Embedded> createRepeated() => $pb.PbList<Embedded>();
+  @$core.pragma('dart2js:noInline')
+  static Embedded getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Embedded>(create);
+  static Embedded _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get embeddedLevel0 => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set embeddedLevel0($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasEmbeddedLevel0() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearEmbeddedLevel0() => clearField(1);
+}
+
+class ScopeLevel1_Embedded extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('ScopeLevel1.Embedded', package: const $pb.PackageName('tests'), createEmptyInstance: create)
+    ..aOS(1, 'embeddedLevel1', protoName: 'embeddedLevel1')
+    ..hasRequiredFields = false
+  ;
+
+  ScopeLevel1_Embedded._() : super();
+  factory ScopeLevel1_Embedded() => create();
+  factory ScopeLevel1_Embedded.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ScopeLevel1_Embedded.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  ScopeLevel1_Embedded clone() => ScopeLevel1_Embedded()..mergeFromMessage(this);
+  ScopeLevel1_Embedded copyWith(void Function(ScopeLevel1_Embedded) updates) => super.copyWith((message) => updates(message as ScopeLevel1_Embedded));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static ScopeLevel1_Embedded create() => ScopeLevel1_Embedded._();
+  ScopeLevel1_Embedded createEmptyInstance() => create();
+  static $pb.PbList<ScopeLevel1_Embedded> createRepeated() => $pb.PbList<ScopeLevel1_Embedded>();
+  @$core.pragma('dart2js:noInline')
+  static ScopeLevel1_Embedded getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ScopeLevel1_Embedded>(create);
+  static ScopeLevel1_Embedded _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get embeddedLevel1 => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set embeddedLevel1($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasEmbeddedLevel1() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearEmbeddedLevel1() => clearField(1);
+}
+
+class ScopeLevel1_ScopeLevel2_Embedded extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('ScopeLevel1.ScopeLevel2.Embedded', package: const $pb.PackageName('tests'), createEmptyInstance: create)
+    ..aOS(1, 'embeddedLevel2', protoName: 'embeddedLevel2')
+    ..hasRequiredFields = false
+  ;
+
+  ScopeLevel1_ScopeLevel2_Embedded._() : super();
+  factory ScopeLevel1_ScopeLevel2_Embedded() => create();
+  factory ScopeLevel1_ScopeLevel2_Embedded.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ScopeLevel1_ScopeLevel2_Embedded.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  ScopeLevel1_ScopeLevel2_Embedded clone() => ScopeLevel1_ScopeLevel2_Embedded()..mergeFromMessage(this);
+  ScopeLevel1_ScopeLevel2_Embedded copyWith(void Function(ScopeLevel1_ScopeLevel2_Embedded) updates) => super.copyWith((message) => updates(message as ScopeLevel1_ScopeLevel2_Embedded));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static ScopeLevel1_ScopeLevel2_Embedded create() => ScopeLevel1_ScopeLevel2_Embedded._();
+  ScopeLevel1_ScopeLevel2_Embedded createEmptyInstance() => create();
+  static $pb.PbList<ScopeLevel1_ScopeLevel2_Embedded> createRepeated() => $pb.PbList<ScopeLevel1_ScopeLevel2_Embedded>();
+  @$core.pragma('dart2js:noInline')
+  static ScopeLevel1_ScopeLevel2_Embedded getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ScopeLevel1_ScopeLevel2_Embedded>(create);
+  static ScopeLevel1_ScopeLevel2_Embedded _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get embeddedLevel2 => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set embeddedLevel2($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasEmbeddedLevel2() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearEmbeddedLevel2() => clearField(1);
+}
+
+class ScopeLevel1_ScopeLevel2_ScopeLevel3 extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('ScopeLevel1.ScopeLevel2.ScopeLevel3', package: const $pb.PackageName('tests'), createEmptyInstance: create)
+    ..aOM<ScopeLevel1_ScopeLevel2_Embedded>(1, 't', subBuilder: ScopeLevel1_ScopeLevel2_Embedded.create)
+    ..hasRequiredFields = false
+  ;
+
+  ScopeLevel1_ScopeLevel2_ScopeLevel3._() : super();
+  factory ScopeLevel1_ScopeLevel2_ScopeLevel3() => create();
+  factory ScopeLevel1_ScopeLevel2_ScopeLevel3.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ScopeLevel1_ScopeLevel2_ScopeLevel3.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  ScopeLevel1_ScopeLevel2_ScopeLevel3 clone() => ScopeLevel1_ScopeLevel2_ScopeLevel3()..mergeFromMessage(this);
+  ScopeLevel1_ScopeLevel2_ScopeLevel3 copyWith(void Function(ScopeLevel1_ScopeLevel2_ScopeLevel3) updates) => super.copyWith((message) => updates(message as ScopeLevel1_ScopeLevel2_ScopeLevel3));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static ScopeLevel1_ScopeLevel2_ScopeLevel3 create() => ScopeLevel1_ScopeLevel2_ScopeLevel3._();
+  ScopeLevel1_ScopeLevel2_ScopeLevel3 createEmptyInstance() => create();
+  static $pb.PbList<ScopeLevel1_ScopeLevel2_ScopeLevel3> createRepeated() => $pb.PbList<ScopeLevel1_ScopeLevel2_ScopeLevel3>();
+  @$core.pragma('dart2js:noInline')
+  static ScopeLevel1_ScopeLevel2_ScopeLevel3 getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ScopeLevel1_ScopeLevel2_ScopeLevel3>(create);
+  static ScopeLevel1_ScopeLevel2_ScopeLevel3 _defaultInstance;
+
+  @$pb.TagNumber(1)
+  ScopeLevel1_ScopeLevel2_Embedded get t => $_getN(0);
+  @$pb.TagNumber(1)
+  set t(ScopeLevel1_ScopeLevel2_Embedded v) { setField(1, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasT() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearT() => clearField(1);
+  @$pb.TagNumber(1)
+  ScopeLevel1_ScopeLevel2_Embedded ensureT() => $_ensure(0);
+}
+
+class ScopeLevel1_ScopeLevel2 extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('ScopeLevel1.ScopeLevel2', package: const $pb.PackageName('tests'), createEmptyInstance: create)
+    ..aOM<ScopeLevel1_ScopeLevel2_Embedded>(1, 't', subBuilder: ScopeLevel1_ScopeLevel2_Embedded.create)
+    ..hasRequiredFields = false
+  ;
+
+  ScopeLevel1_ScopeLevel2._() : super();
+  factory ScopeLevel1_ScopeLevel2() => create();
+  factory ScopeLevel1_ScopeLevel2.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ScopeLevel1_ScopeLevel2.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  ScopeLevel1_ScopeLevel2 clone() => ScopeLevel1_ScopeLevel2()..mergeFromMessage(this);
+  ScopeLevel1_ScopeLevel2 copyWith(void Function(ScopeLevel1_ScopeLevel2) updates) => super.copyWith((message) => updates(message as ScopeLevel1_ScopeLevel2));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static ScopeLevel1_ScopeLevel2 create() => ScopeLevel1_ScopeLevel2._();
+  ScopeLevel1_ScopeLevel2 createEmptyInstance() => create();
+  static $pb.PbList<ScopeLevel1_ScopeLevel2> createRepeated() => $pb.PbList<ScopeLevel1_ScopeLevel2>();
+  @$core.pragma('dart2js:noInline')
+  static ScopeLevel1_ScopeLevel2 getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ScopeLevel1_ScopeLevel2>(create);
+  static ScopeLevel1_ScopeLevel2 _defaultInstance;
+
+  @$pb.TagNumber(1)
+  ScopeLevel1_ScopeLevel2_Embedded get t => $_getN(0);
+  @$pb.TagNumber(1)
+  set t(ScopeLevel1_ScopeLevel2_Embedded v) { setField(1, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasT() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearT() => clearField(1);
+  @$pb.TagNumber(1)
+  ScopeLevel1_ScopeLevel2_Embedded ensureT() => $_ensure(0);
+}
+
+class ScopeLevel1 extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('ScopeLevel1', package: const $pb.PackageName('tests'), createEmptyInstance: create)
+    ..aOM<ScopeLevel1_Embedded>(1, 't', subBuilder: ScopeLevel1_Embedded.create)
+    ..hasRequiredFields = false
+  ;
+
+  ScopeLevel1._() : super();
+  factory ScopeLevel1() => create();
+  factory ScopeLevel1.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ScopeLevel1.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  ScopeLevel1 clone() => ScopeLevel1()..mergeFromMessage(this);
+  ScopeLevel1 copyWith(void Function(ScopeLevel1) updates) => super.copyWith((message) => updates(message as ScopeLevel1));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static ScopeLevel1 create() => ScopeLevel1._();
+  ScopeLevel1 createEmptyInstance() => create();
+  static $pb.PbList<ScopeLevel1> createRepeated() => $pb.PbList<ScopeLevel1>();
+  @$core.pragma('dart2js:noInline')
+  static ScopeLevel1 getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ScopeLevel1>(create);
+  static ScopeLevel1 _defaultInstance;
+
+  @$pb.TagNumber(1)
+  ScopeLevel1_Embedded get t => $_getN(0);
+  @$pb.TagNumber(1)
+  set t(ScopeLevel1_Embedded v) { setField(1, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasT() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearT() => clearField(1);
+  @$pb.TagNumber(1)
+  ScopeLevel1_Embedded ensureT() => $_ensure(0);
 }
 

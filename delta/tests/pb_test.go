@@ -11,6 +11,13 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+func TestScope(t *testing.T) {
+	s1 := ScopeLevel1{T: &ScopeLevel1_Embedded{EmbeddedLevel1: ""}}
+	s2 := ScopeLevel1_ScopeLevel2{T: &ScopeLevel1_ScopeLevel2_Embedded{EmbeddedLevel2: ""}}
+	s3 := ScopeLevel1_ScopeLevel2_ScopeLevel3{T: &ScopeLevel1_ScopeLevel2_Embedded{EmbeddedLevel2: ""}}
+	_, _, _ = s1, s2, s3
+}
+
 func TestTransform(t *testing.T) {
 	type itemType struct {
 		solo     bool
@@ -21,6 +28,34 @@ func TestTransform(t *testing.T) {
 		expected proto.Message
 	}
 	items := []itemType{
+		{
+			name:     "edit_index_move_index",
+			op1:      Op().Person().Alias().Index(0).Edit("a", "x"),
+			op2:      Op().Person().Alias().Move(0, 1),
+			data:     &Person{Alias: []string{"a", "b"}},
+			expected: &Person{Alias: []string{"b", "x"}},
+		},
+		{
+			name:     "edit_index_insert_index",
+			op1:      Op().Person().Alias().Index(0).Edit("a", "b"),
+			op2:      Op().Person().Alias().Insert(0, "x"),
+			data:     &Person{Alias: []string{"a"}},
+			expected: &Person{Alias: []string{"x", "b"}},
+		},
+		{
+			name:     "independent_operations_in_same_list",
+			op1:      Op().Person().Alias().Move(4, 0),
+			op2:      Op().Person().Alias().Move(1, 3),
+			data:     &Person{Alias: []string{"a", "b", "c", "d", "e"}},
+			expected: &Person{Alias: []string{"e", "a", "c", "d", "b"}},
+		},
+		{
+			name:     "ancestor_of_deleted_value",
+			op1:      Op().Person().Cases().Key("a").Name().Replace("x"),
+			op2:      Op().Person().Cases().Move("b", "a"),
+			data:     &Person{Cases: map[string]*Case{"a": {Name: "a"}, "b": {Name: "b"}}},
+			expected: &Person{Cases: map[string]*Case{"a": {Name: "b"}}},
+		},
 		{
 			name:     "edit_delta_edit_equal",
 			op1:      Op().Company().Name().Edit("a", "x"),

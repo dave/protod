@@ -12,6 +12,12 @@ class Op_root_type {
   Person_type Person() {
     return Person_type([]);
   }
+  Person_Type_type Person_Type() {
+    return Person_Type_type([]);
+  }
+  Person_Embed_type Person_Embed() {
+    return Person_Embed_type([]);
+  }
   Company_type Company() {
     return Company_type([]);
   }
@@ -39,6 +45,18 @@ class Person_type extends delta.Location {
   }
   delta.String_scalar_list Alias() {
     return delta.String_scalar_list(delta.copyAndAppendField(location, "alias", 6));
+  }
+   Type() {
+    return (delta.copyAndAppendField(location, "type", 7));
+  }
+   TypeList() {
+    return (delta.copyAndAppendField(location, "typeList", 8));
+  }
+   TypeMap() {
+    return (delta.copyAndAppendField(location, "typeMap", 9));
+  }
+  Person_Embed_type Embedded() {
+    return Person_Embed_type(delta.copyAndAppendField(location, "embedded", 10));
   }
   delta.Op Delete() {
     return delta.delete(location);
@@ -206,6 +224,355 @@ class Person_type_string_map extends delta.Location {
   }
 
   delta.Op Replace(Map<String, pb.Person> value) {
+    return delta.replace(location, value);
+  }
+
+}
+
+class Person_Type_type extends delta.Location {
+  Person_Type_type(List<delta.Locator> location) : super(location);
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Replace(pb.Person_Type value) {
+    return delta.replace(location, value);
+  }
+
+}
+
+class Person_Type_type_list extends delta.Location {
+  Person_Type_type_list(List<delta.Locator> location) : super(location);
+  Person_Type_type Index(int i) {
+    return Person_Type_type(delta.copyAndAppendIndex(location, fixnum.Int64(i)));
+  }
+  delta.Op Insert(int index, pb.Person_Type value) {
+    return delta.insert(delta.copyAndAppendIndex(location, fixnum.Int64(index)), value);
+  }
+
+  delta.Op Move(int from, int to) {
+    return delta.moveList(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
+  }
+
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Replace(List<pb.Person_Type> value) {
+    return delta.replace(location, value);
+  }
+
+}
+
+class Person_Type_type_bool_map extends delta.Location {
+  Person_Type_type_bool_map(List<delta.Locator> location) : super(location);
+  Person_Type_type Key(bool key) {
+    return Person_Type_type(delta.copyAndAppendKeyBool(location, key));
+  }
+  delta.Op Insert(bool key, pb.Person_Type value) {
+    return delta.insert(delta.copyAndAppendKeyBool(location, key), value);
+  }
+
+  delta.Op Move(bool from, bool to) {
+    return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
+  }
+
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Replace(Map<bool, pb.Person_Type> value) {
+    return delta.replace(location, value);
+  }
+
+}
+
+class Person_Type_type_int32_map extends delta.Location {
+  Person_Type_type_int32_map(List<delta.Locator> location) : super(location);
+  Person_Type_type Key(int key) {
+    return Person_Type_type(delta.copyAndAppendKeyInt32(location, key));
+  }
+  delta.Op Insert(int key, pb.Person_Type value) {
+    return delta.insert(delta.copyAndAppendKeyInt32(location, key), value);
+  }
+
+  delta.Op Move(int from, int to) {
+    return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
+  }
+
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Replace(Map<int, pb.Person_Type> value) {
+    return delta.replace(location, value);
+  }
+
+}
+
+class Person_Type_type_int64_map extends delta.Location {
+  Person_Type_type_int64_map(List<delta.Locator> location) : super(location);
+  Person_Type_type Key(int key) {
+    return Person_Type_type(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
+  }
+  delta.Op Insert(int key, pb.Person_Type value) {
+    return delta.insert(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)), value);
+  }
+
+  delta.Op Move(int from, int to) {
+    return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
+  }
+
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Replace(Map<fixnum.Int64, pb.Person_Type> value) {
+    return delta.replace(location, value);
+  }
+
+}
+
+class Person_Type_type_uint32_map extends delta.Location {
+  Person_Type_type_uint32_map(List<delta.Locator> location) : super(location);
+  Person_Type_type Key(int key) {
+    return Person_Type_type(delta.copyAndAppendKeyUint32(location, key));
+  }
+  delta.Op Insert(int key, pb.Person_Type value) {
+    return delta.insert(delta.copyAndAppendKeyUint32(location, key), value);
+  }
+
+  delta.Op Move(int from, int to) {
+    return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
+  }
+
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Replace(Map<int, pb.Person_Type> value) {
+    return delta.replace(location, value);
+  }
+
+}
+
+class Person_Type_type_uint64_map extends delta.Location {
+  Person_Type_type_uint64_map(List<delta.Locator> location) : super(location);
+  Person_Type_type Key(int key) {
+    return Person_Type_type(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
+  }
+  delta.Op Insert(int key, pb.Person_Type value) {
+    return delta.insert(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)), value);
+  }
+
+  delta.Op Move(int from, int to) {
+    return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
+  }
+
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Replace(Map<fixnum.Int64, pb.Person_Type> value) {
+    return delta.replace(location, value);
+  }
+
+}
+
+class Person_Type_type_string_map extends delta.Location {
+  Person_Type_type_string_map(List<delta.Locator> location) : super(location);
+  Person_Type_type Key(String key) {
+    return Person_Type_type(delta.copyAndAppendKeyString(location, key));
+  }
+  delta.Op Insert(String key, pb.Person_Type value) {
+    return delta.insert(delta.copyAndAppendKeyString(location, key), value);
+  }
+
+  delta.Op Move(String from, String to) {
+    return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
+  }
+
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Replace(Map<String, pb.Person_Type> value) {
+    return delta.replace(location, value);
+  }
+
+}
+
+class Person_Embed_type extends delta.Location {
+  Person_Embed_type(List<delta.Locator> location) : super(location);
+  delta.String_scalar Name() {
+    return delta.String_scalar(delta.copyAndAppendField(location, "name", 1));
+  }
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Replace(pb.Person_Embed value) {
+    return delta.replace(location, value);
+  }
+
+}
+
+class Person_Embed_type_list extends delta.Location {
+  Person_Embed_type_list(List<delta.Locator> location) : super(location);
+  Person_Embed_type Index(int i) {
+    return Person_Embed_type(delta.copyAndAppendIndex(location, fixnum.Int64(i)));
+  }
+  delta.Op Insert(int index, pb.Person_Embed value) {
+    return delta.insert(delta.copyAndAppendIndex(location, fixnum.Int64(index)), value);
+  }
+
+  delta.Op Move(int from, int to) {
+    return delta.moveList(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
+  }
+
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Replace(List<pb.Person_Embed> value) {
+    return delta.replace(location, value);
+  }
+
+}
+
+class Person_Embed_type_bool_map extends delta.Location {
+  Person_Embed_type_bool_map(List<delta.Locator> location) : super(location);
+  Person_Embed_type Key(bool key) {
+    return Person_Embed_type(delta.copyAndAppendKeyBool(location, key));
+  }
+  delta.Op Insert(bool key, pb.Person_Embed value) {
+    return delta.insert(delta.copyAndAppendKeyBool(location, key), value);
+  }
+
+  delta.Op Move(bool from, bool to) {
+    return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
+  }
+
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Replace(Map<bool, pb.Person_Embed> value) {
+    return delta.replace(location, value);
+  }
+
+}
+
+class Person_Embed_type_int32_map extends delta.Location {
+  Person_Embed_type_int32_map(List<delta.Locator> location) : super(location);
+  Person_Embed_type Key(int key) {
+    return Person_Embed_type(delta.copyAndAppendKeyInt32(location, key));
+  }
+  delta.Op Insert(int key, pb.Person_Embed value) {
+    return delta.insert(delta.copyAndAppendKeyInt32(location, key), value);
+  }
+
+  delta.Op Move(int from, int to) {
+    return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
+  }
+
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Replace(Map<int, pb.Person_Embed> value) {
+    return delta.replace(location, value);
+  }
+
+}
+
+class Person_Embed_type_int64_map extends delta.Location {
+  Person_Embed_type_int64_map(List<delta.Locator> location) : super(location);
+  Person_Embed_type Key(int key) {
+    return Person_Embed_type(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
+  }
+  delta.Op Insert(int key, pb.Person_Embed value) {
+    return delta.insert(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)), value);
+  }
+
+  delta.Op Move(int from, int to) {
+    return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
+  }
+
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Replace(Map<fixnum.Int64, pb.Person_Embed> value) {
+    return delta.replace(location, value);
+  }
+
+}
+
+class Person_Embed_type_uint32_map extends delta.Location {
+  Person_Embed_type_uint32_map(List<delta.Locator> location) : super(location);
+  Person_Embed_type Key(int key) {
+    return Person_Embed_type(delta.copyAndAppendKeyUint32(location, key));
+  }
+  delta.Op Insert(int key, pb.Person_Embed value) {
+    return delta.insert(delta.copyAndAppendKeyUint32(location, key), value);
+  }
+
+  delta.Op Move(int from, int to) {
+    return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
+  }
+
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Replace(Map<int, pb.Person_Embed> value) {
+    return delta.replace(location, value);
+  }
+
+}
+
+class Person_Embed_type_uint64_map extends delta.Location {
+  Person_Embed_type_uint64_map(List<delta.Locator> location) : super(location);
+  Person_Embed_type Key(int key) {
+    return Person_Embed_type(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
+  }
+  delta.Op Insert(int key, pb.Person_Embed value) {
+    return delta.insert(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)), value);
+  }
+
+  delta.Op Move(int from, int to) {
+    return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
+  }
+
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Replace(Map<fixnum.Int64, pb.Person_Embed> value) {
+    return delta.replace(location, value);
+  }
+
+}
+
+class Person_Embed_type_string_map extends delta.Location {
+  Person_Embed_type_string_map(List<delta.Locator> location) : super(location);
+  Person_Embed_type Key(String key) {
+    return Person_Embed_type(delta.copyAndAppendKeyString(location, key));
+  }
+  delta.Op Insert(String key, pb.Person_Embed value) {
+    return delta.insert(delta.copyAndAppendKeyString(location, key), value);
+  }
+
+  delta.Op Move(String from, String to) {
+    return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
+  }
+
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Replace(Map<String, pb.Person_Embed> value) {
     return delta.replace(location, value);
   }
 
