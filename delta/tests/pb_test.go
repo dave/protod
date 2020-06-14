@@ -437,6 +437,30 @@ func TestApply(t *testing.T) {
 	}
 	items := []itemType{
 		{
+			name:     "replace_message_with_enum",
+			op:       Op().Company().Ceo().Replace(&Person{Name: "a", TypeList: []Person_Type{Person_Bravo}}),
+			data:     &Company{Name: "a"},
+			expected: &Company{Name: "a", Ceo: &Person{Name: "a", TypeList: []Person_Type{Person_Bravo}}},
+		},
+		{
+			name:     "insert_map_enum",
+			op:       Op().Person().TypeMap().Insert("b", Person_Charlie),
+			data:     &Person{Name: "a", TypeMap: map[string]Person_Type{"a": Person_Alpha, "b": Person_Bravo}},
+			expected: &Person{Name: "a", TypeMap: map[string]Person_Type{"a": Person_Alpha, "b": Person_Charlie}},
+		},
+		{
+			name:     "insert_list_enum",
+			op:       Op().Person().TypeList().Insert(0, Person_Bravo),
+			data:     &Person{Name: "a"},
+			expected: &Person{Name: "a", TypeList: []Person_Type{Person_Bravo}},
+		},
+		{
+			name:     "replace_enum",
+			op:       Op().Person().Type().Replace(Person_Alpha),
+			data:     &Person{Name: "a"},
+			expected: &Person{Name: "a", Type: Person_Alpha},
+		},
+		{
 			name:     "delete_root",
 			op:       Op().Person().Delete(),
 			data:     &Person{Name: "a"},

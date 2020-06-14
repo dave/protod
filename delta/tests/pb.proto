@@ -31,6 +31,7 @@ message Company {
   string name = 11;
   float revenue = 12;
   map<int64, string> flags = 13;
+  Person ceo = 14;
 }
 
 // [proto:data]

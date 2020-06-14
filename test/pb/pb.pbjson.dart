@@ -62,6 +62,7 @@ const Company$json = const {
     const {'1': 'name', '3': 11, '4': 1, '5': 9, '10': 'name'},
     const {'1': 'revenue', '3': 12, '4': 1, '5': 2, '10': 'revenue'},
     const {'1': 'flags', '3': 13, '4': 3, '5': 11, '6': '.tests.Company.FlagsEntry', '10': 'flags'},
+    const {'1': 'ceo', '3': 14, '4': 1, '5': 11, '6': '.tests.Person', '10': 'ceo'},
   ],
   '3': const [Company_FlagsEntry$json],
 };

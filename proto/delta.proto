@@ -18,11 +18,12 @@ message Op {
   repeated Op ops = 3; // children for compound operations
   oneof value {
     Scalar scalar = 4;               // new value [Edit, Insert]
-    Delta delta = 5;                 // quill text delta [Edit, Insert]
-    google.protobuf.Any message = 6; // new value [Edit, Insert]
-    Object object = 7;               // new value [Edit, Insert]
-    int64 index = 8;                 // destination index [Move]
-    Key key = 9;                     // destination key [Move]
+    int32 enum = 5;                  // new value [Edit, Insert]
+    Delta delta = 6;                 // quill text delta [Edit, Insert]
+    google.protobuf.Any message = 7; // new value [Edit, Insert]
+    Object object = 8;               // new value [Edit, Insert]
+    int64 index = 9;                 // destination index [Move]
+    Key key = 10;                    // destination key [Move]
   }
 }
 

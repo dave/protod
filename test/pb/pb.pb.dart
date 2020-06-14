@@ -141,6 +141,7 @@ class Company extends $pb.GeneratedMessage {
     ..aOS(11, 'name')
     ..a<$core.double>(12, 'revenue', $pb.PbFieldType.OF)
     ..m<$fixnum.Int64, $core.String>(13, 'flags', entryClassName: 'Company.FlagsEntry', keyFieldType: $pb.PbFieldType.O6, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('tests'))
+    ..aOM<Person>(14, 'ceo', subBuilder: Person.create)
     ..hasRequiredFields = false
   ;
 
@@ -179,6 +180,17 @@ class Company extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(13)
   $core.Map<$fixnum.Int64, $core.String> get flags => $_getMap(2);
+
+  @$pb.TagNumber(14)
+  Person get ceo => $_getN(3);
+  @$pb.TagNumber(14)
+  set ceo(Person v) { setField(14, v); }
+  @$pb.TagNumber(14)
+  $core.bool hasCeo() => $_has(3);
+  @$pb.TagNumber(14)
+  void clearCeo() => clearField(14);
+  @$pb.TagNumber(14)
+  Person ensureCeo() => $_ensure(3);
 }
 
 class Case extends $pb.GeneratedMessage {

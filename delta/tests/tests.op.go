@@ -667,6 +667,9 @@ func (b Company_type) Revenue() delta.Float_scalar {
 func (b Company_type) Flags() delta.String_scalar_int64_map {
 	return delta.NewString_scalar_int64_map(delta.CopyAndAppendField(b.location, "flags", 13))
 }
+func (b Company_type) Ceo() Person_type {
+	return NewPerson_type(delta.CopyAndAppendField(b.location, "ceo", 14))
+}
 func (b Company_type) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }

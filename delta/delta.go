@@ -235,6 +235,10 @@ func ApplyDelete(op *Op, inputAddr *proto2.Message) error {
 	return nil
 }
 
+func reflectValueOfEnum(enum int32) protoreflect.Value {
+	return protoreflect.ValueOfEnum(protoreflect.EnumNumber(enum))
+}
+
 func reflectValueOfScalar(scalar *Scalar) protoreflect.Value {
 	switch value := scalar.V.(type) {
 	case *Scalar_Float:
@@ -294,6 +298,8 @@ func getValue(current protoreflect.Value, value isOp_Value) protoreflect.Value {
 
 func getValueField(parent protoreflect.Message, field protoreflect.FieldDescriptor, current protoreflect.Value, value isOp_Value) protoreflect.Value {
 	switch value := value.(type) {
+	case *Op_Enum:
+		return reflectValueOfEnum(value.Enum)
 	case *Op_Scalar:
 		return reflectValueOfScalar(value.Scalar)
 	case *Op_Delta:
@@ -547,12 +553,19 @@ func locKey(value interface{}) isLocator_V {
 	return &Locator_Key{Key: getKey(value)}
 }
 
+type ProtoEnum interface {
+	Descriptor() protoreflect.EnumDescriptor
+	Number() protoreflect.EnumNumber
+}
+
 func opValue(value interface{}) isOp_Value {
 	switch value := value.(type) {
 	case int, string, float64, float32, int64, int32, uint64, uint32, bool, []byte:
 		return &Op_Scalar{Scalar: getScalar(value)}
 	case proto.Message:
 		return &Op_Message{Message: MustMarshalAny(value)}
+	case ProtoEnum:
+		return &Op_Enum{Enum: int32(value.Number())}
 	default:
 		return &Op_Object{Object: NewObject(value)}
 	}

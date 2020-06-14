@@ -18,6 +18,7 @@ export 'delta.pbenum.dart';
 
 enum Op_Value {
   scalar, 
+  enum_5, 
   delta, 
   message, 
   object, 
@@ -29,24 +30,26 @@ enum Op_Value {
 class Op extends $pb.GeneratedMessage {
   static const $core.Map<$core.int, Op_Value> _Op_ValueByTag = {
     4 : Op_Value.scalar,
-    5 : Op_Value.delta,
-    6 : Op_Value.message,
-    7 : Op_Value.object,
-    8 : Op_Value.index_,
-    9 : Op_Value.key,
+    5 : Op_Value.enum_5,
+    6 : Op_Value.delta,
+    7 : Op_Value.message,
+    8 : Op_Value.object,
+    9 : Op_Value.index_,
+    10 : Op_Value.key,
     0 : Op_Value.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('Op', package: const $pb.PackageName('delta'), createEmptyInstance: create)
-    ..oo(0, [4, 5, 6, 7, 8, 9])
+    ..oo(0, [4, 5, 6, 7, 8, 9, 10])
     ..e<Op_Type>(1, 'type', $pb.PbFieldType.OE, defaultOrMaker: Op_Type.Edit, valueOf: Op_Type.valueOf, enumValues: Op_Type.values)
     ..pc<Locator>(2, 'location', $pb.PbFieldType.PM, subBuilder: Locator.create)
     ..pc<Op>(3, 'ops', $pb.PbFieldType.PM, subBuilder: Op.create)
     ..aOM<Scalar>(4, 'scalar', subBuilder: Scalar.create)
-    ..aOM<Delta>(5, 'delta', subBuilder: Delta.create)
-    ..aOM<$1.Any>(6, 'message', subBuilder: $1.Any.create)
-    ..aOM<Object>(7, 'object', subBuilder: Object.create)
-    ..aInt64(8, 'index')
-    ..aOM<Key>(9, 'key', subBuilder: Key.create)
+    ..a<$core.int>(5, 'enum', $pb.PbFieldType.O3)
+    ..aOM<Delta>(6, 'delta', subBuilder: Delta.create)
+    ..aOM<$1.Any>(7, 'message', subBuilder: $1.Any.create)
+    ..aOM<Object>(8, 'object', subBuilder: Object.create)
+    ..aInt64(9, 'index')
+    ..aOM<Key>(10, 'key', subBuilder: Key.create)
     ..hasRequiredFields = false
   ;
 
@@ -95,57 +98,66 @@ class Op extends $pb.GeneratedMessage {
   Scalar ensureScalar() => $_ensure(3);
 
   @$pb.TagNumber(5)
-  Delta get delta => $_getN(4);
+  $core.int get enum_5 => $_getIZ(4);
   @$pb.TagNumber(5)
-  set delta(Delta v) { setField(5, v); }
+  set enum_5($core.int v) { $_setSignedInt32(4, v); }
   @$pb.TagNumber(5)
-  $core.bool hasDelta() => $_has(4);
+  $core.bool hasEnum_5() => $_has(4);
   @$pb.TagNumber(5)
-  void clearDelta() => clearField(5);
-  @$pb.TagNumber(5)
-  Delta ensureDelta() => $_ensure(4);
+  void clearEnum_5() => clearField(5);
 
   @$pb.TagNumber(6)
-  $1.Any get message => $_getN(5);
+  Delta get delta => $_getN(5);
   @$pb.TagNumber(6)
-  set message($1.Any v) { setField(6, v); }
+  set delta(Delta v) { setField(6, v); }
   @$pb.TagNumber(6)
-  $core.bool hasMessage() => $_has(5);
+  $core.bool hasDelta() => $_has(5);
   @$pb.TagNumber(6)
-  void clearMessage() => clearField(6);
+  void clearDelta() => clearField(6);
   @$pb.TagNumber(6)
-  $1.Any ensureMessage() => $_ensure(5);
+  Delta ensureDelta() => $_ensure(5);
 
   @$pb.TagNumber(7)
-  Object get object => $_getN(6);
+  $1.Any get message => $_getN(6);
   @$pb.TagNumber(7)
-  set object(Object v) { setField(7, v); }
+  set message($1.Any v) { setField(7, v); }
   @$pb.TagNumber(7)
-  $core.bool hasObject() => $_has(6);
+  $core.bool hasMessage() => $_has(6);
   @$pb.TagNumber(7)
-  void clearObject() => clearField(7);
+  void clearMessage() => clearField(7);
   @$pb.TagNumber(7)
-  Object ensureObject() => $_ensure(6);
+  $1.Any ensureMessage() => $_ensure(6);
 
   @$pb.TagNumber(8)
-  $fixnum.Int64 get index => $_getI64(7);
+  Object get object => $_getN(7);
   @$pb.TagNumber(8)
-  set index($fixnum.Int64 v) { $_setInt64(7, v); }
+  set object(Object v) { setField(8, v); }
   @$pb.TagNumber(8)
-  $core.bool hasIndex() => $_has(7);
+  $core.bool hasObject() => $_has(7);
   @$pb.TagNumber(8)
-  void clearIndex() => clearField(8);
+  void clearObject() => clearField(8);
+  @$pb.TagNumber(8)
+  Object ensureObject() => $_ensure(7);
 
   @$pb.TagNumber(9)
-  Key get key => $_getN(8);
+  $fixnum.Int64 get index => $_getI64(8);
   @$pb.TagNumber(9)
-  set key(Key v) { setField(9, v); }
+  set index($fixnum.Int64 v) { $_setInt64(8, v); }
   @$pb.TagNumber(9)
-  $core.bool hasKey() => $_has(8);
+  $core.bool hasIndex() => $_has(8);
   @$pb.TagNumber(9)
-  void clearKey() => clearField(9);
-  @$pb.TagNumber(9)
-  Key ensureKey() => $_ensure(8);
+  void clearIndex() => clearField(9);
+
+  @$pb.TagNumber(10)
+  Key get key => $_getN(9);
+  @$pb.TagNumber(10)
+  set key(Key v) { setField(10, v); }
+  @$pb.TagNumber(10)
+  $core.bool hasKey() => $_has(9);
+  @$pb.TagNumber(10)
+  void clearKey() => clearField(10);
+  @$pb.TagNumber(10)
+  Key ensureKey() => $_ensure(9);
 }
 
 enum Locator_V {
