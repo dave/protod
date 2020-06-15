@@ -17,9 +17,6 @@ func deleteShifter(deleteIndex int64) func(int64) int64 {
 }
 
 func insertShifter(insertIndex int64, priority, applyPriority bool) func(int64) int64 {
-
-	// TODO: I don't think we ever need to apply priority in this function - remove?
-
 	return func(i int64) int64 {
 		switch {
 		case i > insertIndex:

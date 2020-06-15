@@ -43,14 +43,18 @@ func main() {
 											Switch(Id("opItem").Dot("V").Assert(Type())).BlockFunc(func(g *Group) {
 												for _, opLocType := range opData.Locators {
 													opLoc := Locators[opLocType]
-													g.Case(Op("*").Id(opLoc.Type)).Block(
-														// return transformEditFieldEditField(t, op, priority)
-														Return(Id(fmt.Sprintf("transform%s%s%s%s", tData.Name, tLoc.Name, opData.Name, opLoc.Name)).Call(
-															Id("t"),
-															Id("op"),
-															Id("priority"),
-														)),
-													)
+													g.Case(Op("*").Id(opLoc.Type)).BlockFunc(func(g *Group) {
+														if tLoc.Name == opLoc.Name {
+															// return transformEditFieldEditField(t, op, priority)
+															g.Return(Id(fmt.Sprintf("transform%s%s%s%s", tData.Name, tLoc.Name, opData.Name, opLoc.Name)).Call(
+																Id("t"),
+																Id("op"),
+																Id("priority"),
+															))
+														} else {
+															g.Return(Id("transformIndependent").Call(Id("t"), Id("op")))
+														}
+													})
 												}
 												g.Default().Block(Panic(Lit("invalid op")))
 											}),
