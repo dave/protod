@@ -38,929 +38,15 @@ func (t *Op) Transform(op *Op, priority bool) *Op {
 		}
 		return out
 	}
-	switch t.Type {
-	case Op_Edit:
-		_, transformerItem := t.Pop()
-		_, transformerIsDelta := t.Value.(*Op_Delta)
-		if transformerIsDelta {
-			switch transformerItem.V.(type) {
-			case *Locator_Field:
-				switch op.Type {
-				case Op_Edit:
-					_, opItem := op.Pop()
-					_, opIsDelta := op.Value.(*Op_Delta)
-					if opIsDelta {
-						switch opItem.V.(type) {
-						case *Locator_Field:
-							return transformEditFieldEditField(t, op, priority)
-						case *Locator_Index:
-							return transformEditFieldEditIndex(t, op, priority)
-						case *Locator_Key:
-							return transformEditFieldEditKey(t, op, priority)
-						default:
-							panic("invalid op")
-						}
-					} else {
-						switch opItem.V.(type) {
-						case *Locator_Field:
-							return transformEditFieldReplaceField(t, op, priority)
-						case *Locator_Index:
-							return transformEditFieldReplaceIndex(t, op, priority)
-						case *Locator_Key:
-							return transformEditFieldReplaceKey(t, op, priority)
-						default:
-							panic("invalid op")
-						}
-					}
-				case Op_Insert:
-					_, opItem := op.Pop()
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						panic("invalid op")
-					case *Locator_Index:
-						return transformEditFieldInsertIndex(t, op, priority)
-					case *Locator_Key:
-						return transformEditFieldInsertKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				case Op_Move:
-					_, opItem := op.Pop()
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						panic("invalid op")
-					case *Locator_Index:
-						return transformEditFieldMoveIndex(t, op, priority)
-					case *Locator_Key:
-						return transformEditFieldMoveKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				case Op_Delete:
-					_, opItem := op.Pop()
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						return transformEditFieldDeleteField(t, op, priority)
-					case *Locator_Index:
-						return transformEditFieldDeleteIndex(t, op, priority)
-					case *Locator_Key:
-						return transformEditFieldDeleteKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				default:
-					panic("invalid op")
-				}
-			case *Locator_Index:
-				switch op.Type {
-				case Op_Edit:
-					_, opItem := op.Pop()
-					_, opIsDelta := op.Value.(*Op_Delta)
-					if opIsDelta {
-						switch opItem.V.(type) {
-						case *Locator_Field:
-							return transformEditIndexEditField(t, op, priority)
-						case *Locator_Index:
-							return transformEditIndexEditIndex(t, op, priority)
-						case *Locator_Key:
-							return transformEditIndexEditKey(t, op, priority)
-						default:
-							panic("invalid op")
-						}
-					} else {
-						switch opItem.V.(type) {
-						case *Locator_Field:
-							return transformEditIndexReplaceField(t, op, priority)
-						case *Locator_Index:
-							return transformEditIndexReplaceIndex(t, op, priority)
-						case *Locator_Key:
-							return transformEditIndexReplaceKey(t, op, priority)
-						default:
-							panic("invalid op")
-						}
-					}
-				case Op_Insert:
-					_, opItem := op.Pop()
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						panic("invalid op")
-					case *Locator_Index:
-						return transformEditIndexInsertIndex(t, op, priority)
-					case *Locator_Key:
-						return transformEditIndexInsertKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				case Op_Move:
-					_, opItem := op.Pop()
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						panic("invalid op")
-					case *Locator_Index:
-						return transformEditIndexMoveIndex(t, op, priority)
-					case *Locator_Key:
-						return transformEditIndexMoveKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				case Op_Delete:
-					_, opItem := op.Pop()
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						return transformEditIndexDeleteField(t, op, priority)
-					case *Locator_Index:
-						return transformEditIndexDeleteIndex(t, op, priority)
-					case *Locator_Key:
-						return transformEditIndexDeleteKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				default:
-					panic("invalid op")
-				}
-			case *Locator_Key:
-				switch op.Type {
-				case Op_Edit:
-					_, opItem := op.Pop()
-					_, opIsDelta := op.Value.(*Op_Delta)
-					if opIsDelta {
-						switch opItem.V.(type) {
-						case *Locator_Field:
-							return transformEditKeyEditField(t, op, priority)
-						case *Locator_Index:
-							return transformEditKeyEditIndex(t, op, priority)
-						case *Locator_Key:
-							return transformEditKeyEditKey(t, op, priority)
-						default:
-							panic("invalid op")
-						}
-					} else {
-						switch opItem.V.(type) {
-						case *Locator_Field:
-							return transformEditKeyReplaceField(t, op, priority)
-						case *Locator_Index:
-							return transformEditKeyReplaceIndex(t, op, priority)
-						case *Locator_Key:
-							return transformEditKeyReplaceKey(t, op, priority)
-						default:
-							panic("invalid op")
-						}
-					}
-				case Op_Insert:
-					_, opItem := op.Pop()
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						panic("invalid op")
-					case *Locator_Index:
-						return transformEditKeyInsertIndex(t, op, priority)
-					case *Locator_Key:
-						return transformEditKeyInsertKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				case Op_Move:
-					_, opItem := op.Pop()
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						panic("invalid op")
-					case *Locator_Index:
-						return transformEditKeyMoveIndex(t, op, priority)
-					case *Locator_Key:
-						return transformEditKeyMoveKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				case Op_Delete:
-					_, opItem := op.Pop()
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						return transformEditKeyDeleteField(t, op, priority)
-					case *Locator_Index:
-						return transformEditKeyDeleteIndex(t, op, priority)
-					case *Locator_Key:
-						return transformEditKeyDeleteKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				default:
-					panic("invalid op")
-				}
-			default:
-				panic("invalid op")
-			}
-		} else {
-			switch transformerItem.V.(type) {
-			case *Locator_Field:
-				switch op.Type {
-				case Op_Edit:
-					_, opItem := op.Pop()
-					_, opIsDelta := op.Value.(*Op_Delta)
-					if opIsDelta {
-						switch opItem.V.(type) {
-						case *Locator_Field:
-							return transformReplaceFieldEditField(t, op, priority)
-						case *Locator_Index:
-							return transformReplaceFieldEditIndex(t, op, priority)
-						case *Locator_Key:
-							return transformReplaceFieldEditKey(t, op, priority)
-						default:
-							panic("invalid op")
-						}
-					} else {
-						switch opItem.V.(type) {
-						case *Locator_Field:
-							return transformReplaceFieldReplaceField(t, op, priority)
-						case *Locator_Index:
-							return transformReplaceFieldReplaceIndex(t, op, priority)
-						case *Locator_Key:
-							return transformReplaceFieldReplaceKey(t, op, priority)
-						default:
-							panic("invalid op")
-						}
-					}
-				case Op_Insert:
-					_, opItem := op.Pop()
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						panic("invalid op")
-					case *Locator_Index:
-						return transformReplaceFieldInsertIndex(t, op, priority)
-					case *Locator_Key:
-						return transformReplaceFieldInsertKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				case Op_Move:
-					_, opItem := op.Pop()
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						panic("invalid op")
-					case *Locator_Index:
-						return transformReplaceFieldMoveIndex(t, op, priority)
-					case *Locator_Key:
-						return transformReplaceFieldMoveKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				case Op_Delete:
-					_, opItem := op.Pop()
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						return transformReplaceFieldDeleteField(t, op, priority)
-					case *Locator_Index:
-						return transformReplaceFieldDeleteIndex(t, op, priority)
-					case *Locator_Key:
-						return transformReplaceFieldDeleteKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				default:
-					panic("invalid op")
-				}
-			case *Locator_Index:
-				switch op.Type {
-				case Op_Edit:
-					_, opItem := op.Pop()
-					_, opIsDelta := op.Value.(*Op_Delta)
-					if opIsDelta {
-						switch opItem.V.(type) {
-						case *Locator_Field:
-							return transformReplaceIndexEditField(t, op, priority)
-						case *Locator_Index:
-							return transformReplaceIndexEditIndex(t, op, priority)
-						case *Locator_Key:
-							return transformReplaceIndexEditKey(t, op, priority)
-						default:
-							panic("invalid op")
-						}
-					} else {
-						switch opItem.V.(type) {
-						case *Locator_Field:
-							return transformReplaceIndexReplaceField(t, op, priority)
-						case *Locator_Index:
-							return transformReplaceIndexReplaceIndex(t, op, priority)
-						case *Locator_Key:
-							return transformReplaceIndexReplaceKey(t, op, priority)
-						default:
-							panic("invalid op")
-						}
-					}
-				case Op_Insert:
-					_, opItem := op.Pop()
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						panic("invalid op")
-					case *Locator_Index:
-						return transformReplaceIndexInsertIndex(t, op, priority)
-					case *Locator_Key:
-						return transformReplaceIndexInsertKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				case Op_Move:
-					_, opItem := op.Pop()
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						panic("invalid op")
-					case *Locator_Index:
-						return transformReplaceIndexMoveIndex(t, op, priority)
-					case *Locator_Key:
-						return transformReplaceIndexMoveKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				case Op_Delete:
-					_, opItem := op.Pop()
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						return transformReplaceIndexDeleteField(t, op, priority)
-					case *Locator_Index:
-						return transformReplaceIndexDeleteIndex(t, op, priority)
-					case *Locator_Key:
-						return transformReplaceIndexDeleteKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				default:
-					panic("invalid op")
-				}
-			case *Locator_Key:
-				switch op.Type {
-				case Op_Edit:
-					_, opItem := op.Pop()
-					_, opIsDelta := op.Value.(*Op_Delta)
-					if opIsDelta {
-						switch opItem.V.(type) {
-						case *Locator_Field:
-							return transformReplaceKeyEditField(t, op, priority)
-						case *Locator_Index:
-							return transformReplaceKeyEditIndex(t, op, priority)
-						case *Locator_Key:
-							return transformReplaceKeyEditKey(t, op, priority)
-						default:
-							panic("invalid op")
-						}
-					} else {
-						switch opItem.V.(type) {
-						case *Locator_Field:
-							return transformReplaceKeyReplaceField(t, op, priority)
-						case *Locator_Index:
-							return transformReplaceKeyReplaceIndex(t, op, priority)
-						case *Locator_Key:
-							return transformReplaceKeyReplaceKey(t, op, priority)
-						default:
-							panic("invalid op")
-						}
-					}
-				case Op_Insert:
-					_, opItem := op.Pop()
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						panic("invalid op")
-					case *Locator_Index:
-						return transformReplaceKeyInsertIndex(t, op, priority)
-					case *Locator_Key:
-						return transformReplaceKeyInsertKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				case Op_Move:
-					_, opItem := op.Pop()
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						panic("invalid op")
-					case *Locator_Index:
-						return transformReplaceKeyMoveIndex(t, op, priority)
-					case *Locator_Key:
-						return transformReplaceKeyMoveKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				case Op_Delete:
-					_, opItem := op.Pop()
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						return transformReplaceKeyDeleteField(t, op, priority)
-					case *Locator_Index:
-						return transformReplaceKeyDeleteIndex(t, op, priority)
-					case *Locator_Key:
-						return transformReplaceKeyDeleteKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				default:
-					panic("invalid op")
-				}
-			default:
-				panic("invalid op")
-			}
-
-		}
-	case Op_Insert:
-		_, transformerItem := t.Pop()
-		switch transformerItem.V.(type) {
-		case *Locator_Field:
-			panic("invalid op")
-		case *Locator_Index:
-			switch op.Type {
-			case Op_Edit:
-				_, opItem := op.Pop()
-				_, opIsDelta := op.Value.(*Op_Delta)
-				if opIsDelta {
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						return transformInsertIndexEditField(t, op, priority)
-					case *Locator_Index:
-						return transformInsertIndexEditIndex(t, op, priority)
-					case *Locator_Key:
-						return transformInsertIndexEditKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				} else {
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						return transformInsertIndexReplaceField(t, op, priority)
-					case *Locator_Index:
-						return transformInsertIndexReplaceIndex(t, op, priority)
-					case *Locator_Key:
-						return transformInsertIndexReplaceKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				}
-			case Op_Insert:
-				_, opItem := op.Pop()
-				switch opItem.V.(type) {
-				case *Locator_Field:
-					panic("invalid op")
-				case *Locator_Index:
-					return transformInsertIndexInsertIndex(t, op, priority)
-				case *Locator_Key:
-					return transformInsertIndexInsertKey(t, op, priority)
-				default:
-					panic("invalid op")
-				}
-			case Op_Move:
-				_, opItem := op.Pop()
-				switch opItem.V.(type) {
-				case *Locator_Field:
-					panic("invalid op")
-				case *Locator_Index:
-					return transformInsertIndexMoveIndex(t, op, priority)
-				case *Locator_Key:
-					return transformInsertIndexMoveKey(t, op, priority)
-				default:
-					panic("invalid op")
-				}
-			case Op_Delete:
-				_, opItem := op.Pop()
-				switch opItem.V.(type) {
-				case *Locator_Field:
-					return transformInsertIndexDeleteField(t, op, priority)
-				case *Locator_Index:
-					return transformInsertIndexDeleteIndex(t, op, priority)
-				case *Locator_Key:
-					return transformInsertIndexDeleteKey(t, op, priority)
-				default:
-					panic("invalid op")
-				}
-			default:
-				panic("invalid op")
-			}
-
-		case *Locator_Key:
-
-			switch op.Type {
-			case Op_Edit:
-				_, opItem := op.Pop()
-				_, opIsDelta := op.Value.(*Op_Delta)
-				if opIsDelta {
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						return transformInsertKeyEditField(t, op, priority)
-					case *Locator_Index:
-						return transformInsertKeyEditIndex(t, op, priority)
-					case *Locator_Key:
-						return transformInsertKeyEditKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				} else {
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						return transformInsertKeyReplaceField(t, op, priority)
-					case *Locator_Index:
-						return transformInsertKeyReplaceIndex(t, op, priority)
-					case *Locator_Key:
-						return transformInsertKeyReplaceKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				}
-			case Op_Insert:
-				_, opItem := op.Pop()
-				switch opItem.V.(type) {
-				case *Locator_Field:
-					panic("invalid op")
-				case *Locator_Index:
-					return transformInsertKeyInsertIndex(t, op, priority)
-				case *Locator_Key:
-					return transformInsertKeyInsertKey(t, op, priority)
-				default:
-					panic("invalid op")
-				}
-			case Op_Move:
-				_, opItem := op.Pop()
-				switch opItem.V.(type) {
-				case *Locator_Field:
-					panic("invalid op")
-				case *Locator_Index:
-					return transformInsertKeyMoveIndex(t, op, priority)
-				case *Locator_Key:
-					return transformInsertKeyMoveKey(t, op, priority)
-				default:
-					panic("invalid op")
-				}
-			case Op_Delete:
-				_, opItem := op.Pop()
-				switch opItem.V.(type) {
-				case *Locator_Field:
-					return transformInsertKeyDeleteField(t, op, priority)
-				case *Locator_Index:
-					return transformInsertKeyDeleteIndex(t, op, priority)
-				case *Locator_Key:
-					return transformInsertKeyDeleteKey(t, op, priority)
-				default:
-					panic("invalid op")
-				}
-			default:
-				panic("invalid op")
-			}
-
-		default:
-			panic("invalid op")
-		}
-	case Op_Move:
-		_, transformerItem := t.Pop()
-		switch transformerItem.V.(type) {
-		case *Locator_Field:
-			panic("invalid op")
-		case *Locator_Index:
-			switch op.Type {
-			case Op_Edit:
-				_, opItem := op.Pop()
-				_, opIsDelta := op.Value.(*Op_Delta)
-				if opIsDelta {
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						return transformMoveIndexEditField(t, op, priority)
-					case *Locator_Index:
-						return transformMoveIndexEditIndex(t, op, priority)
-					case *Locator_Key:
-						return transformMoveIndexEditKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				} else {
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						return transformMoveIndexReplaceField(t, op, priority)
-					case *Locator_Index:
-						return transformMoveIndexReplaceIndex(t, op, priority)
-					case *Locator_Key:
-						return transformMoveIndexReplaceKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				}
-			case Op_Insert:
-				_, opItem := op.Pop()
-				switch opItem.V.(type) {
-				case *Locator_Field:
-					panic("invalid op")
-				case *Locator_Index:
-					return transformMoveIndexInsertIndex(t, op, priority)
-				case *Locator_Key:
-					return transformMoveIndexInsertKey(t, op, priority)
-				default:
-					panic("invalid op")
-				}
-			case Op_Move:
-				_, opItem := op.Pop()
-				switch opItem.V.(type) {
-				case *Locator_Field:
-					panic("invalid op")
-				case *Locator_Index:
-					return transformMoveIndexMoveIndex(t, op, priority)
-				case *Locator_Key:
-					return transformMoveIndexMoveKey(t, op, priority)
-				default:
-					panic("invalid op")
-				}
-			case Op_Delete:
-				_, opItem := op.Pop()
-				switch opItem.V.(type) {
-				case *Locator_Field:
-					return transformMoveIndexDeleteField(t, op, priority)
-				case *Locator_Index:
-					return transformMoveIndexDeleteIndex(t, op, priority)
-				case *Locator_Key:
-					return transformMoveIndexDeleteKey(t, op, priority)
-				default:
-					panic("invalid op")
-				}
-			default:
-				panic("invalid op")
-			}
-		case *Locator_Key:
-			switch op.Type {
-			case Op_Edit:
-				_, opItem := op.Pop()
-				_, opIsDelta := op.Value.(*Op_Delta)
-				if opIsDelta {
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						return transformMoveKeyEditField(t, op, priority)
-					case *Locator_Index:
-						return transformMoveKeyEditIndex(t, op, priority)
-					case *Locator_Key:
-						return transformMoveKeyEditKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				} else {
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						return transformMoveKeyReplaceField(t, op, priority)
-					case *Locator_Index:
-						return transformMoveKeyReplaceIndex(t, op, priority)
-					case *Locator_Key:
-						return transformMoveKeyReplaceKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				}
-			case Op_Insert:
-				_, opItem := op.Pop()
-				switch opItem.V.(type) {
-				case *Locator_Field:
-					panic("invalid op")
-				case *Locator_Index:
-					return transformMoveKeyInsertIndex(t, op, priority)
-				case *Locator_Key:
-					return transformMoveKeyInsertKey(t, op, priority)
-				default:
-					panic("invalid op")
-				}
-			case Op_Move:
-				_, opItem := op.Pop()
-				switch opItem.V.(type) {
-				case *Locator_Field:
-					panic("invalid op")
-				case *Locator_Index:
-					return transformMoveKeyMoveIndex(t, op, priority)
-				case *Locator_Key:
-					return transformMoveKeyMoveKey(t, op, priority)
-				default:
-					panic("invalid op")
-				}
-			case Op_Delete:
-				_, opItem := op.Pop()
-				switch opItem.V.(type) {
-				case *Locator_Field:
-					return transformMoveKeyDeleteField(t, op, priority)
-				case *Locator_Index:
-					return transformMoveKeyDeleteIndex(t, op, priority)
-				case *Locator_Key:
-					return transformMoveKeyDeleteKey(t, op, priority)
-				default:
-					panic("invalid op")
-				}
-			default:
-				panic("invalid op")
-			}
-		default:
-			panic("invalid op")
-		}
-	case Op_Delete:
-		_, transformerItem := t.Pop()
-		switch transformerItem.V.(type) {
-		case *Locator_Field:
-			switch op.Type {
-			case Op_Edit:
-				_, opItem := op.Pop()
-				_, opIsDelta := op.Value.(*Op_Delta)
-				if opIsDelta {
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						return transformDeleteFieldEditField(t, op, priority)
-					case *Locator_Index:
-						return transformDeleteFieldEditIndex(t, op, priority)
-					case *Locator_Key:
-						return transformDeleteFieldEditKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				} else {
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						return transformDeleteFieldReplaceField(t, op, priority)
-					case *Locator_Index:
-						return transformDeleteFieldReplaceIndex(t, op, priority)
-					case *Locator_Key:
-						return transformDeleteFieldReplaceKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				}
-			case Op_Insert:
-				_, opItem := op.Pop()
-				switch opItem.V.(type) {
-				case *Locator_Field:
-					panic("invalid op")
-				case *Locator_Index:
-					return transformDeleteFieldInsertIndex(t, op, priority)
-				case *Locator_Key:
-					return transformDeleteFieldInsertKey(t, op, priority)
-				default:
-					panic("invalid op")
-				}
-			case Op_Move:
-				_, opItem := op.Pop()
-				switch opItem.V.(type) {
-				case *Locator_Field:
-					panic("invalid op")
-				case *Locator_Index:
-					return transformDeleteFieldMoveIndex(t, op, priority)
-				case *Locator_Key:
-					return transformDeleteFieldMoveKey(t, op, priority)
-				default:
-					panic("invalid op")
-				}
-			case Op_Delete:
-				_, opItem := op.Pop()
-				switch opItem.V.(type) {
-				case *Locator_Field:
-					return transformDeleteFieldDeleteField(t, op, priority)
-				case *Locator_Index:
-					return transformDeleteFieldDeleteIndex(t, op, priority)
-				case *Locator_Key:
-					return transformDeleteFieldDeleteKey(t, op, priority)
-				default:
-					panic("invalid op")
-				}
-			default:
-				panic("invalid op")
-			}
-		case *Locator_Index:
-			switch op.Type {
-			case Op_Edit:
-				_, opItem := op.Pop()
-				_, opIsDelta := op.Value.(*Op_Delta)
-				if opIsDelta {
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						return transformDeleteIndexEditField(t, op, priority)
-					case *Locator_Index:
-						return transformDeleteIndexEditIndex(t, op, priority)
-					case *Locator_Key:
-						return transformDeleteIndexEditKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				} else {
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						return transformDeleteIndexReplaceField(t, op, priority)
-					case *Locator_Index:
-						return transformDeleteIndexReplaceIndex(t, op, priority)
-					case *Locator_Key:
-						return transformDeleteIndexReplaceKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				}
-			case Op_Insert:
-				_, opItem := op.Pop()
-				switch opItem.V.(type) {
-				case *Locator_Field:
-					panic("invalid op")
-				case *Locator_Index:
-					return transformDeleteIndexInsertIndex(t, op, priority)
-				case *Locator_Key:
-					return transformDeleteIndexInsertKey(t, op, priority)
-				default:
-					panic("invalid op")
-				}
-			case Op_Move:
-				_, opItem := op.Pop()
-				switch opItem.V.(type) {
-				case *Locator_Field:
-					panic("invalid op")
-				case *Locator_Index:
-					return transformDeleteIndexMoveIndex(t, op, priority)
-				case *Locator_Key:
-					return transformDeleteIndexMoveKey(t, op, priority)
-				default:
-					panic("invalid op")
-				}
-			case Op_Delete:
-				_, opItem := op.Pop()
-				switch opItem.V.(type) {
-				case *Locator_Field:
-					return transformDeleteIndexDeleteField(t, op, priority)
-				case *Locator_Index:
-					return transformDeleteIndexDeleteIndex(t, op, priority)
-				case *Locator_Key:
-					return transformDeleteIndexDeleteKey(t, op, priority)
-				default:
-					panic("invalid op")
-				}
-			default:
-				panic("invalid op")
-			}
-		case *Locator_Key:
-			switch op.Type {
-			case Op_Edit:
-				_, opItem := op.Pop()
-				_, opIsDelta := op.Value.(*Op_Delta)
-				if opIsDelta {
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						return transformDeleteKeyEditField(t, op, priority)
-					case *Locator_Index:
-						return transformDeleteKeyEditIndex(t, op, priority)
-					case *Locator_Key:
-						return transformDeleteKeyEditKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				} else {
-					switch opItem.V.(type) {
-					case *Locator_Field:
-						return transformDeleteKeyReplaceField(t, op, priority)
-					case *Locator_Index:
-						return transformDeleteKeyReplaceIndex(t, op, priority)
-					case *Locator_Key:
-						return transformDeleteKeyReplaceKey(t, op, priority)
-					default:
-						panic("invalid op")
-					}
-				}
-			case Op_Insert:
-				_, opItem := op.Pop()
-				switch opItem.V.(type) {
-				case *Locator_Field:
-					panic("invalid op")
-				case *Locator_Index:
-					return transformDeleteKeyInsertIndex(t, op, priority)
-				case *Locator_Key:
-					return transformDeleteKeyInsertKey(t, op, priority)
-				default:
-					panic("invalid op")
-				}
-			case Op_Move:
-				_, opItem := op.Pop()
-				switch opItem.V.(type) {
-				case *Locator_Field:
-					panic("invalid op")
-				case *Locator_Index:
-					return transformDeleteKeyMoveIndex(t, op, priority)
-				case *Locator_Key:
-					return transformDeleteKeyMoveKey(t, op, priority)
-				default:
-					panic("invalid op")
-				}
-			case Op_Delete:
-				_, opItem := op.Pop()
-				switch opItem.V.(type) {
-				case *Locator_Field:
-					return transformDeleteKeyDeleteField(t, op, priority)
-				case *Locator_Index:
-					return transformDeleteKeyDeleteIndex(t, op, priority)
-				case *Locator_Key:
-					return transformDeleteKeyDeleteKey(t, op, priority)
-				default:
-					panic("invalid op")
-				}
-			default:
-				panic("invalid op")
-			}
-		default:
-			panic("invalid op")
-		}
-	default:
-		panic("invalid op")
-	}
+	return t.transform(op, priority)
 }
 
 func transformIndependent(t, op *Op) *Op {
 
 	// op1 and op2 are not acting on the same value, or the values don't conflict.
 
-	behaviour := getBehaviour(t)
-	opBehaviour := getBehaviour(op)
+	behaviour := GetBehaviour(t)
+	opBehaviour := GetBehaviour(op)
 
 	if behaviour.ItemIsDeleted && TreeRelationship(t.Location, op.Location) == TREE_ANCESTOR {
 		// Op is acting on a value that is a descendent of a value that t deleted. We should delete op.
@@ -1025,11 +111,11 @@ func transformEditEdit(t, op *Op, priority bool) *Op {
 
 func transformEditOverwrite(t, op *Op) *Op {
 	// Used by:
-	// transformEditFieldReplaceField
+	// transformEditFieldSetField
 	// transformEditFieldDeleteField
-	// transformEditIndexReplaceIndex
+	// transformEditIndexSetIndex
 	// transformEditIndexDeleteIndex
-	// transformEditKeyReplaceKey
+	// transformEditKeySetKey
 	// transformEditKeyDeleteKey
 
 	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
@@ -1042,7 +128,7 @@ func transformEditOverwrite(t, op *Op) *Op {
 func transformEditFieldEditField(t, op *Op, priority bool) *Op {
 	return transformEditEdit(t, op, priority)
 }
-func transformEditFieldReplaceField(t, op *Op, priority bool) *Op {
+func transformEditFieldSetField(t, op *Op, priority bool) *Op {
 	return transformEditOverwrite(t, op)
 }
 func transformEditFieldDeleteField(t, op *Op, priority bool) *Op {
@@ -1052,7 +138,7 @@ func transformEditFieldDeleteField(t, op *Op, priority bool) *Op {
 func transformEditIndexEditIndex(t, op *Op, priority bool) *Op {
 	return transformEditEdit(t, op, priority)
 }
-func transformEditIndexReplaceIndex(t, op *Op, priority bool) *Op {
+func transformEditIndexSetIndex(t, op *Op, priority bool) *Op {
 	return transformEditOverwrite(t, op)
 }
 func transformEditIndexInsertIndex(t, op *Op, priority bool) *Op {
@@ -1075,18 +161,10 @@ func transformEditIndexDeleteIndex(t, op *Op, priority bool) *Op {
 func transformEditKeyEditKey(t, op *Op, priority bool) *Op {
 	return transformEditEdit(t, op, priority)
 }
-func transformEditKeyReplaceKey(t, op *Op, priority bool) *Op {
+func transformEditKeySetKey(t, op *Op, priority bool) *Op {
 	return transformEditOverwrite(t, op)
 }
-func transformEditKeyInsertKey(t, op *Op, priority bool) *Op {
-	// we don't have a "transformEditInsert" function because key / index inserts are completely different.
-	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
-		return transformIndependent(t, op)
-	}
-	// Op is overwriting the value that t has modified. In order to converge, op has priority.
-	return proto.Clone(op).(*Op)
-}
-func transformEditKeyMoveKey(t, op *Op, priority bool) *Op {
+func transformEditKeyRenameKey(t, op *Op, priority bool) *Op {
 	if op.IsNullMove() {
 		return nil
 	}
@@ -1111,9 +189,9 @@ func transformEditKeyDeleteKey(t, op *Op, priority bool) *Op {
 
 func transformOverwriteEdit(t, op *Op) *Op {
 	// Used by:
-	// transformReplaceFieldEditField
-	// transformReplaceKeyEditKey
-	// transformReplaceIndexEditIndex
+	// transformSetFieldEditField
+	// transformSetKeyEditKey
+	// transformSetIndexEditIndex
 
 	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
 		return transformIndependent(t, op)
@@ -1122,26 +200,21 @@ func transformOverwriteEdit(t, op *Op) *Op {
 	return nil
 }
 
-func transformReplaceFieldEditField(t, op *Op, priority bool) *Op {
+func transformSetFieldEditField(t, op *Op, priority bool) *Op {
 	return transformOverwriteEdit(t, op)
 }
 
 func transformOverwriteOverwrite(t, op *Op, priority bool) *Op {
 	// Used by:
-	// transformReplaceFieldReplaceField
-	// transformReplaceFieldDeleteField
-	// transformReplaceIndexReplaceIndex
-	// transformReplaceIndexDeleteIndex
-	// transformReplaceKeyReplaceKey
-	// transformReplaceKeyInsertKey
-	// transformReplaceKeyDeleteKey
-	// transformInsertKeyReplaceKey
-	// transformInsertKeyInsertKey
-	// transformInsertKeyDeleteKey
-	// transformDeleteFieldReplaceField
-	// transformDeleteIndexReplaceIndex
-	// transformDeleteKeyReplaceKey
-	// transformDeleteKeyInsertKey
+	// transformSetFieldSetField
+	// transformSetFieldDeleteField
+	// transformSetIndexSetIndex
+	// transformSetIndexDeleteIndex
+	// transformSetKeySetKey
+	// transformSetKeyDeleteKey
+	// transformDeleteFieldSetField
+	// transformDeleteIndexSetIndex
+	// transformDeleteKeySetKey
 
 	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
 		return transformIndependent(t, op)
@@ -1154,27 +227,27 @@ func transformOverwriteOverwrite(t, op *Op, priority bool) *Op {
 	return proto.Clone(op).(*Op)
 }
 
-func transformReplaceFieldReplaceField(t, op *Op, priority bool) *Op {
+func transformSetFieldSetField(t, op *Op, priority bool) *Op {
 	return transformOverwriteOverwrite(t, op, priority)
 }
-func transformReplaceFieldDeleteField(t, op *Op, priority bool) *Op {
+func transformSetFieldDeleteField(t, op *Op, priority bool) *Op {
 	return transformOverwriteOverwrite(t, op, priority)
 }
 
-func transformReplaceIndexEditIndex(t, op *Op, priority bool) *Op {
+func transformSetIndexEditIndex(t, op *Op, priority bool) *Op {
 	return transformOverwriteEdit(t, op)
 }
-func transformReplaceIndexReplaceIndex(t, op *Op, priority bool) *Op {
+func transformSetIndexSetIndex(t, op *Op, priority bool) *Op {
 	return transformOverwriteOverwrite(t, op, priority)
 }
-func transformReplaceIndexInsertIndex(t, op *Op, priority bool) *Op {
+func transformSetIndexInsertIndex(t, op *Op, priority bool) *Op {
 	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
 		return transformIndependent(t, op)
 	}
 	// op is inserting at the same list index that t has already replaced. This inserts a new value, so is independent.
 	return proto.Clone(op).(*Op)
 }
-func transformReplaceIndexMoveIndex(t, op *Op, priority bool) *Op {
+func transformSetIndexMoveIndex(t, op *Op, priority bool) *Op {
 	if op.IsNullMove() {
 		return nil
 	}
@@ -1194,25 +267,18 @@ func transformReplaceIndexMoveIndex(t, op *Op, priority bool) *Op {
 		panic("")
 	}
 }
-func transformReplaceIndexDeleteIndex(t, op *Op, priority bool) *Op {
+func transformSetIndexDeleteIndex(t, op *Op, priority bool) *Op {
 	return transformOverwriteOverwrite(t, op, priority)
 }
 
-func transformReplaceKeyEditKey(t, op *Op, priority bool) *Op {
+func transformSetKeyEditKey(t, op *Op, priority bool) *Op {
 	return transformOverwriteEdit(t, op)
 }
-func transformReplaceKeyReplaceKey(t, op *Op, priority bool) *Op {
-	return transformOverwriteOverwrite(t, op, priority)
-}
-func transformReplaceKeyInsertKey(t, op *Op, priority bool) *Op {
+func transformSetKeySetKey(t, op *Op, priority bool) *Op {
 	return transformOverwriteOverwrite(t, op, priority)
 }
 
-func transformOverwriteKeyMoveKey(t, op *Op, priority bool) *Op {
-	// Used by:
-	// transformReplaceKeyMoveKey
-	// transformInsertKeyMoveKey
-
+func transformSetKeyRenameKey(t, op *Op, priority bool) *Op {
 	if op.IsNullMove() {
 		return nil
 	}
@@ -1239,11 +305,7 @@ func transformOverwriteKeyMoveKey(t, op *Op, priority bool) *Op {
 		panic("")
 	}
 }
-
-func transformReplaceKeyMoveKey(t, op *Op, priority bool) *Op {
-	return transformOverwriteKeyMoveKey(t, op, priority)
-}
-func transformReplaceKeyDeleteKey(t, op *Op, priority bool) *Op {
+func transformSetKeyDeleteKey(t, op *Op, priority bool) *Op {
 	return transformOverwriteOverwrite(t, op, priority)
 }
 
@@ -1258,7 +320,7 @@ func transformInsertIndexEditIndex(t, op *Op, priority bool) *Op {
 	// independent. This is handled by transformIndependent.
 	return transformIndependent(t, op)
 }
-func transformInsertIndexReplaceIndex(t, op *Op, priority bool) *Op {
+func transformInsertIndexSetIndex(t, op *Op, priority bool) *Op {
 
 	// Note: not needed because all paths lead to transformIndependent
 	// if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
@@ -1322,31 +384,10 @@ func transformInsertIndexDeleteIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
 
-func transformInsertKeyEditKey(t, op *Op, priority bool) *Op {
-	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
-		return transformIndependent(t, op)
-	}
-	// op is trying to modify the same value that op has overwritten. In order to converge, we must give t the priority
-	// and remove op.
-	return nil
-}
-func transformInsertKeyReplaceKey(t, op *Op, priority bool) *Op {
-	return transformOverwriteOverwrite(t, op, priority)
-}
-func transformInsertKeyInsertKey(t, op *Op, priority bool) *Op {
-	return transformOverwriteOverwrite(t, op, priority)
-}
-func transformInsertKeyMoveKey(t, op *Op, priority bool) *Op {
-	return transformOverwriteKeyMoveKey(t, op, priority)
-}
-func transformInsertKeyDeleteKey(t, op *Op, priority bool) *Op {
-	return transformOverwriteOverwrite(t, op, priority)
-}
-
 func transformMoveIndexModifyIndex(t, op *Op, priority bool) *Op {
 	// Shared by:
 	// transformMoveIndexEditIndex
-	// transformMoveIndexReplaceIndex
+	// transformMoveIndexSetIndex
 	// transformMoveIndexDeleteIndex
 
 	if t.IsNullMove() {
@@ -1373,7 +414,7 @@ func transformMoveIndexModifyIndex(t, op *Op, priority bool) *Op {
 func transformMoveIndexEditIndex(t, op *Op, priority bool) *Op {
 	return transformMoveIndexModifyIndex(t, op, priority)
 }
-func transformMoveIndexReplaceIndex(t, op *Op, priority bool) *Op {
+func transformMoveIndexSetIndex(t, op *Op, priority bool) *Op {
 	return transformMoveIndexModifyIndex(t, op, priority)
 }
 func transformMoveIndexInsertIndex(t, op *Op, priority bool) *Op {
@@ -1468,7 +509,7 @@ func transformMoveIndexDeleteIndex(t, op *Op, priority bool) *Op {
 	return transformMoveIndexModifyIndex(t, op, priority)
 }
 
-func transformMoveKeyEditKey(t, op *Op, priority bool) *Op {
+func transformRenameKeyEditKey(t, op *Op, priority bool) *Op {
 	if t.IsNullMove() {
 		return proto.Clone(op).(*Op)
 	}
@@ -1489,11 +530,7 @@ func transformMoveKeyEditKey(t, op *Op, priority bool) *Op {
 		panic("")
 	}
 }
-func transformMoveKeyOverwriteKey(t, op *Op, priority bool) *Op {
-	// Shared by:
-	// transformMoveKeyReplaceKey
-	// transformMoveKeyInsertKey
-
+func transformRenameKeySetKey(t, op *Op, priority bool) *Op {
 	if t.IsNullMove() {
 		return proto.Clone(op).(*Op)
 	}
@@ -1518,13 +555,7 @@ func transformMoveKeyOverwriteKey(t, op *Op, priority bool) *Op {
 		panic("")
 	}
 }
-func transformMoveKeyReplaceKey(t, op *Op, priority bool) *Op {
-	return transformMoveKeyOverwriteKey(t, op, priority)
-}
-func transformMoveKeyInsertKey(t, op *Op, priority bool) *Op {
-	return transformMoveKeyOverwriteKey(t, op, priority)
-}
-func transformMoveKeyMoveKey(t, op *Op, priority bool) *Op {
+func transformRenameKeyRenameKey(t, op *Op, priority bool) *Op {
 	if op.IsNullMove() {
 		return nil
 	}
@@ -1585,7 +616,7 @@ func transformMoveKeyMoveKey(t, op *Op, priority bool) *Op {
 		return proto.Clone(op).(*Op)
 	}
 }
-func transformMoveKeyDeleteKey(t, op *Op, priority bool) *Op {
+func transformRenameKeyDeleteKey(t, op *Op, priority bool) *Op {
 	if t.IsNullMove() {
 		return proto.Clone(op).(*Op)
 	}
@@ -1622,7 +653,7 @@ func transformDeleteEdit(t, op *Op) *Op {
 func transformDeleteFieldEditField(t, op *Op, priority bool) *Op {
 	return transformDeleteEdit(t, op)
 }
-func transformDeleteFieldReplaceField(t, op *Op, priority bool) *Op {
+func transformDeleteFieldSetField(t, op *Op, priority bool) *Op {
 	return transformOverwriteOverwrite(t, op, priority)
 }
 func transformDeleteDelete(t, op *Op) *Op {
@@ -1644,7 +675,7 @@ func transformDeleteFieldDeleteField(t, op *Op, priority bool) *Op {
 func transformDeleteIndexEditIndex(t, op *Op, priority bool) *Op {
 	return transformDeleteEdit(t, op)
 }
-func transformDeleteIndexReplaceIndex(t, op *Op, priority bool) *Op {
+func transformDeleteIndexSetIndex(t, op *Op, priority bool) *Op {
 	return transformOverwriteOverwrite(t, op, priority)
 }
 func transformDeleteIndexInsertIndex(t, op *Op, priority bool) *Op {
@@ -1680,13 +711,10 @@ func transformDeleteIndexDeleteIndex(t, op *Op, priority bool) *Op {
 func transformDeleteKeyEditKey(t, op *Op, priority bool) *Op {
 	return transformDeleteEdit(t, op)
 }
-func transformDeleteKeyReplaceKey(t, op *Op, priority bool) *Op {
+func transformDeleteKeySetKey(t, op *Op, priority bool) *Op {
 	return transformOverwriteOverwrite(t, op, priority)
 }
-func transformDeleteKeyInsertKey(t, op *Op, priority bool) *Op {
-	return transformOverwriteOverwrite(t, op, priority)
-}
-func transformDeleteKeyMoveKey(t, op *Op, priority bool) *Op {
+func transformDeleteKeyRenameKey(t, op *Op, priority bool) *Op {
 	if op.IsNullMove() {
 		return nil
 	}
@@ -1726,22 +754,19 @@ func transformEditFieldEditIndex(t, op *Op, priority bool) *Op {
 func transformEditFieldEditKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformEditFieldReplaceIndex(t, op *Op, priority bool) *Op {
+func transformEditFieldSetIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformEditFieldReplaceKey(t, op *Op, priority bool) *Op {
+func transformEditFieldSetKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
 func transformEditFieldInsertIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformEditFieldInsertKey(t, op *Op, priority bool) *Op {
-	return transformIndependent(t, op)
-}
 func transformEditFieldMoveIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformEditFieldMoveKey(t, op *Op, priority bool) *Op {
+func transformEditFieldRenameKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
 func transformEditFieldDeleteIndex(t, op *Op, priority bool) *Op {
@@ -1757,16 +782,13 @@ func transformEditIndexEditField(t, op *Op, priority bool) *Op {
 func transformEditIndexEditKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformEditIndexReplaceField(t, op *Op, priority bool) *Op {
+func transformEditIndexSetField(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformEditIndexReplaceKey(t, op *Op, priority bool) *Op {
+func transformEditIndexSetKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformEditIndexInsertKey(t, op *Op, priority bool) *Op {
-	return transformIndependent(t, op)
-}
-func transformEditIndexMoveKey(t, op *Op, priority bool) *Op {
+func transformEditIndexRenameKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
 func transformEditIndexDeleteField(t, op *Op, priority bool) *Op {
@@ -1782,10 +804,10 @@ func transformEditKeyEditField(t, op *Op, priority bool) *Op {
 func transformEditKeyEditIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformEditKeyReplaceField(t, op *Op, priority bool) *Op {
+func transformEditKeySetField(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformEditKeyReplaceIndex(t, op *Op, priority bool) *Op {
+func transformEditKeySetIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
 func transformEditKeyInsertIndex(t, op *Op, priority bool) *Op {
@@ -1801,84 +823,78 @@ func transformEditKeyDeleteIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
 
-func transformReplaceFieldEditIndex(t, op *Op, priority bool) *Op {
+func transformSetFieldEditIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformReplaceFieldEditKey(t, op *Op, priority bool) *Op {
+func transformSetFieldEditKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformReplaceFieldReplaceIndex(t, op *Op, priority bool) *Op {
+func transformSetFieldSetIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformReplaceFieldReplaceKey(t, op *Op, priority bool) *Op {
+func transformSetFieldSetKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformReplaceFieldInsertIndex(t, op *Op, priority bool) *Op {
+func transformSetFieldInsertIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformReplaceFieldInsertKey(t, op *Op, priority bool) *Op {
+func transformSetFieldMoveIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformReplaceFieldMoveIndex(t, op *Op, priority bool) *Op {
+func transformSetFieldRenameKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformReplaceFieldMoveKey(t, op *Op, priority bool) *Op {
+func transformSetFieldDeleteIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformReplaceFieldDeleteIndex(t, op *Op, priority bool) *Op {
-	return transformIndependent(t, op)
-}
-func transformReplaceFieldDeleteKey(t, op *Op, priority bool) *Op {
+func transformSetFieldDeleteKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
 
-func transformReplaceIndexEditField(t, op *Op, priority bool) *Op {
+func transformSetIndexEditField(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformReplaceIndexEditKey(t, op *Op, priority bool) *Op {
+func transformSetIndexEditKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformReplaceIndexReplaceField(t, op *Op, priority bool) *Op {
+func transformSetIndexSetField(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformReplaceIndexReplaceKey(t, op *Op, priority bool) *Op {
+func transformSetIndexSetKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformReplaceIndexInsertKey(t, op *Op, priority bool) *Op {
+func transformSetIndexRenameKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformReplaceIndexMoveKey(t, op *Op, priority bool) *Op {
+func transformSetIndexDeleteField(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformReplaceIndexDeleteField(t, op *Op, priority bool) *Op {
-	return transformIndependent(t, op)
-}
-func transformReplaceIndexDeleteKey(t, op *Op, priority bool) *Op {
+func transformSetIndexDeleteKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
 
-func transformReplaceKeyEditField(t, op *Op, priority bool) *Op {
+func transformSetKeyEditField(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformReplaceKeyEditIndex(t, op *Op, priority bool) *Op {
+func transformSetKeyEditIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformReplaceKeyReplaceField(t, op *Op, priority bool) *Op {
+func transformSetKeySetField(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformReplaceKeyReplaceIndex(t, op *Op, priority bool) *Op {
+func transformSetKeySetIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformReplaceKeyInsertIndex(t, op *Op, priority bool) *Op {
+func transformSetKeyInsertIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformReplaceKeyMoveIndex(t, op *Op, priority bool) *Op {
+func transformSetKeyMoveIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformReplaceKeyDeleteField(t, op *Op, priority bool) *Op {
+func transformSetKeyDeleteField(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformReplaceKeyDeleteIndex(t, op *Op, priority bool) *Op {
+func transformSetKeyDeleteIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
 
@@ -1888,16 +904,13 @@ func transformInsertIndexEditField(t, op *Op, priority bool) *Op {
 func transformInsertIndexEditKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformInsertIndexReplaceField(t, op *Op, priority bool) *Op {
+func transformInsertIndexSetField(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformInsertIndexReplaceKey(t, op *Op, priority bool) *Op {
+func transformInsertIndexSetKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformInsertIndexInsertKey(t, op *Op, priority bool) *Op {
-	return transformIndependent(t, op)
-}
-func transformInsertIndexMoveKey(t, op *Op, priority bool) *Op {
+func transformInsertIndexRenameKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
 func transformInsertIndexDeleteField(t, op *Op, priority bool) *Op {
@@ -1907,47 +920,19 @@ func transformInsertIndexDeleteKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
 
-func transformInsertKeyEditField(t, op *Op, priority bool) *Op {
-	return transformIndependent(t, op)
-}
-func transformInsertKeyEditIndex(t, op *Op, priority bool) *Op {
-	return transformIndependent(t, op)
-}
-func transformInsertKeyReplaceField(t, op *Op, priority bool) *Op {
-	return transformIndependent(t, op)
-}
-func transformInsertKeyReplaceIndex(t, op *Op, priority bool) *Op {
-	return transformIndependent(t, op)
-}
-func transformInsertKeyInsertIndex(t, op *Op, priority bool) *Op {
-	return transformIndependent(t, op)
-}
-func transformInsertKeyMoveIndex(t, op *Op, priority bool) *Op {
-	return transformIndependent(t, op)
-}
-func transformInsertKeyDeleteField(t, op *Op, priority bool) *Op {
-	return transformIndependent(t, op)
-}
-func transformInsertKeyDeleteIndex(t, op *Op, priority bool) *Op {
-	return transformIndependent(t, op)
-}
-
 func transformMoveIndexEditField(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
 func transformMoveIndexEditKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformMoveIndexReplaceField(t, op *Op, priority bool) *Op {
+func transformMoveIndexSetField(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformMoveIndexReplaceKey(t, op *Op, priority bool) *Op {
+func transformMoveIndexSetKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformMoveIndexInsertKey(t, op *Op, priority bool) *Op {
-	return transformIndependent(t, op)
-}
-func transformMoveIndexMoveKey(t, op *Op, priority bool) *Op {
+func transformMoveIndexRenameKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
 func transformMoveIndexDeleteField(t, op *Op, priority bool) *Op {
@@ -1957,28 +942,28 @@ func transformMoveIndexDeleteKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
 
-func transformMoveKeyEditField(t, op *Op, priority bool) *Op {
+func transformRenameKeyEditField(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformMoveKeyEditIndex(t, op *Op, priority bool) *Op {
+func transformRenameKeyEditIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformMoveKeyReplaceField(t, op *Op, priority bool) *Op {
+func transformRenameKeySetField(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformMoveKeyReplaceIndex(t, op *Op, priority bool) *Op {
+func transformRenameKeySetIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformMoveKeyInsertIndex(t, op *Op, priority bool) *Op {
+func transformRenameKeyInsertIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformMoveKeyMoveIndex(t, op *Op, priority bool) *Op {
+func transformRenameKeyMoveIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformMoveKeyDeleteField(t, op *Op, priority bool) *Op {
+func transformRenameKeyDeleteField(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformMoveKeyDeleteIndex(t, op *Op, priority bool) *Op {
+func transformRenameKeyDeleteIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
 
@@ -1988,22 +973,19 @@ func transformDeleteFieldEditIndex(t, op *Op, priority bool) *Op {
 func transformDeleteFieldEditKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformDeleteFieldReplaceIndex(t, op *Op, priority bool) *Op {
+func transformDeleteFieldSetIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformDeleteFieldReplaceKey(t, op *Op, priority bool) *Op {
+func transformDeleteFieldSetKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
 func transformDeleteFieldInsertIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformDeleteFieldInsertKey(t, op *Op, priority bool) *Op {
-	return transformIndependent(t, op)
-}
 func transformDeleteFieldMoveIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformDeleteFieldMoveKey(t, op *Op, priority bool) *Op {
+func transformDeleteFieldRenameKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
 func transformDeleteFieldDeleteIndex(t, op *Op, priority bool) *Op {
@@ -2019,16 +1001,13 @@ func transformDeleteIndexEditField(t, op *Op, priority bool) *Op {
 func transformDeleteIndexEditKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformDeleteIndexReplaceField(t, op *Op, priority bool) *Op {
+func transformDeleteIndexSetField(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformDeleteIndexReplaceKey(t, op *Op, priority bool) *Op {
+func transformDeleteIndexSetKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformDeleteIndexInsertKey(t, op *Op, priority bool) *Op {
-	return transformIndependent(t, op)
-}
-func transformDeleteIndexMoveKey(t, op *Op, priority bool) *Op {
+func transformDeleteIndexRenameKey(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
 func transformDeleteIndexDeleteField(t, op *Op, priority bool) *Op {
@@ -2044,10 +1023,10 @@ func transformDeleteKeyEditField(t, op *Op, priority bool) *Op {
 func transformDeleteKeyEditIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformDeleteKeyReplaceField(t, op *Op, priority bool) *Op {
+func transformDeleteKeySetField(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
-func transformDeleteKeyReplaceIndex(t, op *Op, priority bool) *Op {
+func transformDeleteKeySetIndex(t, op *Op, priority bool) *Op {
 	return transformIndependent(t, op)
 }
 func transformDeleteKeyInsertIndex(t, op *Op, priority bool) *Op {

@@ -42,7 +42,7 @@ func insertShifter(insertIndex int64, priority, applyPriority bool) func(int64) 
 	}
 }
 
-func moveKeyShifter(fromKey, toKey *Key) func(*Key) *Key {
+func renameShifter(fromKey, toKey *Key) func(*Key) *Key {
 	return func(key *Key) *Key {
 		if proto.Equal(fromKey, key) {
 			return proto.Clone(toKey).(*Key)

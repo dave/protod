@@ -52,8 +52,8 @@ func (b Person_type) Embedded() Person_Embed_type {
 func (b Person_type) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_type) Replace(value *Person) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_type) Set(value *Person) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Person_type_list struct {
@@ -78,8 +78,8 @@ func (b Person_type_list) Move(from, to int) *delta.Op {
 func (b Person_type_list) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_type_list) Replace(value []*Person) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_type_list) Set(value []*Person) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Person_type_bool_map struct {
@@ -95,17 +95,14 @@ func NewPerson_type_bool_map(l []*delta.Locator) Person_type_bool_map {
 func (b Person_type_bool_map) Key(key bool) Person_type {
 	return NewPerson_type(delta.CopyAndAppendKeyBool(b.location, key))
 }
-func (b Person_type_bool_map) Move(from, to bool) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyBool(b.location, from), to)
-}
-func (b Person_type_bool_map) Insert(key bool, value *Person) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyBool(b.location, key), value)
+func (b Person_type_bool_map) Rename(from, to bool) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyBool(b.location, from), to)
 }
 func (b Person_type_bool_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_type_bool_map) Replace(value map[bool]*Person) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_type_bool_map) Set(value map[bool]*Person) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Person_type_int32_map struct {
@@ -121,17 +118,14 @@ func NewPerson_type_int32_map(l []*delta.Locator) Person_type_int32_map {
 func (b Person_type_int32_map) Key(key int) Person_type {
 	return NewPerson_type(delta.CopyAndAppendKeyInt32(b.location, int32(key)))
 }
-func (b Person_type_int32_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyInt32(b.location, int32(from)), int32(to))
-}
-func (b Person_type_int32_map) Insert(key int, value *Person) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyInt32(b.location, int32(key)), value)
+func (b Person_type_int32_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyInt32(b.location, int32(from)), int32(to))
 }
 func (b Person_type_int32_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_type_int32_map) Replace(value map[int32]*Person) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_type_int32_map) Set(value map[int32]*Person) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Person_type_int64_map struct {
@@ -147,17 +141,14 @@ func NewPerson_type_int64_map(l []*delta.Locator) Person_type_int64_map {
 func (b Person_type_int64_map) Key(key int) Person_type {
 	return NewPerson_type(delta.CopyAndAppendKeyInt64(b.location, int64(key)))
 }
-func (b Person_type_int64_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyInt64(b.location, int64(from)), int64(to))
-}
-func (b Person_type_int64_map) Insert(key int, value *Person) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyInt64(b.location, int64(key)), value)
+func (b Person_type_int64_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyInt64(b.location, int64(from)), int64(to))
 }
 func (b Person_type_int64_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_type_int64_map) Replace(value map[int64]*Person) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_type_int64_map) Set(value map[int64]*Person) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Person_type_uint32_map struct {
@@ -173,17 +164,14 @@ func NewPerson_type_uint32_map(l []*delta.Locator) Person_type_uint32_map {
 func (b Person_type_uint32_map) Key(key int) Person_type {
 	return NewPerson_type(delta.CopyAndAppendKeyUint32(b.location, uint32(key)))
 }
-func (b Person_type_uint32_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyUint32(b.location, uint32(from)), uint32(to))
-}
-func (b Person_type_uint32_map) Insert(key int, value *Person) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyUint32(b.location, uint32(key)), value)
+func (b Person_type_uint32_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyUint32(b.location, uint32(from)), uint32(to))
 }
 func (b Person_type_uint32_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_type_uint32_map) Replace(value map[uint32]*Person) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_type_uint32_map) Set(value map[uint32]*Person) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Person_type_uint64_map struct {
@@ -199,17 +187,14 @@ func NewPerson_type_uint64_map(l []*delta.Locator) Person_type_uint64_map {
 func (b Person_type_uint64_map) Key(key int) Person_type {
 	return NewPerson_type(delta.CopyAndAppendKeyUint64(b.location, uint64(key)))
 }
-func (b Person_type_uint64_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyUint64(b.location, uint64(from)), uint64(to))
-}
-func (b Person_type_uint64_map) Insert(key int, value *Person) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyUint64(b.location, uint64(key)), value)
+func (b Person_type_uint64_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyUint64(b.location, uint64(from)), uint64(to))
 }
 func (b Person_type_uint64_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_type_uint64_map) Replace(value map[uint64]*Person) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_type_uint64_map) Set(value map[uint64]*Person) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Person_type_string_map struct {
@@ -225,17 +210,14 @@ func NewPerson_type_string_map(l []*delta.Locator) Person_type_string_map {
 func (b Person_type_string_map) Key(key string) Person_type {
 	return NewPerson_type(delta.CopyAndAppendKeyString(b.location, key))
 }
-func (b Person_type_string_map) Move(from, to string) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyString(b.location, from), to)
-}
-func (b Person_type_string_map) Insert(key string, value *Person) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyString(b.location, key), value)
+func (b Person_type_string_map) Rename(from, to string) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyString(b.location, from), to)
 }
 func (b Person_type_string_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_type_string_map) Replace(value map[string]*Person) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_type_string_map) Set(value map[string]*Person) *delta.Op {
+	return delta.Set(b.location, value)
 }
 func (Op_root_type) Person_Type() Person_Type_type {
 	return Person_Type_type{}
@@ -254,8 +236,8 @@ func NewPerson_Type_type(l []*delta.Locator) Person_Type_type {
 func (b Person_Type_type) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Type_type) Replace(value Person_Type) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_Type_type) Set(value Person_Type) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Person_Type_type_list struct {
@@ -280,8 +262,8 @@ func (b Person_Type_type_list) Move(from, to int) *delta.Op {
 func (b Person_Type_type_list) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Type_type_list) Replace(value Person_Type) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_Type_type_list) Set(value Person_Type) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Person_Type_type_bool_map struct {
@@ -297,17 +279,14 @@ func NewPerson_Type_type_bool_map(l []*delta.Locator) Person_Type_type_bool_map 
 func (b Person_Type_type_bool_map) Key(key bool) Person_Type_type {
 	return NewPerson_Type_type(delta.CopyAndAppendKeyBool(b.location, key))
 }
-func (b Person_Type_type_bool_map) Move(from, to bool) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyBool(b.location, from), to)
-}
-func (b Person_Type_type_bool_map) Insert(key bool, value Person_Type) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyBool(b.location, key), value)
+func (b Person_Type_type_bool_map) Rename(from, to bool) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyBool(b.location, from), to)
 }
 func (b Person_Type_type_bool_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Type_type_bool_map) Replace(value Person_Type) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_Type_type_bool_map) Set(value Person_Type) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Person_Type_type_int32_map struct {
@@ -323,17 +302,14 @@ func NewPerson_Type_type_int32_map(l []*delta.Locator) Person_Type_type_int32_ma
 func (b Person_Type_type_int32_map) Key(key int) Person_Type_type {
 	return NewPerson_Type_type(delta.CopyAndAppendKeyInt32(b.location, int32(key)))
 }
-func (b Person_Type_type_int32_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyInt32(b.location, int32(from)), int32(to))
-}
-func (b Person_Type_type_int32_map) Insert(key int, value Person_Type) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyInt32(b.location, int32(key)), value)
+func (b Person_Type_type_int32_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyInt32(b.location, int32(from)), int32(to))
 }
 func (b Person_Type_type_int32_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Type_type_int32_map) Replace(value Person_Type) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_Type_type_int32_map) Set(value Person_Type) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Person_Type_type_int64_map struct {
@@ -349,17 +325,14 @@ func NewPerson_Type_type_int64_map(l []*delta.Locator) Person_Type_type_int64_ma
 func (b Person_Type_type_int64_map) Key(key int) Person_Type_type {
 	return NewPerson_Type_type(delta.CopyAndAppendKeyInt64(b.location, int64(key)))
 }
-func (b Person_Type_type_int64_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyInt64(b.location, int64(from)), int64(to))
-}
-func (b Person_Type_type_int64_map) Insert(key int, value Person_Type) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyInt64(b.location, int64(key)), value)
+func (b Person_Type_type_int64_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyInt64(b.location, int64(from)), int64(to))
 }
 func (b Person_Type_type_int64_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Type_type_int64_map) Replace(value Person_Type) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_Type_type_int64_map) Set(value Person_Type) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Person_Type_type_uint32_map struct {
@@ -375,17 +348,14 @@ func NewPerson_Type_type_uint32_map(l []*delta.Locator) Person_Type_type_uint32_
 func (b Person_Type_type_uint32_map) Key(key int) Person_Type_type {
 	return NewPerson_Type_type(delta.CopyAndAppendKeyUint32(b.location, uint32(key)))
 }
-func (b Person_Type_type_uint32_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyUint32(b.location, uint32(from)), uint32(to))
-}
-func (b Person_Type_type_uint32_map) Insert(key int, value Person_Type) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyUint32(b.location, uint32(key)), value)
+func (b Person_Type_type_uint32_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyUint32(b.location, uint32(from)), uint32(to))
 }
 func (b Person_Type_type_uint32_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Type_type_uint32_map) Replace(value Person_Type) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_Type_type_uint32_map) Set(value Person_Type) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Person_Type_type_uint64_map struct {
@@ -401,17 +371,14 @@ func NewPerson_Type_type_uint64_map(l []*delta.Locator) Person_Type_type_uint64_
 func (b Person_Type_type_uint64_map) Key(key int) Person_Type_type {
 	return NewPerson_Type_type(delta.CopyAndAppendKeyUint64(b.location, uint64(key)))
 }
-func (b Person_Type_type_uint64_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyUint64(b.location, uint64(from)), uint64(to))
-}
-func (b Person_Type_type_uint64_map) Insert(key int, value Person_Type) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyUint64(b.location, uint64(key)), value)
+func (b Person_Type_type_uint64_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyUint64(b.location, uint64(from)), uint64(to))
 }
 func (b Person_Type_type_uint64_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Type_type_uint64_map) Replace(value Person_Type) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_Type_type_uint64_map) Set(value Person_Type) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Person_Type_type_string_map struct {
@@ -427,17 +394,14 @@ func NewPerson_Type_type_string_map(l []*delta.Locator) Person_Type_type_string_
 func (b Person_Type_type_string_map) Key(key string) Person_Type_type {
 	return NewPerson_Type_type(delta.CopyAndAppendKeyString(b.location, key))
 }
-func (b Person_Type_type_string_map) Move(from, to string) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyString(b.location, from), to)
-}
-func (b Person_Type_type_string_map) Insert(key string, value Person_Type) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyString(b.location, key), value)
+func (b Person_Type_type_string_map) Rename(from, to string) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyString(b.location, from), to)
 }
 func (b Person_Type_type_string_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Type_type_string_map) Replace(value Person_Type) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_Type_type_string_map) Set(value Person_Type) *delta.Op {
+	return delta.Set(b.location, value)
 }
 func (Op_root_type) Person_Embed() Person_Embed_type {
 	return Person_Embed_type{}
@@ -459,8 +423,8 @@ func (b Person_Embed_type) Name() delta.String_scalar {
 func (b Person_Embed_type) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Embed_type) Replace(value *Person_Embed) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_Embed_type) Set(value *Person_Embed) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Person_Embed_type_list struct {
@@ -485,8 +449,8 @@ func (b Person_Embed_type_list) Move(from, to int) *delta.Op {
 func (b Person_Embed_type_list) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Embed_type_list) Replace(value []*Person_Embed) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_Embed_type_list) Set(value []*Person_Embed) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Person_Embed_type_bool_map struct {
@@ -502,17 +466,14 @@ func NewPerson_Embed_type_bool_map(l []*delta.Locator) Person_Embed_type_bool_ma
 func (b Person_Embed_type_bool_map) Key(key bool) Person_Embed_type {
 	return NewPerson_Embed_type(delta.CopyAndAppendKeyBool(b.location, key))
 }
-func (b Person_Embed_type_bool_map) Move(from, to bool) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyBool(b.location, from), to)
-}
-func (b Person_Embed_type_bool_map) Insert(key bool, value *Person_Embed) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyBool(b.location, key), value)
+func (b Person_Embed_type_bool_map) Rename(from, to bool) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyBool(b.location, from), to)
 }
 func (b Person_Embed_type_bool_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Embed_type_bool_map) Replace(value map[bool]*Person_Embed) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_Embed_type_bool_map) Set(value map[bool]*Person_Embed) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Person_Embed_type_int32_map struct {
@@ -528,17 +489,14 @@ func NewPerson_Embed_type_int32_map(l []*delta.Locator) Person_Embed_type_int32_
 func (b Person_Embed_type_int32_map) Key(key int) Person_Embed_type {
 	return NewPerson_Embed_type(delta.CopyAndAppendKeyInt32(b.location, int32(key)))
 }
-func (b Person_Embed_type_int32_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyInt32(b.location, int32(from)), int32(to))
-}
-func (b Person_Embed_type_int32_map) Insert(key int, value *Person_Embed) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyInt32(b.location, int32(key)), value)
+func (b Person_Embed_type_int32_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyInt32(b.location, int32(from)), int32(to))
 }
 func (b Person_Embed_type_int32_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Embed_type_int32_map) Replace(value map[int32]*Person_Embed) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_Embed_type_int32_map) Set(value map[int32]*Person_Embed) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Person_Embed_type_int64_map struct {
@@ -554,17 +512,14 @@ func NewPerson_Embed_type_int64_map(l []*delta.Locator) Person_Embed_type_int64_
 func (b Person_Embed_type_int64_map) Key(key int) Person_Embed_type {
 	return NewPerson_Embed_type(delta.CopyAndAppendKeyInt64(b.location, int64(key)))
 }
-func (b Person_Embed_type_int64_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyInt64(b.location, int64(from)), int64(to))
-}
-func (b Person_Embed_type_int64_map) Insert(key int, value *Person_Embed) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyInt64(b.location, int64(key)), value)
+func (b Person_Embed_type_int64_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyInt64(b.location, int64(from)), int64(to))
 }
 func (b Person_Embed_type_int64_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Embed_type_int64_map) Replace(value map[int64]*Person_Embed) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_Embed_type_int64_map) Set(value map[int64]*Person_Embed) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Person_Embed_type_uint32_map struct {
@@ -580,17 +535,14 @@ func NewPerson_Embed_type_uint32_map(l []*delta.Locator) Person_Embed_type_uint3
 func (b Person_Embed_type_uint32_map) Key(key int) Person_Embed_type {
 	return NewPerson_Embed_type(delta.CopyAndAppendKeyUint32(b.location, uint32(key)))
 }
-func (b Person_Embed_type_uint32_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyUint32(b.location, uint32(from)), uint32(to))
-}
-func (b Person_Embed_type_uint32_map) Insert(key int, value *Person_Embed) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyUint32(b.location, uint32(key)), value)
+func (b Person_Embed_type_uint32_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyUint32(b.location, uint32(from)), uint32(to))
 }
 func (b Person_Embed_type_uint32_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Embed_type_uint32_map) Replace(value map[uint32]*Person_Embed) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_Embed_type_uint32_map) Set(value map[uint32]*Person_Embed) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Person_Embed_type_uint64_map struct {
@@ -606,17 +558,14 @@ func NewPerson_Embed_type_uint64_map(l []*delta.Locator) Person_Embed_type_uint6
 func (b Person_Embed_type_uint64_map) Key(key int) Person_Embed_type {
 	return NewPerson_Embed_type(delta.CopyAndAppendKeyUint64(b.location, uint64(key)))
 }
-func (b Person_Embed_type_uint64_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyUint64(b.location, uint64(from)), uint64(to))
-}
-func (b Person_Embed_type_uint64_map) Insert(key int, value *Person_Embed) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyUint64(b.location, uint64(key)), value)
+func (b Person_Embed_type_uint64_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyUint64(b.location, uint64(from)), uint64(to))
 }
 func (b Person_Embed_type_uint64_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Embed_type_uint64_map) Replace(value map[uint64]*Person_Embed) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_Embed_type_uint64_map) Set(value map[uint64]*Person_Embed) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Person_Embed_type_string_map struct {
@@ -632,17 +581,14 @@ func NewPerson_Embed_type_string_map(l []*delta.Locator) Person_Embed_type_strin
 func (b Person_Embed_type_string_map) Key(key string) Person_Embed_type {
 	return NewPerson_Embed_type(delta.CopyAndAppendKeyString(b.location, key))
 }
-func (b Person_Embed_type_string_map) Move(from, to string) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyString(b.location, from), to)
-}
-func (b Person_Embed_type_string_map) Insert(key string, value *Person_Embed) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyString(b.location, key), value)
+func (b Person_Embed_type_string_map) Rename(from, to string) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyString(b.location, from), to)
 }
 func (b Person_Embed_type_string_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Embed_type_string_map) Replace(value map[string]*Person_Embed) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Person_Embed_type_string_map) Set(value map[string]*Person_Embed) *delta.Op {
+	return delta.Set(b.location, value)
 }
 func (Op_root_type) Company() Company_type {
 	return Company_type{}
@@ -673,8 +619,8 @@ func (b Company_type) Ceo() Person_type {
 func (b Company_type) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Company_type) Replace(value *Company) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Company_type) Set(value *Company) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Company_type_list struct {
@@ -699,8 +645,8 @@ func (b Company_type_list) Move(from, to int) *delta.Op {
 func (b Company_type_list) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Company_type_list) Replace(value []*Company) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Company_type_list) Set(value []*Company) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Company_type_bool_map struct {
@@ -716,17 +662,14 @@ func NewCompany_type_bool_map(l []*delta.Locator) Company_type_bool_map {
 func (b Company_type_bool_map) Key(key bool) Company_type {
 	return NewCompany_type(delta.CopyAndAppendKeyBool(b.location, key))
 }
-func (b Company_type_bool_map) Move(from, to bool) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyBool(b.location, from), to)
-}
-func (b Company_type_bool_map) Insert(key bool, value *Company) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyBool(b.location, key), value)
+func (b Company_type_bool_map) Rename(from, to bool) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyBool(b.location, from), to)
 }
 func (b Company_type_bool_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Company_type_bool_map) Replace(value map[bool]*Company) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Company_type_bool_map) Set(value map[bool]*Company) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Company_type_int32_map struct {
@@ -742,17 +685,14 @@ func NewCompany_type_int32_map(l []*delta.Locator) Company_type_int32_map {
 func (b Company_type_int32_map) Key(key int) Company_type {
 	return NewCompany_type(delta.CopyAndAppendKeyInt32(b.location, int32(key)))
 }
-func (b Company_type_int32_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyInt32(b.location, int32(from)), int32(to))
-}
-func (b Company_type_int32_map) Insert(key int, value *Company) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyInt32(b.location, int32(key)), value)
+func (b Company_type_int32_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyInt32(b.location, int32(from)), int32(to))
 }
 func (b Company_type_int32_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Company_type_int32_map) Replace(value map[int32]*Company) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Company_type_int32_map) Set(value map[int32]*Company) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Company_type_int64_map struct {
@@ -768,17 +708,14 @@ func NewCompany_type_int64_map(l []*delta.Locator) Company_type_int64_map {
 func (b Company_type_int64_map) Key(key int) Company_type {
 	return NewCompany_type(delta.CopyAndAppendKeyInt64(b.location, int64(key)))
 }
-func (b Company_type_int64_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyInt64(b.location, int64(from)), int64(to))
-}
-func (b Company_type_int64_map) Insert(key int, value *Company) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyInt64(b.location, int64(key)), value)
+func (b Company_type_int64_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyInt64(b.location, int64(from)), int64(to))
 }
 func (b Company_type_int64_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Company_type_int64_map) Replace(value map[int64]*Company) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Company_type_int64_map) Set(value map[int64]*Company) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Company_type_uint32_map struct {
@@ -794,17 +731,14 @@ func NewCompany_type_uint32_map(l []*delta.Locator) Company_type_uint32_map {
 func (b Company_type_uint32_map) Key(key int) Company_type {
 	return NewCompany_type(delta.CopyAndAppendKeyUint32(b.location, uint32(key)))
 }
-func (b Company_type_uint32_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyUint32(b.location, uint32(from)), uint32(to))
-}
-func (b Company_type_uint32_map) Insert(key int, value *Company) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyUint32(b.location, uint32(key)), value)
+func (b Company_type_uint32_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyUint32(b.location, uint32(from)), uint32(to))
 }
 func (b Company_type_uint32_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Company_type_uint32_map) Replace(value map[uint32]*Company) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Company_type_uint32_map) Set(value map[uint32]*Company) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Company_type_uint64_map struct {
@@ -820,17 +754,14 @@ func NewCompany_type_uint64_map(l []*delta.Locator) Company_type_uint64_map {
 func (b Company_type_uint64_map) Key(key int) Company_type {
 	return NewCompany_type(delta.CopyAndAppendKeyUint64(b.location, uint64(key)))
 }
-func (b Company_type_uint64_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyUint64(b.location, uint64(from)), uint64(to))
-}
-func (b Company_type_uint64_map) Insert(key int, value *Company) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyUint64(b.location, uint64(key)), value)
+func (b Company_type_uint64_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyUint64(b.location, uint64(from)), uint64(to))
 }
 func (b Company_type_uint64_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Company_type_uint64_map) Replace(value map[uint64]*Company) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Company_type_uint64_map) Set(value map[uint64]*Company) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Company_type_string_map struct {
@@ -846,17 +777,14 @@ func NewCompany_type_string_map(l []*delta.Locator) Company_type_string_map {
 func (b Company_type_string_map) Key(key string) Company_type {
 	return NewCompany_type(delta.CopyAndAppendKeyString(b.location, key))
 }
-func (b Company_type_string_map) Move(from, to string) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyString(b.location, from), to)
-}
-func (b Company_type_string_map) Insert(key string, value *Company) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyString(b.location, key), value)
+func (b Company_type_string_map) Rename(from, to string) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyString(b.location, from), to)
 }
 func (b Company_type_string_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Company_type_string_map) Replace(value map[string]*Company) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Company_type_string_map) Set(value map[string]*Company) *delta.Op {
+	return delta.Set(b.location, value)
 }
 func (Op_root_type) Case() Case_type {
 	return Case_type{}
@@ -881,8 +809,8 @@ func (b Case_type) Items() Item_type_list {
 func (b Case_type) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Case_type) Replace(value *Case) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Case_type) Set(value *Case) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Case_type_list struct {
@@ -907,8 +835,8 @@ func (b Case_type_list) Move(from, to int) *delta.Op {
 func (b Case_type_list) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Case_type_list) Replace(value []*Case) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Case_type_list) Set(value []*Case) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Case_type_bool_map struct {
@@ -924,17 +852,14 @@ func NewCase_type_bool_map(l []*delta.Locator) Case_type_bool_map {
 func (b Case_type_bool_map) Key(key bool) Case_type {
 	return NewCase_type(delta.CopyAndAppendKeyBool(b.location, key))
 }
-func (b Case_type_bool_map) Move(from, to bool) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyBool(b.location, from), to)
-}
-func (b Case_type_bool_map) Insert(key bool, value *Case) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyBool(b.location, key), value)
+func (b Case_type_bool_map) Rename(from, to bool) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyBool(b.location, from), to)
 }
 func (b Case_type_bool_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Case_type_bool_map) Replace(value map[bool]*Case) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Case_type_bool_map) Set(value map[bool]*Case) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Case_type_int32_map struct {
@@ -950,17 +875,14 @@ func NewCase_type_int32_map(l []*delta.Locator) Case_type_int32_map {
 func (b Case_type_int32_map) Key(key int) Case_type {
 	return NewCase_type(delta.CopyAndAppendKeyInt32(b.location, int32(key)))
 }
-func (b Case_type_int32_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyInt32(b.location, int32(from)), int32(to))
-}
-func (b Case_type_int32_map) Insert(key int, value *Case) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyInt32(b.location, int32(key)), value)
+func (b Case_type_int32_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyInt32(b.location, int32(from)), int32(to))
 }
 func (b Case_type_int32_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Case_type_int32_map) Replace(value map[int32]*Case) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Case_type_int32_map) Set(value map[int32]*Case) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Case_type_int64_map struct {
@@ -976,17 +898,14 @@ func NewCase_type_int64_map(l []*delta.Locator) Case_type_int64_map {
 func (b Case_type_int64_map) Key(key int) Case_type {
 	return NewCase_type(delta.CopyAndAppendKeyInt64(b.location, int64(key)))
 }
-func (b Case_type_int64_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyInt64(b.location, int64(from)), int64(to))
-}
-func (b Case_type_int64_map) Insert(key int, value *Case) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyInt64(b.location, int64(key)), value)
+func (b Case_type_int64_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyInt64(b.location, int64(from)), int64(to))
 }
 func (b Case_type_int64_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Case_type_int64_map) Replace(value map[int64]*Case) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Case_type_int64_map) Set(value map[int64]*Case) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Case_type_uint32_map struct {
@@ -1002,17 +921,14 @@ func NewCase_type_uint32_map(l []*delta.Locator) Case_type_uint32_map {
 func (b Case_type_uint32_map) Key(key int) Case_type {
 	return NewCase_type(delta.CopyAndAppendKeyUint32(b.location, uint32(key)))
 }
-func (b Case_type_uint32_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyUint32(b.location, uint32(from)), uint32(to))
-}
-func (b Case_type_uint32_map) Insert(key int, value *Case) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyUint32(b.location, uint32(key)), value)
+func (b Case_type_uint32_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyUint32(b.location, uint32(from)), uint32(to))
 }
 func (b Case_type_uint32_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Case_type_uint32_map) Replace(value map[uint32]*Case) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Case_type_uint32_map) Set(value map[uint32]*Case) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Case_type_uint64_map struct {
@@ -1028,17 +944,14 @@ func NewCase_type_uint64_map(l []*delta.Locator) Case_type_uint64_map {
 func (b Case_type_uint64_map) Key(key int) Case_type {
 	return NewCase_type(delta.CopyAndAppendKeyUint64(b.location, uint64(key)))
 }
-func (b Case_type_uint64_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyUint64(b.location, uint64(from)), uint64(to))
-}
-func (b Case_type_uint64_map) Insert(key int, value *Case) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyUint64(b.location, uint64(key)), value)
+func (b Case_type_uint64_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyUint64(b.location, uint64(from)), uint64(to))
 }
 func (b Case_type_uint64_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Case_type_uint64_map) Replace(value map[uint64]*Case) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Case_type_uint64_map) Set(value map[uint64]*Case) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Case_type_string_map struct {
@@ -1054,17 +967,14 @@ func NewCase_type_string_map(l []*delta.Locator) Case_type_string_map {
 func (b Case_type_string_map) Key(key string) Case_type {
 	return NewCase_type(delta.CopyAndAppendKeyString(b.location, key))
 }
-func (b Case_type_string_map) Move(from, to string) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyString(b.location, from), to)
-}
-func (b Case_type_string_map) Insert(key string, value *Case) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyString(b.location, key), value)
+func (b Case_type_string_map) Rename(from, to string) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyString(b.location, from), to)
 }
 func (b Case_type_string_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Case_type_string_map) Replace(value map[string]*Case) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Case_type_string_map) Set(value map[string]*Case) *delta.Op {
+	return delta.Set(b.location, value)
 }
 func (Op_root_type) Item() Item_type {
 	return Item_type{}
@@ -1092,8 +1002,8 @@ func (b Item_type) Flags() delta.String_scalar_list {
 func (b Item_type) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Item_type) Replace(value *Item) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Item_type) Set(value *Item) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Item_type_list struct {
@@ -1118,8 +1028,8 @@ func (b Item_type_list) Move(from, to int) *delta.Op {
 func (b Item_type_list) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Item_type_list) Replace(value []*Item) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Item_type_list) Set(value []*Item) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Item_type_bool_map struct {
@@ -1135,17 +1045,14 @@ func NewItem_type_bool_map(l []*delta.Locator) Item_type_bool_map {
 func (b Item_type_bool_map) Key(key bool) Item_type {
 	return NewItem_type(delta.CopyAndAppendKeyBool(b.location, key))
 }
-func (b Item_type_bool_map) Move(from, to bool) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyBool(b.location, from), to)
-}
-func (b Item_type_bool_map) Insert(key bool, value *Item) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyBool(b.location, key), value)
+func (b Item_type_bool_map) Rename(from, to bool) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyBool(b.location, from), to)
 }
 func (b Item_type_bool_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Item_type_bool_map) Replace(value map[bool]*Item) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Item_type_bool_map) Set(value map[bool]*Item) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Item_type_int32_map struct {
@@ -1161,17 +1068,14 @@ func NewItem_type_int32_map(l []*delta.Locator) Item_type_int32_map {
 func (b Item_type_int32_map) Key(key int) Item_type {
 	return NewItem_type(delta.CopyAndAppendKeyInt32(b.location, int32(key)))
 }
-func (b Item_type_int32_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyInt32(b.location, int32(from)), int32(to))
-}
-func (b Item_type_int32_map) Insert(key int, value *Item) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyInt32(b.location, int32(key)), value)
+func (b Item_type_int32_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyInt32(b.location, int32(from)), int32(to))
 }
 func (b Item_type_int32_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Item_type_int32_map) Replace(value map[int32]*Item) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Item_type_int32_map) Set(value map[int32]*Item) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Item_type_int64_map struct {
@@ -1187,17 +1091,14 @@ func NewItem_type_int64_map(l []*delta.Locator) Item_type_int64_map {
 func (b Item_type_int64_map) Key(key int) Item_type {
 	return NewItem_type(delta.CopyAndAppendKeyInt64(b.location, int64(key)))
 }
-func (b Item_type_int64_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyInt64(b.location, int64(from)), int64(to))
-}
-func (b Item_type_int64_map) Insert(key int, value *Item) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyInt64(b.location, int64(key)), value)
+func (b Item_type_int64_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyInt64(b.location, int64(from)), int64(to))
 }
 func (b Item_type_int64_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Item_type_int64_map) Replace(value map[int64]*Item) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Item_type_int64_map) Set(value map[int64]*Item) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Item_type_uint32_map struct {
@@ -1213,17 +1114,14 @@ func NewItem_type_uint32_map(l []*delta.Locator) Item_type_uint32_map {
 func (b Item_type_uint32_map) Key(key int) Item_type {
 	return NewItem_type(delta.CopyAndAppendKeyUint32(b.location, uint32(key)))
 }
-func (b Item_type_uint32_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyUint32(b.location, uint32(from)), uint32(to))
-}
-func (b Item_type_uint32_map) Insert(key int, value *Item) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyUint32(b.location, uint32(key)), value)
+func (b Item_type_uint32_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyUint32(b.location, uint32(from)), uint32(to))
 }
 func (b Item_type_uint32_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Item_type_uint32_map) Replace(value map[uint32]*Item) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Item_type_uint32_map) Set(value map[uint32]*Item) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Item_type_uint64_map struct {
@@ -1239,17 +1137,14 @@ func NewItem_type_uint64_map(l []*delta.Locator) Item_type_uint64_map {
 func (b Item_type_uint64_map) Key(key int) Item_type {
 	return NewItem_type(delta.CopyAndAppendKeyUint64(b.location, uint64(key)))
 }
-func (b Item_type_uint64_map) Move(from, to int) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyUint64(b.location, uint64(from)), uint64(to))
-}
-func (b Item_type_uint64_map) Insert(key int, value *Item) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyUint64(b.location, uint64(key)), value)
+func (b Item_type_uint64_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyUint64(b.location, uint64(from)), uint64(to))
 }
 func (b Item_type_uint64_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Item_type_uint64_map) Replace(value map[uint64]*Item) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Item_type_uint64_map) Set(value map[uint64]*Item) *delta.Op {
+	return delta.Set(b.location, value)
 }
 
 type Item_type_string_map struct {
@@ -1265,15 +1160,12 @@ func NewItem_type_string_map(l []*delta.Locator) Item_type_string_map {
 func (b Item_type_string_map) Key(key string) Item_type {
 	return NewItem_type(delta.CopyAndAppendKeyString(b.location, key))
 }
-func (b Item_type_string_map) Move(from, to string) *delta.Op {
-	return delta.Move(delta.CopyAndAppendKeyString(b.location, from), to)
-}
-func (b Item_type_string_map) Insert(key string, value *Item) *delta.Op {
-	return delta.Insert(delta.CopyAndAppendKeyString(b.location, key), value)
+func (b Item_type_string_map) Rename(from, to string) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyString(b.location, from), to)
 }
 func (b Item_type_string_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Item_type_string_map) Replace(value map[string]*Item) *delta.Op {
-	return delta.Replace(b.location, value)
+func (b Item_type_string_map) Set(value map[string]*Item) *delta.Op {
+	return delta.Set(b.location, value)
 }

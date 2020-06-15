@@ -456,7 +456,7 @@ func (s *state) scanMessages() error {
 
 						// reserved method names
 						switch field.NameTitle {
-						case "Edit", "Insert", "Delete", "Move", "Replace":
+						case "Edit", "Insert", "Delete", "Move", "Set", "Rename":
 							field.NameTitle += "_"
 						}
 
@@ -702,20 +702,11 @@ func (s *state) genDart() error {
 					sb.WriteString(fmt.Sprintf("  }\n"))
 
 					/*
-						delta.Op Insert(int k, String value) {
-						  return delta.insert(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)), scalarString(value));
-						}
-					*/
-					sb.WriteString(fmt.Sprintf("  delta.Op Insert(%s key, %s value) {\n", DartTypesConvenience[typ.Key], typ.DartValueType()))
-					sb.WriteString(fmt.Sprintf("    return delta.insert(delta.copyAndAppendKey%s(location, %s), %s);\n", strings.Title(typ.Key), DartTypesConversion[typ.Key]("key"), typ.DartValueConversion("value")))
-					sb.WriteString("  }\n")
-					sb.WriteString("\n")
-					/*
-						delta.Op Move(int from, int to) {
+						delta.Op Rename(int from, int to) {
 						  return delta.moveMap(delta.copyAndAppendIndex(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
 						}
 					*/
-					sb.WriteString(fmt.Sprintf("  delta.Op Move(%s from, %s to) {\n", DartTypesConvenience[typ.Key], DartTypesConvenience[typ.Key]))
+					sb.WriteString(fmt.Sprintf("  delta.Op Rename(%s from, %s to) {\n", DartTypesConvenience[typ.Key], DartTypesConvenience[typ.Key]))
 					sb.WriteString(fmt.Sprintf("    return delta.moveMap(delta.copyAndAppendKey%s(location, %s), delta.key%s(%s));\n", strings.Title(typ.Key), DartTypesConversion[typ.Key]("from"), strings.Title(typ.Key), DartTypesConversion[typ.Key]("to")))
 					sb.WriteString("  }\n")
 					sb.WriteString("\n")
@@ -754,12 +745,12 @@ func (s *state) genDart() error {
 				sb.WriteString("  }\n")
 				sb.WriteString("\n")
 				/*
-					delta.Op Replace(pb.Company value) {
-					  return delta.replace(location, value);
+					delta.Op Set(pb.Company value) {
+					  return delta.set(location, value);
 					}
 				*/
-				sb.WriteString(fmt.Sprintf("  delta.Op Replace(%s value) {\n", typ.DartCollectionType()))
-				sb.WriteString(fmt.Sprintf("    return delta.replace(location, %s);\n", typ.DartCollectionConversion("value")))
+				sb.WriteString(fmt.Sprintf("  delta.Op Set(%s value) {\n", typ.DartCollectionType()))
+				sb.WriteString(fmt.Sprintf("    return delta.set(location, %s);\n", typ.DartCollectionConversion("value")))
 				sb.WriteString("  }\n")
 				sb.WriteString("\n")
 				if typ.CollectionType == BASE && typ.ValueType == SCALAR && typ.Value == "string" {
@@ -1039,8 +1030,8 @@ func (t *Type) EmitGo(f *jen.File) {
 		)
 
 		/*
-			func (b Person_type) Move(from, to string) *delta.Op {
-				return delta.Move(
+			func (b Person_type) Rename(from, to string) *delta.Op {
+				return delta.Rename(
 					delta.CopyAndAppendKeyString(
 						b.location,
 						from
@@ -1049,33 +1040,13 @@ func (t *Type) EmitGo(f *jen.File) {
 				)
 			}
 		*/
-		f.Func().Params(jen.Id("b").Id(t.LocatorName)).Id("Move").Params(jen.Id("from"), jen.Id("to").Add(GoTypesConvenience[t.Key])).Op("*").Qual(deltaPath, "Op").Block(
-			jen.Return(jen.Qual(deltaPath, "Move").Call(
+		f.Func().Params(jen.Id("b").Id(t.LocatorName)).Id("Rename").Params(jen.Id("from"), jen.Id("to").Add(GoTypesConvenience[t.Key])).Op("*").Qual(deltaPath, "Op").Block(
+			jen.Return(jen.Qual(deltaPath, "Rename").Call(
 				jen.Qual(deltaPath, fmt.Sprintf("CopyAndAppendKey%s", strings.Title(t.Key))).Call(
 					jen.Id("b").Dot("location"),
 					GoTypesConversion[t.Key]("from"),
 				),
 				GoTypesConversion[t.Key]("to"),
-			)),
-		)
-		/*
-			func (b Person_type) Insert(key bool, value *Person) *delta.Op {
-				return delta.Move(
-					delta.CopyAndAppendKeyBool(
-						b.location,
-						key,
-					),
-					value,
-				)
-			}
-		*/
-		f.Func().Params(jen.Id("b").Id(t.LocatorName)).Id("Insert").Params(jen.Id("key").Add(GoTypesConvenience[t.Key]), jen.Id("value").Add(t.GoValueType())).Op("*").Qual(deltaPath, "Op").Block(
-			jen.Return(jen.Qual(deltaPath, "Insert").Call(
-				jen.Qual(deltaPath, fmt.Sprintf("CopyAndAppendKey%s", strings.Title(t.Key))).Call(
-					jen.Id("b").Dot("location"),
-					GoTypesConversion[t.Key]("key"),
-				),
-				t.GoValueConversion("value"),
 			)),
 		)
 
@@ -1114,12 +1085,12 @@ func (t *Type) EmitGo(f *jen.File) {
 		jen.Return(jen.Qual(deltaPath, "Delete").Call(jen.Id("b").Dot("location"))),
 	)
 	/*
-		func (b Person_type) Replace(value *Person) *delta.Op {
-			return delta.Replace(b.location, value)
+		func (b Person_type) Set(value *Person) *delta.Op {
+			return delta.Set(b.location, value)
 		}
 	*/
-	f.Func().Params(jen.Id("b").Id(t.LocatorName)).Id("Replace").Params(jen.Id("value").Add(t.GoCollectionType())).Op("*").Qual(deltaPath, "Op").Block(
-		jen.Return(jen.Qual(deltaPath, "Replace").Call(jen.Id("b").Dot("location"), t.GoCollectionConversion("value"))),
+	f.Func().Params(jen.Id("b").Id(t.LocatorName)).Id("Set").Params(jen.Id("value").Add(t.GoCollectionType())).Op("*").Qual(deltaPath, "Op").Block(
+		jen.Return(jen.Qual(deltaPath, "Set").Call(jen.Id("b").Dot("location"), t.GoCollectionConversion("value"))),
 	)
 	if t.CollectionType == BASE && t.Value == "string" {
 		/*

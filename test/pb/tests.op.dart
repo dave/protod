@@ -62,8 +62,8 @@ class Person_type extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(pb.Person value) {
-    return delta.replace(location, value);
+  delta.Op Set(pb.Person value) {
+    return delta.set(location, value);
   }
 
 }
@@ -85,8 +85,8 @@ class Person_type_list extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(List<pb.Person> value) {
-    return delta.replace(location, value);
+  delta.Op Set(List<pb.Person> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -96,11 +96,7 @@ class Person_type_bool_map extends delta.Location {
   Person_type Key(bool key) {
     return Person_type(delta.copyAndAppendKeyBool(location, key));
   }
-  delta.Op Insert(bool key, pb.Person value) {
-    return delta.insert(delta.copyAndAppendKeyBool(location, key), value);
-  }
-
-  delta.Op Move(bool from, bool to) {
+  delta.Op Rename(bool from, bool to) {
     return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
   }
 
@@ -108,8 +104,8 @@ class Person_type_bool_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<bool, pb.Person> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<bool, pb.Person> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -119,11 +115,7 @@ class Person_type_int32_map extends delta.Location {
   Person_type Key(int key) {
     return Person_type(delta.copyAndAppendKeyInt32(location, key));
   }
-  delta.Op Insert(int key, pb.Person value) {
-    return delta.insert(delta.copyAndAppendKeyInt32(location, key), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
   }
 
@@ -131,8 +123,8 @@ class Person_type_int32_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<int, pb.Person> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<int, pb.Person> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -142,11 +134,7 @@ class Person_type_int64_map extends delta.Location {
   Person_type Key(int key) {
     return Person_type(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
   }
-  delta.Op Insert(int key, pb.Person value) {
-    return delta.insert(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
   }
 
@@ -154,8 +142,8 @@ class Person_type_int64_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<fixnum.Int64, pb.Person> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<fixnum.Int64, pb.Person> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -165,11 +153,7 @@ class Person_type_uint32_map extends delta.Location {
   Person_type Key(int key) {
     return Person_type(delta.copyAndAppendKeyUint32(location, key));
   }
-  delta.Op Insert(int key, pb.Person value) {
-    return delta.insert(delta.copyAndAppendKeyUint32(location, key), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
   }
 
@@ -177,8 +161,8 @@ class Person_type_uint32_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<int, pb.Person> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<int, pb.Person> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -188,11 +172,7 @@ class Person_type_uint64_map extends delta.Location {
   Person_type Key(int key) {
     return Person_type(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
   }
-  delta.Op Insert(int key, pb.Person value) {
-    return delta.insert(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
   }
 
@@ -200,8 +180,8 @@ class Person_type_uint64_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<fixnum.Int64, pb.Person> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<fixnum.Int64, pb.Person> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -211,11 +191,7 @@ class Person_type_string_map extends delta.Location {
   Person_type Key(String key) {
     return Person_type(delta.copyAndAppendKeyString(location, key));
   }
-  delta.Op Insert(String key, pb.Person value) {
-    return delta.insert(delta.copyAndAppendKeyString(location, key), value);
-  }
-
-  delta.Op Move(String from, String to) {
+  delta.Op Rename(String from, String to) {
     return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
   }
 
@@ -223,8 +199,8 @@ class Person_type_string_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<String, pb.Person> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<String, pb.Person> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -235,8 +211,8 @@ class Person_Type_type extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(pb.Person_Type value) {
-    return delta.replace(location, value);
+  delta.Op Set(pb.Person_Type value) {
+    return delta.set(location, value);
   }
 
 }
@@ -258,8 +234,8 @@ class Person_Type_type_list extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(List<pb.Person_Type> value) {
-    return delta.replace(location, value);
+  delta.Op Set(List<pb.Person_Type> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -269,11 +245,7 @@ class Person_Type_type_bool_map extends delta.Location {
   Person_Type_type Key(bool key) {
     return Person_Type_type(delta.copyAndAppendKeyBool(location, key));
   }
-  delta.Op Insert(bool key, pb.Person_Type value) {
-    return delta.insert(delta.copyAndAppendKeyBool(location, key), value);
-  }
-
-  delta.Op Move(bool from, bool to) {
+  delta.Op Rename(bool from, bool to) {
     return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
   }
 
@@ -281,8 +253,8 @@ class Person_Type_type_bool_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<bool, pb.Person_Type> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<bool, pb.Person_Type> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -292,11 +264,7 @@ class Person_Type_type_int32_map extends delta.Location {
   Person_Type_type Key(int key) {
     return Person_Type_type(delta.copyAndAppendKeyInt32(location, key));
   }
-  delta.Op Insert(int key, pb.Person_Type value) {
-    return delta.insert(delta.copyAndAppendKeyInt32(location, key), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
   }
 
@@ -304,8 +272,8 @@ class Person_Type_type_int32_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<int, pb.Person_Type> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<int, pb.Person_Type> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -315,11 +283,7 @@ class Person_Type_type_int64_map extends delta.Location {
   Person_Type_type Key(int key) {
     return Person_Type_type(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
   }
-  delta.Op Insert(int key, pb.Person_Type value) {
-    return delta.insert(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
   }
 
@@ -327,8 +291,8 @@ class Person_Type_type_int64_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<fixnum.Int64, pb.Person_Type> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<fixnum.Int64, pb.Person_Type> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -338,11 +302,7 @@ class Person_Type_type_uint32_map extends delta.Location {
   Person_Type_type Key(int key) {
     return Person_Type_type(delta.copyAndAppendKeyUint32(location, key));
   }
-  delta.Op Insert(int key, pb.Person_Type value) {
-    return delta.insert(delta.copyAndAppendKeyUint32(location, key), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
   }
 
@@ -350,8 +310,8 @@ class Person_Type_type_uint32_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<int, pb.Person_Type> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<int, pb.Person_Type> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -361,11 +321,7 @@ class Person_Type_type_uint64_map extends delta.Location {
   Person_Type_type Key(int key) {
     return Person_Type_type(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
   }
-  delta.Op Insert(int key, pb.Person_Type value) {
-    return delta.insert(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
   }
 
@@ -373,8 +329,8 @@ class Person_Type_type_uint64_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<fixnum.Int64, pb.Person_Type> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<fixnum.Int64, pb.Person_Type> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -384,11 +340,7 @@ class Person_Type_type_string_map extends delta.Location {
   Person_Type_type Key(String key) {
     return Person_Type_type(delta.copyAndAppendKeyString(location, key));
   }
-  delta.Op Insert(String key, pb.Person_Type value) {
-    return delta.insert(delta.copyAndAppendKeyString(location, key), value);
-  }
-
-  delta.Op Move(String from, String to) {
+  delta.Op Rename(String from, String to) {
     return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
   }
 
@@ -396,8 +348,8 @@ class Person_Type_type_string_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<String, pb.Person_Type> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<String, pb.Person_Type> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -411,8 +363,8 @@ class Person_Embed_type extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(pb.Person_Embed value) {
-    return delta.replace(location, value);
+  delta.Op Set(pb.Person_Embed value) {
+    return delta.set(location, value);
   }
 
 }
@@ -434,8 +386,8 @@ class Person_Embed_type_list extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(List<pb.Person_Embed> value) {
-    return delta.replace(location, value);
+  delta.Op Set(List<pb.Person_Embed> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -445,11 +397,7 @@ class Person_Embed_type_bool_map extends delta.Location {
   Person_Embed_type Key(bool key) {
     return Person_Embed_type(delta.copyAndAppendKeyBool(location, key));
   }
-  delta.Op Insert(bool key, pb.Person_Embed value) {
-    return delta.insert(delta.copyAndAppendKeyBool(location, key), value);
-  }
-
-  delta.Op Move(bool from, bool to) {
+  delta.Op Rename(bool from, bool to) {
     return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
   }
 
@@ -457,8 +405,8 @@ class Person_Embed_type_bool_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<bool, pb.Person_Embed> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<bool, pb.Person_Embed> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -468,11 +416,7 @@ class Person_Embed_type_int32_map extends delta.Location {
   Person_Embed_type Key(int key) {
     return Person_Embed_type(delta.copyAndAppendKeyInt32(location, key));
   }
-  delta.Op Insert(int key, pb.Person_Embed value) {
-    return delta.insert(delta.copyAndAppendKeyInt32(location, key), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
   }
 
@@ -480,8 +424,8 @@ class Person_Embed_type_int32_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<int, pb.Person_Embed> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<int, pb.Person_Embed> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -491,11 +435,7 @@ class Person_Embed_type_int64_map extends delta.Location {
   Person_Embed_type Key(int key) {
     return Person_Embed_type(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
   }
-  delta.Op Insert(int key, pb.Person_Embed value) {
-    return delta.insert(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
   }
 
@@ -503,8 +443,8 @@ class Person_Embed_type_int64_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<fixnum.Int64, pb.Person_Embed> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<fixnum.Int64, pb.Person_Embed> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -514,11 +454,7 @@ class Person_Embed_type_uint32_map extends delta.Location {
   Person_Embed_type Key(int key) {
     return Person_Embed_type(delta.copyAndAppendKeyUint32(location, key));
   }
-  delta.Op Insert(int key, pb.Person_Embed value) {
-    return delta.insert(delta.copyAndAppendKeyUint32(location, key), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
   }
 
@@ -526,8 +462,8 @@ class Person_Embed_type_uint32_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<int, pb.Person_Embed> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<int, pb.Person_Embed> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -537,11 +473,7 @@ class Person_Embed_type_uint64_map extends delta.Location {
   Person_Embed_type Key(int key) {
     return Person_Embed_type(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
   }
-  delta.Op Insert(int key, pb.Person_Embed value) {
-    return delta.insert(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
   }
 
@@ -549,8 +481,8 @@ class Person_Embed_type_uint64_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<fixnum.Int64, pb.Person_Embed> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<fixnum.Int64, pb.Person_Embed> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -560,11 +492,7 @@ class Person_Embed_type_string_map extends delta.Location {
   Person_Embed_type Key(String key) {
     return Person_Embed_type(delta.copyAndAppendKeyString(location, key));
   }
-  delta.Op Insert(String key, pb.Person_Embed value) {
-    return delta.insert(delta.copyAndAppendKeyString(location, key), value);
-  }
-
-  delta.Op Move(String from, String to) {
+  delta.Op Rename(String from, String to) {
     return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
   }
 
@@ -572,8 +500,8 @@ class Person_Embed_type_string_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<String, pb.Person_Embed> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<String, pb.Person_Embed> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -596,8 +524,8 @@ class Company_type extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(pb.Company value) {
-    return delta.replace(location, value);
+  delta.Op Set(pb.Company value) {
+    return delta.set(location, value);
   }
 
 }
@@ -619,8 +547,8 @@ class Company_type_list extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(List<pb.Company> value) {
-    return delta.replace(location, value);
+  delta.Op Set(List<pb.Company> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -630,11 +558,7 @@ class Company_type_bool_map extends delta.Location {
   Company_type Key(bool key) {
     return Company_type(delta.copyAndAppendKeyBool(location, key));
   }
-  delta.Op Insert(bool key, pb.Company value) {
-    return delta.insert(delta.copyAndAppendKeyBool(location, key), value);
-  }
-
-  delta.Op Move(bool from, bool to) {
+  delta.Op Rename(bool from, bool to) {
     return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
   }
 
@@ -642,8 +566,8 @@ class Company_type_bool_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<bool, pb.Company> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<bool, pb.Company> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -653,11 +577,7 @@ class Company_type_int32_map extends delta.Location {
   Company_type Key(int key) {
     return Company_type(delta.copyAndAppendKeyInt32(location, key));
   }
-  delta.Op Insert(int key, pb.Company value) {
-    return delta.insert(delta.copyAndAppendKeyInt32(location, key), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
   }
 
@@ -665,8 +585,8 @@ class Company_type_int32_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<int, pb.Company> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<int, pb.Company> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -676,11 +596,7 @@ class Company_type_int64_map extends delta.Location {
   Company_type Key(int key) {
     return Company_type(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
   }
-  delta.Op Insert(int key, pb.Company value) {
-    return delta.insert(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
   }
 
@@ -688,8 +604,8 @@ class Company_type_int64_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<fixnum.Int64, pb.Company> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<fixnum.Int64, pb.Company> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -699,11 +615,7 @@ class Company_type_uint32_map extends delta.Location {
   Company_type Key(int key) {
     return Company_type(delta.copyAndAppendKeyUint32(location, key));
   }
-  delta.Op Insert(int key, pb.Company value) {
-    return delta.insert(delta.copyAndAppendKeyUint32(location, key), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
   }
 
@@ -711,8 +623,8 @@ class Company_type_uint32_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<int, pb.Company> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<int, pb.Company> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -722,11 +634,7 @@ class Company_type_uint64_map extends delta.Location {
   Company_type Key(int key) {
     return Company_type(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
   }
-  delta.Op Insert(int key, pb.Company value) {
-    return delta.insert(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
   }
 
@@ -734,8 +642,8 @@ class Company_type_uint64_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<fixnum.Int64, pb.Company> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<fixnum.Int64, pb.Company> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -745,11 +653,7 @@ class Company_type_string_map extends delta.Location {
   Company_type Key(String key) {
     return Company_type(delta.copyAndAppendKeyString(location, key));
   }
-  delta.Op Insert(String key, pb.Company value) {
-    return delta.insert(delta.copyAndAppendKeyString(location, key), value);
-  }
-
-  delta.Op Move(String from, String to) {
+  delta.Op Rename(String from, String to) {
     return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
   }
 
@@ -757,8 +661,8 @@ class Company_type_string_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<String, pb.Company> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<String, pb.Company> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -775,8 +679,8 @@ class Case_type extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(pb.Case value) {
-    return delta.replace(location, value);
+  delta.Op Set(pb.Case value) {
+    return delta.set(location, value);
   }
 
 }
@@ -798,8 +702,8 @@ class Case_type_list extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(List<pb.Case> value) {
-    return delta.replace(location, value);
+  delta.Op Set(List<pb.Case> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -809,11 +713,7 @@ class Case_type_bool_map extends delta.Location {
   Case_type Key(bool key) {
     return Case_type(delta.copyAndAppendKeyBool(location, key));
   }
-  delta.Op Insert(bool key, pb.Case value) {
-    return delta.insert(delta.copyAndAppendKeyBool(location, key), value);
-  }
-
-  delta.Op Move(bool from, bool to) {
+  delta.Op Rename(bool from, bool to) {
     return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
   }
 
@@ -821,8 +721,8 @@ class Case_type_bool_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<bool, pb.Case> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<bool, pb.Case> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -832,11 +732,7 @@ class Case_type_int32_map extends delta.Location {
   Case_type Key(int key) {
     return Case_type(delta.copyAndAppendKeyInt32(location, key));
   }
-  delta.Op Insert(int key, pb.Case value) {
-    return delta.insert(delta.copyAndAppendKeyInt32(location, key), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
   }
 
@@ -844,8 +740,8 @@ class Case_type_int32_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<int, pb.Case> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<int, pb.Case> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -855,11 +751,7 @@ class Case_type_int64_map extends delta.Location {
   Case_type Key(int key) {
     return Case_type(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
   }
-  delta.Op Insert(int key, pb.Case value) {
-    return delta.insert(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
   }
 
@@ -867,8 +759,8 @@ class Case_type_int64_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<fixnum.Int64, pb.Case> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<fixnum.Int64, pb.Case> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -878,11 +770,7 @@ class Case_type_uint32_map extends delta.Location {
   Case_type Key(int key) {
     return Case_type(delta.copyAndAppendKeyUint32(location, key));
   }
-  delta.Op Insert(int key, pb.Case value) {
-    return delta.insert(delta.copyAndAppendKeyUint32(location, key), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
   }
 
@@ -890,8 +778,8 @@ class Case_type_uint32_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<int, pb.Case> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<int, pb.Case> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -901,11 +789,7 @@ class Case_type_uint64_map extends delta.Location {
   Case_type Key(int key) {
     return Case_type(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
   }
-  delta.Op Insert(int key, pb.Case value) {
-    return delta.insert(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
   }
 
@@ -913,8 +797,8 @@ class Case_type_uint64_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<fixnum.Int64, pb.Case> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<fixnum.Int64, pb.Case> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -924,11 +808,7 @@ class Case_type_string_map extends delta.Location {
   Case_type Key(String key) {
     return Case_type(delta.copyAndAppendKeyString(location, key));
   }
-  delta.Op Insert(String key, pb.Case value) {
-    return delta.insert(delta.copyAndAppendKeyString(location, key), value);
-  }
-
-  delta.Op Move(String from, String to) {
+  delta.Op Rename(String from, String to) {
     return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
   }
 
@@ -936,8 +816,8 @@ class Case_type_string_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<String, pb.Case> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<String, pb.Case> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -957,8 +837,8 @@ class Item_type extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(pb.Item value) {
-    return delta.replace(location, value);
+  delta.Op Set(pb.Item value) {
+    return delta.set(location, value);
   }
 
 }
@@ -980,8 +860,8 @@ class Item_type_list extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(List<pb.Item> value) {
-    return delta.replace(location, value);
+  delta.Op Set(List<pb.Item> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -991,11 +871,7 @@ class Item_type_bool_map extends delta.Location {
   Item_type Key(bool key) {
     return Item_type(delta.copyAndAppendKeyBool(location, key));
   }
-  delta.Op Insert(bool key, pb.Item value) {
-    return delta.insert(delta.copyAndAppendKeyBool(location, key), value);
-  }
-
-  delta.Op Move(bool from, bool to) {
+  delta.Op Rename(bool from, bool to) {
     return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
   }
 
@@ -1003,8 +879,8 @@ class Item_type_bool_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<bool, pb.Item> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<bool, pb.Item> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -1014,11 +890,7 @@ class Item_type_int32_map extends delta.Location {
   Item_type Key(int key) {
     return Item_type(delta.copyAndAppendKeyInt32(location, key));
   }
-  delta.Op Insert(int key, pb.Item value) {
-    return delta.insert(delta.copyAndAppendKeyInt32(location, key), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
   }
 
@@ -1026,8 +898,8 @@ class Item_type_int32_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<int, pb.Item> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<int, pb.Item> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -1037,11 +909,7 @@ class Item_type_int64_map extends delta.Location {
   Item_type Key(int key) {
     return Item_type(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
   }
-  delta.Op Insert(int key, pb.Item value) {
-    return delta.insert(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
   }
 
@@ -1049,8 +917,8 @@ class Item_type_int64_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<fixnum.Int64, pb.Item> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<fixnum.Int64, pb.Item> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -1060,11 +928,7 @@ class Item_type_uint32_map extends delta.Location {
   Item_type Key(int key) {
     return Item_type(delta.copyAndAppendKeyUint32(location, key));
   }
-  delta.Op Insert(int key, pb.Item value) {
-    return delta.insert(delta.copyAndAppendKeyUint32(location, key), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
   }
 
@@ -1072,8 +936,8 @@ class Item_type_uint32_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<int, pb.Item> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<int, pb.Item> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -1083,11 +947,7 @@ class Item_type_uint64_map extends delta.Location {
   Item_type Key(int key) {
     return Item_type(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
   }
-  delta.Op Insert(int key, pb.Item value) {
-    return delta.insert(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)), value);
-  }
-
-  delta.Op Move(int from, int to) {
+  delta.Op Rename(int from, int to) {
     return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
   }
 
@@ -1095,8 +955,8 @@ class Item_type_uint64_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<fixnum.Int64, pb.Item> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<fixnum.Int64, pb.Item> value) {
+    return delta.set(location, value);
   }
 
 }
@@ -1106,11 +966,7 @@ class Item_type_string_map extends delta.Location {
   Item_type Key(String key) {
     return Item_type(delta.copyAndAppendKeyString(location, key));
   }
-  delta.Op Insert(String key, pb.Item value) {
-    return delta.insert(delta.copyAndAppendKeyString(location, key), value);
-  }
-
-  delta.Op Move(String from, String to) {
+  delta.Op Rename(String from, String to) {
     return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
   }
 
@@ -1118,8 +974,8 @@ class Item_type_string_map extends delta.Location {
     return delta.delete(location);
   }
 
-  delta.Op Replace(Map<String, pb.Item> value) {
-    return delta.replace(location, value);
+  delta.Op Set(Map<String, pb.Item> value) {
+    return delta.set(location, value);
   }
 
 }

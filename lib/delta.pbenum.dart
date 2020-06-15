@@ -10,16 +10,20 @@ import 'dart:core' as $core;
 import 'package:protobuf/protobuf.dart' as $pb;
 
 class Op_Type extends $pb.ProtobufEnum {
-  static const Op_Type Edit = Op_Type._(0, 'Edit');
-  static const Op_Type Insert = Op_Type._(1, 'Insert');
-  static const Op_Type Move = Op_Type._(2, 'Move');
-  static const Op_Type Delete = Op_Type._(3, 'Delete');
-  static const Op_Type Compound = Op_Type._(4, 'Compound');
+  static const Op_Type Set = Op_Type._(0, 'Set');
+  static const Op_Type Edit = Op_Type._(1, 'Edit');
+  static const Op_Type Insert = Op_Type._(2, 'Insert');
+  static const Op_Type Move = Op_Type._(3, 'Move');
+  static const Op_Type Rename = Op_Type._(4, 'Rename');
+  static const Op_Type Delete = Op_Type._(5, 'Delete');
+  static const Op_Type Compound = Op_Type._(6, 'Compound');
 
   static const $core.List<Op_Type> values = <Op_Type> [
+    Set,
     Edit,
     Insert,
     Move,
+    Rename,
     Delete,
     Compound,
   ];

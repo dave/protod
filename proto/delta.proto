@@ -7,23 +7,25 @@ option go_package = "github.com/dave/protod/delta;delta";
 
 message Op {
   enum Type {
-    Edit = 0;     // edit the value or create a new value when the value is null
-    Insert = 1;   // insert at a specific location in a list or map
-    Move = 2;     // move in a list or change the key in a map
-    Delete = 3;   // delete from a list or map, or unset the value
-    Compound = 4; // several operations combined into one
+    Set = 0;      // set the value
+    Edit = 1;     // edit the text value with a diff
+    Insert = 2;   // insert at a specific location in a list
+    Move = 3;     // move in a list
+    Rename = 4;   // change the key in a map
+    Delete = 5;   // delete from a list or map, or unset the value
+    Compound = 6; // several operations combined into one
   }
   Type type = 1;
   repeated Locator location = 2;
   repeated Op ops = 3; // children for compound operations
   oneof value {
-    Scalar scalar = 4;               // new value [Edit, Insert]
-    int32 enum = 5;                  // new value [Edit, Insert]
-    Delta delta = 6;                 // quill text delta [Edit, Insert]
-    google.protobuf.Any message = 7; // new value [Edit, Insert]
-    Object object = 8;               // new value [Edit, Insert]
-    int64 index = 9;                 // destination index [Move]
-    Key key = 10;                    // destination key [Move]
+    Scalar scalar = 4;               // new value [Set, Insert]
+    int32 enum = 5;                  // new value [Set, Insert]
+    google.protobuf.Any message = 6; // new value [Set, Insert]
+    Object object = 7;               // new value [Set, Insert]
+    Delta delta = 8;                 // quill text delta [Edit]
+    int64 index = 9;                 // new index [Move]
+    Key key = 10;                    // new key [Rename]
   }
 }
 

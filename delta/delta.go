@@ -52,18 +52,22 @@ func Apply(op *Op, input *proto2.Message) error {
 		}
 		return nil
 	case Op_Edit:
-		return ApplyEdit(op, input)
+		return ApplySet(op, input)
+	case Op_Set:
+		return ApplySet(op, input)
 	case Op_Insert:
 		return ApplyInsert(op, *input)
 	case Op_Move:
 		return ApplyMove(op, *input)
+	case Op_Rename:
+		return ApplyRename(op, *input)
 	case Op_Delete:
 		return ApplyDelete(op, input)
 	}
 	return fmt.Errorf("unknown op type %v", op.Type)
 }
 
-func ApplyEdit(op *Op, inputAddr *proto2.Message) error {
+func ApplySet(op *Op, inputAddr *proto2.Message) error {
 	if op.Location == nil {
 		// root
 		v := getValue(protoreflect.ValueOfMessage((*inputAddr).ProtoReflect()), op.Value)
@@ -82,7 +86,6 @@ func ApplyEdit(op *Op, inputAddr *proto2.Message) error {
 		field := getField(locator, parent)
 		value := getValueField(parent, field, parent.Get(field), op.Value)
 		parent.Set(field, value)
-		// ...
 	case *Locator_Index:
 		parent, ok := parent.(protoreflect.List)
 		if !ok {
@@ -129,13 +132,7 @@ func ApplyInsert(op *Op, input proto2.Message) error {
 		parent.Set(index, value)
 		setter(protoreflect.ValueOfList(parent)) // must use parent setter in case of mutating operation
 	case *Locator_Key:
-		parent, ok := parent.(protoreflect.Map)
-		if !ok {
-			return fmt.Errorf("can't insert map locator from %T", parent)
-		}
-		value := getValue(protoreflect.Value{}, op.Value)
-		key := getMapKey(locator.Key)
-		parent.Set(key, value)
+		return fmt.Errorf("can't insert with a key locator")
 	}
 	return nil
 }
@@ -171,6 +168,20 @@ func ApplyMove(op *Op, input proto2.Message) error {
 			}
 		}
 		parent.Set(to, item)
+	case *Locator_Key:
+		return fmt.Errorf("can't move with a key locator")
+	}
+	return nil
+}
+
+func ApplyRename(op *Op, input proto2.Message) error {
+	parentLocator, itemLocator := pop(op.Location)
+	parent, _ := getLocation(input.ProtoReflect(), parentLocator)
+	switch locator := itemLocator.V.(type) {
+	case *Locator_Field:
+		return fmt.Errorf("can't move with a field locator")
+	case *Locator_Index:
+		return fmt.Errorf("can't rename with an index locator")
 	case *Locator_Key:
 		parent, ok := parent.(protoreflect.Map)
 		if !ok {
@@ -479,12 +490,6 @@ func Delete(location []*Locator) *Op {
 func Move(location []*Locator, to interface{}) *Op {
 	_, item := pop(location)
 	switch item.V.(type) {
-	case *Locator_Key:
-		return &Op{
-			Type:     Op_Move,
-			Location: location,
-			Value:    opKey(to),
-		}
 	case *Locator_Index:
 		return &Op{
 			Type:     Op_Move,
@@ -496,6 +501,20 @@ func Move(location []*Locator, to interface{}) *Op {
 	}
 }
 
+func Rename(location []*Locator, to interface{}) *Op {
+	_, item := pop(location)
+	switch item.V.(type) {
+	case *Locator_Key:
+		return &Op{
+			Type:     Op_Rename,
+			Location: location,
+			Value:    opKey(to),
+		}
+	default:
+		panic(fmt.Sprintf("can't create rename operation with %T item", item.V))
+	}
+}
+
 func Insert(location []*Locator, value interface{}) *Op {
 	return &Op{
 		Type:     Op_Insert,
@@ -504,9 +523,9 @@ func Insert(location []*Locator, value interface{}) *Op {
 	}
 }
 
-func Replace(location []*Locator, value interface{}) *Op {
+func Set(location []*Locator, value interface{}) *Op {
 	return &Op{
-		Type:     Op_Edit,
+		Type:     Op_Set,
 		Location: location,
 		Value:    opValue(value),
 	}
@@ -875,7 +894,7 @@ func isAncestor(ancestor, descendent []*Locator) bool {
 
 // IsNullMove returns true if o is an Op_Move and the from and to locations are the same.
 func (o *Op) IsNullMove() bool {
-	if o.Type != Op_Move {
+	if o.Type != Op_Move && o.Type != Op_Rename {
 		return false
 	}
 	from := o.Item()
@@ -892,7 +911,7 @@ func (o *Op) IsNullMove() bool {
 }
 
 func (o *Op) To() []*Locator {
-	if o.Type != Op_Move {
+	if o.Type != Op_Move && o.Type != Op_Rename {
 		return []*Locator{}
 	}
 	path, value := o.Pop()

@@ -3,14 +3,15 @@ package delta
 type OpType int
 
 const (
-	EDIT    OpType = 1
-	REPLACE OpType = 2
-	INSERT  OpType = 3
-	MOVE    OpType = 4
-	DELETE  OpType = 5
+	EDIT   OpType = 1
+	SET    OpType = 2
+	INSERT OpType = 3
+	MOVE   OpType = 4
+	DELETE OpType = 5
+	RENAME OpType = 6
 )
 
-var OpTypes = []OpType{EDIT, REPLACE, INSERT, MOVE, DELETE}
+var OpTypes = []OpType{EDIT, SET, INSERT, MOVE, DELETE, RENAME}
 
 type LocatorType int
 
@@ -25,7 +26,8 @@ var LocatorTypes = []LocatorType{FIELD, INDEX, KEY}
 type OpData struct {
 	Name     string
 	Type     string
-	Locators map[LocatorType]OpBehaviour
+	Locators []LocatorType
+	Data     map[LocatorType]OpBehaviour
 }
 
 type OpBehaviour struct {
@@ -38,9 +40,10 @@ type OpBehaviour struct {
 
 var Behaviours = map[OpType]OpData{
 	EDIT: {
-		Name: "Edit",
-		Type: "Op_Edit",
-		Locators: map[LocatorType]OpBehaviour{
+		Name:     "Edit",
+		Type:     "Op_Edit",
+		Locators: []LocatorType{FIELD, INDEX, KEY},
+		Data: map[LocatorType]OpBehaviour{
 			FIELD: {
 				ValueIsLocation: false,
 				ItemIsDeleted:   false,
@@ -64,10 +67,11 @@ var Behaviours = map[OpType]OpData{
 			},
 		},
 	},
-	REPLACE: {
-		Name: "Replace",
-		Type: "Op_Edit",
-		Locators: map[LocatorType]OpBehaviour{
+	SET: {
+		Name:     "Set",
+		Type:     "Op_Set",
+		Locators: []LocatorType{FIELD, INDEX, KEY},
+		Data: map[LocatorType]OpBehaviour{
 			FIELD: {
 				ValueIsLocation: false,
 				ItemIsDeleted:   true,
@@ -92,9 +96,10 @@ var Behaviours = map[OpType]OpData{
 		},
 	},
 	INSERT: {
-		Name: "Insert",
-		Type: "Op_Insert",
-		Locators: map[LocatorType]OpBehaviour{
+		Name:     "Insert",
+		Type:     "Op_Insert",
+		Locators: []LocatorType{INDEX},
+		Data: map[LocatorType]OpBehaviour{
 			INDEX: {
 				ValueIsLocation: false,
 				ItemIsDeleted:   false,
@@ -104,19 +109,13 @@ var Behaviours = map[OpType]OpData{
 				},
 				KeyShifter: nil,
 			},
-			KEY: {
-				ValueIsLocation: false,
-				ItemIsDeleted:   true,
-				ValueIsDeleted:  false,
-				IndexShifter:    nil,
-				KeyShifter:      nil,
-			},
 		},
 	},
 	MOVE: {
-		Name: "Move",
-		Type: "Op_Move",
-		Locators: map[LocatorType]OpBehaviour{
+		Name:     "Move",
+		Type:     "Op_Move",
+		Locators: []LocatorType{INDEX},
+		Data: map[LocatorType]OpBehaviour{
 			INDEX: {
 				ValueIsLocation: true,
 				ItemIsDeleted:   false,
@@ -126,21 +125,29 @@ var Behaviours = map[OpType]OpData{
 				},
 				KeyShifter: nil,
 			},
+		},
+	},
+	RENAME: {
+		Name:     "Rename",
+		Type:     "Op_Rename",
+		Locators: []LocatorType{KEY},
+		Data: map[LocatorType]OpBehaviour{
 			KEY: {
 				ValueIsLocation: true,
 				ItemIsDeleted:   false,
 				ValueIsDeleted:  true,
 				IndexShifter:    nil,
 				KeyShifter: func(op *Op, op2 *Op, b bool) func(*Key) *Key {
-					return moveKeyShifter(op.Item().V.(*Locator_Key).Key, op.Value.(*Op_Key).Key)
+					return renameShifter(op.Item().V.(*Locator_Key).Key, op.Value.(*Op_Key).Key)
 				},
 			},
 		},
 	},
 	DELETE: {
-		Name: "Delete",
-		Type: "Op_Delete",
-		Locators: map[LocatorType]OpBehaviour{
+		Name:     "Delete",
+		Type:     "Op_Delete",
+		Locators: []LocatorType{FIELD, INDEX, KEY},
+		Data: map[LocatorType]OpBehaviour{
 			FIELD: {
 				ValueIsLocation: false,
 				ItemIsDeleted:   true,
@@ -188,65 +195,30 @@ var Locators = map[LocatorType]LocatorData{
 	},
 }
 
-func getBehaviour(op *Op) OpBehaviour {
+func GetBehaviour(op *Op) OpBehaviour {
 	var data OpData
 	var behaviour OpBehaviour
 	switch op.Type {
 	case Op_Edit:
-		switch op.Value.(type) {
-		case *Op_Delta:
-			data = Behaviours[EDIT]
-		default:
-			data = Behaviours[REPLACE]
-		}
+		data = Behaviours[EDIT]
+	case Op_Set:
+		data = Behaviours[SET]
 	case Op_Insert:
 		data = Behaviours[INSERT]
 	case Op_Move:
 		data = Behaviours[MOVE]
+	case Op_Rename:
+		data = Behaviours[RENAME]
 	case Op_Delete:
 		data = Behaviours[DELETE]
 	}
 	switch op.Item().V.(type) {
 	case *Locator_Field:
-		behaviour = data.Locators[FIELD]
+		behaviour = data.Data[FIELD]
 	case *Locator_Index:
-		behaviour = data.Locators[INDEX]
+		behaviour = data.Data[INDEX]
 	case *Locator_Key:
-		behaviour = data.Locators[KEY]
+		behaviour = data.Data[KEY]
 	}
 	return behaviour
-}
-
-func (t *Op) Transform3(op *Op, priority bool) *Op {
-	tBehaviour := getBehaviour(t)
-	//opBehaviour := getBehaviour(op)
-
-	if tBehaviour.ItemIsDeleted {
-		if rel := TreeRelationship(t.Location, op.Location); rel == TREE_ANCESTOR || rel == TREE_EQUAL {
-			// t deleted the value at
-		}
-	}
-
-	return nil
-	//f := jen.NewFilePathName("github.com/dave/protod/delta", "delta")
-	//for _, op1Type := range OpTypes {
-	//	op1Data := Types[op1Type]
-	//	for _, locator1Type := range op1Data.Locators {
-	//		locator1Data := Locators[locator1Type]
-	//
-	//		for _, op2Type := range OpTypes {
-	//			op2Data := Types[op2Type]
-	//			for _, locator2Type := range op2Data.Locators {
-	//				locator2Data := Locators[locator2Type]
-	//
-	//				f.Commentf("%s (%s), %s, %s (%s), %s", op1Data.Name, op1Data.Type, locator1Data.Type, op2Data.Name, op2Data.Type, locator2Data.Type)
-	//
-	//			}
-	//		}
-	//
-	//	}
-	//}
-	//if err := f.Save("./delta/transform3.go"); err != nil {
-	//	panic(err)
-	//}
 }
