@@ -25,7 +25,6 @@ const (
 // of the legacy proto package is being used.
 const _ = proto.ProtoPackageIsVersion4
 
-// [proto:data]
 type Person_Type int32
 
 const (
@@ -379,148 +378,6 @@ func (x *Item) GetFlags() []string {
 	return nil
 }
 
-type Holder struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Numbers map[string]int32 `protobuf:"bytes,1,rep,name=numbers,proto3" json:"numbers,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
-}
-
-func (x *Holder) Reset() {
-	*x = Holder{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_proto_msgTypes[4]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *Holder) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Holder) ProtoMessage() {}
-
-func (x *Holder) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_proto_msgTypes[4]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Holder.ProtoReflect.Descriptor instead.
-func (*Holder) Descriptor() ([]byte, []int) {
-	return file_pb_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *Holder) GetNumbers() map[string]int32 {
-	if x != nil {
-		return x.Numbers
-	}
-	return nil
-}
-
-type Embedded struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	EmbeddedLevel0 string `protobuf:"bytes,1,opt,name=embeddedLevel0,proto3" json:"embeddedLevel0,omitempty"`
-}
-
-func (x *Embedded) Reset() {
-	*x = Embedded{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_proto_msgTypes[5]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *Embedded) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Embedded) ProtoMessage() {}
-
-func (x *Embedded) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_proto_msgTypes[5]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Embedded.ProtoReflect.Descriptor instead.
-func (*Embedded) Descriptor() ([]byte, []int) {
-	return file_pb_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *Embedded) GetEmbeddedLevel0() string {
-	if x != nil {
-		return x.EmbeddedLevel0
-	}
-	return ""
-}
-
-type ScopeLevel1 struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	T *ScopeLevel1_Embedded `protobuf:"bytes,1,opt,name=t,proto3" json:"t,omitempty"`
-}
-
-func (x *ScopeLevel1) Reset() {
-	*x = ScopeLevel1{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_proto_msgTypes[6]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ScopeLevel1) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ScopeLevel1) ProtoMessage() {}
-
-func (x *ScopeLevel1) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_proto_msgTypes[6]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ScopeLevel1.ProtoReflect.Descriptor instead.
-func (*ScopeLevel1) Descriptor() ([]byte, []int) {
-	return file_pb_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *ScopeLevel1) GetT() *ScopeLevel1_Embedded {
-	if x != nil {
-		return x.T
-	}
-	return nil
-}
-
-// [proto:data]
 type Person_Embed struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -532,7 +389,7 @@ type Person_Embed struct {
 func (x *Person_Embed) Reset() {
 	*x = Person_Embed{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_proto_msgTypes[7]
+		mi := &file_pb_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -545,7 +402,7 @@ func (x *Person_Embed) String() string {
 func (*Person_Embed) ProtoMessage() {}
 
 func (x *Person_Embed) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_proto_msgTypes[7]
+	mi := &file_pb_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -566,194 +423,6 @@ func (x *Person_Embed) GetName() string {
 		return x.Name
 	}
 	return ""
-}
-
-type ScopeLevel1_Embedded struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	EmbeddedLevel1 string `protobuf:"bytes,1,opt,name=embeddedLevel1,proto3" json:"embeddedLevel1,omitempty"`
-}
-
-func (x *ScopeLevel1_Embedded) Reset() {
-	*x = ScopeLevel1_Embedded{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_proto_msgTypes[12]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ScopeLevel1_Embedded) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ScopeLevel1_Embedded) ProtoMessage() {}
-
-func (x *ScopeLevel1_Embedded) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_proto_msgTypes[12]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ScopeLevel1_Embedded.ProtoReflect.Descriptor instead.
-func (*ScopeLevel1_Embedded) Descriptor() ([]byte, []int) {
-	return file_pb_proto_rawDescGZIP(), []int{6, 0}
-}
-
-func (x *ScopeLevel1_Embedded) GetEmbeddedLevel1() string {
-	if x != nil {
-		return x.EmbeddedLevel1
-	}
-	return ""
-}
-
-type ScopeLevel1_ScopeLevel2 struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	T *ScopeLevel1_ScopeLevel2_Embedded `protobuf:"bytes,1,opt,name=t,proto3" json:"t,omitempty"`
-}
-
-func (x *ScopeLevel1_ScopeLevel2) Reset() {
-	*x = ScopeLevel1_ScopeLevel2{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_proto_msgTypes[13]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ScopeLevel1_ScopeLevel2) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ScopeLevel1_ScopeLevel2) ProtoMessage() {}
-
-func (x *ScopeLevel1_ScopeLevel2) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_proto_msgTypes[13]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ScopeLevel1_ScopeLevel2.ProtoReflect.Descriptor instead.
-func (*ScopeLevel1_ScopeLevel2) Descriptor() ([]byte, []int) {
-	return file_pb_proto_rawDescGZIP(), []int{6, 1}
-}
-
-func (x *ScopeLevel1_ScopeLevel2) GetT() *ScopeLevel1_ScopeLevel2_Embedded {
-	if x != nil {
-		return x.T
-	}
-	return nil
-}
-
-type ScopeLevel1_ScopeLevel2_Embedded struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	EmbeddedLevel2 string `protobuf:"bytes,1,opt,name=embeddedLevel2,proto3" json:"embeddedLevel2,omitempty"`
-}
-
-func (x *ScopeLevel1_ScopeLevel2_Embedded) Reset() {
-	*x = ScopeLevel1_ScopeLevel2_Embedded{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_proto_msgTypes[14]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ScopeLevel1_ScopeLevel2_Embedded) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ScopeLevel1_ScopeLevel2_Embedded) ProtoMessage() {}
-
-func (x *ScopeLevel1_ScopeLevel2_Embedded) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_proto_msgTypes[14]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ScopeLevel1_ScopeLevel2_Embedded.ProtoReflect.Descriptor instead.
-func (*ScopeLevel1_ScopeLevel2_Embedded) Descriptor() ([]byte, []int) {
-	return file_pb_proto_rawDescGZIP(), []int{6, 1, 0}
-}
-
-func (x *ScopeLevel1_ScopeLevel2_Embedded) GetEmbeddedLevel2() string {
-	if x != nil {
-		return x.EmbeddedLevel2
-	}
-	return ""
-}
-
-type ScopeLevel1_ScopeLevel2_ScopeLevel3 struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	T *ScopeLevel1_ScopeLevel2_Embedded `protobuf:"bytes,1,opt,name=t,proto3" json:"t,omitempty"`
-}
-
-func (x *ScopeLevel1_ScopeLevel2_ScopeLevel3) Reset() {
-	*x = ScopeLevel1_ScopeLevel2_ScopeLevel3{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_proto_msgTypes[15]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ScopeLevel1_ScopeLevel2_ScopeLevel3) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ScopeLevel1_ScopeLevel2_ScopeLevel3) ProtoMessage() {}
-
-func (x *ScopeLevel1_ScopeLevel2_ScopeLevel3) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_proto_msgTypes[15]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ScopeLevel1_ScopeLevel2_ScopeLevel3.ProtoReflect.Descriptor instead.
-func (*ScopeLevel1_ScopeLevel2_ScopeLevel3) Descriptor() ([]byte, []int) {
-	return file_pb_proto_rawDescGZIP(), []int{6, 1, 1}
-}
-
-func (x *ScopeLevel1_ScopeLevel2_ScopeLevel3) GetT() *ScopeLevel1_ScopeLevel2_Embedded {
-	if x != nil {
-		return x.T
-	}
-	return nil
 }
 
 var File_pb_proto protoreflect.FileDescriptor
@@ -816,37 +485,7 @@ var file_pb_proto_rawDesc = []byte{
 	0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x18, 0x1f, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x69,
 	0x74, 0x6c, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x64, 0x6f, 0x6e, 0x65, 0x18, 0x22, 0x20, 0x01, 0x28,
 	0x08, 0x52, 0x04, 0x64, 0x6f, 0x6e, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x66, 0x6c, 0x61, 0x67, 0x73,
-	0x18, 0x23, 0x20, 0x03, 0x28, 0x09, 0x52, 0x05, 0x66, 0x6c, 0x61, 0x67, 0x73, 0x22, 0x7a, 0x0a,
-	0x06, 0x48, 0x6f, 0x6c, 0x64, 0x65, 0x72, 0x12, 0x34, 0x0a, 0x07, 0x6e, 0x75, 0x6d, 0x62, 0x65,
-	0x72, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x73,
-	0x2e, 0x48, 0x6f, 0x6c, 0x64, 0x65, 0x72, 0x2e, 0x4e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x45,
-	0x6e, 0x74, 0x72, 0x79, 0x52, 0x07, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x1a, 0x3a, 0x0a,
-	0x0c, 0x4e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a,
-	0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12,
-	0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x05,
-	0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x22, 0x32, 0x0a, 0x08, 0x45, 0x6d, 0x62,
-	0x65, 0x64, 0x64, 0x65, 0x64, 0x12, 0x26, 0x0a, 0x0e, 0x65, 0x6d, 0x62, 0x65, 0x64, 0x64, 0x65,
-	0x64, 0x4c, 0x65, 0x76, 0x65, 0x6c, 0x30, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x65,
-	0x6d, 0x62, 0x65, 0x64, 0x64, 0x65, 0x64, 0x4c, 0x65, 0x76, 0x65, 0x6c, 0x30, 0x22, 0xad, 0x02,
-	0x0a, 0x0b, 0x53, 0x63, 0x6f, 0x70, 0x65, 0x4c, 0x65, 0x76, 0x65, 0x6c, 0x31, 0x12, 0x29, 0x0a,
-	0x01, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x73,
-	0x2e, 0x53, 0x63, 0x6f, 0x70, 0x65, 0x4c, 0x65, 0x76, 0x65, 0x6c, 0x31, 0x2e, 0x45, 0x6d, 0x62,
-	0x65, 0x64, 0x64, 0x65, 0x64, 0x52, 0x01, 0x74, 0x1a, 0x32, 0x0a, 0x08, 0x45, 0x6d, 0x62, 0x65,
-	0x64, 0x64, 0x65, 0x64, 0x12, 0x26, 0x0a, 0x0e, 0x65, 0x6d, 0x62, 0x65, 0x64, 0x64, 0x65, 0x64,
-	0x4c, 0x65, 0x76, 0x65, 0x6c, 0x31, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x65, 0x6d,
-	0x62, 0x65, 0x64, 0x64, 0x65, 0x64, 0x4c, 0x65, 0x76, 0x65, 0x6c, 0x31, 0x1a, 0xbe, 0x01, 0x0a,
-	0x0b, 0x53, 0x63, 0x6f, 0x70, 0x65, 0x4c, 0x65, 0x76, 0x65, 0x6c, 0x32, 0x12, 0x35, 0x0a, 0x01,
-	0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x73, 0x2e,
-	0x53, 0x63, 0x6f, 0x70, 0x65, 0x4c, 0x65, 0x76, 0x65, 0x6c, 0x31, 0x2e, 0x53, 0x63, 0x6f, 0x70,
-	0x65, 0x4c, 0x65, 0x76, 0x65, 0x6c, 0x32, 0x2e, 0x45, 0x6d, 0x62, 0x65, 0x64, 0x64, 0x65, 0x64,
-	0x52, 0x01, 0x74, 0x1a, 0x32, 0x0a, 0x08, 0x45, 0x6d, 0x62, 0x65, 0x64, 0x64, 0x65, 0x64, 0x12,
-	0x26, 0x0a, 0x0e, 0x65, 0x6d, 0x62, 0x65, 0x64, 0x64, 0x65, 0x64, 0x4c, 0x65, 0x76, 0x65, 0x6c,
-	0x32, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x65, 0x6d, 0x62, 0x65, 0x64, 0x64, 0x65,
-	0x64, 0x4c, 0x65, 0x76, 0x65, 0x6c, 0x32, 0x1a, 0x44, 0x0a, 0x0b, 0x53, 0x63, 0x6f, 0x70, 0x65,
-	0x4c, 0x65, 0x76, 0x65, 0x6c, 0x33, 0x12, 0x35, 0x0a, 0x01, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x27, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x73, 0x2e, 0x53, 0x63, 0x6f, 0x70, 0x65, 0x4c,
-	0x65, 0x76, 0x65, 0x6c, 0x31, 0x2e, 0x53, 0x63, 0x6f, 0x70, 0x65, 0x4c, 0x65, 0x76, 0x65, 0x6c,
-	0x32, 0x2e, 0x45, 0x6d, 0x62, 0x65, 0x64, 0x64, 0x65, 0x64, 0x52, 0x01, 0x74, 0x42, 0x2a, 0x5a,
+	0x18, 0x23, 0x20, 0x03, 0x28, 0x09, 0x52, 0x05, 0x66, 0x6c, 0x61, 0x67, 0x73, 0x42, 0x2a, 0x5a,
 	0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x61, 0x76, 0x65,
 	0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x64, 0x2f, 0x64, 0x65, 0x6c, 0x74, 0x61, 0x2f, 0x74, 0x65,
 	0x73, 0x74, 0x73, 0x3b, 0x74, 0x65, 0x73, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
@@ -866,47 +505,35 @@ func file_pb_proto_rawDescGZIP() []byte {
 }
 
 var file_pb_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_pb_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_pb_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_pb_proto_goTypes = []interface{}{
-	(Person_Type)(0),                         // 0: tests.Person.Type
-	(*Person)(nil),                           // 1: tests.Person
-	(*Company)(nil),                          // 2: tests.Company
-	(*Case)(nil),                             // 3: tests.Case
-	(*Item)(nil),                             // 4: tests.Item
-	(*Holder)(nil),                           // 5: tests.Holder
-	(*Embedded)(nil),                         // 6: tests.Embedded
-	(*ScopeLevel1)(nil),                      // 7: tests.ScopeLevel1
-	(*Person_Embed)(nil),                     // 8: tests.Person.Embed
-	nil,                                      // 9: tests.Person.CasesEntry
-	nil,                                      // 10: tests.Person.TypeMapEntry
-	nil,                                      // 11: tests.Company.FlagsEntry
-	nil,                                      // 12: tests.Holder.NumbersEntry
-	(*ScopeLevel1_Embedded)(nil),             // 13: tests.ScopeLevel1.Embedded
-	(*ScopeLevel1_ScopeLevel2)(nil),          // 14: tests.ScopeLevel1.ScopeLevel2
-	(*ScopeLevel1_ScopeLevel2_Embedded)(nil), // 15: tests.ScopeLevel1.ScopeLevel2.Embedded
-	(*ScopeLevel1_ScopeLevel2_ScopeLevel3)(nil), // 16: tests.ScopeLevel1.ScopeLevel2.ScopeLevel3
+	(Person_Type)(0),     // 0: tests.Person.Type
+	(*Person)(nil),       // 1: tests.Person
+	(*Company)(nil),      // 2: tests.Company
+	(*Case)(nil),         // 3: tests.Case
+	(*Item)(nil),         // 4: tests.Item
+	(*Person_Embed)(nil), // 5: tests.Person.Embed
+	nil,                  // 6: tests.Person.CasesEntry
+	nil,                  // 7: tests.Person.TypeMapEntry
+	nil,                  // 8: tests.Company.FlagsEntry
 }
 var file_pb_proto_depIdxs = []int32{
-	9,  // 0: tests.Person.cases:type_name -> tests.Person.CasesEntry
+	6,  // 0: tests.Person.cases:type_name -> tests.Person.CasesEntry
 	2,  // 1: tests.Person.company:type_name -> tests.Company
 	0,  // 2: tests.Person.type:type_name -> tests.Person.Type
 	0,  // 3: tests.Person.typeList:type_name -> tests.Person.Type
-	10, // 4: tests.Person.typeMap:type_name -> tests.Person.TypeMapEntry
-	8,  // 5: tests.Person.embedded:type_name -> tests.Person.Embed
-	11, // 6: tests.Company.flags:type_name -> tests.Company.FlagsEntry
+	7,  // 4: tests.Person.typeMap:type_name -> tests.Person.TypeMapEntry
+	5,  // 5: tests.Person.embedded:type_name -> tests.Person.Embed
+	8,  // 6: tests.Company.flags:type_name -> tests.Company.FlagsEntry
 	1,  // 7: tests.Company.ceo:type_name -> tests.Person
 	4,  // 8: tests.Case.items:type_name -> tests.Item
-	12, // 9: tests.Holder.numbers:type_name -> tests.Holder.NumbersEntry
-	13, // 10: tests.ScopeLevel1.t:type_name -> tests.ScopeLevel1.Embedded
-	3,  // 11: tests.Person.CasesEntry.value:type_name -> tests.Case
-	0,  // 12: tests.Person.TypeMapEntry.value:type_name -> tests.Person.Type
-	15, // 13: tests.ScopeLevel1.ScopeLevel2.t:type_name -> tests.ScopeLevel1.ScopeLevel2.Embedded
-	15, // 14: tests.ScopeLevel1.ScopeLevel2.ScopeLevel3.t:type_name -> tests.ScopeLevel1.ScopeLevel2.Embedded
-	15, // [15:15] is the sub-list for method output_type
-	15, // [15:15] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	3,  // 9: tests.Person.CasesEntry.value:type_name -> tests.Case
+	0,  // 10: tests.Person.TypeMapEntry.value:type_name -> tests.Person.Type
+	11, // [11:11] is the sub-list for method output_type
+	11, // [11:11] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_pb_proto_init() }
@@ -964,91 +591,7 @@ func file_pb_proto_init() {
 			}
 		}
 		file_pb_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Holder); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_pb_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Embedded); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_pb_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ScopeLevel1); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_pb_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Person_Embed); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_pb_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ScopeLevel1_Embedded); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_pb_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ScopeLevel1_ScopeLevel2); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_pb_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ScopeLevel1_ScopeLevel2_Embedded); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_pb_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ScopeLevel1_ScopeLevel2_ScopeLevel3); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1066,7 +609,7 @@ func file_pb_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_pb_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   16,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

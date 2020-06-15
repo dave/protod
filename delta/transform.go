@@ -995,7 +995,7 @@ func transformIndependent(t, op *Op) *Op {
 		// should update the map key of the locator using the index shifter function.
 		shifter := behaviour.KeyShifter(t, op, false)
 		index := len(t.Location) - 1
-		value := t.Value.(*Op_Key).Key
+		value := op.Location[index].V.(*Locator_Key).Key
 		out := proto.Clone(op).(*Op)
 		out.Location[index] = &Locator{V: &Locator_Key{Key: shifter(value)}}
 		// We don't need to worry about updating the value because all possible instances where the value key would

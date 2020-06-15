@@ -5,13 +5,11 @@ option go_package = "github.com/dave/protod/delta/tests;tests";
 
 // [proto:data]
 message Person {
-  // [proto:data]
   enum Type {
     Alpha = 0;
     Bravo = 1;
     Charlie = 2;
   }
-  // [proto:data]
   message Embed {
     string name = 1;
   }
@@ -45,28 +43,4 @@ message Item {
   string title = 31;
   bool done = 34;
   repeated string flags = 35;
-}
-
-message Holder {
-  map<string, int32> numbers = 1;
-}
-
-message Embedded {
-  string embeddedLevel0 = 1;
-}
-
-message ScopeLevel1 {
-  message Embedded {
-    string embeddedLevel1 = 1;
-  }
-  Embedded t = 1;
-  message ScopeLevel2 {
-    message Embedded {
-      string embeddedLevel2 = 1;
-    }
-    Embedded t = 1;
-    message ScopeLevel3 {
-      Embedded t = 1;
-    }
-  }
 }

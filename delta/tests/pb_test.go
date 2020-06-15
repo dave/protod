@@ -11,23 +11,169 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestScope(t *testing.T) {
-	s1 := ScopeLevel1{T: &ScopeLevel1_Embedded{EmbeddedLevel1: ""}}
-	s2 := ScopeLevel1_ScopeLevel2{T: &ScopeLevel1_ScopeLevel2_Embedded{EmbeddedLevel2: ""}}
-	s3 := ScopeLevel1_ScopeLevel2_ScopeLevel3{T: &ScopeLevel1_ScopeLevel2_Embedded{EmbeddedLevel2: ""}}
-	_, _, _ = s1, s2, s3
-}
-
 func TestTransform(t *testing.T) {
 	type itemType struct {
-		solo     bool
-		name     string
-		op1      *delta.Op
-		op2      *delta.Op
-		data     proto.Message
-		expected proto.Message
+		solo      bool
+		name      string
+		op1       *delta.Op
+		op2       *delta.Op
+		data      proto.Message
+		expected  proto.Message
+		expected1 proto.Message
+		expected2 proto.Message
 	}
 	items := []itemType{
+		{
+			name:     "replace_index_move_index_independent",
+			op1:      Op().Person().Alias().Index(1).Replace("x"),
+			op2:      Op().Person().Alias().Move(0, 2),
+			data:     &Person{Alias: []string{"a", "b", "c"}},
+			expected: &Person{Alias: []string{"x", "c", "a"}},
+		},
+		{
+			name:     "replace_index_move_index_to",
+			op1:      Op().Person().Alias().Index(1).Replace("x"),
+			op2:      Op().Person().Alias().Move(0, 1),
+			data:     &Person{Alias: []string{"a", "b"}},
+			expected: &Person{Alias: []string{"x", "a"}},
+		},
+		{
+			name:     "replace_index_move_index_from",
+			op1:      Op().Person().Alias().Index(0).Replace("x"),
+			op2:      Op().Person().Alias().Move(0, 1),
+			data:     &Person{Alias: []string{"a", "b"}},
+			expected: &Person{Alias: []string{"b", "x"}},
+		},
+		{
+			name:      "replace_index_replace_index",
+			op1:       Op().Person().Alias().Index(0).Replace("x"),
+			op2:       Op().Person().Alias().Index(0).Replace("y"),
+			data:      &Person{Alias: []string{"a", "b"}},
+			expected1: &Person{Alias: []string{"x", "b"}},
+			expected2: &Person{Alias: []string{"y", "b"}},
+		},
+		{
+			name:      "replace_field_delete_field",
+			op1:       Op().Company().Name().Replace("b"),
+			op2:       Op().Company().Name().Delete(),
+			data:      &Company{Name: "a"},
+			expected1: &Company{Name: "b"},
+			expected2: &Company{},
+		},
+		{
+			name:     "edit_key_delete_key",
+			op1:      Op().Company().Flags().Key(1).Edit("a", "x"),
+			op2:      Op().Company().Flags().Key(1).Delete(),
+			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected: &Company{Flags: map[int64]string{2: "b"}},
+		},
+		{
+			name:     "edit_key_move_key_null",
+			op1:      Op().Company().Flags().Key(1).Edit("a", "x"),
+			op2:      Op().Company().Flags().Move(1, 1),
+			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected: &Company{Flags: map[int64]string{1: "x", 2: "b"}},
+		},
+		{
+			name:     "edit_key_move_key_independent",
+			op1:      Op().Company().Flags().Key(1).Edit("a", "x"),
+			op2:      Op().Company().Flags().Move(2, 3),
+			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected: &Company{Flags: map[int64]string{1: "x", 3: "b"}},
+		},
+		{
+			name:     "edit_key_move_key_to",
+			op1:      Op().Company().Flags().Key(2).Edit("b", "x"),
+			op2:      Op().Company().Flags().Move(1, 2),
+			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected: &Company{Flags: map[int64]string{2: "a"}},
+		},
+		{
+			name:     "edit_key_move_key_from",
+			op1:      Op().Company().Flags().Key(1).Edit("a", "x"),
+			op2:      Op().Company().Flags().Move(1, 2),
+			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected: &Company{Flags: map[int64]string{2: "x"}},
+		},
+		{
+			name:     "edit_key_insert_key",
+			op1:      Op().Company().Flags().Key(1).Edit("a", "x"),
+			op2:      Op().Company().Flags().Insert(1, "y"),
+			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected: &Company{Flags: map[int64]string{1: "y", 2: "b"}},
+		},
+		{
+			name:     "edit_key_replace_key_independent",
+			op1:      Op().Company().Flags().Key(1).Edit("a", "x"),
+			op2:      Op().Company().Flags().Key(2).Replace("y"),
+			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected: &Company{Flags: map[int64]string{1: "x", 2: "y"}},
+		},
+		{
+			name:     "edit_key_replace_key",
+			op1:      Op().Company().Flags().Key(1).Edit("a", "x"),
+			op2:      Op().Company().Flags().Key(1).Replace("y"),
+			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected: &Company{Flags: map[int64]string{1: "y", 2: "b"}},
+		},
+		{
+			name:     "edit_key_edit_key_independent",
+			op1:      Op().Company().Flags().Key(1).Edit("a", "x"),
+			op2:      Op().Company().Flags().Key(2).Edit("b", "y"),
+			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected: &Company{Flags: map[int64]string{1: "x", 2: "y"}},
+		},
+		{
+			name:      "edit_key_edit_key",
+			op1:       Op().Company().Flags().Key(1).Edit("a", "x"),
+			op2:       Op().Company().Flags().Key(1).Edit("a", "y"),
+			data:      &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected1: &Company{Flags: map[int64]string{1: "xy", 2: "b"}},
+			expected2: &Company{Flags: map[int64]string{1: "yx", 2: "b"}},
+		},
+		{
+			name:     "edit_index_delete_index",
+			op1:      Op().Person().Alias().Index(0).Edit("a", "x"),
+			op2:      Op().Person().Alias().Index(0).Delete(),
+			data:     &Person{Alias: []string{"a", "b"}},
+			expected: &Person{Alias: []string{"b"}},
+		},
+		{
+			name:     "edit_index_move_index_null",
+			op1:      Op().Person().Alias().Index(0).Edit("a", "x"),
+			op2:      Op().Person().Alias().Move(0, 0),
+			data:     &Person{Alias: []string{"a", "b"}},
+			expected: &Person{Alias: []string{"x", "b"}},
+		},
+		{
+			name:     "edit_index_replace_index",
+			op1:      Op().Person().Alias().Index(0).Edit("a", "x"),
+			op2:      Op().Person().Alias().Index(0).Replace("y"),
+			data:     &Person{Alias: []string{"a", "b"}},
+			expected: &Person{Alias: []string{"y", "b"}},
+		},
+		{
+			name:     "edit_index_edit_index_independent",
+			op1:      Op().Person().Alias().Index(0).Edit("a", "x"),
+			op2:      Op().Person().Alias().Index(1).Edit("b", "y"),
+			data:     &Person{Alias: []string{"a", "b"}},
+			expected: &Person{Alias: []string{"x", "y"}},
+		},
+		{
+			name:      "edit_index_edit_index",
+			op1:       Op().Person().Alias().Index(0).Edit("a", "x"),
+			op2:       Op().Person().Alias().Index(0).Edit("a", "y"),
+			data:      &Person{Alias: []string{"a", "b"}},
+			expected1: &Person{Alias: []string{"xy", "b"}},
+			expected2: &Person{Alias: []string{"yx", "b"}},
+		},
+		{
+			name:     "edit_field_delete_field",
+			op1:      Op().Person().Name().Edit("a", "b"),
+			op2:      Op().Person().Name().Delete(),
+			data:     &Person{Name: "a"},
+			expected: &Person{},
+		},
 		{
 			name:     "edit_index_move_index",
 			op1:      Op().Person().Alias().Index(0).Edit("a", "x"),
@@ -92,18 +238,12 @@ func TestTransform(t *testing.T) {
 			expected: &Company{Flags: map[int64]string{1: "x", 2: "y"}},
 		},
 		{
-			name:     "insert_key_edit_equal",
-			op1:      Op().Company().Flags().Insert(1, "y"),
-			op2:      Op().Company().Flags().Key(1).Replace("x"),
-			data:     &Company{Flags: map[int64]string{1: "a"}},
-			expected: &Company{Flags: map[int64]string{1: "y"}},
-		},
-		{
-			name:     "edit_insert_key_equal",
-			op1:      Op().Company().Flags().Key(1).Replace("x"),
-			op2:      Op().Company().Flags().Insert(1, "y"),
-			data:     &Company{Flags: map[int64]string{1: "a"}},
-			expected: &Company{Flags: map[int64]string{1: "x"}},
+			name:      "insert_key_edit_equal",
+			op1:       Op().Company().Flags().Insert(1, "y"),
+			op2:       Op().Company().Flags().Key(1).Replace("x"),
+			data:      &Company{Flags: map[int64]string{1: "a"}},
+			expected1: &Company{Flags: map[int64]string{1: "y"}},
+			expected2: &Company{Flags: map[int64]string{1: "x"}},
 		},
 		{
 			name:     "edit_insert_index_descendent",
@@ -204,18 +344,12 @@ func TestTransform(t *testing.T) {
 			expected: &Company{Flags: map[int64]string{1: "a", 3: "c"}},
 		},
 		{
-			name:     "conflicting_map_insert_and_delete_1",
-			op1:      Op().Company().Flags().Key(3).Delete(),
-			op2:      Op().Company().Flags().Insert(3, "c"),
-			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
-			expected: &Company{Flags: map[int64]string{1: "a", 2: "b"}},
-		},
-		{
-			name:     "conflicting_map_insert_and_delete_2",
-			op1:      Op().Company().Flags().Insert(3, "c"),
-			op2:      Op().Company().Flags().Key(3).Delete(),
-			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
-			expected: &Company{Flags: map[int64]string{1: "a", 2: "b", 3: "c"}},
+			name:      "conflicting_map_insert_and_delete_1",
+			op1:       Op().Company().Flags().Key(3).Delete(),
+			op2:       Op().Company().Flags().Insert(3, "c"),
+			data:      &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected1: &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected2: &Company{Flags: map[int64]string{1: "a", 2: "b", 3: "c"}},
 		},
 		{
 			name:     "conflicting_deletes",
@@ -239,11 +373,12 @@ func TestTransform(t *testing.T) {
 			expected: &Person{Alias: []string{"b", "c"}},
 		},
 		{
-			name:     "conflicting_replace",
-			op1:      Op().Person().Company().Replace(&Company{Name: "bar"}),
-			op2:      Op().Person().Company().Replace(&Company{Name: "baz"}),
-			data:     &Person{Company: &Company{Name: "foo"}},
-			expected: &Person{Company: &Company{Name: "bar"}},
+			name:      "conflicting_replace",
+			op1:       Op().Person().Company().Replace(&Company{Name: "bar"}),
+			op2:       Op().Person().Company().Replace(&Company{Name: "baz"}),
+			data:      &Person{Company: &Company{Name: "foo"}},
+			expected1: &Person{Company: &Company{Name: "bar"}},
+			expected2: &Person{Company: &Company{Name: "baz"}},
 		},
 		{
 			name:     "operation_inside_replace_1",
@@ -260,11 +395,12 @@ func TestTransform(t *testing.T) {
 			expected: &Person{Company: &Company{Name: "bar"}},
 		},
 		{
-			name:     "conflicting_diffs",
-			op1:      Op().Person().Name().Edit("foo bar", "foo bar baz"),
-			op2:      Op().Person().Name().Edit("foo bar", "foo bar qux"),
-			data:     &Person{Name: "foo bar"},
-			expected: &Person{Name: "foo bar baz qux"},
+			name:      "conflicting_diffs",
+			op1:       Op().Person().Name().Edit("foo bar", "foo bar baz"),
+			op2:       Op().Person().Name().Edit("foo bar", "foo bar qux"),
+			data:      &Person{Name: "foo bar"},
+			expected1: &Person{Name: "foo bar baz qux"},
+			expected2: &Person{Name: "foo bar qux baz"},
 		},
 		{
 			name:     "transform_diffs",
@@ -323,11 +459,12 @@ func TestTransform(t *testing.T) {
 			expected: &Person{Alias: []string{"a", "b", "c", "x"}},
 		},
 		{
-			name:     "identical_map_inserts",
-			op1:      Op().Company().Flags().Insert(1, "a"),
-			op2:      Op().Company().Flags().Insert(1, "b"),
-			data:     &Company{},
-			expected: &Company{Flags: map[int64]string{1: "a"}},
+			name:      "identical_map_inserts",
+			op1:       Op().Company().Flags().Insert(1, "a"),
+			op2:       Op().Company().Flags().Insert(1, "b"),
+			data:      &Company{},
+			expected1: &Company{Flags: map[int64]string{1: "a"}},
+			expected2: &Company{Flags: map[int64]string{1: "b"}},
 		},
 		{
 			name:     "insert_delete",
@@ -337,11 +474,12 @@ func TestTransform(t *testing.T) {
 			expected: &Person{Alias: []string{"x"}},
 		},
 		{
-			name:     "identical_list_inserts",
-			op1:      Op().Person().Alias().Insert(0, "x"),
-			op2:      Op().Person().Alias().Insert(0, "y"),
-			data:     &Person{},
-			expected: &Person{Alias: []string{"x", "y"}},
+			name:      "identical_list_inserts",
+			op1:       Op().Person().Alias().Insert(0, "x"),
+			op2:       Op().Person().Alias().Insert(0, "y"),
+			data:      &Person{},
+			expected1: &Person{Alias: []string{"x", "y"}},
+			expected2: &Person{Alias: []string{"y", "x"}},
 		},
 		{
 			name:     "double_inserts",
@@ -371,33 +509,66 @@ func TestTransform(t *testing.T) {
 		}
 		t.Run(item.name, func(t *testing.T) {
 
-			op1x, op2x, err := delta.Transform(item.op1, item.op2, true)
+			// op1 has priority
+			op1xp1, op2xp1, err := delta.Transform(item.op1, item.op2, true)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			data1 := proto.Clone(item.data)
-			if err := delta.Apply(item.op1, &data1); err != nil {
-				t.Fatal(err)
-			}
-			if err := delta.Apply(op2x, &data1); err != nil {
-				t.Fatal(err)
-			}
-
-			data2 := proto.Clone(item.data)
-			if err := delta.Apply(item.op2, &data2); err != nil {
-				t.Fatal(err)
-			}
-			if err := delta.Apply(op1x, &data2); err != nil {
-				t.Fatal(err)
-			}
-
-			result1, err := protojson.Marshal(data1)
+			// op2 has priority
+			op1xp2, op2xp2, err := delta.Transform(item.op1, item.op2, false)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			result2, err := protojson.Marshal(data2)
+			data1p1 := proto.Clone(item.data)
+			if err := delta.Apply(item.op1, &data1p1); err != nil {
+				t.Fatal(err)
+			}
+			if err := delta.Apply(op2xp1, &data1p1); err != nil {
+				t.Fatal(err)
+			}
+
+			data2p1 := proto.Clone(item.data)
+			if err := delta.Apply(item.op2, &data2p1); err != nil {
+				t.Fatal(err)
+			}
+			if err := delta.Apply(op1xp1, &data2p1); err != nil {
+				t.Fatal(err)
+			}
+
+			data1p2 := proto.Clone(item.data)
+			if err := delta.Apply(item.op1, &data1p2); err != nil {
+				t.Fatal(err)
+			}
+			if err := delta.Apply(op2xp2, &data1p2); err != nil {
+				t.Fatal(err)
+			}
+
+			data2p2 := proto.Clone(item.data)
+			if err := delta.Apply(item.op2, &data2p2); err != nil {
+				t.Fatal(err)
+			}
+			if err := delta.Apply(op1xp2, &data2p2); err != nil {
+				t.Fatal(err)
+			}
+
+			result1p1, err := protojson.Marshal(data1p1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			result1p2, err := protojson.Marshal(data1p2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			result2p1, err := protojson.Marshal(data2p1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			result2p2, err := protojson.Marshal(data2p2)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -407,17 +578,35 @@ func TestTransform(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			expected, err := protojson.Marshal(item.expected)
-			if err != nil {
-				t.Fatal(err)
+			var expectedp1, expectedp2 []byte
+			if item.expected != nil {
+				expectedp1, err = protojson.Marshal(item.expected)
+				if err != nil {
+					t.Fatal(err)
+				}
+				expectedp2, err = protojson.Marshal(item.expected)
+				if err != nil {
+					t.Fatal(err)
+				}
+			} else {
+				expectedp1, err = protojson.Marshal(item.expected1)
+				if err != nil {
+					t.Fatal(err)
+				}
+				expectedp2, err = protojson.Marshal(item.expected2)
+				if err != nil {
+					t.Fatal(err)
+				}
 			}
 
-			if !compareJson(string(result1), string(expected)) || !compareJson(string(result2), string(expected)) {
+			if !compareJson(string(result1p1), string(expectedp1)) || !compareJson(string(result1p2), string(expectedp2)) || !compareJson(string(result2p1), string(expectedp1)) || !compareJson(string(result2p2), string(expectedp2)) {
 				fmt.Println("op1", item.op1)
-				fmt.Println("op2x", op2x)
+				fmt.Println("op2xp1", op2xp1)
+				fmt.Println("op2xp2", op2xp2)
 				fmt.Println("op2", item.op2)
-				fmt.Println("op1x", op1x)
-				t.Fatalf("\ndata:     %s\nresult1:  %s\nresult2:  %s\nexpected: %s", string(input), string(result1), string(result2), string(expected))
+				fmt.Println("op1xp1", op1xp1)
+				fmt.Println("op1xp2", op1xp2)
+				t.Fatalf("\ndata:     %s\nresult1-p1:  %s\nresult2-p1:  %s\nexpected-p1: %s\nresult1-p2:  %s\nresult2-p2:  %s\nexpected-p2: %s", string(input), string(result1p1), string(result2p1), string(expectedp1), string(result1p2), string(result2p2), string(expectedp2))
 			}
 		})
 	}

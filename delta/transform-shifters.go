@@ -82,9 +82,9 @@ func moveShifter(fromIndex, toIndex int64, priority bool) func(int64) int64 {
 				return i
 			case i == toIndex:
 				if priority {
-					return i - 1
-				} else {
 					return i
+				} else {
+					return i - 1
 				}
 			case i < toIndex && i > fromIndex:
 				return i - 1

@@ -288,6 +288,18 @@ func (s *state) scanFiles(fpath string, info os.FileInfo, err error) error {
 }
 
 func (s *state) scanEnum(scope *Scope, v *parser.Enum, f *File) {
+	if scope.Parent == nil {
+		// only require annotations for root messages
+		var found bool
+		for _, comment := range v.Comments {
+			if strings.Contains(comment.Raw, "[proto:data]") {
+				found = true
+			}
+		}
+		if !found {
+			return
+		}
+	}
 	addEnum := func(ct CollectionType, key string) {
 		t := &Type{
 			Scope:          scope,
@@ -321,14 +333,17 @@ func (s *state) scanEnum(scope *Scope, v *parser.Enum, f *File) {
 }
 
 func (s *state) scanMessage(scope *Scope, v *parser.Message, f *File) {
-	var found bool
-	for _, comment := range v.Comments {
-		if strings.Contains(comment.Raw, "[proto:data]") {
-			found = true
+	if scope.Parent == nil {
+		// only require annotations for root messages
+		var found bool
+		for _, comment := range v.Comments {
+			if strings.Contains(comment.Raw, "[proto:data]") {
+				found = true
+			}
 		}
-	}
-	if !found {
-		return
+		if !found {
+			return
+		}
 	}
 	innerScope := &Scope{
 		Parent: scope,
