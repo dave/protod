@@ -806,6 +806,9 @@ func (b Case_type) Name() delta.String_scalar {
 func (b Case_type) Items() Item_type_list {
 	return NewItem_type_list(delta.CopyAndAppendField(b.location, "items", 22))
 }
+func (b Case_type) Flags() delta.String_scalar_int64_map {
+	return delta.NewString_scalar_int64_map(delta.CopyAndAppendField(b.location, "flags", 23))
+}
 func (b Case_type) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }

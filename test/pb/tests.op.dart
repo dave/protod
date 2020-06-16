@@ -675,6 +675,9 @@ class Case_type extends delta.Location {
   Item_type_list Items() {
     return Item_type_list(delta.copyAndAppendField(location, "items", 22));
   }
+  delta.String_scalar_int64_map Flags() {
+    return delta.String_scalar_int64_map(delta.copyAndAppendField(location, "flags", 23));
+  }
   delta.Op Delete() {
     return delta.delete(location);
   }

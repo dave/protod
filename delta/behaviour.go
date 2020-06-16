@@ -105,7 +105,7 @@ var Behaviours = map[OpType]OpData{
 				ItemIsDeleted:   false,
 				ValueIsDeleted:  false,
 				IndexShifter: func(transformer, op *Op, priority bool) func(int64) int64 {
-					return insertShifter(transformer.Item().V.(*Locator_Index).Index, priority, op.Type == Op_Insert)
+					return insertValueShifter(transformer.Item().V.(*Locator_Index).Index)
 				},
 				KeyShifter: nil,
 			},
@@ -121,7 +121,7 @@ var Behaviours = map[OpType]OpData{
 				ItemIsDeleted:   false,
 				ValueIsDeleted:  false,
 				IndexShifter: func(transformer, op *Op, priority bool) func(int64) int64 {
-					return moveShifter(transformer.Item().V.(*Locator_Index).Index, transformer.Value.(*Op_Index).Index, priority)
+					return moveValueShifter(transformer.Item().V.(*Locator_Index).Index, transformer.Value.(*Op_Index).Index)
 				},
 				KeyShifter: nil,
 			},

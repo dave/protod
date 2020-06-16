@@ -197,6 +197,7 @@ class Case extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('Case', package: const $pb.PackageName('tests'), createEmptyInstance: create)
     ..aOS(21, 'name')
     ..pc<Item>(22, 'items', $pb.PbFieldType.PM, subBuilder: Item.create)
+    ..m<$fixnum.Int64, $core.String>(23, 'flags', entryClassName: 'Case.FlagsEntry', keyFieldType: $pb.PbFieldType.O6, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('tests'))
     ..hasRequiredFields = false
   ;
 
@@ -226,6 +227,9 @@ class Case extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(22)
   $core.List<Item> get items => $_getList(1);
+
+  @$pb.TagNumber(23)
+  $core.Map<$fixnum.Int64, $core.String> get flags => $_getMap(2);
 }
 
 class Item extends $pb.GeneratedMessage {

@@ -23,6 +23,116 @@ func TestTransform(t *testing.T) {
 		expected2 proto.Message
 	}
 	items := []itemType{
+		//{
+		//	//solo:      true,
+		//	name:      "move_index_insert_index_to_plus_one",
+		//	op1:       Op().Person().Alias().Move(1, 3),     // "a", "c", "d", "b"
+		//	op2:       Op().Person().Alias().Insert(4, "x"), // "a", "b", "c", "d", "x"
+		//	data:      &Person{Alias: []string{"a", "b", "c", "d"}},
+		//	expected1: &Person{Alias: []string{"a", "c", "d", "b", "x"}},
+		//	expected2: &Person{Alias: []string{"a", "c", "d", "x", "b"}},
+		//	//expected: &Person{Alias: []string{"a", "c", "d", "b", "x"}},
+		//},
+		//{
+		//	name:     "move_index_insert_index_to",
+		//	op1:      Op().Person().Alias().Move(1, 3),     // "a", "c", "d", "b"
+		//	op2:      Op().Person().Alias().Insert(3, "x"), // "a", "b", "c", "x", "d"
+		//	data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+		//	expected: &Person{Alias: []string{"a", "c", "x", "d", "b"}},
+		//},
+		//-
+		{
+			name:     "insert_index_move_index_from",
+			op1:      Op().Person().Alias().Insert(1, "x"),
+			op2:      Op().Person().Alias().Move(1, 3),
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"a", "x", "c", "d", "b"}},
+		},
+		{
+			name:     "insert_index_move_index_independent_end_reverse",
+			op1:      Op().Person().Alias().Insert(3, "x"),
+			op2:      Op().Person().Alias().Move(2, 1),
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"a", "c", "b", "x", "d"}},
+		},
+		{
+			name:     "insert_index_move_index_independent_mid_reverse",
+			op1:      Op().Person().Alias().Insert(2, "x"),
+			op2:      Op().Person().Alias().Move(3, 1),
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"a", "d", "b", "x", "c"}},
+		},
+		{
+			name:     "insert_index_move_index_independent_before_reverse",
+			op1:      Op().Person().Alias().Insert(0, "x"),
+			op2:      Op().Person().Alias().Move(2, 1),
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"x", "a", "c", "b", "d"}},
+		},
+		{
+			name:     "insert_index_move_index_independent_end_forward",
+			op1:      Op().Person().Alias().Insert(3, "x"),
+			op2:      Op().Person().Alias().Move(1, 2),
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"a", "c", "b", "x", "d"}},
+		},
+		{
+			name:     "insert_index_move_index_independent_mid_forward",
+			op1:      Op().Person().Alias().Insert(2, "x"),
+			op2:      Op().Person().Alias().Move(1, 3),
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"a", "x", "c", "d", "b"}},
+		},
+		{
+			name:     "insert_index_move_index_independent_before_forward",
+			op1:      Op().Person().Alias().Insert(0, "x"),
+			op2:      Op().Person().Alias().Move(1, 2),
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"x", "a", "c", "b", "d"}},
+		},
+		{
+			name:     "insert_index_move_index_null",
+			op1:      Op().Person().Alias().Insert(0, "x"),
+			op2:      Op().Person().Alias().Move(0, 0),
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"x", "a", "b", "c", "d"}},
+		},
+		{
+			name:      "set_key_rename_key_to",
+			op1:       Op().Company().Flags().Key(2).Set("x"),
+			op2:       Op().Company().Flags().Rename(1, 2),
+			data:      &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected1: &Company{Flags: map[int64]string{2: "x"}},
+			expected2: &Company{Flags: map[int64]string{2: "a"}},
+		},
+		{
+			name:     "set_key_rename_key_from",
+			op1:      Op().Company().Flags().Key(1).Set("x"),
+			op2:      Op().Company().Flags().Rename(1, 10),
+			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected: &Company{Flags: map[int64]string{10: "x", 2: "b"}},
+		},
+		{
+			name:     "set_key_rename_key_independent_ancestor",
+			op1:      Op().Person().Cases().Key("a").Flags().Key(1).Set("x"),
+			op2:      Op().Person().Cases().Rename("a", "y"),
+			data:     &Person{Cases: map[string]*Case{"a": {Flags: map[int64]string{1: "a"}}}},
+			expected: &Person{Cases: map[string]*Case{"y": {Flags: map[int64]string{1: "x"}}}},
+		},
+		{
+			name:     "set_key_rename_key_independent",
+			op1:      Op().Company().Flags().Key(1).Set("x"),
+			op2:      Op().Company().Flags().Rename(2, 10),
+			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected: &Company{Flags: map[int64]string{1: "x", 10: "b"}},
+		},
+		{
+			name:     "set_key_rename_key_null",
+			op1:      Op().Company().Flags().Key(1).Set("x"),
+			op2:      Op().Company().Flags().Rename(1, 1),
+			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
+			expected: &Company{Flags: map[int64]string{1: "x", 2: "b"}},
+		},
 		{
 			name:     "replace_index_move_index_independent",
 			op1:      Op().Person().Alias().Index(1).Set("x"),
@@ -606,7 +716,11 @@ func TestTransform(t *testing.T) {
 				fmt.Println("op2", item.op2)
 				fmt.Println("op1xp1", op1xp1)
 				fmt.Println("op1xp2", op1xp2)
-				t.Fatalf("\ndata:     %s\nresult1-p1:  %s\nresult2-p1:  %s\nexpected-p1: %s\nresult1-p2:  %s\nresult2-p2:  %s\nexpected-p2: %s", string(input), string(result1p1), string(result2p1), string(expectedp1), string(result1p2), string(result2p2), string(expectedp2))
+				if item.expected != nil {
+					t.Fatalf("\ndata:        %s\nresult1-p1:  %s\nresult2-p1:  %s\nresult1-p2:  %s\nresult2-p2:  %s\nexpected:    %s", string(input), string(result1p1), string(result2p1), string(result1p2), string(result2p2), string(expectedp1))
+				} else {
+					t.Fatalf("\ndata:        %s\nresult1-p1:  %s\nresult2-p1:  %s\nexpected-p1: %s\nresult1-p2:  %s\nresult2-p2:  %s\nexpected-p2: %s", string(input), string(result1p1), string(result2p1), string(expectedp1), string(result1p2), string(result2p2), string(expectedp2))
+				}
 			}
 		})
 	}

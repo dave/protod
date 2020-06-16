@@ -36,6 +36,7 @@ message Company {
 message Case {
   string name = 21;
   repeated Item items = 22;
+  map<int64, string> flags = 23;
 }
 
 // [proto:data]

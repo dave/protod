@@ -81,7 +81,18 @@ const Case$json = const {
   '2': const [
     const {'1': 'name', '3': 21, '4': 1, '5': 9, '10': 'name'},
     const {'1': 'items', '3': 22, '4': 3, '5': 11, '6': '.tests.Item', '10': 'items'},
+    const {'1': 'flags', '3': 23, '4': 3, '5': 11, '6': '.tests.Case.FlagsEntry', '10': 'flags'},
   ],
+  '3': const [Case_FlagsEntry$json],
+};
+
+const Case_FlagsEntry$json = const {
+  '1': 'FlagsEntry',
+  '2': const [
+    const {'1': 'key', '3': 1, '4': 1, '5': 3, '10': 'key'},
+    const {'1': 'value', '3': 2, '4': 1, '5': 9, '10': 'value'},
+  ],
+  '7': const {'7': true},
 };
 
 const Item$json = const {

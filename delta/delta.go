@@ -152,6 +152,20 @@ func ApplyMove(op *Op, input proto2.Message) error {
 		if !ok {
 			return fmt.Errorf("can't move in list with %T value", op.Value)
 		}
+
+		//if value.Index > locator.Index {
+		//	// When we move an item in a list, the "to" location is in the frame of reference of the result. When
+		//	// moving forward (to > from), the "to" index is shifted back, so the index in the original list is one
+		//	// more than the given index. For example:
+		//	// data: [a, b, c] -> op: move from 0 to 1 -> result: [b, a, c]
+		//	// the value was moved to index 1 in the resultant list, but the new position position is index 2 in the
+		//	// original list.
+		//	// For the purposes of correctly transforming the move operation, it's important we always work in the
+		//	// frame of reference of the original list. So we tweak the to address when we create the move operation,
+		//	// and tweak it back here.
+		//	value.Index--
+		//}
+
 		from := int(locator.Index)
 		to := int(value.Index)
 		if from == to {
@@ -487,10 +501,23 @@ func Delete(location []*Locator) *Op {
 	}
 }
 
-func Move(location []*Locator, to interface{}) *Op {
+func Move(location []*Locator, to int64) *Op {
 	_, item := pop(location)
+	//switch v := item.V.(type) {
 	switch item.V.(type) {
 	case *Locator_Index:
+		//if to > v.Index {
+		//	// When we move an item in a list, the "to" location is in the frame of reference of the result. When
+		//	// moving forward (to > from), the "to" index is shifted back, so the index in the original list is one
+		//	// more than the given index. For example:
+		//	// data: [a, b, c] -> op: move from 0 to 1 -> result: [b, a, c]
+		//	// the value was moved to index 1 in the resultant list, but the new position position is index 2 in the
+		//	// original list.
+		//	// For the purposes of correctly transforming the move operation, it's important we always work in the
+		//	// frame of reference of the original list. So we tweak the to address here and tweak it back in the apply
+		//	// function.
+		//	to++
+		//}
 		return &Op{
 			Type:     Op_Move,
 			Location: location,
@@ -909,6 +936,67 @@ func (o *Op) IsNullMove() bool {
 	}
 	panic("")
 }
+
+//func (o *Op) ToShiftedIndex() int64 {
+//	_, value := o.Pop()
+//	switch value.V.(type) {
+//	case *Locator_Index:
+//		fromIndex := o.Item().V.(*Locator_Index).Index
+//		toIndex := o.Value.(*Op_Index).Index
+//		switch {
+//		case fromIndex == toIndex:
+//			return toIndex
+//		case fromIndex > toIndex:
+//			// items in between to and from shift forward one
+//			return toIndex
+//		case fromIndex < toIndex:
+//			// items in between to and from shift back one
+//			return toIndex + 1
+//		}
+//		panic("")
+//	default:
+//		panic(fmt.Sprintf("invalid location %T in ToShifted()", value.V))
+//	}
+//}
+//
+//func (o *Op) ToShifted() []*Locator {
+//
+//	// When we move an item in a list, the "to" location is in the frame of reference of the result. When moving
+//	// forward, the value is shifted. For example:
+//	// data: [a, b, c] -> op: move from 0 to 1 -> result: [b, a, c]
+//	// the value was moved to index 1 in the resultant list, but the new position position is index 2 in the original list.
+//	// ... SO we introduce a ToShifted() method that shifts the "to" location so we can compare it to locations in the
+//	// original list.
+//
+//	if o.Type != Op_Move {
+//		return []*Locator{}
+//	}
+//	path, value := o.Pop()
+//	switch value.V.(type) {
+//	case *Locator_Index:
+//
+//		var index int64
+//		fromIndex := o.Item().V.(*Locator_Index).Index
+//		toIndex := o.Value.(*Op_Index).Index
+//		switch {
+//		case fromIndex == toIndex:
+//			index = toIndex
+//		case fromIndex > toIndex:
+//			// items in between to and from shift forward one
+//			index = toIndex
+//		case fromIndex < toIndex:
+//			// items in between to and from shift back one
+//			index = toIndex + 1
+//		}
+//
+//		return append(
+//			append([]*Locator(nil), path...),
+//			&Locator{V: &Locator_Index{Index: index}},
+//		)
+//	default:
+//		panic(fmt.Sprintf("invalid location %T in ToShifted()", value.V))
+//	}
+//}
 
 func (o *Op) To() []*Locator {
 	if o.Type != Op_Move && o.Type != Op_Rename {
