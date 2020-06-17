@@ -11,99 +11,218 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestTransformMoveMove(t *testing.T) {
-	//                0    1    2    3    4    5    6
-	list := []string{"a", "b", "c", "d", "e", "f", "g"}
-	data := &Person{Alias: list}
-
-	test := func(fromA, toA, fromB, toB int) {
-		opA := Op().Person().Alias().Move(fromA, toA)
-		opB := Op().Person().Alias().Move(fromB, toB)
-
-		// opA has priority
-		opAxpA, opBxpA, err := delta.Transform(opA, opB, true)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		// opB has priority
-		opAxpB, opBxpB, err := delta.Transform(opA, opB, false)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		dataApA := proto.Clone(data)
-		if err := delta.Apply(opA, &dataApA); err != nil {
-			t.Fatal(err)
-		}
-		if err := delta.Apply(opBxpA, &dataApA); err != nil {
-			t.Fatal(err)
-		}
-
-		dataBpA := proto.Clone(data)
-		if err := delta.Apply(opB, &dataBpA); err != nil {
-			t.Fatal(err)
-		}
-		if err := delta.Apply(opAxpA, &dataBpA); err != nil {
-			t.Fatal(err)
-		}
-
-		dataApB := proto.Clone(data)
-		if err := delta.Apply(opA, &dataApB); err != nil {
-			t.Fatal(err)
-		}
-		if err := delta.Apply(opBxpB, &dataApB); err != nil {
-			t.Fatal(err)
-		}
-
-		dataBpB := proto.Clone(data)
-		if err := delta.Apply(opB, &dataBpB); err != nil {
-			t.Fatal(err)
-		}
-		if err := delta.Apply(opAxpB, &dataBpB); err != nil {
-			t.Fatal(err)
-		}
-
-		resultApA, err := protojson.Marshal(dataApA)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		resultApB, err := protojson.Marshal(dataApB)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		resultBpA, err := protojson.Marshal(dataBpA)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		resultBpB, err := protojson.Marshal(dataBpB)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if !compareJson(string(resultApA), string(resultBpA)) {
-			t.Fatalf("\nA: %d -> %d\nB: %d -> %d\npriority: A\nresult-A-Bx: %s\nresult-B-Ax: %s\n", fromA, toA, fromB, toB, resultApA, resultBpA)
-		}
-
-		if !compareJson(string(resultApB), string(resultBpB)) {
-			t.Fatalf("\nA: %d -> %d\nB: %d -> %d\npriority: B\nresult-A-Bx: %s\nresult-B-Ax: %s\n", fromA, toA, fromB, toB, resultApB, resultBpB)
-		}
-
+func testTwoOps(t *testing.T, opA, opB *delta.Op, descA, descB string, data proto.Message) {
+	// opA has priority
+	opAxpA, opBxpA, err := delta.Transform(opA, opB, true)
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	for fromA := range list {
-		for toA := range list {
-			for fromB := range list {
-				for toB := range list {
-					test(fromA, toA, fromB, toB)
+	// opB has priority
+	opAxpB, opBxpB, err := delta.Transform(opA, opB, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	dataApA := proto.Clone(data)
+	if err := delta.Apply(opA, &dataApA); err != nil {
+		t.Fatal(err)
+	}
+	if err := delta.Apply(opBxpA, &dataApA); err != nil {
+		t.Fatal(err)
+	}
+
+	dataBpA := proto.Clone(data)
+	if err := delta.Apply(opB, &dataBpA); err != nil {
+		t.Fatal(err)
+	}
+	if err := delta.Apply(opAxpA, &dataBpA); err != nil {
+		t.Fatal(err)
+	}
+
+	dataApB := proto.Clone(data)
+	if err := delta.Apply(opA, &dataApB); err != nil {
+		t.Fatal(err)
+	}
+	if err := delta.Apply(opBxpB, &dataApB); err != nil {
+		t.Fatal(err)
+	}
+
+	dataBpB := proto.Clone(data)
+	if err := delta.Apply(opB, &dataBpB); err != nil {
+		t.Fatal(err)
+	}
+	if err := delta.Apply(opAxpB, &dataBpB); err != nil {
+		t.Fatal(err)
+	}
+
+	resultApA, err := protojson.Marshal(dataApA)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resultApB, err := protojson.Marshal(dataApB)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resultBpA, err := protojson.Marshal(dataBpA)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resultBpB, err := protojson.Marshal(dataBpB)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !compareJson(string(resultApA), string(resultBpA)) {
+		t.Fatalf("\nA: %s\nB: %s\npriority: A\nresult-A-Bx: %s\nresult-B-Ax: %s\n", descA, descB, resultApA, resultBpA)
+	}
+
+	if !compareJson(string(resultApB), string(resultBpB)) {
+		t.Fatalf("\nA: %s\nB: %s\npriority: B\nresult-A-Bx: %s\nresult-B-Ax: %s\n", descA, descB, resultApB, resultBpB)
+	}
+}
+
+func TestTransformMoveMove(t *testing.T) {
+	//                 0    1    2    3    4    5    6
+	listD := []string{"a", "b", "c", "d", "e", "f", "g"}
+	listT := []string{"0", "1", "2", "3", "4", "5", "6", "7"}
+	listF := []string{"0", "1", "2", "3", "4", "5", "6"}
+	data := &Person{Alias: listD}
+	for fromA := range listF {
+		for toA := range listT {
+			for fromB := range listF {
+				for toB := range listT {
+					opA := Op().Person().Alias().Move(fromA, toA)
+					opB := Op().Person().Alias().Move(fromB, toB)
+					descA := fmt.Sprintf("%d->%d", fromA, toA)
+					descB := fmt.Sprintf("%d->%d", fromB, toB)
+					testTwoOps(t, opA, opB, descA, descB, data)
 				}
 			}
 		}
 	}
+}
 
+func TestTransformMoveInsert(t *testing.T) {
+	//                 0    1    2    3    4    5    6
+	listD := []string{"a", "b", "c", "d", "e", "f", "g"}
+	listT := []string{"0", "1", "2", "3", "4", "5", "6", "7"}
+	listF := []string{"0", "1", "2", "3", "4", "5", "6"}
+	listI := []string{"0", "1", "2", "3", "4", "5", "6", "7"}
+	data := &Person{Alias: listD}
+	for from := range listF {
+		for to := range listT {
+			for ins := range listI {
+				opA := Op().Person().Alias().Move(from, to)
+				opB := Op().Person().Alias().Insert(ins, "X")
+				descA := fmt.Sprintf("%d->%d", from, to)
+				descB := fmt.Sprintf("ins@%d", ins)
+				testTwoOps(t, opA, opB, descA, descB, data)
+				testTwoOps(t, opB, opA, descB, descA, data)
+			}
+		}
+	}
+}
+
+func TestTransformInsertInsert(t *testing.T) {
+	//                 0    1    2    3    4    5    6
+	listD := []string{"a", "b", "c", "d", "e", "f", "g"}
+	listI := []string{"0", "1", "2", "3", "4", "5", "6", "7"}
+	data := &Person{Alias: listD}
+	for insA := range listI {
+		for insB := range listI {
+			opA := Op().Person().Alias().Insert(insA, "X")
+			opB := Op().Person().Alias().Insert(insB, "Y")
+			descA := fmt.Sprintf("ins@%d", insA)
+			descB := fmt.Sprintf("ins@%d", insB)
+			testTwoOps(t, opA, opB, descA, descB, data)
+		}
+	}
+}
+
+func TestTransformDeleteMove(t *testing.T) {
+	//                 0    1    2    3    4    5    6
+	listD := []string{"a", "b", "c", "d", "e", "f", "g"}
+	listT := []string{"0", "1", "2", "3", "4", "5", "6", "7"}
+	listF := []string{"0", "1", "2", "3", "4", "5", "6"}
+	listX := []string{"0", "1", "2", "3", "4", "5", "6"}
+	data := &Person{Alias: listD}
+	for from := range listF {
+		for to := range listT {
+			for del := range listX {
+				opA := Op().Person().Alias().Index(del).Delete()
+				opB := Op().Person().Alias().Move(from, to)
+				descA := fmt.Sprintf("del@%d", del)
+				descB := fmt.Sprintf("%d->%d", from, to)
+				testTwoOps(t, opA, opB, descA, descB, data)
+				testTwoOps(t, opB, opA, descB, descA, data)
+			}
+		}
+	}
+}
+
+func TestTransformMoveSet(t *testing.T) {
+	//                 0    1    2    3    4    5    6
+	listD := []string{"a", "b", "c", "d", "e", "f", "g"}
+	listT := []string{"0", "1", "2", "3", "4", "5", "6", "7"}
+	listF := []string{"0", "1", "2", "3", "4", "5", "6"}
+	listS := []string{"0", "1", "2", "3", "4", "5", "6"}
+	data := &Person{Alias: listD}
+	for from := range listF {
+		for to := range listT {
+			for set := range listS {
+				opA := Op().Person().Alias().Index(set).Set("X")
+				opB := Op().Person().Alias().Move(from, to)
+				descA := fmt.Sprintf("set@%d", set)
+				descB := fmt.Sprintf("%d->%d", from, to)
+				testTwoOps(t, opA, opB, descA, descB, data)
+				testTwoOps(t, opB, opA, descB, descA, data)
+			}
+		}
+	}
+}
+
+func TestTransformMoveEdit(t *testing.T) {
+	//                 0    1    2    3    4    5    6
+	listD := []string{"a", "b", "c", "d", "e", "f", "g"}
+	listT := []string{"0", "1", "2", "3", "4", "5", "6", "7"}
+	listF := []string{"0", "1", "2", "3", "4", "5", "6"}
+	listS := []string{"0", "1", "2", "3", "4", "5", "6"}
+	data := &Person{Alias: listD}
+	for from := range listF {
+		for to := range listT {
+			for set := range listS {
+				opA := Op().Person().Alias().Index(set).Edit(listD[set], "X")
+				opB := Op().Person().Alias().Move(from, to)
+				descA := fmt.Sprintf("edit@%d", set)
+				descB := fmt.Sprintf("%d->%d", from, to)
+				testTwoOps(t, opA, opB, descA, descB, data)
+				testTwoOps(t, opB, opA, descB, descA, data)
+			}
+		}
+	}
+}
+
+func TestTransformRename(t *testing.T) {
+	mapD := map[int64]string{0: "a", 1: "b", 2: "c", 3: "d", 4: "e", 5: "f"}
+	values := []string{"0", "1", "2", "3", "4", "5"}
+	data := &Company{Flags: mapD}
+	for fromA := range values {
+		for toA := range values {
+			for fromB := range values {
+				for toB := range values {
+					opA := Op().Company().Flags().Rename(fromA, toA)
+					opB := Op().Company().Flags().Rename(fromB, toB)
+					descA := fmt.Sprintf("%d->%d", fromA, toA)
+					descB := fmt.Sprintf("%d->%d", fromB, toB)
+					testTwoOps(t, opA, opB, descA, descB, data)
+				}
+			}
+		}
+	}
 }
 
 func TestTransform(t *testing.T) {

@@ -573,12 +573,16 @@ func transformRenameKeyRenameKey(t, op *Op, priority bool) *Op {
 	case fromFrom == TREE_EQUAL:
 		// Op is trying to move the value that t already moved, and the "to" locations are different. We can use
 		// priority to determine which to location is used. If t has priority, delete the op. If not, we change the
-		// From location to move the correct value.
+		// From location to move the correct value. If we remove op, we must replace with an operation that deletes
+		// the "to" location.
 		if priority {
-			return nil
+			return &Op{
+				Type:     Op_Delete,
+				Location: proto.Clone(op).(*Op).To(),
+			}
 		}
 		out := proto.Clone(op).(*Op)
-		out.SetItemIndex(t.ToIndex())
+		out.Location = proto.Clone(t).(*Op).To()
 		return out
 	case toTo == TREE_EQUAL:
 		// Op is trying to move a value and overwrite the value that t already overwrote. We can use priority to
