@@ -11,6 +11,101 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+func TestTransformMoveMove(t *testing.T) {
+	//                0    1    2    3    4    5    6
+	list := []string{"a", "b", "c", "d", "e", "f", "g"}
+	data := &Person{Alias: list}
+
+	test := func(fromA, toA, fromB, toB int) {
+		opA := Op().Person().Alias().Move(fromA, toA)
+		opB := Op().Person().Alias().Move(fromB, toB)
+
+		// opA has priority
+		opAxpA, opBxpA, err := delta.Transform(opA, opB, true)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		// opB has priority
+		opAxpB, opBxpB, err := delta.Transform(opA, opB, false)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		dataApA := proto.Clone(data)
+		if err := delta.Apply(opA, &dataApA); err != nil {
+			t.Fatal(err)
+		}
+		if err := delta.Apply(opBxpA, &dataApA); err != nil {
+			t.Fatal(err)
+		}
+
+		dataBpA := proto.Clone(data)
+		if err := delta.Apply(opB, &dataBpA); err != nil {
+			t.Fatal(err)
+		}
+		if err := delta.Apply(opAxpA, &dataBpA); err != nil {
+			t.Fatal(err)
+		}
+
+		dataApB := proto.Clone(data)
+		if err := delta.Apply(opA, &dataApB); err != nil {
+			t.Fatal(err)
+		}
+		if err := delta.Apply(opBxpB, &dataApB); err != nil {
+			t.Fatal(err)
+		}
+
+		dataBpB := proto.Clone(data)
+		if err := delta.Apply(opB, &dataBpB); err != nil {
+			t.Fatal(err)
+		}
+		if err := delta.Apply(opAxpB, &dataBpB); err != nil {
+			t.Fatal(err)
+		}
+
+		resultApA, err := protojson.Marshal(dataApA)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		resultApB, err := protojson.Marshal(dataApB)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		resultBpA, err := protojson.Marshal(dataBpA)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		resultBpB, err := protojson.Marshal(dataBpB)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if !compareJson(string(resultApA), string(resultBpA)) {
+			t.Fatalf("\nA: %d -> %d\nB: %d -> %d\npriority: A\nresult-A-Bx: %s\nresult-B-Ax: %s\n", fromA, toA, fromB, toB, resultApA, resultBpA)
+		}
+
+		if !compareJson(string(resultApB), string(resultBpB)) {
+			t.Fatalf("\nA: %d -> %d\nB: %d -> %d\npriority: B\nresult-A-Bx: %s\nresult-B-Ax: %s\n", fromA, toA, fromB, toB, resultApB, resultBpB)
+		}
+
+	}
+
+	for fromA := range list {
+		for toA := range list {
+			for fromB := range list {
+				for toB := range list {
+					test(fromA, toA, fromB, toB)
+				}
+			}
+		}
+	}
+
+}
+
 func TestTransform(t *testing.T) {
 	type itemType struct {
 		solo      bool
@@ -23,28 +118,89 @@ func TestTransform(t *testing.T) {
 		expected2 proto.Message
 	}
 	items := []itemType{
-		//{
-		//	//solo:      true,
-		//	name:      "move_index_insert_index_to_plus_one",
-		//	op1:       Op().Person().Alias().Move(1, 3),     // "a", "c", "d", "b"
-		//	op2:       Op().Person().Alias().Insert(4, "x"), // "a", "b", "c", "d", "x"
-		//	data:      &Person{Alias: []string{"a", "b", "c", "d"}},
-		//	expected1: &Person{Alias: []string{"a", "c", "d", "b", "x"}},
-		//	expected2: &Person{Alias: []string{"a", "c", "d", "x", "b"}},
-		//	//expected: &Person{Alias: []string{"a", "c", "d", "b", "x"}},
-		//},
-		//{
-		//	name:     "move_index_insert_index_to",
-		//	op1:      Op().Person().Alias().Move(1, 3),     // "a", "c", "d", "b"
-		//	op2:      Op().Person().Alias().Insert(3, "x"), // "a", "b", "c", "x", "d"
-		//	data:     &Person{Alias: []string{"a", "b", "c", "d"}},
-		//	expected: &Person{Alias: []string{"a", "c", "x", "d", "b"}},
-		//},
-		//-
+		{
+			name:     "move_index_insert_index_backward_4", // a b c d
+			op1:      Op().Person().Alias().Move(3, 1),     // a d b c
+			op2:      Op().Person().Alias().Insert(4, "x"), // a b c d x
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"a", "d", "b", "c", "x"}},
+		},
+		{
+			name:     "move_index_insert_index_backward_3", // a b c d
+			op1:      Op().Person().Alias().Move(3, 1),     // a d b c
+			op2:      Op().Person().Alias().Insert(3, "x"), // a b c x d
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"a", "d", "b", "c", "x"}},
+		},
+		{
+			name:     "move_index_insert_index_backward_2", // a b c d
+			op1:      Op().Person().Alias().Move(3, 1),     // a d b c
+			op2:      Op().Person().Alias().Insert(2, "x"), // a b x c d
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"a", "d", "b", "x", "c"}},
+		},
+		{
+			name:      "move_index_insert_index_backward_1", // a b c d
+			op1:       Op().Person().Alias().Move(3, 1),     // a d b c
+			op2:       Op().Person().Alias().Insert(1, "x"), // a x b c d
+			data:      &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected1: &Person{Alias: []string{"a", "d", "x", "b", "c"}},
+			expected2: &Person{Alias: []string{"a", "x", "d", "b", "c"}},
+		},
+		{
+			name:     "move_index_insert_index_backward_0", // a b c d
+			op1:      Op().Person().Alias().Move(3, 1),     // a d b c
+			op2:      Op().Person().Alias().Insert(0, "x"), // x a b c d
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"x", "a", "d", "b", "c"}},
+		},
+		{
+			name:      "move_index_insert_index_forward_4",  // a b c d
+			op1:       Op().Person().Alias().Move(1, 4),     // a c d b
+			op2:       Op().Person().Alias().Insert(4, "x"), // a b c d x
+			data:      &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected1: &Person{Alias: []string{"a", "c", "d", "b", "x"}},
+			expected2: &Person{Alias: []string{"a", "c", "d", "x", "b"}},
+		},
+		{
+			name:     "move_index_insert_index_forward_3",  // a b c d
+			op1:      Op().Person().Alias().Move(1, 4),     // a c d b
+			op2:      Op().Person().Alias().Insert(3, "x"), // a b c x d
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"a", "c", "x", "d", "b"}},
+		},
+		{
+			name:     "move_index_insert_index_forward_2",  // a b c d
+			op1:      Op().Person().Alias().Move(1, 4),     // a c d b
+			op2:      Op().Person().Alias().Insert(2, "x"), // a b x c d
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"a", "x", "c", "d", "b"}},
+		},
+		{
+			name:     "move_index_insert_index_forward_1",  // a b c d
+			op1:      Op().Person().Alias().Move(1, 4),     // a c d b
+			op2:      Op().Person().Alias().Insert(1, "x"), // a x b c d
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"a", "x", "c", "d", "b"}},
+		},
+		{
+			name:     "move_index_insert_index_forward_0",  // a b c d
+			op1:      Op().Person().Alias().Move(1, 4),     // a c d b
+			op2:      Op().Person().Alias().Insert(0, "x"), // x a b c d
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"x", "a", "c", "d", "b"}},
+		},
+		{
+			name:     "move_index_insert_index_to",         // a b c d
+			op1:      Op().Person().Alias().Move(1, 4),     // a c d b
+			op2:      Op().Person().Alias().Insert(3, "x"), // a b c x d
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"a", "c", "x", "d", "b"}},
+		},
 		{
 			name:     "insert_index_move_index_from",
 			op1:      Op().Person().Alias().Insert(1, "x"),
-			op2:      Op().Person().Alias().Move(1, 3),
+			op2:      Op().Person().Alias().Move(1, 4),
 			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
 			expected: &Person{Alias: []string{"a", "x", "c", "d", "b"}},
 		},
@@ -70,23 +226,24 @@ func TestTransform(t *testing.T) {
 			expected: &Person{Alias: []string{"x", "a", "c", "b", "d"}},
 		},
 		{
-			name:     "insert_index_move_index_independent_end_forward",
-			op1:      Op().Person().Alias().Insert(3, "x"),
-			op2:      Op().Person().Alias().Move(1, 2),
-			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
-			expected: &Person{Alias: []string{"a", "c", "b", "x", "d"}},
+			name:      "insert_index_move_index_independent_end_forward", // a b c d
+			op1:       Op().Person().Alias().Insert(3, "x"),              // a b c x d
+			op2:       Op().Person().Alias().Move(1, 3),                  // a c b d
+			data:      &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected1: &Person{Alias: []string{"a", "c", "x", "b", "d"}}, // a c b x d
+			expected2: &Person{Alias: []string{"a", "c", "b", "x", "d"}}, // a c x b d
 		},
 		{
 			name:     "insert_index_move_index_independent_mid_forward",
 			op1:      Op().Person().Alias().Insert(2, "x"),
-			op2:      Op().Person().Alias().Move(1, 3),
+			op2:      Op().Person().Alias().Move(1, 4),
 			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
 			expected: &Person{Alias: []string{"a", "x", "c", "d", "b"}},
 		},
 		{
 			name:     "insert_index_move_index_independent_before_forward",
 			op1:      Op().Person().Alias().Insert(0, "x"),
-			op2:      Op().Person().Alias().Move(1, 2),
+			op2:      Op().Person().Alias().Move(1, 3),
 			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
 			expected: &Person{Alias: []string{"x", "a", "c", "b", "d"}},
 		},
@@ -136,23 +293,30 @@ func TestTransform(t *testing.T) {
 		{
 			name:     "replace_index_move_index_independent",
 			op1:      Op().Person().Alias().Index(1).Set("x"),
-			op2:      Op().Person().Alias().Move(0, 2),
+			op2:      Op().Person().Alias().Move(0, 3),
 			data:     &Person{Alias: []string{"a", "b", "c"}},
 			expected: &Person{Alias: []string{"x", "c", "a"}},
 		},
 		{
 			name:     "replace_index_move_index_to",
 			op1:      Op().Person().Alias().Index(1).Set("x"),
-			op2:      Op().Person().Alias().Move(0, 1),
+			op2:      Op().Person().Alias().Move(0, 2),
 			data:     &Person{Alias: []string{"a", "b"}},
 			expected: &Person{Alias: []string{"x", "a"}},
 		},
 		{
 			name:     "replace_index_move_index_from",
 			op1:      Op().Person().Alias().Index(0).Set("x"),
-			op2:      Op().Person().Alias().Move(0, 1),
+			op2:      Op().Person().Alias().Move(0, 2),
 			data:     &Person{Alias: []string{"a", "b"}},
 			expected: &Person{Alias: []string{"b", "x"}},
+		},
+		{
+			name:     "replace_index_null_move_index_from",
+			op1:      Op().Person().Alias().Index(0).Set("x"),
+			op2:      Op().Person().Alias().Move(0, 1),
+			data:     &Person{Alias: []string{"a", "b"}},
+			expected: &Person{Alias: []string{"x", "b"}},
 		},
 		{
 			name:      "replace_index_replace_index",
@@ -287,7 +451,7 @@ func TestTransform(t *testing.T) {
 		{
 			name:     "edit_index_move_index",
 			op1:      Op().Person().Alias().Index(0).Edit("a", "x"),
-			op2:      Op().Person().Alias().Move(0, 1),
+			op2:      Op().Person().Alias().Move(0, 2),
 			data:     &Person{Alias: []string{"a", "b"}},
 			expected: &Person{Alias: []string{"b", "x"}},
 		},
@@ -301,7 +465,7 @@ func TestTransform(t *testing.T) {
 		{
 			name:     "independent_operations_in_same_list",
 			op1:      Op().Person().Alias().Move(4, 0),
-			op2:      Op().Person().Alias().Move(1, 3),
+			op2:      Op().Person().Alias().Move(1, 4),
 			data:     &Person{Alias: []string{"a", "b", "c", "d", "e"}},
 			expected: &Person{Alias: []string{"e", "a", "c", "d", "b"}},
 		},
@@ -520,22 +684,36 @@ func TestTransform(t *testing.T) {
 			expected: &Person{Name: "foo qux bar baz"},
 		},
 		{
+			name:     "move_then_edit_0_to_0",
+			op1:      Op().Person().Alias().Move(0, 0),
+			op2:      Op().Person().Alias().Index(0).Set("x"),
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"x", "b", "c", "d"}},
+		},
+		{
 			name:     "move_then_edit_0_to_1",
 			op1:      Op().Person().Alias().Move(0, 1),
 			op2:      Op().Person().Alias().Index(0).Set("x"),
 			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
-			expected: &Person{Alias: []string{"b", "x", "c", "d"}},
+			expected: &Person{Alias: []string{"x", "b", "c", "d"}},
 		},
 		{
 			name:     "move_then_edit_0_to_2",
 			op1:      Op().Person().Alias().Move(0, 2),
 			op2:      Op().Person().Alias().Index(0).Set("x"),
 			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
-			expected: &Person{Alias: []string{"b", "c", "x", "d"}},
+			expected: &Person{Alias: []string{"b", "x", "c", "d"}},
 		},
 		{
 			name:     "move_then_edit_0_to_3",
 			op1:      Op().Person().Alias().Move(0, 3),
+			op2:      Op().Person().Alias().Index(0).Set("x"),
+			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
+			expected: &Person{Alias: []string{"b", "c", "x", "d"}},
+		},
+		{
+			name:     "move_then_edit_0_to_4",
+			op1:      Op().Person().Alias().Move(0, 4),
 			op2:      Op().Person().Alias().Index(0).Set("x"),
 			data:     &Person{Alias: []string{"a", "b", "c", "d"}},
 			expected: &Person{Alias: []string{"b", "c", "d", "x"}},
@@ -897,25 +1075,25 @@ func TestApply(t *testing.T) {
 		},
 		{
 			name:     "move_list_scalar_start_next",
-			op:       Op().Person().Alias().Move(0, 1),
+			op:       Op().Person().Alias().Move(0, 2),
 			data:     &Person{Alias: []string{"a", "b", "c", "d", "e"}},
 			expected: &Person{Alias: []string{"b", "a", "c", "d", "e"}},
 		},
 		{
 			name:     "move_list_scalar_start_mid",
-			op:       Op().Person().Alias().Move(0, 2),
+			op:       Op().Person().Alias().Move(0, 3),
 			data:     &Person{Alias: []string{"a", "b", "c", "d", "e"}},
 			expected: &Person{Alias: []string{"b", "c", "a", "d", "e"}},
 		},
 		{
 			name:     "move_list_scalar_start_end",
-			op:       Op().Person().Alias().Move(0, 4),
+			op:       Op().Person().Alias().Move(0, 5),
 			data:     &Person{Alias: []string{"a", "b", "c", "d", "e"}},
 			expected: &Person{Alias: []string{"b", "c", "d", "e", "a"}},
 		},
 		{
 			name:     "move_list_scalar_mid_next",
-			op:       Op().Person().Alias().Move(2, 3),
+			op:       Op().Person().Alias().Move(2, 4),
 			data:     &Person{Alias: []string{"a", "b", "c", "d", "e"}},
 			expected: &Person{Alias: []string{"a", "b", "d", "c", "e"}},
 		},
@@ -927,7 +1105,7 @@ func TestApply(t *testing.T) {
 		},
 		{
 			name:     "move_list_scalar_mid_end",
-			op:       Op().Person().Alias().Move(2, 4),
+			op:       Op().Person().Alias().Move(2, 5),
 			data:     &Person{Alias: []string{"a", "b", "c", "d", "e"}},
 			expected: &Person{Alias: []string{"a", "b", "d", "e", "c"}},
 		},
@@ -957,7 +1135,7 @@ func TestApply(t *testing.T) {
 		},
 		{
 			name:     "move_list_message",
-			op:       Op().Case().Items().Move(0, 2),
+			op:       Op().Case().Items().Move(0, 3),
 			data:     &Case{Items: []*Item{{Title: "a"}, {Title: "b"}, {Title: "c"}}},
 			expected: &Case{Items: []*Item{{Title: "b"}, {Title: "c"}, {Title: "a"}}},
 		},

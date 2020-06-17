@@ -53,25 +53,23 @@ func transformIndependent(t, op *Op) *Op {
 		return nil
 	}
 
-	if behaviour.ValueIsDeleted && TreeRelationship(t.To(), op.Location) == TREE_ANCESTOR {
+	if behaviour.ValueIsLocation && behaviour.ValueIsDeleted && TreeRelationship(t.To(), op.Location) == TREE_ANCESTOR {
 		// Op is acting on a value that is a descendent of a value that t deleted. We should delete op.
 		return nil
 	}
 
-	if behaviour.IndexShifter != nil && TreeRelationship(t.Parent(), op.Location) == TREE_ANCESTOR {
+	if behaviour.IndexValueShifter != nil && TreeRelationship(t.Parent(), op.Location) == TREE_ANCESTOR {
 		// Op is acting on a value that is a descendent of a value that may have had it's list index shifted by t.
 		// We should update the list index of the locator using the index shifter function.
-		shifter := behaviour.IndexShifter(t, op, false)
-		index := len(t.Location) - 1
-		value := op.Location[index].V.(*Locator_Index).Index
+		valueShifter := behaviour.IndexValueShifter(t, op)
 		out := proto.Clone(op).(*Op)
-		out.Location[index].V.(*Locator_Index).Index = shifter(value)
+		out.SetItemIndex(valueShifter(op.ItemIndex()))
 		if opBehaviour.ValueIsLocation && TreeRelationship(t.Parent(), op.Parent()) == TREE_EQUAL {
 			// If t and op both act on values within the same list (have the same parent), AND op has a location at
 			// it's value, then we update the location using the shifter. Example is two moves which are acting on
 			// different values within a list.
-			value := op.Value.(*Op_Index).Index
-			out.Value.(*Op_Index).Index = shifter(value)
+			locationShifter := behaviour.IndexLocationShifter(t, op)
+			out.SetToIndex(locationShifter(op.ToIndex()))
 		}
 		return out
 	}
@@ -79,7 +77,7 @@ func transformIndependent(t, op *Op) *Op {
 	if behaviour.KeyShifter != nil && TreeRelationship(t.Parent(), op.Location) == TREE_ANCESTOR {
 		// Op is acting on a value that is a descendent of a value that may have had it's map key shifted by t. We
 		// should update the map key of the locator using the index shifter function.
-		shifter := behaviour.KeyShifter(t, op, false)
+		shifter := behaviour.KeyShifter(t, op)
 		index := len(t.Location) - 1
 		value := op.Location[index].V.(*Locator_Key).Key
 		out := proto.Clone(op).(*Op)
@@ -336,11 +334,9 @@ func transformInsertIndexInsertIndex(t, op *Op, priority bool) *Op {
 		return transformIndependent(t, op)
 	}
 	// Both operations are inserting at the same index. We should use priority to determine which is shifted.
-	shifter := insertLocationShifter(t.Item().V.(*Locator_Index).Index, priority)
-	index := len(op.Location) - 1
-	value := op.Location[index].V.(*Locator_Index).Index
+	shifter := insertLocationShifter(t.ItemIndex(), priority, true)
 	out := proto.Clone(op).(*Op)
-	out.Location[index].V.(*Locator_Index).Index = shifter(value)
+	out.SetItemIndex(shifter(op.ItemIndex()))
 	return out
 }
 func transformInsertIndexMoveIndex(t, op *Op, priority bool) *Op {
@@ -360,15 +356,11 @@ func transformInsertIndexMoveIndex(t, op *Op, priority bool) *Op {
 	case to == TREE_EQUAL:
 		// op is trying to move a value to the same index that t inserted at. We can use priority to determine
 		// which is shifted, but the destination index should be shifted without taking account of priority.
-		locationShifter := insertLocationShifter(t.Item().V.(*Locator_Index).Index, priority)
-		valueShifter := insertValueShifter(t.Item().V.(*Locator_Index).Index)
-		index := len(op.Location) - 1
-		moveFrom := op.Location[index].V.(*Locator_Index).Index
-		moveTo := op.Value.(*Op_Index).Index
-		//moveTo := op.ToShiftedIndex()
+		locationShifter := insertLocationShifter(t.ItemIndex(), priority, true)
+		valueShifter := insertValueShifter(t.ItemIndex())
 		out := proto.Clone(op).(*Op)
-		out.Location[index].V.(*Locator_Index).Index = valueShifter(moveFrom)
-		out.Value.(*Op_Index).Index = locationShifter(moveTo)
+		out.SetItemIndex(valueShifter(op.ItemIndex()))
+		out.SetToIndex(locationShifter(op.ToIndex()))
 		return out
 	default:
 		panic("")
@@ -430,18 +422,21 @@ func transformMoveIndexInsertIndex(t, op *Op, priority bool) *Op {
 		return transformIndependent(t, op)
 	case from == TREE_EQUAL:
 		// op is inserting a new value at the same location that t moved from. Operations are independent, but we don't
-		// want to apply the shifter because that would make the insert move with the moved value.
-		return proto.Clone(op).(*Op)
-	case to == TREE_EQUAL:
-		// op is inserting a new value at the same location that t moved to. We can use priority to determine which
-		// operation is shifted.
-		//
-		// TODO
-		shifter := moveLocationShifter(t.Item().V.(*Locator_Index).Index, t.Value.(*Op_Index).Index, priority)
-		index := len(op.Location) - 1
-		value := op.Location[index].V.(*Locator_Index).Index
+		// want to use transformIndependent because that would make the insert move with the moved value (it uses the
+		// moveValueShifter shifter variant). We manually use moveLocationShifter to shift the location:
+
+		// Note: priority doesn't matter here because it is only used when (i == to) || (from < to && i == to+1)
+		// Since we know i == from, it cannot be used. Set to false to demonstrate this:
+		shifter := moveLocationShifter(t.ItemIndex(), t.ToIndex(), false, false)
 		out := proto.Clone(op).(*Op)
-		out.Location[index].V.(*Locator_Index).Index = shifter(value)
+		out.SetItemIndex(shifter(op.ItemIndex()))
+		return out
+	case to == TREE_EQUAL:
+		// op is inserting a new value at the same location that t moved to. We can priority to determine which
+		// operation is shifted.
+		shifter := moveLocationShifter(t.ItemIndex(), t.ToIndex(), priority, true)
+		out := proto.Clone(op).(*Op)
+		out.SetItemIndex(shifter(op.ItemIndex()))
 		return out
 	default:
 		panic("")
@@ -471,27 +466,23 @@ func transformMoveIndexMoveIndex(t, op *Op, priority bool) *Op {
 		if priority {
 			return nil
 		}
-		// priority in shifter doesn't matter because it is only used when i == toIndex, and we know t.To() != op.To()
-		locationShifter := moveLocationShifter(t.Item().V.(*Locator_Index).Index, t.Value.(*Op_Index).Index, priority)
-		valueShifter := moveValueShifter(t.Item().V.(*Locator_Index).Index, t.Value.(*Op_Index).Index)
-		index := len(op.Location) - 1
-		opFrom := op.Location[index].V.(*Locator_Index).Index
-		opTo := op.Value.(*Op_Index).Index
+
+		// Here all we need to do is modify the from location of op so that is uses the value at the to location of t.
+		// We don't need to use the shifter.
+		locationShifter := moveLocationShifter(t.ItemIndex(), t.ToIndex(), priority, true)
 		out := proto.Clone(op).(*Op)
-		out.Location[index].V.(*Locator_Index).Index = valueShifter(opFrom)
-		out.Value.(*Op_Index).Index = locationShifter(opTo)
+		// must use location locationShifter here because that was used to shift t.To
+		out.SetItemIndex(locationShifter(t.ToIndex()))
+		out.SetToIndex(locationShifter(op.ToIndex()))
 		return out
 	case toTo == TREE_EQUAL:
 		// Op is trying to move another value to the same index that t just moved a value to. We can use priority to
 		// determine which value is shifted.
-		locationShifter := moveLocationShifter(t.Item().V.(*Locator_Index).Index, t.Value.(*Op_Index).Index, priority)
-		valueShifter := moveValueShifter(t.Item().V.(*Locator_Index).Index, t.Value.(*Op_Index).Index)
-		index := len(op.Location) - 1
-		opFrom := op.Location[index].V.(*Locator_Index).Index
-		opTo := op.Value.(*Op_Index).Index
+		locationShifter := moveLocationShifter(t.ItemIndex(), t.ToIndex(), priority, true)
+		valueShifter := moveValueShifter(t.ItemIndex(), t.ToIndex())
 		out := proto.Clone(op).(*Op)
-		out.Location[index].V.(*Locator_Index).Index = valueShifter(opFrom)
-		out.Value.(*Op_Index).Index = locationShifter(opTo)
+		out.SetItemIndex(valueShifter(op.ItemIndex()))
+		out.SetToIndex(locationShifter(op.ToIndex()))
 		return out
 	case fromTo == TREE_EQUAL && toFrom == TREE_EQUAL:
 		// Op is trying to move the value at the to index of the move that t has just done, and move to the from index.
@@ -587,7 +578,7 @@ func transformRenameKeyRenameKey(t, op *Op, priority bool) *Op {
 			return nil
 		}
 		out := proto.Clone(op).(*Op)
-		out.Location = proto.Clone(t).(*Op).To()
+		out.SetItemIndex(t.ToIndex())
 		return out
 	case toTo == TREE_EQUAL:
 		// Op is trying to move a value and overwrite the value that t already overwrote. We can use priority to

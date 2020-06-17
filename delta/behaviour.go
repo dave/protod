@@ -31,11 +31,12 @@ type OpData struct {
 }
 
 type OpBehaviour struct {
-	ItemIsDeleted   bool
-	ValueIsDeleted  bool
-	ValueIsLocation bool
-	IndexShifter    func(*Op, *Op, bool) func(int64) int64
-	KeyShifter      func(*Op, *Op, bool) func(*Key) *Key
+	ItemIsDeleted        bool
+	ValueIsDeleted       bool
+	ValueIsLocation      bool
+	IndexValueShifter    func(*Op, *Op) func(int64) int64
+	IndexLocationShifter func(*Op, *Op) func(int64) int64
+	KeyShifter           func(*Op, *Op) func(*Key) *Key
 }
 
 var Behaviours = map[OpType]OpData{
@@ -45,25 +46,28 @@ var Behaviours = map[OpType]OpData{
 		Locators: []LocatorType{FIELD, INDEX, KEY},
 		Data: map[LocatorType]OpBehaviour{
 			FIELD: {
-				ValueIsLocation: false,
-				ItemIsDeleted:   false,
-				ValueIsDeleted:  false,
-				IndexShifter:    nil,
-				KeyShifter:      nil,
+				ValueIsLocation:      false,
+				ItemIsDeleted:        false,
+				ValueIsDeleted:       false,
+				IndexValueShifter:    nil,
+				IndexLocationShifter: nil,
+				KeyShifter:           nil,
 			},
 			INDEX: {
-				ValueIsLocation: false,
-				ItemIsDeleted:   false,
-				ValueIsDeleted:  false,
-				IndexShifter:    nil,
-				KeyShifter:      nil,
+				ValueIsLocation:      false,
+				ItemIsDeleted:        false,
+				ValueIsDeleted:       false,
+				IndexValueShifter:    nil,
+				IndexLocationShifter: nil,
+				KeyShifter:           nil,
 			},
 			KEY: {
-				ValueIsLocation: false,
-				ItemIsDeleted:   false,
-				ValueIsDeleted:  false,
-				IndexShifter:    nil,
-				KeyShifter:      nil,
+				ValueIsLocation:      false,
+				ItemIsDeleted:        false,
+				ValueIsDeleted:       false,
+				IndexValueShifter:    nil,
+				IndexLocationShifter: nil,
+				KeyShifter:           nil,
 			},
 		},
 	},
@@ -73,25 +77,28 @@ var Behaviours = map[OpType]OpData{
 		Locators: []LocatorType{FIELD, INDEX, KEY},
 		Data: map[LocatorType]OpBehaviour{
 			FIELD: {
-				ValueIsLocation: false,
-				ItemIsDeleted:   true,
-				ValueIsDeleted:  false,
-				IndexShifter:    nil,
-				KeyShifter:      nil,
+				ValueIsLocation:      false,
+				ItemIsDeleted:        true,
+				ValueIsDeleted:       false,
+				IndexValueShifter:    nil,
+				IndexLocationShifter: nil,
+				KeyShifter:           nil,
 			},
 			INDEX: {
-				ValueIsLocation: false,
-				ItemIsDeleted:   true,
-				ValueIsDeleted:  false,
-				IndexShifter:    nil,
-				KeyShifter:      nil,
+				ValueIsLocation:      false,
+				ItemIsDeleted:        true,
+				ValueIsDeleted:       false,
+				IndexValueShifter:    nil,
+				IndexLocationShifter: nil,
+				KeyShifter:           nil,
 			},
 			KEY: {
-				ValueIsLocation: false,
-				ItemIsDeleted:   true,
-				ValueIsDeleted:  false,
-				IndexShifter:    nil,
-				KeyShifter:      nil,
+				ValueIsLocation:      false,
+				ItemIsDeleted:        true,
+				ValueIsDeleted:       false,
+				IndexValueShifter:    nil,
+				IndexLocationShifter: nil,
+				KeyShifter:           nil,
 			},
 		},
 	},
@@ -104,8 +111,11 @@ var Behaviours = map[OpType]OpData{
 				ValueIsLocation: false,
 				ItemIsDeleted:   false,
 				ValueIsDeleted:  false,
-				IndexShifter: func(transformer, op *Op, priority bool) func(int64) int64 {
+				IndexValueShifter: func(transformer, op *Op) func(int64) int64 {
 					return insertValueShifter(transformer.Item().V.(*Locator_Index).Index)
+				},
+				IndexLocationShifter: func(transformer, op *Op) func(int64) int64 {
+					return insertLocationShifter(transformer.Item().V.(*Locator_Index).Index, false, false)
 				},
 				KeyShifter: nil,
 			},
@@ -120,8 +130,11 @@ var Behaviours = map[OpType]OpData{
 				ValueIsLocation: true,
 				ItemIsDeleted:   false,
 				ValueIsDeleted:  false,
-				IndexShifter: func(transformer, op *Op, priority bool) func(int64) int64 {
+				IndexValueShifter: func(transformer, op *Op) func(int64) int64 {
 					return moveValueShifter(transformer.Item().V.(*Locator_Index).Index, transformer.Value.(*Op_Index).Index)
+				},
+				IndexLocationShifter: func(transformer, op *Op) func(int64) int64 {
+					return moveLocationShifter(transformer.Item().V.(*Locator_Index).Index, transformer.Value.(*Op_Index).Index, false, false)
 				},
 				KeyShifter: nil,
 			},
@@ -133,11 +146,12 @@ var Behaviours = map[OpType]OpData{
 		Locators: []LocatorType{KEY},
 		Data: map[LocatorType]OpBehaviour{
 			KEY: {
-				ValueIsLocation: true,
-				ItemIsDeleted:   false,
-				ValueIsDeleted:  true,
-				IndexShifter:    nil,
-				KeyShifter: func(op *Op, op2 *Op, b bool) func(*Key) *Key {
+				ValueIsLocation:      true,
+				ItemIsDeleted:        false,
+				ValueIsDeleted:       true,
+				IndexValueShifter:    nil,
+				IndexLocationShifter: nil,
+				KeyShifter: func(op *Op, op2 *Op) func(*Key) *Key {
 					return renameShifter(op.Item().V.(*Locator_Key).Key, op.Value.(*Op_Key).Key)
 				},
 			},
@@ -149,27 +163,32 @@ var Behaviours = map[OpType]OpData{
 		Locators: []LocatorType{FIELD, INDEX, KEY},
 		Data: map[LocatorType]OpBehaviour{
 			FIELD: {
-				ValueIsLocation: false,
-				ItemIsDeleted:   true,
-				ValueIsDeleted:  false,
-				IndexShifter:    nil,
-				KeyShifter:      nil,
+				ValueIsLocation:      false,
+				ItemIsDeleted:        true,
+				ValueIsDeleted:       false,
+				IndexValueShifter:    nil,
+				IndexLocationShifter: nil,
+				KeyShifter:           nil,
 			},
 			INDEX: {
 				ValueIsLocation: false,
 				ItemIsDeleted:   true,
 				ValueIsDeleted:  false,
-				IndexShifter: func(transformer, op *Op, priority bool) func(int64) int64 {
+				IndexValueShifter: func(transformer, op *Op) func(int64) int64 {
+					return deleteShifter(transformer.Item().V.(*Locator_Index).Index)
+				},
+				IndexLocationShifter: func(transformer, op *Op) func(int64) int64 {
 					return deleteShifter(transformer.Item().V.(*Locator_Index).Index)
 				},
 				KeyShifter: nil,
 			},
 			KEY: {
-				ValueIsLocation: false,
-				ItemIsDeleted:   false,
-				ValueIsDeleted:  true,
-				IndexShifter:    nil,
-				KeyShifter:      nil,
+				ValueIsLocation:      false,
+				ItemIsDeleted:        false,
+				ValueIsDeleted:       true,
+				IndexValueShifter:    nil,
+				IndexLocationShifter: nil,
+				KeyShifter:           nil,
 			},
 		},
 	},
