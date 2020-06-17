@@ -11,82 +11,161 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func testTwoOps(t *testing.T, opA, opB *delta.Op, descA, descB string, data proto.Message) {
-	// opA has priority
-	opAxpA, opBxpA, err := delta.Transform(opA, opB, true)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// opB has priority
-	opAxpB, opBxpB, err := delta.Transform(opA, opB, false)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	dataApA := proto.Clone(data)
-	if err := delta.Apply(opA, &dataApA); err != nil {
-		t.Fatal(err)
-	}
-	if err := delta.Apply(opBxpA, &dataApA); err != nil {
-		t.Fatal(err)
-	}
-
-	dataBpA := proto.Clone(data)
-	if err := delta.Apply(opB, &dataBpA); err != nil {
-		t.Fatal(err)
-	}
-	if err := delta.Apply(opAxpA, &dataBpA); err != nil {
-		t.Fatal(err)
-	}
-
-	dataApB := proto.Clone(data)
-	if err := delta.Apply(opA, &dataApB); err != nil {
-		t.Fatal(err)
-	}
-	if err := delta.Apply(opBxpB, &dataApB); err != nil {
-		t.Fatal(err)
-	}
-
-	dataBpB := proto.Clone(data)
-	if err := delta.Apply(opB, &dataBpB); err != nil {
-		t.Fatal(err)
-	}
-	if err := delta.Apply(opAxpB, &dataBpB); err != nil {
-		t.Fatal(err)
-	}
-
-	resultApA, err := protojson.Marshal(dataApA)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resultApB, err := protojson.Marshal(dataApB)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resultBpA, err := protojson.Marshal(dataBpA)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resultBpB, err := protojson.Marshal(dataBpB)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if !compareJson(string(resultApA), string(resultBpA)) {
-		t.Fatalf("\nA: %s\nB: %s\npriority: A\nresult-A-Bx: %s\nresult-B-Ax: %s\n", descA, descB, resultApA, resultBpA)
-	}
-
-	if !compareJson(string(resultApB), string(resultBpB)) {
-		t.Fatalf("\nA: %s\nB: %s\npriority: B\nresult-A-Bx: %s\nresult-B-Ax: %s\n", descA, descB, resultApB, resultBpB)
+// EditEditIndex
+func TestTransformEditEditIndex(t *testing.T) {
+	listD := []string{"a", "b", "c", "d"}
+	listI := []string{"0", "1", "2", "3"}
+	data := &Person{Alias: listD}
+	for editA := range listI {
+		for editB := range listI {
+			opA := Op().Person().Alias().Index(editA).Edit(listD[editA], "X")
+			opB := Op().Person().Alias().Index(editB).Edit(listD[editB], "Y")
+			descA := fmt.Sprintf("edit@%d", editA)
+			descB := fmt.Sprintf("edit@%d", editB)
+			testTwoOpsConverge(t, opA, opB, descA, descB, data)
+		}
 	}
 }
 
+// EditSetIndex
+func TestTransformEditSetIndex(t *testing.T) {
+	listD := []string{"a", "b", "c", "d"}
+	listI := []string{"0", "1", "2", "3"}
+	data := &Person{Alias: listD}
+	for edit := range listI {
+		for set := range listI {
+			opA := Op().Person().Alias().Index(edit).Edit(listD[edit], "X")
+			opB := Op().Person().Alias().Index(set).Set("Y")
+			descA := fmt.Sprintf("edit@%d", edit)
+			descB := fmt.Sprintf("set@%d", set)
+			testTwoOpsConverge(t, opA, opB, descA, descB, data)
+			testTwoOpsConverge(t, opB, opA, descB, descA, data)
+		}
+	}
+}
+
+// EditDeleteIndex
+func TestTransformEditDeleteIndex(t *testing.T) {
+	listD := []string{"a", "b", "c", "d"}
+	listX := []string{"0", "1", "2", "3"}
+	data := &Person{Alias: listD}
+	for edit := range listX {
+		for del := range listX {
+			opA := Op().Person().Alias().Index(edit).Edit(listD[edit], "X")
+			opB := Op().Person().Alias().Index(del).Delete()
+			descA := fmt.Sprintf("edit@%d", edit)
+			descB := fmt.Sprintf("del@%d", del)
+			testTwoOpsConverge(t, opA, opB, descA, descB, data)
+			testTwoOpsConverge(t, opB, opA, descB, descA, data)
+		}
+	}
+}
+
+// SetSetIndex
+func TestTransformSetSetIndex(t *testing.T) {
+	listD := []string{"a", "b", "c", "d"}
+	listX := []string{"0", "1", "2", "3"}
+	data := &Person{Alias: listD}
+	for setA := range listX {
+		for setB := range listX {
+			opA := Op().Person().Alias().Index(setA).Set("X")
+			opB := Op().Person().Alias().Index(setB).Set("Y")
+			descA := fmt.Sprintf("set@%d", setA)
+			descB := fmt.Sprintf("set@%d", setB)
+			testTwoOpsConverge(t, opA, opB, descA, descB, data)
+		}
+	}
+}
+
+// EditInsert
+func TestTransformEditInsert(t *testing.T) {
+	listD := []string{"a", "b", "c", "d"}
+	listE := []string{"0", "1", "2", "3"}
+	listI := []string{"0", "1", "2", "3", "4"}
+	data := &Person{Alias: listD}
+	for edit := range listE {
+		for ins := range listI {
+			opA := Op().Person().Alias().Index(edit).Edit(listD[edit], "X")
+			opB := Op().Person().Alias().Insert(ins, "Y")
+			descA := fmt.Sprintf("edit@%d", edit)
+			descB := fmt.Sprintf("ins@%d", ins)
+			testTwoOpsConverge(t, opA, opB, descA, descB, data)
+			testTwoOpsConverge(t, opB, opA, descB, descA, data)
+		}
+	}
+}
+
+// SetInsert
+func TestTransformSetInsert(t *testing.T) {
+	listD := []string{"a", "b", "c", "d"}
+	listX := []string{"0", "1", "2", "3"}
+	listI := []string{"0", "1", "2", "3", "4"}
+	data := &Person{Alias: listD}
+	for set := range listX {
+		for ins := range listI {
+			opA := Op().Person().Alias().Index(set).Set("X")
+			opB := Op().Person().Alias().Insert(ins, "Y")
+			descA := fmt.Sprintf("set@%d", set)
+			descB := fmt.Sprintf("ins@%d", ins)
+			testTwoOpsConverge(t, opA, opB, descA, descB, data)
+			testTwoOpsConverge(t, opB, opA, descB, descA, data)
+		}
+	}
+}
+
+// SetDeleteIndex
+func TestTransformSetDeleteIndex(t *testing.T) {
+	listD := []string{"a", "b", "c", "d"}
+	listX := []string{"0", "1", "2", "3"}
+	data := &Person{Alias: listD}
+	for set := range listX {
+		for del := range listX {
+			opA := Op().Person().Alias().Index(set).Set("X")
+			opB := Op().Person().Alias().Index(del).Delete()
+			descA := fmt.Sprintf("set@%d", set)
+			descB := fmt.Sprintf("del@%d", del)
+			testTwoOpsConverge(t, opA, opB, descA, descB, data)
+			testTwoOpsConverge(t, opB, opA, descB, descA, data)
+		}
+	}
+}
+
+// InsertDelete
+func TestTransformInsertDelete(t *testing.T) {
+	listD := []string{"a", "b", "c", "d"}
+	listX := []string{"0", "1", "2", "3"}
+	listI := []string{"0", "1", "2", "3", "4"}
+	data := &Person{Alias: listD}
+	for ins := range listI {
+		for del := range listX {
+			opA := Op().Person().Alias().Insert(ins, "X")
+			opB := Op().Person().Alias().Index(del).Delete()
+			descA := fmt.Sprintf("ins@%d", ins)
+			descB := fmt.Sprintf("del@%d", del)
+			testTwoOpsConverge(t, opA, opB, descA, descB, data)
+			testTwoOpsConverge(t, opB, opA, descB, descA, data)
+		}
+	}
+}
+
+// DeleteDeleteIndex
+func TestTransformDeleteDeleteIndex(t *testing.T) {
+	listD := []string{"a", "b", "c", "d"}
+	listX := []string{"0", "1", "2", "3"}
+	data := &Person{Alias: listD}
+	for delA := range listX {
+		for delB := range listX {
+			opA := Op().Person().Alias().Index(delA).Delete()
+			opB := Op().Person().Alias().Index(delB).Delete()
+			descA := fmt.Sprintf("del@%d", delA)
+			descB := fmt.Sprintf("del@%d", delB)
+			testTwoOpsConverge(t, opA, opB, descA, descB, data)
+		}
+	}
+}
+
+// MoveMove
 func TestTransformMoveMove(t *testing.T) {
-	//                 0    1    2    3    4    5    6
 	listD := []string{"a", "b", "c", "d", "e", "f", "g"}
 	listT := []string{"0", "1", "2", "3", "4", "5", "6", "7"}
 	listF := []string{"0", "1", "2", "3", "4", "5", "6"}
@@ -99,15 +178,15 @@ func TestTransformMoveMove(t *testing.T) {
 					opB := Op().Person().Alias().Move(fromB, toB)
 					descA := fmt.Sprintf("%d->%d", fromA, toA)
 					descB := fmt.Sprintf("%d->%d", fromB, toB)
-					testTwoOps(t, opA, opB, descA, descB, data)
+					testTwoOpsConverge(t, opA, opB, descA, descB, data)
 				}
 			}
 		}
 	}
 }
 
+// MoveInsert
 func TestTransformMoveInsert(t *testing.T) {
-	//                 0    1    2    3    4    5    6
 	listD := []string{"a", "b", "c", "d", "e", "f", "g"}
 	listT := []string{"0", "1", "2", "3", "4", "5", "6", "7"}
 	listF := []string{"0", "1", "2", "3", "4", "5", "6"}
@@ -120,15 +199,15 @@ func TestTransformMoveInsert(t *testing.T) {
 				opB := Op().Person().Alias().Insert(ins, "X")
 				descA := fmt.Sprintf("%d->%d", from, to)
 				descB := fmt.Sprintf("ins@%d", ins)
-				testTwoOps(t, opA, opB, descA, descB, data)
-				testTwoOps(t, opB, opA, descB, descA, data)
+				testTwoOpsConverge(t, opA, opB, descA, descB, data)
+				testTwoOpsConverge(t, opB, opA, descB, descA, data)
 			}
 		}
 	}
 }
 
+// InsertInsert
 func TestTransformInsertInsert(t *testing.T) {
-	//                 0    1    2    3    4    5    6
 	listD := []string{"a", "b", "c", "d", "e", "f", "g"}
 	listI := []string{"0", "1", "2", "3", "4", "5", "6", "7"}
 	data := &Person{Alias: listD}
@@ -138,13 +217,13 @@ func TestTransformInsertInsert(t *testing.T) {
 			opB := Op().Person().Alias().Insert(insB, "Y")
 			descA := fmt.Sprintf("ins@%d", insA)
 			descB := fmt.Sprintf("ins@%d", insB)
-			testTwoOps(t, opA, opB, descA, descB, data)
+			testTwoOpsConverge(t, opA, opB, descA, descB, data)
 		}
 	}
 }
 
-func TestTransformDeleteMove(t *testing.T) {
-	//                 0    1    2    3    4    5    6
+// MoveDelete
+func TestTransformMoveDelete(t *testing.T) {
 	listD := []string{"a", "b", "c", "d", "e", "f", "g"}
 	listT := []string{"0", "1", "2", "3", "4", "5", "6", "7"}
 	listF := []string{"0", "1", "2", "3", "4", "5", "6"}
@@ -157,15 +236,15 @@ func TestTransformDeleteMove(t *testing.T) {
 				opB := Op().Person().Alias().Move(from, to)
 				descA := fmt.Sprintf("del@%d", del)
 				descB := fmt.Sprintf("%d->%d", from, to)
-				testTwoOps(t, opA, opB, descA, descB, data)
-				testTwoOps(t, opB, opA, descB, descA, data)
+				testTwoOpsConverge(t, opA, opB, descA, descB, data)
+				testTwoOpsConverge(t, opB, opA, descB, descA, data)
 			}
 		}
 	}
 }
 
+// SetMove
 func TestTransformMoveSet(t *testing.T) {
-	//                 0    1    2    3    4    5    6
 	listD := []string{"a", "b", "c", "d", "e", "f", "g"}
 	listT := []string{"0", "1", "2", "3", "4", "5", "6", "7"}
 	listF := []string{"0", "1", "2", "3", "4", "5", "6"}
@@ -178,15 +257,15 @@ func TestTransformMoveSet(t *testing.T) {
 				opB := Op().Person().Alias().Move(from, to)
 				descA := fmt.Sprintf("set@%d", set)
 				descB := fmt.Sprintf("%d->%d", from, to)
-				testTwoOps(t, opA, opB, descA, descB, data)
-				testTwoOps(t, opB, opA, descB, descA, data)
+				testTwoOpsConverge(t, opA, opB, descA, descB, data)
+				testTwoOpsConverge(t, opB, opA, descB, descA, data)
 			}
 		}
 	}
 }
 
+// EditMove
 func TestTransformMoveEdit(t *testing.T) {
-	//                 0    1    2    3    4    5    6
 	listD := []string{"a", "b", "c", "d", "e", "f", "g"}
 	listT := []string{"0", "1", "2", "3", "4", "5", "6", "7"}
 	listF := []string{"0", "1", "2", "3", "4", "5", "6"}
@@ -199,14 +278,15 @@ func TestTransformMoveEdit(t *testing.T) {
 				opB := Op().Person().Alias().Move(from, to)
 				descA := fmt.Sprintf("edit@%d", set)
 				descB := fmt.Sprintf("%d->%d", from, to)
-				testTwoOps(t, opA, opB, descA, descB, data)
-				testTwoOps(t, opB, opA, descB, descA, data)
+				testTwoOpsConverge(t, opA, opB, descA, descB, data)
+				testTwoOpsConverge(t, opB, opA, descB, descA, data)
 			}
 		}
 	}
 }
 
-func TestTransformRename(t *testing.T) {
+// RenameRename
+func TestTransformRenameRename(t *testing.T) {
 	mapD := map[int64]string{0: "a", 1: "b", 2: "c", 3: "d", 4: "e", 5: "f"}
 	values := []string{"0", "1", "2", "3", "4", "5"}
 	data := &Company{Flags: mapD}
@@ -218,9 +298,171 @@ func TestTransformRename(t *testing.T) {
 					opB := Op().Company().Flags().Rename(fromB, toB)
 					descA := fmt.Sprintf("%d->%d", fromA, toA)
 					descB := fmt.Sprintf("%d->%d", fromB, toB)
-					testTwoOps(t, opA, opB, descA, descB, data)
+					testTwoOpsConverge(t, opA, opB, descA, descB, data)
 				}
 			}
+		}
+	}
+}
+
+// EditEditKey
+func TestTransformEditEditKey(t *testing.T) {
+	mapD := map[int64]string{0: "a", 1: "b", 2: "c", 3: "d"}
+	values := []string{"0", "1", "2", "3"}
+	data := &Company{Flags: mapD}
+	for editA := range values {
+		for editB := range values {
+			opA := Op().Company().Flags().Key(editA).Edit(mapD[int64(editA)], "X")
+			opB := Op().Company().Flags().Key(editB).Edit(mapD[int64(editB)], "Y")
+			descA := fmt.Sprintf("edit@%d", editA)
+			descB := fmt.Sprintf("edit@%d", editB)
+			testTwoOpsConverge(t, opA, opB, descA, descB, data)
+		}
+	}
+}
+
+// EditSetKey
+func TestTransformEditSetKey(t *testing.T) {
+	mapD := map[int64]string{0: "a", 1: "b", 2: "c", 3: "d"}
+	values := []string{"0", "1", "2", "3"}
+	data := &Company{Flags: mapD}
+	for edit := range values {
+		for set := range values {
+			opA := Op().Company().Flags().Key(edit).Edit(mapD[int64(edit)], "X")
+			opB := Op().Company().Flags().Key(set).Set("Y")
+			descA := fmt.Sprintf("edit@%d", edit)
+			descB := fmt.Sprintf("set@%d", set)
+			testTwoOpsConverge(t, opA, opB, descA, descB, data)
+			testTwoOpsConverge(t, opB, opA, descB, descA, data)
+		}
+	}
+}
+
+// EditDeleteKey
+func TestTransformEditDeleteKey(t *testing.T) {
+	mapD := map[int64]string{0: "a", 1: "b", 2: "c", 3: "d"}
+	values := []string{"0", "1", "2", "3"}
+	data := &Company{Flags: mapD}
+	for edit := range values {
+		for del := range values {
+			opA := Op().Company().Flags().Key(edit).Edit(mapD[int64(edit)], "X")
+			opB := Op().Company().Flags().Key(del).Delete()
+			descA := fmt.Sprintf("edit@%d", edit)
+			descB := fmt.Sprintf("del@%d", del)
+			testTwoOpsConverge(t, opA, opB, descA, descB, data)
+			testTwoOpsConverge(t, opB, opA, descB, descA, data)
+		}
+	}
+}
+
+// EditRename
+func TestTransformEditRenameKey(t *testing.T) {
+	mapD := map[int64]string{0: "a", 1: "b", 2: "c", 3: "d"}
+	editV := []string{"0", "1", "2", "3"}
+	renameF := []string{"0", "1", "2", "3"}
+	renameT := []string{"0", "1", "2", "3", "4", "5"}
+	data := &Company{Flags: mapD}
+	for edit := range editV {
+		for from := range renameF {
+			for to := range renameT {
+				opA := Op().Company().Flags().Key(edit).Edit(mapD[int64(edit)], "X")
+				opB := Op().Company().Flags().Rename(from, to)
+				descA := fmt.Sprintf("edit@%d", edit)
+				descB := fmt.Sprintf("%d->%d", from, to)
+				testTwoOpsConverge(t, opA, opB, descA, descB, data)
+				testTwoOpsConverge(t, opB, opA, descB, descA, data)
+			}
+		}
+	}
+}
+
+// SetRename
+func TestTransformSetRenameKey(t *testing.T) {
+	mapD := map[int64]string{0: "a", 1: "b", 2: "c", 3: "d"}
+	setV := []string{"0", "1", "2", "3"}
+	renameF := []string{"0", "1", "2", "3"}
+	renameT := []string{"0", "1", "2", "3", "4", "5"}
+	data := &Company{Flags: mapD}
+	for set := range setV {
+		for from := range renameF {
+			for to := range renameT {
+				opA := Op().Company().Flags().Key(set).Set("X")
+				opB := Op().Company().Flags().Rename(from, to)
+				descA := fmt.Sprintf("set@%d", set)
+				descB := fmt.Sprintf("%d->%d", from, to)
+				testTwoOpsConverge(t, opA, opB, descA, descB, data)
+				testTwoOpsConverge(t, opB, opA, descB, descA, data)
+			}
+		}
+	}
+}
+
+// RenameDelete
+func TestTransformRenameDelete(t *testing.T) {
+	mapD := map[int64]string{0: "a", 1: "b", 2: "c", 3: "d"}
+	delV := []string{"0", "1", "2", "3"}
+	renameF := []string{"0", "1", "2", "3"}
+	renameT := []string{"0", "1", "2", "3", "4", "5"}
+	data := &Company{Flags: mapD}
+	for del := range delV {
+		for from := range renameF {
+			for to := range renameT {
+				opA := Op().Company().Flags().Key(del).Delete()
+				opB := Op().Company().Flags().Rename(from, to)
+				descA := fmt.Sprintf("del@%d", del)
+				descB := fmt.Sprintf("%d->%d", from, to)
+				testTwoOpsConverge(t, opA, opB, descA, descB, data)
+				testTwoOpsConverge(t, opB, opA, descB, descA, data)
+			}
+		}
+	}
+}
+
+// SetSetKey
+func TestTransformSetSetKey(t *testing.T) {
+	mapD := map[int64]string{0: "a", 1: "b", 2: "c", 3: "d"}
+	setV := []string{"0", "1", "2", "3"}
+	data := &Company{Flags: mapD}
+	for setA := range setV {
+		for setB := range setV {
+			opA := Op().Company().Flags().Key(setA).Set("X")
+			opB := Op().Company().Flags().Key(setB).Set("Y")
+			descA := fmt.Sprintf("set@%d", setA)
+			descB := fmt.Sprintf("set@%d", setB)
+			testTwoOpsConverge(t, opA, opB, descA, descB, data)
+		}
+	}
+}
+
+// SetDeleteKey
+func TestTransformSetDeleteKey(t *testing.T) {
+	mapD := map[int64]string{0: "a", 1: "b", 2: "c", 3: "d"}
+	values := []string{"0", "1", "2", "3"}
+	data := &Company{Flags: mapD}
+	for set := range values {
+		for del := range values {
+			opA := Op().Company().Flags().Key(set).Set("X")
+			opB := Op().Company().Flags().Key(del).Delete()
+			descA := fmt.Sprintf("set@%d", set)
+			descB := fmt.Sprintf("del@%d", del)
+			testTwoOpsConverge(t, opA, opB, descA, descB, data)
+			testTwoOpsConverge(t, opB, opA, descB, descA, data)
+		}
+	}
+}
+
+// DeleteDeleteKey
+func TestTransformDeleteDeleteKey(t *testing.T) {
+	mapD := map[int64]string{0: "a", 1: "b", 2: "c", 3: "d"}
+	values := []string{"0", "1", "2", "3"}
+	data := &Company{Flags: mapD}
+	for delA := range values {
+		for delB := range values {
+			opA := Op().Company().Flags().Key(delA).Delete()
+			opB := Op().Company().Flags().Key(delB).Delete()
+			descA := fmt.Sprintf("del@%d", delA)
+			descB := fmt.Sprintf("del@%d", delB)
+			testTwoOpsConverge(t, opA, opB, descA, descB, data)
 		}
 	}
 }
@@ -1412,6 +1654,80 @@ func TestApply(t *testing.T) {
 	}
 	if solo {
 		t.Fatal("tests skipped")
+	}
+}
+
+func testTwoOpsConverge(t *testing.T, opA, opB *delta.Op, descA, descB string, data proto.Message) {
+	// opA has priority
+	opAxpA, opBxpA, err := delta.Transform(opA, opB, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// opB has priority
+	opAxpB, opBxpB, err := delta.Transform(opA, opB, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	dataApA := proto.Clone(data)
+	if err := delta.Apply(opA, &dataApA); err != nil {
+		t.Fatal(err)
+	}
+	if err := delta.Apply(opBxpA, &dataApA); err != nil {
+		t.Fatal(err)
+	}
+
+	dataBpA := proto.Clone(data)
+	if err := delta.Apply(opB, &dataBpA); err != nil {
+		t.Fatal(err)
+	}
+	if err := delta.Apply(opAxpA, &dataBpA); err != nil {
+		t.Fatal(err)
+	}
+
+	dataApB := proto.Clone(data)
+	if err := delta.Apply(opA, &dataApB); err != nil {
+		t.Fatal(err)
+	}
+	if err := delta.Apply(opBxpB, &dataApB); err != nil {
+		t.Fatal(err)
+	}
+
+	dataBpB := proto.Clone(data)
+	if err := delta.Apply(opB, &dataBpB); err != nil {
+		t.Fatal(err)
+	}
+	if err := delta.Apply(opAxpB, &dataBpB); err != nil {
+		t.Fatal(err)
+	}
+
+	resultApA, err := protojson.Marshal(dataApA)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resultApB, err := protojson.Marshal(dataApB)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resultBpA, err := protojson.Marshal(dataBpA)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resultBpB, err := protojson.Marshal(dataBpB)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !compareJson(string(resultApA), string(resultBpA)) {
+		t.Fatalf("\nA: %s\nB: %s\npriority: A\nresult-A-Bx: %s\nresult-B-Ax: %s\n", descA, descB, resultApA, resultBpA)
+	}
+
+	if !compareJson(string(resultApB), string(resultBpB)) {
+		t.Fatalf("\nA: %s\nB: %s\npriority: B\nresult-A-Bx: %s\nresult-B-Ax: %s\n", descA, descB, resultApB, resultBpB)
 	}
 }
 

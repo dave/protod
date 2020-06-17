@@ -207,11 +207,9 @@ func transformOverwriteOverwrite(t, op *Op, priority bool) *Op {
 	// transformSetFieldSetField
 	// transformSetFieldDeleteField
 	// transformSetIndexSetIndex
-	// transformSetIndexDeleteIndex
 	// transformSetKeySetKey
 	// transformSetKeyDeleteKey
 	// transformDeleteFieldSetField
-	// transformDeleteIndexSetIndex
 	// transformDeleteKeySetKey
 
 	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
@@ -266,7 +264,11 @@ func transformSetIndexMoveIndex(t, op *Op, priority bool) *Op {
 	}
 }
 func transformSetIndexDeleteIndex(t, op *Op, priority bool) *Op {
-	return transformOverwriteOverwrite(t, op, priority)
+	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
+		return transformIndependent(t, op)
+	}
+	// op is deleting the value that t has already replaced. op takes priority.
+	return proto.Clone(op).(*Op)
 }
 
 func transformSetKeyEditKey(t, op *Op, priority bool) *Op {
@@ -677,7 +679,11 @@ func transformDeleteIndexEditIndex(t, op *Op, priority bool) *Op {
 	return transformDeleteEdit(t, op)
 }
 func transformDeleteIndexSetIndex(t, op *Op, priority bool) *Op {
-	return transformOverwriteOverwrite(t, op, priority)
+	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
+		return transformIndependent(t, op)
+	}
+	// op is trying to set the value that op already deleted. the delete takes priority.
+	return nil
 }
 func transformDeleteIndexInsertIndex(t, op *Op, priority bool) *Op {
 	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
@@ -732,14 +738,7 @@ func transformDeleteKeyRenameKey(t, op *Op, priority bool) *Op {
 			Location: proto.Clone(op).(*Op).To(),
 		}
 	case to == TREE_EQUAL:
-		// op is trying to overwrite the value that op already deleted. We can use priority to determine which outcome
-		// to accept. If we delete op, we must replace with an operation that deleted the "from" value.
-		if priority {
-			return &Op{
-				Type:     Op_Delete,
-				Location: proto.Clone(op).(*Op).Location,
-			}
-		}
+		// op is trying to overwrite the value that op already deleted. continue with op.
 		return proto.Clone(op).(*Op)
 	default:
 		panic("")
