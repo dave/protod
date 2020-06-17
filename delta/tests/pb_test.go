@@ -532,6 +532,20 @@ func TestTransform(t *testing.T) {
 	}
 	items := []itemType{
 		{
+			name:     "delete_field_delete_field_independent",
+			op1:      Op().Person().Name().Delete(),
+			op2:      Op().Person().Age().Delete(),
+			data:     &Person{Name: "a", Age: 10, Alias: []string{"b", "c"}},
+			expected: &Person{Alias: []string{"b", "c"}},
+		},
+		{
+			name:     "delete_field_delete_field",
+			op1:      Op().Person().Name().Delete(),
+			op2:      Op().Person().Name().Delete(),
+			data:     &Person{Name: "a", Age: 10, Alias: []string{"b", "c"}},
+			expected: &Person{Age: 10, Alias: []string{"b", "c"}},
+		},
+		{
 			name:     "move_move_not_bug",              // a b c d e f
 			op1:      Op().Person().Alias().Move(2, 6), // a b d e f c
 			op2:      Op().Person().Alias().Move(1, 3), // a c b d e f

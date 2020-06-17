@@ -46,13 +46,13 @@ func main() {
 													g.Case(Op("*").Id(opLoc.Type)).BlockFunc(func(g *Group) {
 														if tLoc.Name == opLoc.Name {
 															// return transformEditFieldEditField(t, op, priority)
-															g.Return(Id(fmt.Sprintf("transform%s%s%s%s", tData.Name, tLoc.Name, opData.Name, opLoc.Name)).Call(
+															g.Return(Id(fmt.Sprintf("t%s%s%s%s", tData.Name, tLoc.Name, opData.Name, opLoc.Name)).Call(
 																Id("t"),
 																Id("op"),
 																Id("priority"),
 															))
 														} else {
-															g.Return(Id("transformIndependent").Call(Id("t"), Id("op")))
+															g.Return(Id("tIndependent").Call(Id("t"), Id("op")))
 														}
 													})
 												}

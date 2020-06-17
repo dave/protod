@@ -41,10 +41,9 @@ func (t *Op) Transform(op *Op, priority bool) *Op {
 	return t.transform(op, priority)
 }
 
-func transformIndependent(t, op *Op) *Op {
+func tIndependent(t, op *Op) *Op {
 
 	// op1 and op2 are not acting on the same value, or the values don't conflict.
-
 	behaviour := GetBehaviour(t)
 	opBehaviour := GetBehaviour(op)
 
@@ -66,8 +65,8 @@ func transformIndependent(t, op *Op) *Op {
 		out.SetItemIndex(valueShifter(op.ItemIndex()))
 		if opBehaviour.ValueIsLocation && TreeRelationship(t.Parent(), op.Parent()) == TREE_EQUAL {
 			// If t and op both act on values within the same list (have the same parent), AND op has a location at
-			// it's value, then we update the location using the shifter. Example is two moves which are acting on
-			// different values within a list.
+			// it's value, then we update the location using the location shifter. Example is two moves which are
+			// acting on different values within a list.
 			locationShifter := behaviour.IndexLocationShifter(t, op)
 			out.SetToIndex(locationShifter(op.ToIndex()))
 		}
@@ -90,14 +89,14 @@ func transformIndependent(t, op *Op) *Op {
 	return proto.Clone(op).(*Op)
 }
 
-func transformEditEdit(t, op *Op, priority bool) *Op {
+func tEdit(t, op *Op, priority bool) *Op {
 	// Used by:
-	// transformEditFieldEditField
-	// transformEditIndexEditIndex
-	// transformEditKeyEditKey
+	// tEditFieldEditField
+	// tEditIndexEditIndex
+	// tEditKeyEditKey
 
 	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
-		return transformIndependent(t, op)
+		return tIndependent(t, op)
 	}
 	// Two delta edits operating on the same value - use Quill library to transform the operation.
 	tQuill := t.Value.(*Op_Delta).Delta.Quill()
@@ -106,63 +105,107 @@ func transformEditEdit(t, op *Op, priority bool) *Op {
 	out.Value = &Op_Delta{Delta: DeltaFromQuill(tQuill.Transform(*opQuill, priority))}
 	return out
 }
+func tEditFieldEditField(t, op *Op, priority bool) *Op { return tEdit(t, op, priority) }
+func tEditIndexEditIndex(t, op *Op, priority bool) *Op { return tEdit(t, op, priority) }
+func tEditKeyEditKey(t, op *Op, priority bool) *Op     { return tEdit(t, op, priority) }
 
-func transformEditOverwrite(t, op *Op) *Op {
+func tEditOverwrite(t, op *Op) *Op {
 	// Used by:
-	// transformEditFieldSetField
-	// transformEditFieldDeleteField
-	// transformEditIndexSetIndex
-	// transformEditIndexDeleteIndex
-	// transformEditKeySetKey
-	// transformEditKeyDeleteKey
+	// tEditFieldSetField
+	// tEditIndexSetIndex
+	// tEditKeySetKey
+	// tEditFieldDeleteField
+	// tEditIndexDeleteIndex
+	// tEditKeyDeleteKey
+	// tSetIndexDeleteIndex
 
 	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
-		return transformIndependent(t, op)
+		return tIndependent(t, op)
 	}
 	// Op is trying to overwrite the value that t has modified. In order to converge, op will have priority.
 	return proto.Clone(op).(*Op)
 }
+func tOverwriteEdit(t, op *Op) *Op {
+	// Used by:
+	// tSetFieldEditField
+	// tSetIndexEditIndex
+	// tSetKeyEditKey
+	// tDeleteFieldEditField
+	// tDeleteIndexEditIndex
+	// tDeleteKeyEditKey
+	// tDeleteIndexSetIndex
 
-func transformEditFieldEditField(t, op *Op, priority bool) *Op {
-	return transformEditEdit(t, op, priority)
+	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
+		return tIndependent(t, op)
+	}
+	// op is trying to edit a value that t has already overwritten. In order to converge, t must take priority.
+	return nil
 }
-func transformEditFieldSetField(t, op *Op, priority bool) *Op {
-	return transformEditOverwrite(t, op)
-}
-func transformEditFieldDeleteField(t, op *Op, priority bool) *Op {
-	return transformEditOverwrite(t, op)
-}
+func tEditFieldSetField(t, op *Op, priority bool) *Op    { return tEditOverwrite(t, op) }
+func tEditFieldDeleteField(t, op *Op, priority bool) *Op { return tEditOverwrite(t, op) }
+func tEditIndexSetIndex(t, op *Op, priority bool) *Op    { return tEditOverwrite(t, op) }
+func tEditIndexDeleteIndex(t, op *Op, priority bool) *Op { return tEditOverwrite(t, op) }
+func tEditKeySetKey(t, op *Op, priority bool) *Op        { return tEditOverwrite(t, op) }
+func tEditKeyDeleteKey(t, op *Op, priority bool) *Op     { return tEditOverwrite(t, op) }
+func tSetIndexDeleteIndex(t, op *Op, priority bool) *Op  { return tEditOverwrite(t, op) }
+func tSetFieldEditField(t, op *Op, priority bool) *Op    { return tOverwriteEdit(t, op) }
+func tDeleteFieldEditField(t, op *Op, priority bool) *Op { return tOverwriteEdit(t, op) }
+func tSetIndexEditIndex(t, op *Op, priority bool) *Op    { return tOverwriteEdit(t, op) }
+func tDeleteIndexEditIndex(t, op *Op, priority bool) *Op { return tOverwriteEdit(t, op) }
+func tSetKeyEditKey(t, op *Op, priority bool) *Op        { return tOverwriteEdit(t, op) }
+func tDeleteKeyEditKey(t, op *Op, priority bool) *Op     { return tOverwriteEdit(t, op) }
+func tDeleteIndexSetIndex(t, op *Op, priority bool) *Op  { return tOverwriteEdit(t, op) }
 
-func transformEditIndexEditIndex(t, op *Op, priority bool) *Op {
-	return transformEditEdit(t, op, priority)
-}
-func transformEditIndexSetIndex(t, op *Op, priority bool) *Op {
-	return transformEditOverwrite(t, op)
-}
-func transformEditIndexInsertIndex(t, op *Op, priority bool) *Op {
+func tEditIndexInsertIndex(t, op *Op, priority bool) *Op {
 	// Op is trying to insert a value into a list after t modified a value. Even when t and op act on the same
 	// location, they are independent.
-	return transformIndependent(t, op)
+	return tIndependent(t, op)
 }
-func transformEditIndexMoveIndex(t, op *Op, priority bool) *Op {
+func tInsertIndexEditIndex(t, op *Op, priority bool) *Op {
+	// Op is editing at the same index that t has inserted. op will edit at the shifted index and operations will be
+	// independent. This is handled by tIndependent.
+	return tIndependent(t, op)
+}
+
+func tMoveModify(t, op *Op) *Op {
+	// Shared by:
+	// tMoveIndexEditIndex
+	// tMoveIndexSetIndex
+
+	if t.IsNullMove() {
+		return proto.Clone(op).(*Op)
+	}
+
+	// op is trying to modify a value after t has moved values. Even when t and op act on the same location, they are
+	// independent.
+	return tIndependent(t, op)
+}
+func tModifyMove(t, op *Op) *Op {
+	// Shared by:
+	// tEditIndexMoveIndex
+	// tSetIndexMoveIndex
+
 	if op.IsNullMove() {
 		return nil
 	}
 	// Op is trying to move a value in a list after op modified a value. Even when t and op act on the same
 	// location, they are independent.
-	return transformIndependent(t, op)
+	return tIndependent(t, op)
 }
-func transformEditIndexDeleteIndex(t, op *Op, priority bool) *Op {
-	return transformEditOverwrite(t, op)
-}
+func tMoveIndexEditIndex(t, op *Op, priority bool) *Op { return tMoveModify(t, op) }
+func tMoveIndexSetIndex(t, op *Op, priority bool) *Op  { return tMoveModify(t, op) }
+func tEditIndexMoveIndex(t, op *Op, priority bool) *Op { return tModifyMove(t, op) }
+func tSetIndexMoveIndex(t, op *Op, priority bool) *Op  { return tModifyMove(t, op) }
 
-func transformEditKeyEditKey(t, op *Op, priority bool) *Op {
-	return transformEditEdit(t, op, priority)
+func tMoveIndexDeleteIndex(t, op *Op, priority bool) *Op {
+	if t.IsNullMove() {
+		return proto.Clone(op).(*Op)
+	}
+	// op is trying to delete a value after t has moved values. Even when t and op act on the same location,
+	// they are independent.
+	return tIndependent(t, op)
 }
-func transformEditKeySetKey(t, op *Op, priority bool) *Op {
-	return transformEditOverwrite(t, op)
-}
-func transformEditKeyRenameKey(t, op *Op, priority bool) *Op {
+func tDeleteIndexMoveIndex(t, op *Op, priority bool) *Op {
 	if op.IsNullMove() {
 		return nil
 	}
@@ -170,7 +213,27 @@ func transformEditKeyRenameKey(t, op *Op, priority bool) *Op {
 	to := TreeRelationship(t.Location, op.To())
 	switch {
 	case from != TREE_EQUAL && to != TREE_EQUAL:
-		return transformIndependent(t, op)
+		return tIndependent(t, op)
+	case from == TREE_EQUAL:
+		// op is trying to move the value that op has already deleted. In order to converge, t must take priority.
+		return nil
+	case to == TREE_EQUAL:
+		// op is trying to move to the index of the value that op already deleted. Operations are independent.
+		return tIndependent(t, op)
+	default:
+		panic("")
+	}
+}
+
+func tEditKeyRenameKey(t, op *Op, priority bool) *Op {
+	if op.IsNullMove() {
+		return nil
+	}
+	from := TreeRelationship(t.Location, op.Location)
+	to := TreeRelationship(t.Location, op.To())
+	switch {
+	case from != TREE_EQUAL && to != TREE_EQUAL:
+		return tIndependent(t, op)
 	case from == TREE_EQUAL:
 		// op is moving the value that t already modified. Continue with op.
 		return proto.Clone(op).(*Op)
@@ -181,39 +244,40 @@ func transformEditKeyRenameKey(t, op *Op, priority bool) *Op {
 		panic("")
 	}
 }
-func transformEditKeyDeleteKey(t, op *Op, priority bool) *Op {
-	return transformEditOverwrite(t, op)
-}
-
-func transformOverwriteEdit(t, op *Op) *Op {
-	// Used by:
-	// transformSetFieldEditField
-	// transformSetKeyEditKey
-	// transformSetIndexEditIndex
-
-	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
-		return transformIndependent(t, op)
+func tRenameKeyEditKey(t, op *Op, priority bool) *Op {
+	if t.IsNullMove() {
+		return proto.Clone(op).(*Op)
 	}
-	// op is trying to edit a value that t has already overwritten. In order to converge, t must take priority.
-	return nil
+	from := TreeRelationship(t.Location, op.Location)
+	to := TreeRelationship(t.To(), op.Location)
+	switch {
+	case from != TREE_EQUAL && to != TREE_EQUAL:
+		return tIndependent(t, op)
+	case from == TREE_EQUAL:
+		// op is trying to modify the value that t moved. Op can continue with shifted key, which is correctly handled
+		// by tIndependent.
+		return tIndependent(t, op)
+	case to == TREE_EQUAL:
+		// op is trying to modify the value that t has already overwritten. In order to converge, the move must take
+		// priority.
+		return nil
+	default:
+		panic("")
+	}
 }
 
-func transformSetFieldEditField(t, op *Op, priority bool) *Op {
-	return transformOverwriteEdit(t, op)
-}
-
-func transformOverwriteOverwrite(t, op *Op, priority bool) *Op {
+func tOverwrite(t, op *Op, priority bool) *Op {
 	// Used by:
-	// transformSetFieldSetField
-	// transformSetFieldDeleteField
-	// transformSetIndexSetIndex
-	// transformSetKeySetKey
-	// transformSetKeyDeleteKey
-	// transformDeleteFieldSetField
-	// transformDeleteKeySetKey
+	// tSetFieldSetField
+	// tSetIndexSetIndex
+	// tSetKeySetKey
+	// tSetFieldDeleteField
+	// tSetKeyDeleteKey
+	// tDeleteFieldSetField
+	// tDeleteKeySetKey
 
 	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
-		return transformIndependent(t, op)
+		return tIndependent(t, op)
 	}
 	// Op and t are both overwriting the same value. Use priority to determine the outcome.
 	if priority {
@@ -222,28 +286,28 @@ func transformOverwriteOverwrite(t, op *Op, priority bool) *Op {
 	}
 	return proto.Clone(op).(*Op)
 }
+func tSetFieldSetField(t, op *Op, priority bool) *Op    { return tOverwrite(t, op, priority) }
+func tSetIndexSetIndex(t, op *Op, priority bool) *Op    { return tOverwrite(t, op, priority) }
+func tSetKeySetKey(t, op *Op, priority bool) *Op        { return tOverwrite(t, op, priority) }
+func tSetFieldDeleteField(t, op *Op, priority bool) *Op { return tOverwrite(t, op, priority) }
+func tSetKeyDeleteKey(t, op *Op, priority bool) *Op     { return tOverwrite(t, op, priority) }
+func tDeleteFieldSetField(t, op *Op, priority bool) *Op { return tOverwrite(t, op, priority) }
+func tDeleteKeySetKey(t, op *Op, priority bool) *Op     { return tOverwrite(t, op, priority) }
 
-func transformSetFieldSetField(t, op *Op, priority bool) *Op {
-	return transformOverwriteOverwrite(t, op, priority)
-}
-func transformSetFieldDeleteField(t, op *Op, priority bool) *Op {
-	return transformOverwriteOverwrite(t, op, priority)
-}
-
-func transformSetIndexEditIndex(t, op *Op, priority bool) *Op {
-	return transformOverwriteEdit(t, op)
-}
-func transformSetIndexSetIndex(t, op *Op, priority bool) *Op {
-	return transformOverwriteOverwrite(t, op, priority)
-}
-func transformSetIndexInsertIndex(t, op *Op, priority bool) *Op {
+func tSetIndexInsertIndex(t, op *Op, priority bool) *Op {
 	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
-		return transformIndependent(t, op)
+		return tIndependent(t, op)
 	}
 	// op is inserting at the same list index that t has already replaced. This inserts a new value, so is independent.
 	return proto.Clone(op).(*Op)
 }
-func transformSetIndexMoveIndex(t, op *Op, priority bool) *Op {
+func tInsertIndexSetIndex(t, op *Op, priority bool) *Op {
+	// op is replacing at the same index that t has inserted. op will replace at the shifted index and will be
+	// independent. This is handled by tIndependent.
+	return tIndependent(t, op)
+}
+
+func tSetKeyRenameKey(t, op *Op, priority bool) *Op {
 	if op.IsNullMove() {
 		return nil
 	}
@@ -251,42 +315,7 @@ func transformSetIndexMoveIndex(t, op *Op, priority bool) *Op {
 	to := TreeRelationship(t.Location, op.To())
 	switch {
 	case from != TREE_EQUAL && to != TREE_EQUAL:
-		return transformIndependent(t, op)
-	case from == TREE_EQUAL:
-		// op is attempting to move the value that t already replaced. We can continue with op.
-		return proto.Clone(op).(*Op)
-	case to == TREE_EQUAL:
-		// op is attempting to move a value and place it at the same index that t overwrote. The move operation inserts
-		// the moved value and shifts the overwritten value, so the operations are independent.
-		return proto.Clone(op).(*Op)
-	default:
-		panic("")
-	}
-}
-func transformSetIndexDeleteIndex(t, op *Op, priority bool) *Op {
-	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
-		return transformIndependent(t, op)
-	}
-	// op is deleting the value that t has already replaced. op takes priority.
-	return proto.Clone(op).(*Op)
-}
-
-func transformSetKeyEditKey(t, op *Op, priority bool) *Op {
-	return transformOverwriteEdit(t, op)
-}
-func transformSetKeySetKey(t, op *Op, priority bool) *Op {
-	return transformOverwriteOverwrite(t, op, priority)
-}
-
-func transformSetKeyRenameKey(t, op *Op, priority bool) *Op {
-	if op.IsNullMove() {
-		return nil
-	}
-	from := TreeRelationship(t.Location, op.Location)
-	to := TreeRelationship(t.Location, op.To())
-	switch {
-	case from != TREE_EQUAL && to != TREE_EQUAL:
-		return transformIndependent(t, op)
+		return tIndependent(t, op)
 	case from == TREE_EQUAL:
 		// op is attempting to move the value that t already overwrote. We can continue with op.
 		return proto.Clone(op).(*Op)
@@ -305,35 +334,35 @@ func transformSetKeyRenameKey(t, op *Op, priority bool) *Op {
 		panic("")
 	}
 }
-func transformSetKeyDeleteKey(t, op *Op, priority bool) *Op {
-	return transformOverwriteOverwrite(t, op, priority)
+func tRenameKeySetKey(t, op *Op, priority bool) *Op {
+	if t.IsNullMove() {
+		return proto.Clone(op).(*Op)
+	}
+	from := TreeRelationship(t.Location, op.Location)
+	to := TreeRelationship(t.To(), op.Location)
+	switch {
+	case from != TREE_EQUAL && to != TREE_EQUAL:
+		return tIndependent(t, op)
+	case from == TREE_EQUAL:
+		// op is trying to replace the value that t moved. Op can continue with shifted key, which is correctly handled
+		// by tIndependent.
+		return tIndependent(t, op)
+	case to == TREE_EQUAL:
+		// op is trying to replace the value that t has overwritten. We can use priority to determine the winner.
+		if priority {
+			// if t has priority, we can just remove op
+			return nil
+		}
+		// if op has priority, it can continue with a shifted key, which is correctly handled by tIndependent.
+		return tIndependent(t, op)
+	default:
+		panic("")
+	}
 }
 
-func transformInsertIndexEditIndex(t, op *Op, priority bool) *Op {
-
-	// Note: not needed because all paths lead to transformIndependent
-	// if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
-	//	return transformIndependent(t, op)
-	// }
-
-	// op is editing at the same index that t has inserted. op will edit at the shifted index and operations will be
-	// independent. This is handled by transformIndependent.
-	return transformIndependent(t, op)
-}
-func transformInsertIndexSetIndex(t, op *Op, priority bool) *Op {
-
-	// Note: not needed because all paths lead to transformIndependent
-	// if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
-	//	return transformIndependent(t, op)
-	// }
-
-	// op is replacing at the same index that t has inserted. op will replace at the shifted index and will be
-	// independent. This is handled by transformIndependent.
-	return transformIndependent(t, op)
-}
-func transformInsertIndexInsertIndex(t, op *Op, priority bool) *Op {
+func tInsertIndexInsertIndex(t, op *Op, priority bool) *Op {
 	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
-		return transformIndependent(t, op)
+		return tIndependent(t, op)
 	}
 	// Both operations are inserting at the same index. We should use priority to determine which is shifted.
 	shifter := insertLocationShifter(t.ItemIndex(), priority, true)
@@ -341,7 +370,8 @@ func transformInsertIndexInsertIndex(t, op *Op, priority bool) *Op {
 	out.SetItemIndex(shifter(op.ItemIndex()))
 	return out
 }
-func transformInsertIndexMoveIndex(t, op *Op, priority bool) *Op {
+
+func tInsertIndexMoveIndex(t, op *Op, priority bool) *Op {
 	if op.IsNullMove() {
 		return nil
 	}
@@ -349,12 +379,12 @@ func transformInsertIndexMoveIndex(t, op *Op, priority bool) *Op {
 	to := TreeRelationship(t.Location, op.To())
 	switch {
 	case from != TREE_EQUAL && to != TREE_EQUAL:
-		return transformIndependent(t, op)
+		return tIndependent(t, op)
 	case from == TREE_EQUAL:
 		// op is trying to move the value that was at the same index as t inserted at. We can just apply the shifter
 		// function to both from and to locations and the operations are independent. This is handled correctly by
-		// transformIndependent.
-		return transformIndependent(t, op)
+		// tIndependent.
+		return tIndependent(t, op)
 	case to == TREE_EQUAL:
 		// op is trying to move a value to the same index that t inserted at. We can use priority to determine
 		// which is shifted, but the destination index should be shifted without taking account of priority.
@@ -368,24 +398,7 @@ func transformInsertIndexMoveIndex(t, op *Op, priority bool) *Op {
 		panic("")
 	}
 }
-func transformInsertIndexDeleteIndex(t, op *Op, priority bool) *Op {
-
-	// Note: not needed because all paths lead to transformIndependent
-	// if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
-	//	return transformIndependent(t, op)
-	// }
-
-	// op is deleting at the same index that t has inserted. op will delete at the shifted index and will be
-	// independent. This is handled by transformIndependent.
-	return transformIndependent(t, op)
-}
-
-func transformMoveIndexModifyIndex(t, op *Op, priority bool) *Op {
-	// Shared by:
-	// transformMoveIndexEditIndex
-	// transformMoveIndexSetIndex
-	// transformMoveIndexDeleteIndex
-
+func tMoveIndexInsertIndex(t, op *Op, priority bool) *Op {
 	if t.IsNullMove() {
 		return proto.Clone(op).(*Op)
 	}
@@ -393,38 +406,10 @@ func transformMoveIndexModifyIndex(t, op *Op, priority bool) *Op {
 	to := TreeRelationship(t.To(), op.Location)
 	switch {
 	case from != TREE_EQUAL && to != TREE_EQUAL:
-		return transformIndependent(t, op)
-	case from == TREE_EQUAL:
-		// op is trying to modify the value at the index that t has moved to. We can continue with op with shifted
-		// location.
-		return transformIndependent(t, op)
-	case to == TREE_EQUAL:
-		// op is trying to modify the value at the index that t has moved to. The operations are independent and we can
-		// continue with op after shifting it's location
-		return transformIndependent(t, op)
-	default:
-		panic("")
-	}
-}
-
-func transformMoveIndexEditIndex(t, op *Op, priority bool) *Op {
-	return transformMoveIndexModifyIndex(t, op, priority)
-}
-func transformMoveIndexSetIndex(t, op *Op, priority bool) *Op {
-	return transformMoveIndexModifyIndex(t, op, priority)
-}
-func transformMoveIndexInsertIndex(t, op *Op, priority bool) *Op {
-	if t.IsNullMove() {
-		return proto.Clone(op).(*Op)
-	}
-	from := TreeRelationship(t.Location, op.Location)
-	to := TreeRelationship(t.To(), op.Location)
-	switch {
-	case from != TREE_EQUAL && to != TREE_EQUAL:
-		return transformIndependent(t, op)
+		return tIndependent(t, op)
 	case from == TREE_EQUAL:
 		// op is inserting a new value at the same location that t moved from. Operations are independent, but we don't
-		// want to use transformIndependent because that would make the insert move with the moved value (it uses the
+		// want to use tIndependent because that would make the insert move with the moved value (it uses the
 		// moveValueShifter shifter variant). We manually use moveLocationShifter to shift the location:
 
 		// Note: priority doesn't matter here because it is only used when (i == to) || (from < to && i == to+1)
@@ -444,7 +429,18 @@ func transformMoveIndexInsertIndex(t, op *Op, priority bool) *Op {
 		panic("")
 	}
 }
-func transformMoveIndexMoveIndex(t, op *Op, priority bool) *Op {
+
+func tInsertIndexDeleteIndex(t, op *Op, priority bool) *Op {
+	// op is deleting at the same index that t has inserted. op will delete at the shifted index and will be
+	// independent. This is handled by tIndependent.
+	return tIndependent(t, op)
+}
+func tDeleteIndexInsertIndex(t, op *Op, priority bool) *Op {
+	// op is trying to insert at the same index as t deleted from. Operations are independent.
+	return tIndependent(t, op)
+}
+
+func tMoveIndexMoveIndex(t, op *Op, priority bool) *Op {
 	if op.IsNullMove() {
 		return nil
 	}
@@ -489,72 +485,23 @@ func transformMoveIndexMoveIndex(t, op *Op, priority bool) *Op {
 	case fromTo == TREE_EQUAL && toFrom == TREE_EQUAL:
 		// Op is trying to move the value at the to index of the move that t has just done, and move to the from index.
 		// Since both moves are non destructive and shift the other values around these operations are independent and
-		// can be handled by transformIndependent.
-		return transformIndependent(t, op)
+		// can be handled by tIndependent.
+		return tIndependent(t, op)
 	case fromTo == TREE_EQUAL:
 		// Op is trying to move to the index that t just moved from. Operations are independent and can be handled by
-		// transformIndependent.
-		return transformIndependent(t, op)
+		// tIndependent.
+		return tIndependent(t, op)
 	case toFrom == TREE_EQUAL:
 		// Op is trying to move from the index that t just moved to. Operations are independent and can be handled by
-		// transformIndependent.
-		return transformIndependent(t, op)
+		// tIndependent.
+		return tIndependent(t, op)
 	default:
 		// Operations are independent.
-		return transformIndependent(t, op)
+		return tIndependent(t, op)
 	}
-}
-func transformMoveIndexDeleteIndex(t, op *Op, priority bool) *Op {
-	return transformMoveIndexModifyIndex(t, op, priority)
 }
 
-func transformRenameKeyEditKey(t, op *Op, priority bool) *Op {
-	if t.IsNullMove() {
-		return proto.Clone(op).(*Op)
-	}
-	from := TreeRelationship(t.Location, op.Location)
-	to := TreeRelationship(t.To(), op.Location)
-	switch {
-	case from != TREE_EQUAL && to != TREE_EQUAL:
-		return transformIndependent(t, op)
-	case from == TREE_EQUAL:
-		// op is trying to modify the value that t moved. Op can continue with shifted key, which is correctly handled
-		// by transformIndependent.
-		return transformIndependent(t, op)
-	case to == TREE_EQUAL:
-		// op is trying to modify the value that t has already overwritten. In order to converge, the move must take
-		// priority.
-		return nil
-	default:
-		panic("")
-	}
-}
-func transformRenameKeySetKey(t, op *Op, priority bool) *Op {
-	if t.IsNullMove() {
-		return proto.Clone(op).(*Op)
-	}
-	from := TreeRelationship(t.Location, op.Location)
-	to := TreeRelationship(t.To(), op.Location)
-	switch {
-	case from != TREE_EQUAL && to != TREE_EQUAL:
-		return transformIndependent(t, op)
-	case from == TREE_EQUAL:
-		// op is trying to replace the value that t moved. Op can continue with shifted key, which is correctly handled
-		// by transformIndependent.
-		return transformIndependent(t, op)
-	case to == TREE_EQUAL:
-		// op is trying to replace the value that t has overwritten. We can use priority to determine the winner.
-		if priority {
-			// if t has priority, we can just remove op
-			return nil
-		}
-		// if op has priority, it can continue with a shifted key, which is correctly handled by transformIndependent.
-		return transformIndependent(t, op)
-	default:
-		panic("")
-	}
-}
-func transformRenameKeyRenameKey(t, op *Op, priority bool) *Op {
+func tRenameKeyRenameKey(t, op *Op, priority bool) *Op {
 	if op.IsNullMove() {
 		return nil
 	}
@@ -619,7 +566,8 @@ func transformRenameKeyRenameKey(t, op *Op, priority bool) *Op {
 		return proto.Clone(op).(*Op)
 	}
 }
-func transformRenameKeyDeleteKey(t, op *Op, priority bool) *Op {
+
+func tRenameKeyDeleteKey(t, op *Op, priority bool) *Op {
 	if t.IsNullMove() {
 		return proto.Clone(op).(*Op)
 	}
@@ -627,11 +575,11 @@ func transformRenameKeyDeleteKey(t, op *Op, priority bool) *Op {
 	to := TreeRelationship(t.To(), op.Location)
 	switch {
 	case from != TREE_EQUAL && to != TREE_EQUAL:
-		return transformIndependent(t, op)
+		return tIndependent(t, op)
 	case from == TREE_EQUAL:
 		// op is trying to delete the value that t moved. Op can continue with shifted key, which is correctly handled
-		// by transformIndependent.
-		return transformIndependent(t, op)
+		// by tIndependent.
+		return tIndependent(t, op)
 	case to == TREE_EQUAL:
 		// op is trying to delete the value that t has already overwritten. We can simply remove op.
 		return nil
@@ -639,60 +587,7 @@ func transformRenameKeyDeleteKey(t, op *Op, priority bool) *Op {
 		panic("")
 	}
 }
-
-func transformDeleteEdit(t, op *Op) *Op {
-	// Used by:
-	// transformDeleteFieldEditField
-	// transformDeleteIndexEditIndex
-	// transformDeleteKeyEditKey
-
-	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
-		return transformIndependent(t, op)
-	}
-	// op is trying to modify the value that t already deleted. In order to converge, t must have priority.
-	return nil
-}
-
-func transformDeleteFieldEditField(t, op *Op, priority bool) *Op {
-	return transformDeleteEdit(t, op)
-}
-func transformDeleteFieldSetField(t, op *Op, priority bool) *Op {
-	return transformOverwriteOverwrite(t, op, priority)
-}
-func transformDeleteDelete(t, op *Op) *Op {
-	// Used by:
-	// transformDeleteFieldDeleteField
-	// transformDeleteIndexDeleteIndex
-	// transformDeleteKeyDeleteKey
-
-	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
-		return transformIndependent(t, op)
-	}
-	// op and t are both deleting the same value. We can remove op.
-	return nil
-}
-func transformDeleteFieldDeleteField(t, op *Op, priority bool) *Op {
-	return transformDeleteDelete(t, op)
-}
-
-func transformDeleteIndexEditIndex(t, op *Op, priority bool) *Op {
-	return transformDeleteEdit(t, op)
-}
-func transformDeleteIndexSetIndex(t, op *Op, priority bool) *Op {
-	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
-		return transformIndependent(t, op)
-	}
-	// op is trying to set the value that op already deleted. the delete takes priority.
-	return nil
-}
-func transformDeleteIndexInsertIndex(t, op *Op, priority bool) *Op {
-	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
-		return transformIndependent(t, op)
-	}
-	// op is trying to insert at the same index as t deleted from. Operations are independent.
-	return transformIndependent(t, op)
-}
-func transformDeleteIndexMoveIndex(t, op *Op, priority bool) *Op {
+func tDeleteKeyRenameKey(t, op *Op, priority bool) *Op {
 	if op.IsNullMove() {
 		return nil
 	}
@@ -700,36 +595,7 @@ func transformDeleteIndexMoveIndex(t, op *Op, priority bool) *Op {
 	to := TreeRelationship(t.Location, op.To())
 	switch {
 	case from != TREE_EQUAL && to != TREE_EQUAL:
-		return transformIndependent(t, op)
-	case from == TREE_EQUAL:
-		// op is trying to move the value that op has already deleted. In order to converge, t must take priority.
-		return nil
-	case to == TREE_EQUAL:
-		// op is trying to move to the index of the value that op already deleted. Operations are independent.
-		return transformIndependent(t, op)
-	default:
-		panic("")
-	}
-}
-func transformDeleteIndexDeleteIndex(t, op *Op, priority bool) *Op {
-	return transformDeleteDelete(t, op)
-}
-
-func transformDeleteKeyEditKey(t, op *Op, priority bool) *Op {
-	return transformDeleteEdit(t, op)
-}
-func transformDeleteKeySetKey(t, op *Op, priority bool) *Op {
-	return transformOverwriteOverwrite(t, op, priority)
-}
-func transformDeleteKeyRenameKey(t, op *Op, priority bool) *Op {
-	if op.IsNullMove() {
-		return nil
-	}
-	from := TreeRelationship(t.Location, op.Location)
-	to := TreeRelationship(t.Location, op.To())
-	switch {
-	case from != TREE_EQUAL && to != TREE_EQUAL:
-		return transformIndependent(t, op)
+		return tIndependent(t, op)
 	case from == TREE_EQUAL:
 		// op is trying to move the value that op already deleted. In order to converge we must remove op and replace
 		// with an operation that deletes the "to" value.
@@ -744,6 +610,19 @@ func transformDeleteKeyRenameKey(t, op *Op, priority bool) *Op {
 		panic("")
 	}
 }
-func transformDeleteKeyDeleteKey(t, op *Op, priority bool) *Op {
-	return transformDeleteDelete(t, op)
+
+func tDelete(t, op *Op) *Op {
+	// Used by:
+	// tDeleteFieldDeleteField
+	// tDeleteIndexDeleteIndex
+	// tDeleteKeyDeleteKey
+
+	if TreeRelationship(t.Location, op.Location) != TREE_EQUAL {
+		return tIndependent(t, op)
+	}
+	// op and t are both deleting the same value. We can remove op.
+	return nil
 }
+func tDeleteFieldDeleteField(t, op *Op, priority bool) *Op { return tDelete(t, op) }
+func tDeleteIndexDeleteIndex(t, op *Op, priority bool) *Op { return tDelete(t, op) }
+func tDeleteKeyDeleteKey(t, op *Op, priority bool) *Op     { return tDelete(t, op) }
