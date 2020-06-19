@@ -33,13 +33,13 @@ void main() {
     testInfo(
       // TODO: failing test because of: https://github.com/dart-lang/protobuf/issues/373
       name: "nil map",
-      op: Op().Company().Flags().Insert(1, "b"),
+      op: Op().Company().Flags().Key(1).Set("b"),
       data: Company(),
       expected: Company()..flags[fixnum.Int64(1)] = "b",
     ),
     testInfo(
       name: "empty map",
-      op: Op().Company().Flags().Insert(1, "b"),
+      op: Op().Company().Flags().Key(1).Set("b"),
       data: Company()..flags.clear(),
       expected: Company()..flags[fixnum.Int64(1)] = "b",
     ),
@@ -107,7 +107,7 @@ void main() {
     ),
     testInfo(
       name: "insert: map scalar",
-      op: Op().Company().Flags().Insert(10, "x"),
+      op: Op().Company().Flags().Key(10).Set("x"),
       data: Company()
         ..flags[fixnum.Int64(1)] = "a"
         ..flags[fixnum.Int64(2)] = "b",
@@ -118,7 +118,7 @@ void main() {
     ),
     testInfo(
       name: "insert: map message",
-      op: Op().Person().Cases().Insert("x", Case()..name = "x"),
+      op: Op().Person().Cases().Key("x").Set(Case()..name = "x"),
       data: Person()
         ..cases["a"] = (Case()..name = "a")
         ..cases["b"] = (Case()..name = "b"),

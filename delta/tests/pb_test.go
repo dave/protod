@@ -9,9 +9,16 @@ import (
 	"testing"
 
 	"github.com/dave/protod/delta"
+	"github.com/golang/protobuf/jsonpb"
+	proto1 "github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/ptypes"
+	any "github.com/golang/protobuf/ptypes/any"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
 )
+
+const OUTPUT_CASES = true
 
 func TestTransform(t *testing.T) {
 	type itemType struct {
@@ -773,119 +780,182 @@ func TestTransform(t *testing.T) {
 			break
 		}
 	}
+	var cases string
 	for _, item := range items {
 		if solo && !item.solo {
 			continue
 		}
 		t.Run(item.name, func(t *testing.T) {
-
-			// op1 has priority
-			op1xp1, op2xp1, err := delta.Transform(item.op1, item.op2, true)
+			dataAny, err := ptypes.MarshalAny(proto1.MessageV1(item.data))
 			if err != nil {
 				t.Fatal(err)
 			}
-
-			// op2 has priority
-			op1xp2, op2xp2, err := delta.Transform(item.op1, item.op2, false)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			data1p1 := proto.Clone(item.data)
-			if err := delta.ApplyPointer(item.op1, &data1p1); err != nil {
-				t.Fatal(err)
-			}
-			if err := delta.ApplyPointer(op2xp1, &data1p1); err != nil {
-				t.Fatal(err)
-			}
-
-			data2p1 := proto.Clone(item.data)
-			if err := delta.ApplyPointer(item.op2, &data2p1); err != nil {
-				t.Fatal(err)
-			}
-			if err := delta.ApplyPointer(op1xp1, &data2p1); err != nil {
-				t.Fatal(err)
-			}
-
-			data1p2 := proto.Clone(item.data)
-			if err := delta.ApplyPointer(item.op1, &data1p2); err != nil {
-				t.Fatal(err)
-			}
-			if err := delta.ApplyPointer(op2xp2, &data1p2); err != nil {
-				t.Fatal(err)
-			}
-
-			data2p2 := proto.Clone(item.data)
-			if err := delta.ApplyPointer(item.op2, &data2p2); err != nil {
-				t.Fatal(err)
-			}
-			if err := delta.ApplyPointer(op1xp2, &data2p2); err != nil {
-				t.Fatal(err)
-			}
-
-			result1p1, err := protojson.Marshal(data1p1)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			result1p2, err := protojson.Marshal(data1p2)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			result2p1, err := protojson.Marshal(data2p1)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			result2p2, err := protojson.Marshal(data2p2)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			input, err := protojson.Marshal(item.data)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			var expectedp1, expectedp2 []byte
+			var expectedAny, expected1Any, expected2Any *anypb.Any
 			if item.expected != nil {
-				expectedp1, err = protojson.Marshal(item.expected)
-				if err != nil {
-					t.Fatal(err)
-				}
-				expectedp2, err = protojson.Marshal(item.expected)
-				if err != nil {
-					t.Fatal(err)
-				}
-			} else {
-				expectedp1, err = protojson.Marshal(item.expected1)
-				if err != nil {
-					t.Fatal(err)
-				}
-				expectedp2, err = protojson.Marshal(item.expected2)
+				expectedAny, err = ptypes.MarshalAny(proto1.MessageV1(item.expected))
 				if err != nil {
 					t.Fatal(err)
 				}
 			}
+			if item.expected1 != nil {
+				expected1Any, err = ptypes.MarshalAny(proto1.MessageV1(item.expected1))
+				if err != nil {
+					t.Fatal(err)
+				}
+			}
+			if item.expected2 != nil {
+				expected2Any, err = ptypes.MarshalAny(proto1.MessageV1(item.expected2))
+				if err != nil {
+					t.Fatal(err)
+				}
+			}
+			tc := &TransformTestCase{
+				Solo:      item.solo,
+				Name:      item.name,
+				Op1:       item.op1,
+				Op2:       item.op2,
+				Data:      dataAny,
+				Expected:  expectedAny,
+				Expected1: expected1Any,
+				Expected2: expected2Any,
+			}
+			var m jsonpb.Marshaler
+			s, err := m.MarshalToString(tc)
+			if err != nil {
+				t.Fatal(err)
+			}
+			cases += s + "\n"
 
-			if !compareJson(string(result1p1), string(expectedp1)) || !compareJson(string(result1p2), string(expectedp2)) || !compareJson(string(result2p1), string(expectedp1)) || !compareJson(string(result2p2), string(expectedp2)) {
-				//fmt.Println("op1", item.op1)
-				//fmt.Println("op2xp1", op2xp1)
-				//fmt.Println("op2xp2", op2xp2)
-				//fmt.Println("op2", item.op2)
-				//fmt.Println("op1xp1", op1xp1)
-				//fmt.Println("op1xp2", op1xp2)
-				if item.expected != nil {
-					t.Fatalf("\ndata:        %s\nresult1-p1:  %s\nresult2-p1:  %s\nresult1-p2:  %s\nresult2-p2:  %s\nexpected:    %s", string(input), string(result1p1), string(result2p1), string(result1p2), string(result2p2), string(expectedp1))
-				} else {
-					t.Fatalf("\ndata:        %s\nresult1-p1:  %s\nresult2-p1:  %s\nexpected-p1: %s\nresult1-p2:  %s\nresult2-p2:  %s\nexpected-p2: %s", string(input), string(result1p1), string(result2p1), string(expectedp1), string(result1p2), string(result2p2), string(expectedp2))
-				}
-			}
+			runTransformTest(t, tc)
+
 		})
+	}
+	if OUTPUT_CASES {
+		fmt.Println(cases)
 	}
 	if solo {
 		t.Fatal("tests skipped")
+	}
+}
+
+func TestTransformCases(t *testing.T) {
+	caseStrings := strings.Split(transformCases, "\n")
+	for _, caseString := range caseStrings {
+		var tc TransformTestCase
+		if err := protojson.Unmarshal([]byte(caseString), &tc); err != nil {
+			t.Fatal(err)
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			runTransformTest(t, &tc)
+		})
+	}
+}
+
+func runTransformTest(t *testing.T, tc *TransformTestCase) {
+
+	// op1 has priority
+	op1xp1, op2xp1, err := delta.Transform(tc.Op1, tc.Op2, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// op2 has priority
+	op1xp2, op2xp2, err := delta.Transform(tc.Op1, tc.Op2, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	data1p1 := mustUnmarshalAny(tc.Data)
+	if err := delta.ApplyPointer(tc.Op1, &data1p1); err != nil {
+		t.Fatal(err)
+	}
+	if err := delta.ApplyPointer(op2xp1, &data1p1); err != nil {
+		t.Fatal(err)
+	}
+
+	data2p1 := mustUnmarshalAny(tc.Data)
+	if err := delta.ApplyPointer(tc.Op2, &data2p1); err != nil {
+		t.Fatal(err)
+	}
+	if err := delta.ApplyPointer(op1xp1, &data2p1); err != nil {
+		t.Fatal(err)
+	}
+
+	data1p2 := mustUnmarshalAny(tc.Data)
+	if err := delta.ApplyPointer(tc.Op1, &data1p2); err != nil {
+		t.Fatal(err)
+	}
+	if err := delta.ApplyPointer(op2xp2, &data1p2); err != nil {
+		t.Fatal(err)
+	}
+
+	data2p2 := mustUnmarshalAny(tc.Data)
+	if err := delta.ApplyPointer(tc.Op2, &data2p2); err != nil {
+		t.Fatal(err)
+	}
+	if err := delta.ApplyPointer(op1xp2, &data2p2); err != nil {
+		t.Fatal(err)
+	}
+
+	result1p1, err := protojson.Marshal(data1p1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	result1p2, err := protojson.Marshal(data1p2)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	result2p1, err := protojson.Marshal(data2p1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	result2p2, err := protojson.Marshal(data2p2)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	input, err := protojson.Marshal(mustUnmarshalAny(tc.Data))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	expected := mustUnmarshalAny(tc.Expected)
+	var expectedp1, expectedp2 []byte
+	if expected != nil {
+		expectedp1, err = protojson.Marshal(expected)
+		if err != nil {
+			t.Fatal(err)
+		}
+		expectedp2, err = protojson.Marshal(expected)
+		if err != nil {
+			t.Fatal(err)
+		}
+	} else {
+		expectedp1, err = protojson.Marshal(mustUnmarshalAny(tc.Expected1))
+		if err != nil {
+			t.Fatal(err)
+		}
+		expectedp2, err = protojson.Marshal(mustUnmarshalAny(tc.Expected2))
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	if !compareJson(string(result1p1), string(expectedp1)) || !compareJson(string(result1p2), string(expectedp2)) || !compareJson(string(result2p1), string(expectedp1)) || !compareJson(string(result2p2), string(expectedp2)) {
+		//fmt.Println("op1", item.op1)
+		//fmt.Println("op2xp1", op2xp1)
+		//fmt.Println("op2xp2", op2xp2)
+		//fmt.Println("op2", item.op2)
+		//fmt.Println("op1xp1", op1xp1)
+		//fmt.Println("op1xp2", op1xp2)
+		if expected != nil {
+			t.Fatalf("\ndata:        %s\nresult1-p1:  %s\nresult2-p1:  %s\nresult1-p2:  %s\nresult2-p2:  %s\nexpected:    %s", string(input), string(result1p1), string(result2p1), string(result1p2), string(result2p2), string(expectedp1))
+		} else {
+			t.Fatalf("\ndata:        %s\nresult1-p1:  %s\nresult2-p1:  %s\nexpected-p1: %s\nresult1-p2:  %s\nresult2-p2:  %s\nexpected-p2: %s", string(input), string(result1p1), string(result2p1), string(expectedp1), string(result1p2), string(result2p2), string(expectedp2))
+		}
 	}
 }
 
@@ -894,7 +964,6 @@ func TestApply(t *testing.T) {
 		solo     bool
 		name     string
 		op       *delta.Op
-		diff     string
 		data     proto.Message
 		expected proto.Message
 	}
@@ -1270,14 +1339,12 @@ func TestApply(t *testing.T) {
 		{
 			name:     "edit_lorem_ipsum",
 			op:       Op().Person().Name().Edit("Lorem ipsum dolor.", "Lorem dolor sit amet."),
-			diff:     `{"ops":[{"retain":"6"},{"delete":"11"},{"insert":"dolor sit amet"},{"retain":"1"}]}`,
 			data:     &Person{Name: "Lorem ipsum dolor."},
 			expected: &Person{Name: "Lorem dolor sit amet."},
 		},
 		{
 			name:     "edit_quick_brown_fox",
 			op:       Op().Person().Name().Edit("the quick brown fox jumped over the lazy dog.", "the quick orange fox jumped over me."),
-			diff:     `{"ops":[{"retain":"10"},{"delete":"5"},{"insert":"orange"},{"retain":"17"},{"delete":"12"},{"insert":"me"},{"retain":"1"}]}`,
 			data:     &Person{Name: "the quick brown fox jumped over the lazy dog."},
 			expected: &Person{Name: "the quick orange fox jumped over me."},
 		},
@@ -1289,48 +1356,117 @@ func TestApply(t *testing.T) {
 			break
 		}
 	}
+	var cases string
 	for _, item := range items {
 		if solo && !item.solo {
 			continue
 		}
 		t.Run(item.name, func(t *testing.T) {
-			if item.diff != "" {
-				diff, err := protojson.Marshal(item.op.Value.(*delta.Op_Delta).Delta)
-				if err != nil {
-					t.Fatal(err)
-				}
-				if !compareJson(string(diff), item.diff) {
-					t.Fatalf("\ndiff result:   %s\ndiff expected: %s", string(diff), item.diff)
-				}
-			}
-			if err := delta.ApplyPointer(item.op, &item.data); err != nil {
+
+			dataAny, err := ptypes.MarshalAny(proto1.MessageV1(item.data))
+			if err != nil {
 				t.Fatal(err)
 			}
-			var result, expected []byte
-			var err error
-			if item.data != nil {
-				result, err = protojson.Marshal(item.data)
-				if err != nil {
-					t.Fatal(err)
-				}
-			} else {
-				result = []byte("nil")
-			}
+			var expectedAny *anypb.Any
 			if item.expected != nil {
-				expected, err = protojson.Marshal(item.expected)
+				expectedAny, err = ptypes.MarshalAny(proto1.MessageV1(item.expected))
 				if err != nil {
 					t.Fatal(err)
 				}
-			} else {
-				expected = []byte("nil")
 			}
-			if string(result) != string(expected) && !compareJson(string(result), string(expected)) {
-				t.Fatalf("\nresult:   %s\nexpected: %s", string(result), string(expected))
+			tc := &ApplyTestCase{
+				Solo:     item.solo,
+				Name:     item.name,
+				Op:       item.op,
+				Data:     dataAny,
+				Expected: expectedAny,
 			}
+			var m jsonpb.Marshaler
+			s, err := m.MarshalToString(tc)
+			if err != nil {
+				t.Fatal(err)
+			}
+			cases += s + "\n"
+
+			runApplyTest(t, tc)
+
 		})
+	}
+	if OUTPUT_CASES {
+		fmt.Println(cases)
 	}
 	if solo {
 		t.Fatal("tests skipped")
+	}
+}
+
+func TestApplyCases(t *testing.T) {
+	caseStrings := strings.Split(applyCases, "\n")
+	for _, caseString := range caseStrings {
+		var tc ApplyTestCase
+		if err := protojson.Unmarshal([]byte(caseString), &tc); err != nil {
+			t.Fatal(err)
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			runApplyTest(t, &tc)
+		})
+	}
+}
+
+func runApplyTest(t *testing.T, tc *ApplyTestCase) {
+
+	data := mustUnmarshalAny(tc.Data)
+	expected := mustUnmarshalAny(tc.Expected)
+
+	if err := delta.ApplyPointer(tc.Op, &data); err != nil {
+		t.Fatal(err)
+	}
+	var resultBytes, expectedBytes []byte
+	var err error
+	if data != nil {
+		resultBytes, err = protojson.Marshal(data)
+		if err != nil {
+			t.Fatal(err)
+		}
+	} else {
+		resultBytes = []byte("nil")
+	}
+	if expected != nil {
+		expectedBytes, err = protojson.Marshal(expected)
+		if err != nil {
+			t.Fatal(err)
+		}
+	} else {
+		expectedBytes = []byte("nil")
+	}
+	if string(resultBytes) != string(expectedBytes) && !compareJson(string(resultBytes), string(expectedBytes)) {
+		t.Fatalf("\nresult:   %s\nexpected: %s", string(resultBytes), string(expectedBytes))
+	}
+}
+
+func TestDiffs(t *testing.T) {
+	cases := []struct {
+		op   *delta.Op
+		diff string
+	}{
+		{
+			op:   Op().Person().Name().Edit("Lorem ipsum dolor.", "Lorem dolor sit amet."),
+			diff: `{"ops":[{"retain":"6"},{"delete":"11"},{"insert":"dolor sit amet"},{"retain":"1"}]}`,
+		},
+		{
+			op:   Op().Person().Name().Edit("the quick brown fox jumped over the lazy dog.", "the quick orange fox jumped over me."),
+			diff: `{"ops":[{"retain":"10"},{"delete":"5"},{"insert":"orange"},{"retain":"17"},{"delete":"12"},{"insert":"me"},{"retain":"1"}]}`,
+		},
+	}
+
+	for _, tc := range cases {
+		diff, err := protojson.Marshal(tc.op.Value.(*delta.Op_Delta).Delta)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !compareJson(string(diff), tc.diff) {
+			t.Fatalf("\ndiff result:   %s\ndiff expected: %s", string(diff), tc.diff)
+		}
 	}
 }
 
@@ -1970,4 +2106,15 @@ func compareResults(t *testing.T, result, expected string) {
 		//t.Fatalf("")
 		t.Fatalf("Unexpected result. Expected:\n%s\n\nResult:\n%s\n", expected, result)
 	}
+}
+
+func mustUnmarshalAny(a *any.Any) proto.Message {
+	if a == nil {
+		return nil
+	}
+	var da ptypes.DynamicAny
+	if err := ptypes.UnmarshalAny(a, &da); err != nil {
+		panic(err)
+	}
+	return proto1.MessageV2(da.Message)
 }

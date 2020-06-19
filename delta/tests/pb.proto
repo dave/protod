@@ -1,6 +1,9 @@
 syntax = "proto3";
 package tests;
 
+import "google/protobuf/any.proto";
+import "proto/delta.proto";
+
 option go_package = "github.com/dave/protod/delta/tests;tests";
 
 // [proto:data]
@@ -53,4 +56,23 @@ message Chooser {
     double dbl = 2;
     Item itm = 3;
   }
+}
+
+message ApplyTestCase {
+  bool solo = 1;
+  string name = 2;
+  delta.Op op = 3;
+  google.protobuf.Any data = 4;
+  google.protobuf.Any expected = 5;
+}
+
+message TransformTestCase {
+  bool solo = 1;
+  string name = 2;
+  delta.Op op1 = 3;
+  delta.Op op2 = 4;
+  google.protobuf.Any data = 5;
+  google.protobuf.Any expected = 6;
+  google.protobuf.Any expected1 = 7;
+  google.protobuf.Any expected2 = 8;
 }
