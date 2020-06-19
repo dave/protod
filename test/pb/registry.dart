@@ -8,5 +8,7 @@ final types = TypeRegistry([
   tests.Company(),
   tests.Case(),
   tests.Item(),
+  tests.Chooser(),
+  tests.Chooser_Choice(),
 ]);
 

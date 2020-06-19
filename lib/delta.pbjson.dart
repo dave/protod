@@ -44,6 +44,7 @@ const Locator$json = const {
     const {'1': 'field', '3': 1, '4': 1, '5': 11, '6': '.delta.Field', '9': 0, '10': 'field'},
     const {'1': 'index', '3': 2, '4': 1, '5': 3, '9': 0, '10': 'index'},
     const {'1': 'key', '3': 3, '4': 1, '5': 11, '6': '.delta.Key', '9': 0, '10': 'key'},
+    const {'1': 'oneof', '3': 4, '4': 1, '5': 11, '6': '.delta.Oneof', '9': 0, '10': 'oneof'},
   ],
   '8': const [
     const {'1': 'v'},
@@ -70,6 +71,14 @@ const Field$json = const {
   '2': const [
     const {'1': 'name', '3': 1, '4': 1, '5': 9, '10': 'name'},
     const {'1': 'number', '3': 2, '4': 1, '5': 5, '10': 'number'},
+  ],
+};
+
+const Oneof$json = const {
+  '1': 'Oneof',
+  '2': const [
+    const {'1': 'name', '3': 1, '4': 1, '5': 9, '10': 'name'},
+    const {'1': 'fields', '3': 2, '4': 3, '5': 11, '6': '.delta.Field', '10': 'fields'},
   ],
 };
 

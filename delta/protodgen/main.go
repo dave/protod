@@ -307,7 +307,7 @@ func (s *state) scanEnum(scope *Scope, v *parser.Enum, f *File) {
 			ValueType:      ENUM,
 			CollectionType: ct,
 			Key:            key,
-			Value:          scope.Prefix + v.EnumName,
+			Value:          v.EnumName,
 			ValueName:      scope.Prefix + strings.Title(v.EnumName),
 			Enum:           v,
 		}
@@ -359,7 +359,7 @@ func (s *state) scanMessage(scope *Scope, v *parser.Message, f *File) {
 			ValueType:      MESSAGE,
 			CollectionType: ct,
 			Key:            key,
-			Value:          scope.Prefix + v.MessageName,
+			Value:          v.MessageName,
 			ValueName:      scope.Prefix + strings.Title(v.MessageName),
 			Message:        v,
 		}
@@ -421,103 +421,173 @@ func (s *state) scanMessages() error {
 				if typ.ValueType == ENUM {
 					continue
 				}
-				for _, protoField := range typ.Message.MessageBody {
-					switch protoField := protoField.(type) {
-					case *parser.Field, *parser.MapField:
-						field := &Field{Message: typ}
-						var valueRaw string
-						switch b := protoField.(type) {
-						case *parser.Field:
-							field.Name = b.FieldName
-							field.NameTitle = strings.Title(field.Name)
-							valueRaw = b.Type
-							if b.IsRepeated {
-								field.CollectionType = LIST
-							} else {
-								field.CollectionType = BASE
-							}
-							fieldNumber, err := strconv.Atoi(b.FieldNumber)
-							if err != nil {
-								return fmt.Errorf("parsing field number: %w", err)
-							}
-							field.Number = fieldNumber
-						case *parser.MapField:
-							field.Name = b.MapName
-							field.NameTitle = strings.Title(field.Name)
-							valueRaw = b.Type
-							field.CollectionType = MAP
-							fieldNumber, err := strconv.Atoi(b.FieldNumber)
-							if err != nil {
-								return fmt.Errorf("parsing field number: %w", err)
-							}
-							field.Number = fieldNumber
-							field.Key = b.KeyType
-						}
-
-						// reserved method names
-						switch field.NameTitle {
-						case "Edit", "Insert", "Delete", "Move", "Set", "Rename":
-							field.NameTitle += "_"
-						}
-
-						if isScalar(valueRaw) {
-							field.Value = valueRaw
-							field.ValueType = SCALAR
-							field.ValueGoPackage = "github.com/dave/protod/delta"
-							field.ValueDartPackage = "protod/delta.dart"
-							field.ValueDartAlias = "delta"
-							pkg.DartImports["protod/delta.dart"] = "delta"
-							field.ValueLocator = fmt.Sprintf("%s_scalar", strings.Title(field.Value))
-						} else if strings.Contains(valueRaw, ".") {
-							packageName := valueRaw[0:strings.LastIndex(valueRaw, ".")]
-							typeName := valueRaw[strings.LastIndex(valueRaw, ".")+1:]
-							valuePkg := s.packages[packageName]
-							t := valuePkg.Scope.Lookup(typeName)
-							if t == nil {
-								return fmt.Errorf("can't find %q in package %q", valueRaw, valuePkg.ProtoName)
-							}
-							field.ValueType = t.ValueType
-							field.Value = typeName
-							field.ValueProtoPackage = packageName
-							field.ValueGoPackage = valuePkg.GoPackagePath
-							field.ValueDartPackage = valuePkg.DartLocatorsFilePath
-							field.ValueDartAlias = valuePkg.DartPackageAlias
-							pkg.DartImports[valuePkg.DartLocatorsFilePath] = valuePkg.DartPackageAlias
-							field.ValueLocator = fmt.Sprintf("%s_type", t.ValueName)
-
-						} else {
-							t := typ.Scope.Lookup(valueRaw)
-							if t == nil {
-								return fmt.Errorf("can't find %q in scope", valueRaw)
-							}
-							field.ValueType = t.ValueType
-							field.Value = valueRaw
-							field.ValueProtoPackage = pkg.ProtoName
-							field.ValueGoPackage = pkg.GoPackagePath
-							field.ValueDartPackage = pkg.DartPackagePath
-							field.ValueDartAlias = ""
-							field.ValueLocator = fmt.Sprintf("%s_type", t.ValueName)
-						}
-						switch field.CollectionType {
-						case LIST:
-							field.ValueLocator += "_list"
-						case MAP:
-							field.ValueLocator += fmt.Sprintf("_%s_map", field.Key)
-						}
-						typ.Fields = append(typ.Fields, field)
-
-					case *parser.Message:
-						// TODO: nested type - recurse?
-					case *parser.Enum:
-						// TODO: enums?
-					default:
-						return fmt.Errorf("unknown type %T", protoField)
+				for _, visitee := range typ.Message.MessageBody {
+					field, err := s.parseField(visitee, typ, file, pkg)
+					if err != nil {
+						return err
 					}
+					if field == nil {
+						continue
+					}
+					typ.Fields = append(typ.Fields, field)
 				}
 			}
 		}
 	}
 	return nil
+}
+
+func (s *state) parseField(v parser.Visitee, typ *Type, file *File, pkg *Package) (*Field, error) {
+	switch protoField := v.(type) {
+	case *parser.Field, *parser.MapField, *parser.Oneof, *parser.OneofField:
+		field := &Field{Message: typ}
+		var rawTypeString string
+		switch b := protoField.(type) {
+		case *parser.Field:
+			field.Name = b.FieldName
+			field.NameTitle = strings.Title(field.Name)
+			rawTypeString = b.Type
+			if b.IsRepeated {
+				field.CollectionType = LIST
+			} else {
+				field.CollectionType = BASE
+			}
+			fieldNumber, err := strconv.Atoi(b.FieldNumber)
+			if err != nil {
+				return nil, fmt.Errorf("parsing field number: %w", err)
+			}
+			field.Number = fieldNumber
+		case *parser.MapField:
+			field.Name = b.MapName
+			field.NameTitle = strings.Title(field.Name)
+			rawTypeString = b.Type
+			field.CollectionType = MAP
+			fieldNumber, err := strconv.Atoi(b.FieldNumber)
+			if err != nil {
+				return nil, fmt.Errorf("parsing field number: %w", err)
+			}
+			field.Number = fieldNumber
+			field.Key = b.KeyType
+		case *parser.Oneof:
+			field.Name = b.OneofName
+			field.NameTitle = strings.Title(b.OneofName)
+			field.CollectionType = BASE
+			field.Number = -1
+
+			if typ.CollectionType == BASE {
+				// only add oneof type once
+				oneofType := &Type{
+					Scope:            typ.Scope,
+					File:             file,
+					ValueType:        ONEOF,
+					CollectionType:   BASE,
+					Key:              "",
+					Value:            field.Name,
+					ValueName:        fmt.Sprintf("%s%s", typ.Scope.Prefix, strings.Title(b.OneofName)),
+					LocatorName:      fmt.Sprintf("%s%s_oneof", typ.Scope.Prefix, strings.Title(b.OneofName)),
+					ValueLocatorName: fmt.Sprintf("%s%s_oneof", typ.Scope.Prefix, strings.Title(b.OneofName)),
+					Fields:           nil,
+					Message:          nil,
+					Enum:             nil,
+					Oneof:            b,
+				}
+				for _, oneofField := range b.OneofFields {
+					f, err := s.parseField(oneofField, typ, file, pkg)
+					if err != nil {
+						return nil, err
+					}
+					if f == nil {
+						continue
+					}
+					oneofType.Fields = append(oneofType.Fields, f)
+					field.OneofFields = append(field.OneofFields, f)
+				}
+
+				file.Types = append(file.Types, oneofType)
+			}
+		case *parser.OneofField:
+			field.Name = b.FieldName
+			field.NameTitle = strings.Title(field.Name)
+			rawTypeString = b.Type
+			field.CollectionType = BASE
+			fieldNumber, err := strconv.Atoi(b.FieldNumber)
+			if err != nil {
+				return nil, fmt.Errorf("parsing field number: %w", err)
+			}
+			field.Number = fieldNumber
+		}
+
+		// reserved method names
+		switch field.NameTitle {
+		case "Edit", "Insert", "Delete", "Move", "Set", "Rename":
+			field.NameTitle += "_"
+		}
+
+		if rawTypeString == "" {
+			// parser.Oneof has no type
+
+			//field.Value = fmt.Sprintf("is%s%s", typ.Scope.Prefix, strings.Title(field.Name))
+			field.ValueType = ONEOF
+			field.ValueProtoPackage = pkg.ProtoName
+			field.ValueGoPackage = pkg.GoPackagePath
+			field.ValueDartPackage = pkg.DartPackagePath
+			field.ValueDartAlias = ""
+			field.ValueLocator = fmt.Sprintf("%s%s_oneof", typ.Scope.Prefix, strings.Title(field.Name))
+
+		} else if isScalar(rawTypeString) {
+			field.Value = rawTypeString
+			field.ValueType = SCALAR
+			field.ValueGoPackage = "github.com/dave/protod/delta"
+			field.ValueDartPackage = "protod/delta.dart"
+			field.ValueDartAlias = "delta"
+			pkg.DartImports["protod/delta.dart"] = "delta"
+			field.ValueLocator = fmt.Sprintf("%s_scalar", strings.Title(field.Value))
+		} else if strings.Contains(rawTypeString, ".") {
+			packageName := rawTypeString[0:strings.LastIndex(rawTypeString, ".")]
+			typeName := rawTypeString[strings.LastIndex(rawTypeString, ".")+1:]
+			valuePkg := s.packages[packageName]
+			t := valuePkg.Scope.Lookup(typeName)
+			if t == nil {
+				return nil, fmt.Errorf("can't find %q in package %q", rawTypeString, valuePkg.ProtoName)
+			}
+			field.ValueType = t.ValueType
+			field.Value = typeName
+			field.ValueProtoPackage = packageName
+			field.ValueGoPackage = valuePkg.GoPackagePath
+			field.ValueDartPackage = valuePkg.DartLocatorsFilePath
+			field.ValueDartAlias = valuePkg.DartPackageAlias
+			pkg.DartImports[valuePkg.DartLocatorsFilePath] = valuePkg.DartPackageAlias
+			field.ValueLocator = fmt.Sprintf("%s_type", t.ValueName)
+
+		} else {
+			t := typ.Scope.Lookup(rawTypeString)
+			if t == nil {
+				return nil, fmt.Errorf("can't find %q in scope", rawTypeString)
+			}
+			field.ValueType = t.ValueType
+			field.Value = rawTypeString
+			field.ValueProtoPackage = pkg.ProtoName
+			field.ValueGoPackage = pkg.GoPackagePath
+			field.ValueDartPackage = pkg.DartPackagePath
+			field.ValueDartAlias = ""
+			field.ValueLocator = fmt.Sprintf("%s_type", t.ValueName)
+		}
+		switch field.CollectionType {
+		case LIST:
+			field.ValueLocator += "_list"
+		case MAP:
+			field.ValueLocator += fmt.Sprintf("_%s_map", field.Key)
+		}
+		return field, nil
+	case *parser.Message:
+		// embedded messages are already flattened
+		return nil, nil
+	case *parser.Enum:
+		// embedded enums are already flattened
+		return nil, nil
+	default:
+		return nil, fmt.Errorf("unknown type %T", protoField)
+	}
 }
 
 func (s *state) genGo() error {
@@ -854,6 +924,7 @@ type ValueType int
 const MESSAGE ValueType = 1
 const SCALAR ValueType = 2
 const ENUM ValueType = 3
+const ONEOF ValueType = 4
 
 type CollectionType int
 
@@ -917,6 +988,7 @@ type Type struct {
 	Fields           []*Field // only for ValueType == MESSAGE
 	Message          *parser.Message
 	Enum             *parser.Enum
+	Oneof            *parser.Oneof
 }
 
 type Field struct {
@@ -933,6 +1005,7 @@ type Field struct {
 	ValueDartPackage  string
 	ValueDartAlias    string
 	ValueLocator      string
+	OneofFields       []*Field
 }
 
 func (t *Type) EmitGo(f *jen.File) {
@@ -1051,9 +1124,8 @@ func (t *Type) EmitGo(f *jen.File) {
 		)
 
 	}
-	if t.CollectionType == BASE && t.ValueType == MESSAGE {
+	if t.CollectionType == BASE && (t.ValueType == MESSAGE || t.ValueType == ONEOF) {
 		for _, field := range t.Fields {
-
 			//func (b Person_type) Name() delta.String_scalar {
 			//	return delta.NewString_scalar(
 			//		delta.CopyAndAppendField(
@@ -1065,13 +1137,28 @@ func (t *Type) EmitGo(f *jen.File) {
 			//}
 			f.Func().Params(jen.Id("b").Id(t.LocatorName)).Id(field.NameTitle).Params().Qual(field.ValueGoPackage, field.ValueLocator).Block(
 				jen.Return(
-					jen.Qual(field.ValueGoPackage, fmt.Sprintf("New%s", field.ValueLocator)).Call(
-						jen.Qual(deltaPath, "CopyAndAppendField").Call(
-							jen.Id("b").Dot("location"),
-							jen.Lit(field.Name),
-							jen.Lit(field.Number),
-						),
-					),
+					jen.Qual(field.ValueGoPackage, fmt.Sprintf("New%s", field.ValueLocator)).CallFunc(func(g *jen.Group) {
+						switch field.ValueType {
+						case ONEOF:
+							// CopyAndAppendOneof(b.location, "name", &Field{Name: "n1", Number:"1"})
+							g.Qual(deltaPath, "CopyAndAppendOneof").CallFunc(func(g *jen.Group) {
+								g.Id("b").Dot("location")
+								g.Lit(field.Name)
+								for _, oneofField := range field.OneofFields {
+									g.Op("&").Qual(deltaPath, "Field").Values(jen.Dict{
+										jen.Id("Name"):   jen.Lit(oneofField.Name),
+										jen.Id("Number"): jen.Lit(oneofField.Number),
+									})
+								}
+							})
+						default:
+							g.Qual(deltaPath, "CopyAndAppendField").Call(
+								jen.Id("b").Dot("location"),
+								jen.Lit(field.Name),
+								jen.Lit(field.Number),
+							)
+						}
+					}),
 				),
 			)
 		}
@@ -1084,14 +1171,16 @@ func (t *Type) EmitGo(f *jen.File) {
 	f.Func().Params(jen.Id("b").Id(t.LocatorName)).Id("Delete").Params().Op("*").Qual(deltaPath, "Op").Block(
 		jen.Return(jen.Qual(deltaPath, "Delete").Call(jen.Id("b").Dot("location"))),
 	)
-	/*
-		func (b Person_type) Set(value *Person) *delta.Op {
-			return delta.Set(b.location, value)
-		}
-	*/
-	f.Func().Params(jen.Id("b").Id(t.LocatorName)).Id("Set").Params(jen.Id("value").Add(t.GoCollectionType())).Op("*").Qual(deltaPath, "Op").Block(
-		jen.Return(jen.Qual(deltaPath, "Set").Call(jen.Id("b").Dot("location"), t.GoCollectionConversion("value"))),
-	)
+	if t.ValueType != ONEOF {
+		/*
+			func (b Person_type) Set(value *Person) *delta.Op {
+				return delta.Set(b.location, value)
+			}
+		*/
+		f.Func().Params(jen.Id("b").Id(t.LocatorName)).Id("Set").Params(jen.Id("value").Add(t.GoCollectionType())).Op("*").Qual(deltaPath, "Op").Block(
+			jen.Return(jen.Qual(deltaPath, "Set").Call(jen.Id("b").Dot("location"), t.GoCollectionConversion("value"))),
+		)
+	}
 	if t.CollectionType == BASE && t.Value == "string" {
 		/*
 			func (b Person_type) Edit(from, to string) *delta.Op {
@@ -1109,6 +1198,8 @@ func (t *Type) GoValueType() jen.Code {
 		return GoTypesConvenience[t.Value]
 	} else if t.ValueType == ENUM {
 		return jen.Id(t.ValueName)
+	} else if t.ValueType == ONEOF {
+		return jen.Id(fmt.Sprintf("is%s", t.ValueName))
 	} else {
 		return jen.Op("*").Id(t.ValueName)
 	}
@@ -1131,7 +1222,9 @@ func (t *Type) GoCollectionType() jen.Code {
 			valueType = GoTypesActual[t.Value]
 		}
 	} else if t.ValueType == ENUM {
-		return jen.Id(t.ValueName)
+		valueType = jen.Id(t.ValueName)
+	} else if t.ValueType == ONEOF {
+		valueType = jen.Id(fmt.Sprintf("is%s", t.ValueName))
 	} else {
 		valueType = jen.Op("*").Id(t.ValueName)
 	}

@@ -164,6 +164,7 @@ enum Locator_V {
   field_1, 
   index_, 
   key, 
+  oneof, 
   notSet
 }
 
@@ -172,13 +173,15 @@ class Locator extends $pb.GeneratedMessage {
     1 : Locator_V.field_1,
     2 : Locator_V.index_,
     3 : Locator_V.key,
+    4 : Locator_V.oneof,
     0 : Locator_V.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('Locator', package: const $pb.PackageName('delta'), createEmptyInstance: create)
-    ..oo(0, [1, 2, 3])
+    ..oo(0, [1, 2, 3, 4])
     ..aOM<Field>(1, 'field', subBuilder: Field.create)
     ..aInt64(2, 'index')
     ..aOM<Key>(3, 'key', subBuilder: Key.create)
+    ..aOM<Oneof>(4, 'oneof', subBuilder: Oneof.create)
     ..hasRequiredFields = false
   ;
 
@@ -230,6 +233,17 @@ class Locator extends $pb.GeneratedMessage {
   void clearKey() => clearField(3);
   @$pb.TagNumber(3)
   Key ensureKey() => $_ensure(2);
+
+  @$pb.TagNumber(4)
+  Oneof get oneof => $_getN(3);
+  @$pb.TagNumber(4)
+  set oneof(Oneof v) { setField(4, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasOneof() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearOneof() => clearField(4);
+  @$pb.TagNumber(4)
+  Oneof ensureOneof() => $_ensure(3);
 }
 
 enum Key_V {
@@ -375,6 +389,41 @@ class Field extends $pb.GeneratedMessage {
   $core.bool hasNumber() => $_has(1);
   @$pb.TagNumber(2)
   void clearNumber() => clearField(2);
+}
+
+class Oneof extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Oneof', package: const $pb.PackageName('delta'), createEmptyInstance: create)
+    ..aOS(1, 'name')
+    ..pc<Field>(2, 'fields', $pb.PbFieldType.PM, subBuilder: Field.create)
+    ..hasRequiredFields = false
+  ;
+
+  Oneof._() : super();
+  factory Oneof() => create();
+  factory Oneof.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory Oneof.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  Oneof clone() => Oneof()..mergeFromMessage(this);
+  Oneof copyWith(void Function(Oneof) updates) => super.copyWith((message) => updates(message as Oneof));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static Oneof create() => Oneof._();
+  Oneof createEmptyInstance() => create();
+  static $pb.PbList<Oneof> createRepeated() => $pb.PbList<Oneof>();
+  @$core.pragma('dart2js:noInline')
+  static Oneof getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Oneof>(create);
+  static Oneof _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get name => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set name($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasName() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearName() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.List<Field> get fields => $_getList(1);
 }
 
 enum Scalar_V {

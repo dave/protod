@@ -104,3 +104,15 @@ const Item$json = const {
   ],
 };
 
+const Chooser$json = const {
+  '1': 'Chooser',
+  '2': const [
+    const {'1': 'str', '3': 1, '4': 1, '5': 9, '9': 0, '10': 'str'},
+    const {'1': 'dbl', '3': 2, '4': 1, '5': 1, '9': 0, '10': 'dbl'},
+    const {'1': 'itm', '3': 3, '4': 1, '5': 11, '6': '.tests.Item', '9': 0, '10': 'itm'},
+  ],
+  '8': const [
+    const {'1': 'choice'},
+  ],
+};
+

@@ -262,7 +262,7 @@ func (b Person_Type_type_list) Move(from, to int) *delta.Op {
 func (b Person_Type_type_list) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Type_type_list) Set(value Person_Type) *delta.Op {
+func (b Person_Type_type_list) Set(value []Person_Type) *delta.Op {
 	return delta.Set(b.location, value)
 }
 
@@ -285,7 +285,7 @@ func (b Person_Type_type_bool_map) Rename(from, to bool) *delta.Op {
 func (b Person_Type_type_bool_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Type_type_bool_map) Set(value Person_Type) *delta.Op {
+func (b Person_Type_type_bool_map) Set(value map[bool]Person_Type) *delta.Op {
 	return delta.Set(b.location, value)
 }
 
@@ -308,7 +308,7 @@ func (b Person_Type_type_int32_map) Rename(from, to int) *delta.Op {
 func (b Person_Type_type_int32_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Type_type_int32_map) Set(value Person_Type) *delta.Op {
+func (b Person_Type_type_int32_map) Set(value map[int32]Person_Type) *delta.Op {
 	return delta.Set(b.location, value)
 }
 
@@ -331,7 +331,7 @@ func (b Person_Type_type_int64_map) Rename(from, to int) *delta.Op {
 func (b Person_Type_type_int64_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Type_type_int64_map) Set(value Person_Type) *delta.Op {
+func (b Person_Type_type_int64_map) Set(value map[int64]Person_Type) *delta.Op {
 	return delta.Set(b.location, value)
 }
 
@@ -354,7 +354,7 @@ func (b Person_Type_type_uint32_map) Rename(from, to int) *delta.Op {
 func (b Person_Type_type_uint32_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Type_type_uint32_map) Set(value Person_Type) *delta.Op {
+func (b Person_Type_type_uint32_map) Set(value map[uint32]Person_Type) *delta.Op {
 	return delta.Set(b.location, value)
 }
 
@@ -377,7 +377,7 @@ func (b Person_Type_type_uint64_map) Rename(from, to int) *delta.Op {
 func (b Person_Type_type_uint64_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Type_type_uint64_map) Set(value Person_Type) *delta.Op {
+func (b Person_Type_type_uint64_map) Set(value map[uint64]Person_Type) *delta.Op {
 	return delta.Set(b.location, value)
 }
 
@@ -400,7 +400,7 @@ func (b Person_Type_type_string_map) Rename(from, to string) *delta.Op {
 func (b Person_Type_type_string_map) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
-func (b Person_Type_type_string_map) Set(value Person_Type) *delta.Op {
+func (b Person_Type_type_string_map) Set(value map[string]Person_Type) *delta.Op {
 	return delta.Set(b.location, value)
 }
 func (Op_root_type) Person_Embed() Person_Embed_type {
@@ -1171,4 +1171,226 @@ func (b Item_type_string_map) Delete() *delta.Op {
 }
 func (b Item_type_string_map) Set(value map[string]*Item) *delta.Op {
 	return delta.Set(b.location, value)
+}
+func (Op_root_type) Chooser() Chooser_type {
+	return Chooser_type{}
+}
+
+type Chooser_type struct {
+	location []*delta.Locator
+}
+
+func (b Chooser_type) Location_get() []*delta.Locator {
+	return b.location
+}
+func NewChooser_type(l []*delta.Locator) Chooser_type {
+	return Chooser_type{location: l}
+}
+func (b Chooser_type) Choice() Chooser_Choice_oneof {
+	return NewChooser_Choice_oneof(delta.CopyAndAppendOneof(b.location, "choice", &delta.Field{
+		Name:   "str",
+		Number: 1,
+	}, &delta.Field{
+		Name:   "dbl",
+		Number: 2,
+	}, &delta.Field{
+		Name:   "itm",
+		Number: 3,
+	}))
+}
+func (b Chooser_type) Delete() *delta.Op {
+	return delta.Delete(b.location)
+}
+func (b Chooser_type) Set(value *Chooser) *delta.Op {
+	return delta.Set(b.location, value)
+}
+
+type Chooser_type_list struct {
+	location []*delta.Locator
+}
+
+func (b Chooser_type_list) Location_get() []*delta.Locator {
+	return b.location
+}
+func NewChooser_type_list(l []*delta.Locator) Chooser_type_list {
+	return Chooser_type_list{location: l}
+}
+func (b Chooser_type_list) Index(i int) Chooser_type {
+	return NewChooser_type(delta.CopyAndAppendIndex(b.location, int64(i)))
+}
+func (b Chooser_type_list) Insert(index int, value *Chooser) *delta.Op {
+	return delta.Insert(delta.CopyAndAppendIndex(b.location, int64(index)), value)
+}
+func (b Chooser_type_list) Move(from, to int) *delta.Op {
+	return delta.Move(delta.CopyAndAppendIndex(b.location, int64(from)), int64(to))
+}
+func (b Chooser_type_list) Delete() *delta.Op {
+	return delta.Delete(b.location)
+}
+func (b Chooser_type_list) Set(value []*Chooser) *delta.Op {
+	return delta.Set(b.location, value)
+}
+
+type Chooser_type_bool_map struct {
+	location []*delta.Locator
+}
+
+func (b Chooser_type_bool_map) Location_get() []*delta.Locator {
+	return b.location
+}
+func NewChooser_type_bool_map(l []*delta.Locator) Chooser_type_bool_map {
+	return Chooser_type_bool_map{location: l}
+}
+func (b Chooser_type_bool_map) Key(key bool) Chooser_type {
+	return NewChooser_type(delta.CopyAndAppendKeyBool(b.location, key))
+}
+func (b Chooser_type_bool_map) Rename(from, to bool) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyBool(b.location, from), to)
+}
+func (b Chooser_type_bool_map) Delete() *delta.Op {
+	return delta.Delete(b.location)
+}
+func (b Chooser_type_bool_map) Set(value map[bool]*Chooser) *delta.Op {
+	return delta.Set(b.location, value)
+}
+
+type Chooser_type_int32_map struct {
+	location []*delta.Locator
+}
+
+func (b Chooser_type_int32_map) Location_get() []*delta.Locator {
+	return b.location
+}
+func NewChooser_type_int32_map(l []*delta.Locator) Chooser_type_int32_map {
+	return Chooser_type_int32_map{location: l}
+}
+func (b Chooser_type_int32_map) Key(key int) Chooser_type {
+	return NewChooser_type(delta.CopyAndAppendKeyInt32(b.location, int32(key)))
+}
+func (b Chooser_type_int32_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyInt32(b.location, int32(from)), int32(to))
+}
+func (b Chooser_type_int32_map) Delete() *delta.Op {
+	return delta.Delete(b.location)
+}
+func (b Chooser_type_int32_map) Set(value map[int32]*Chooser) *delta.Op {
+	return delta.Set(b.location, value)
+}
+
+type Chooser_type_int64_map struct {
+	location []*delta.Locator
+}
+
+func (b Chooser_type_int64_map) Location_get() []*delta.Locator {
+	return b.location
+}
+func NewChooser_type_int64_map(l []*delta.Locator) Chooser_type_int64_map {
+	return Chooser_type_int64_map{location: l}
+}
+func (b Chooser_type_int64_map) Key(key int) Chooser_type {
+	return NewChooser_type(delta.CopyAndAppendKeyInt64(b.location, int64(key)))
+}
+func (b Chooser_type_int64_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyInt64(b.location, int64(from)), int64(to))
+}
+func (b Chooser_type_int64_map) Delete() *delta.Op {
+	return delta.Delete(b.location)
+}
+func (b Chooser_type_int64_map) Set(value map[int64]*Chooser) *delta.Op {
+	return delta.Set(b.location, value)
+}
+
+type Chooser_type_uint32_map struct {
+	location []*delta.Locator
+}
+
+func (b Chooser_type_uint32_map) Location_get() []*delta.Locator {
+	return b.location
+}
+func NewChooser_type_uint32_map(l []*delta.Locator) Chooser_type_uint32_map {
+	return Chooser_type_uint32_map{location: l}
+}
+func (b Chooser_type_uint32_map) Key(key int) Chooser_type {
+	return NewChooser_type(delta.CopyAndAppendKeyUint32(b.location, uint32(key)))
+}
+func (b Chooser_type_uint32_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyUint32(b.location, uint32(from)), uint32(to))
+}
+func (b Chooser_type_uint32_map) Delete() *delta.Op {
+	return delta.Delete(b.location)
+}
+func (b Chooser_type_uint32_map) Set(value map[uint32]*Chooser) *delta.Op {
+	return delta.Set(b.location, value)
+}
+
+type Chooser_type_uint64_map struct {
+	location []*delta.Locator
+}
+
+func (b Chooser_type_uint64_map) Location_get() []*delta.Locator {
+	return b.location
+}
+func NewChooser_type_uint64_map(l []*delta.Locator) Chooser_type_uint64_map {
+	return Chooser_type_uint64_map{location: l}
+}
+func (b Chooser_type_uint64_map) Key(key int) Chooser_type {
+	return NewChooser_type(delta.CopyAndAppendKeyUint64(b.location, uint64(key)))
+}
+func (b Chooser_type_uint64_map) Rename(from, to int) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyUint64(b.location, uint64(from)), uint64(to))
+}
+func (b Chooser_type_uint64_map) Delete() *delta.Op {
+	return delta.Delete(b.location)
+}
+func (b Chooser_type_uint64_map) Set(value map[uint64]*Chooser) *delta.Op {
+	return delta.Set(b.location, value)
+}
+
+type Chooser_type_string_map struct {
+	location []*delta.Locator
+}
+
+func (b Chooser_type_string_map) Location_get() []*delta.Locator {
+	return b.location
+}
+func NewChooser_type_string_map(l []*delta.Locator) Chooser_type_string_map {
+	return Chooser_type_string_map{location: l}
+}
+func (b Chooser_type_string_map) Key(key string) Chooser_type {
+	return NewChooser_type(delta.CopyAndAppendKeyString(b.location, key))
+}
+func (b Chooser_type_string_map) Rename(from, to string) *delta.Op {
+	return delta.Rename(delta.CopyAndAppendKeyString(b.location, from), to)
+}
+func (b Chooser_type_string_map) Delete() *delta.Op {
+	return delta.Delete(b.location)
+}
+func (b Chooser_type_string_map) Set(value map[string]*Chooser) *delta.Op {
+	return delta.Set(b.location, value)
+}
+func (Op_root_type) Chooser_Choice() Chooser_Choice_oneof {
+	return Chooser_Choice_oneof{}
+}
+
+type Chooser_Choice_oneof struct {
+	location []*delta.Locator
+}
+
+func (b Chooser_Choice_oneof) Location_get() []*delta.Locator {
+	return b.location
+}
+func NewChooser_Choice_oneof(l []*delta.Locator) Chooser_Choice_oneof {
+	return Chooser_Choice_oneof{location: l}
+}
+func (b Chooser_Choice_oneof) Str() delta.String_scalar {
+	return delta.NewString_scalar(delta.CopyAndAppendField(b.location, "str", 1))
+}
+func (b Chooser_Choice_oneof) Dbl() delta.Double_scalar {
+	return delta.NewDouble_scalar(delta.CopyAndAppendField(b.location, "dbl", 2))
+}
+func (b Chooser_Choice_oneof) Itm() Item_type {
+	return NewItem_type(delta.CopyAndAppendField(b.location, "itm", 3))
+}
+func (b Chooser_Choice_oneof) Delete() *delta.Op {
+	return delta.Delete(b.location)
 }

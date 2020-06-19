@@ -27,6 +27,12 @@ class Op_root_type {
   Item_type Item() {
     return Item_type([]);
   }
+  Chooser_type Chooser() {
+    return Chooser_type([]);
+  }
+  Chooser_Choice_oneof Chooser_Choice() {
+    return Chooser_Choice_oneof([]);
+  }
 }
 
 class Person_type extends delta.Location {
@@ -978,6 +984,170 @@ class Item_type_string_map extends delta.Location {
   }
 
   delta.Op Set(Map<String, pb.Item> value) {
+    return delta.set(location, value);
+  }
+
+}
+
+class Chooser_type extends delta.Location {
+  Chooser_type(List<delta.Locator> location) : super(location);
+   Choice() {
+    return (delta.copyAndAppendField(location, "choice", -1));
+  }
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Set(pb.Chooser value) {
+    return delta.set(location, value);
+  }
+
+}
+
+class Chooser_type_list extends delta.Location {
+  Chooser_type_list(List<delta.Locator> location) : super(location);
+  Chooser_type Index(int i) {
+    return Chooser_type(delta.copyAndAppendIndex(location, fixnum.Int64(i)));
+  }
+  delta.Op Insert(int index, pb.Chooser value) {
+    return delta.insert(delta.copyAndAppendIndex(location, fixnum.Int64(index)), value);
+  }
+
+  delta.Op Move(int from, int to) {
+    return delta.moveList(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
+  }
+
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Set(List<pb.Chooser> value) {
+    return delta.set(location, value);
+  }
+
+}
+
+class Chooser_type_bool_map extends delta.Location {
+  Chooser_type_bool_map(List<delta.Locator> location) : super(location);
+  Chooser_type Key(bool key) {
+    return Chooser_type(delta.copyAndAppendKeyBool(location, key));
+  }
+  delta.Op Rename(bool from, bool to) {
+    return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
+  }
+
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Set(Map<bool, pb.Chooser> value) {
+    return delta.set(location, value);
+  }
+
+}
+
+class Chooser_type_int32_map extends delta.Location {
+  Chooser_type_int32_map(List<delta.Locator> location) : super(location);
+  Chooser_type Key(int key) {
+    return Chooser_type(delta.copyAndAppendKeyInt32(location, key));
+  }
+  delta.Op Rename(int from, int to) {
+    return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
+  }
+
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Set(Map<int, pb.Chooser> value) {
+    return delta.set(location, value);
+  }
+
+}
+
+class Chooser_type_int64_map extends delta.Location {
+  Chooser_type_int64_map(List<delta.Locator> location) : super(location);
+  Chooser_type Key(int key) {
+    return Chooser_type(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
+  }
+  delta.Op Rename(int from, int to) {
+    return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
+  }
+
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Set(Map<fixnum.Int64, pb.Chooser> value) {
+    return delta.set(location, value);
+  }
+
+}
+
+class Chooser_type_uint32_map extends delta.Location {
+  Chooser_type_uint32_map(List<delta.Locator> location) : super(location);
+  Chooser_type Key(int key) {
+    return Chooser_type(delta.copyAndAppendKeyUint32(location, key));
+  }
+  delta.Op Rename(int from, int to) {
+    return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
+  }
+
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Set(Map<int, pb.Chooser> value) {
+    return delta.set(location, value);
+  }
+
+}
+
+class Chooser_type_uint64_map extends delta.Location {
+  Chooser_type_uint64_map(List<delta.Locator> location) : super(location);
+  Chooser_type Key(int key) {
+    return Chooser_type(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
+  }
+  delta.Op Rename(int from, int to) {
+    return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
+  }
+
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Set(Map<fixnum.Int64, pb.Chooser> value) {
+    return delta.set(location, value);
+  }
+
+}
+
+class Chooser_type_string_map extends delta.Location {
+  Chooser_type_string_map(List<delta.Locator> location) : super(location);
+  Chooser_type Key(String key) {
+    return Chooser_type(delta.copyAndAppendKeyString(location, key));
+  }
+  delta.Op Rename(String from, String to) {
+    return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
+  }
+
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Set(Map<String, pb.Chooser> value) {
+    return delta.set(location, value);
+  }
+
+}
+
+class Chooser_Choice_oneof extends delta.Location {
+  Chooser_Choice_oneof(List<delta.Locator> location) : super(location);
+  delta.Op Delete() {
+    return delta.delete(location);
+  }
+
+  delta.Op Set(pb.Chooser_Choice value) {
     return delta.set(location, value);
   }
 

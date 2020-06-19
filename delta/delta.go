@@ -1,16 +1,17 @@
 package delta
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
 	"time"
 
 	quill "github.com/fmpwizard/go-quilljs-delta/delta"
-	"github.com/golang/protobuf/proto"
+	proto1 "github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/sergi/go-diff/diffmatchpatch"
-	proto2 "google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/anypb"
 )
@@ -34,22 +35,30 @@ func Transform(op1, op2 *Op, op1priority bool) (op1x *Op, op2x *Op, err error) {
 	return op1x, op2x, nil
 }
 
-func Apply(op *Op, input *proto2.Message) error {
+func Apply(op *Op, input proto.Message) error {
+	return applyPointer(op, &input, true)
+}
+
+func ApplyPointer(op *Op, input *proto.Message) error {
+	return applyPointer(op, input, false)
+}
+
+func applyPointer(op *Op, input *proto.Message, errorOnPointer bool) error {
 	if op == nil {
 		return nil
 	}
 	switch op.Type {
 	case Op_Compound:
 		for _, o := range op.Ops {
-			if err := Apply(o, input); err != nil {
+			if err := applyPointer(o, input, errorOnPointer); err != nil {
 				return err
 			}
 		}
 		return nil
 	case Op_Edit:
-		return ApplySet(op, input)
+		return ApplySet(op, input, errorOnPointer)
 	case Op_Set:
-		return ApplySet(op, input)
+		return ApplySet(op, input, errorOnPointer)
 	case Op_Insert:
 		return ApplyInsert(op, *input)
 	case Op_Move:
@@ -57,14 +66,24 @@ func Apply(op *Op, input *proto2.Message) error {
 	case Op_Rename:
 		return ApplyRename(op, *input)
 	case Op_Delete:
-		return ApplyDelete(op, input)
+		return ApplyDelete(op, input, errorOnPointer)
 	}
 	return fmt.Errorf("unknown op type %v", op.Type)
 }
 
-func ApplySet(op *Op, inputAddr *proto2.Message) error {
+func Compound(ops ...*Op) *Op {
+	return &Op{
+		Type: Op_Compound,
+		Ops:  ops,
+	}
+}
+
+func ApplySet(op *Op, inputAddr *proto.Message, errorOnPointer bool) error {
 	if op.Location == nil {
 		// root
+		if errorOnPointer {
+			return errors.New("in order to apply a Set operation to the root node, ApplyPointer must be used")
+		}
 		v := getValue(protoreflect.ValueOfMessage((*inputAddr).ProtoReflect()), op.Value)
 		*inputAddr = v.Message().Interface()
 		return nil
@@ -73,12 +92,14 @@ func ApplySet(op *Op, inputAddr *proto2.Message) error {
 	parentLocator, itemLocator := pop(op.Location)
 	parent, _ := getLocation(input.ProtoReflect(), parentLocator)
 	switch locator := itemLocator.V.(type) {
+	case *Locator_Oneof:
+		return fmt.Errorf("can't set with a oneof locator")
 	case *Locator_Field:
 		parent, ok := parent.(protoreflect.Message)
 		if !ok {
 			return fmt.Errorf("can't apply field locator to %T", parent)
 		}
-		field := getField(locator, parent)
+		field := getField(locator.Field, parent)
 		value := getValueField(parent, field, parent.Get(field), op.Value)
 		parent.Set(field, value)
 	case *Locator_Index:
@@ -117,10 +138,12 @@ func (o *Op) SetToIndex(i int64) {
 	o.Value.(*Op_Index).Index = i
 }
 
-func ApplyInsert(op *Op, input proto2.Message) error {
+func ApplyInsert(op *Op, input proto.Message) error {
 	parentLocator, itemLocator := pop(op.Location)
 	parent, setter := getLocation(input.ProtoReflect(), parentLocator)
 	switch locator := itemLocator.V.(type) {
+	case *Locator_Oneof:
+		return fmt.Errorf("can't insert with a oneof locator")
 	case *Locator_Field:
 		return fmt.Errorf("can't insert with a field locator")
 	case *Locator_Index:
@@ -131,6 +154,10 @@ func ApplyInsert(op *Op, input proto2.Message) error {
 		value := getValue(protoreflect.Value{}, op.Value)
 		index := int(locator.Index)
 		length := parent.Len()
+		if index > length {
+			// append to the end if index out of bounds.
+			index = length
+		}
 		if index == length {
 			parent.Append(value)
 			setter(protoreflect.ValueOfList(parent)) // must use parent setter in case of mutating operation
@@ -148,10 +175,12 @@ func ApplyInsert(op *Op, input proto2.Message) error {
 	return nil
 }
 
-func ApplyMove(op *Op, input proto2.Message) error {
+func ApplyMove(op *Op, input proto.Message) error {
 	parentLocator, itemLocator := pop(op.Location)
 	parent, _ := getLocation(input.ProtoReflect(), parentLocator)
 	switch locator := itemLocator.V.(type) {
+	case *Locator_Oneof:
+		return fmt.Errorf("can't move with a oneof locator")
 	case *Locator_Field:
 		return fmt.Errorf("can't move with a field locator")
 	case *Locator_Index:
@@ -191,12 +220,14 @@ func ApplyMove(op *Op, input proto2.Message) error {
 	return nil
 }
 
-func ApplyRename(op *Op, input proto2.Message) error {
+func ApplyRename(op *Op, input proto.Message) error {
 	parentLocator, itemLocator := pop(op.Location)
 	parent, _ := getLocation(input.ProtoReflect(), parentLocator)
 	switch locator := itemLocator.V.(type) {
+	case *Locator_Oneof:
+		return fmt.Errorf("can't rename with a oneof locator")
 	case *Locator_Field:
-		return fmt.Errorf("can't move with a field locator")
+		return fmt.Errorf("can't rename with a field locator")
 	case *Locator_Index:
 		return fmt.Errorf("can't rename with an index locator")
 	case *Locator_Key:
@@ -223,9 +254,12 @@ func ApplyRename(op *Op, input proto2.Message) error {
 	return nil
 }
 
-func ApplyDelete(op *Op, inputAddr *proto2.Message) error {
+func ApplyDelete(op *Op, inputAddr *proto.Message, errorOnPointer bool) error {
 	if op.Location == nil {
 		// root
+		if errorOnPointer {
+			return errors.New("in order to apply a Delete operation to the root node, ApplyPointer must be used")
+		}
 		*inputAddr = nil
 		return nil
 	}
@@ -233,12 +267,21 @@ func ApplyDelete(op *Op, inputAddr *proto2.Message) error {
 	parentLocator, itemLocator := pop(op.Location)
 	parent, setter := getLocation(input.ProtoReflect(), parentLocator)
 	switch locator := itemLocator.V.(type) {
+	case *Locator_Oneof:
+		parent, ok := parent.(protoreflect.Message)
+		if !ok {
+			return fmt.Errorf("can't delete oneof locator from %T", parent)
+		}
+		for _, field := range locator.Oneof.Fields {
+			field := getField(field, parent)
+			parent.Clear(field)
+		}
 	case *Locator_Field:
 		parent, ok := parent.(protoreflect.Message)
 		if !ok {
 			return fmt.Errorf("can't delete field locator from %T", parent)
 		}
-		field := getField(locator, parent)
+		field := getField(locator.Field, parent)
 		parent.Clear(field)
 	case *Locator_Index:
 		parent, ok := parent.(protoreflect.List)
@@ -346,7 +389,7 @@ func getValueField(parent protoreflect.Message, field protoreflect.FieldDescript
 		return protoreflect.ValueOfString(sb.String())
 	case *Op_Message:
 		dynamicAny := MustUnmarshalAny(value.Message)
-		reflectMessage := proto.MessageReflect(dynamicAny.Message)
+		reflectMessage := proto1.MessageReflect(dynamicAny.Message)
 		return protoreflect.ValueOfMessage(reflectMessage)
 	case *Op_Object:
 		return fromObject(parent, field, value.Object)
@@ -364,7 +407,7 @@ func fromObject(parent protoreflect.Message, field protoreflect.FieldDescriptor,
 		return reflectValueOfScalar(value.Scalar)
 	case *Object_Message:
 		dynamicAny := MustUnmarshalAny(value.Message)
-		reflectMessage := proto.MessageReflect(dynamicAny.Message)
+		reflectMessage := proto1.MessageReflect(dynamicAny.Message)
 		return protoreflect.ValueOfMessage(reflectMessage)
 	case *Object_List:
 		list := parent.NewField(field).List()
@@ -413,9 +456,9 @@ func fromObject(parent protoreflect.Message, field protoreflect.FieldDescriptor,
 	}
 }
 
-func getField(locator *Locator_Field, message protoreflect.Message) protoreflect.FieldDescriptor {
-	field := message.Descriptor().Fields().ByNumber(protoreflect.FieldNumber(locator.Field.Number))
-	if string(field.Name()) != locator.Field.Name {
+func getField(locatorField *Field, message protoreflect.Message) protoreflect.FieldDescriptor {
+	field := message.Descriptor().Fields().ByNumber(protoreflect.FieldNumber(locatorField.Number))
+	if string(field.Name()) != locatorField.Name {
 		panic("field name / number mismatch")
 	}
 	return field
@@ -757,22 +800,23 @@ func getLocation(m protoreflect.Message, loc []*Locator) (interface{}, func(prot
 		var value protoreflect.Value
 		switch c := current.(type) {
 		case protoreflect.Message:
-			field, ok := sel.V.(*Locator_Field)
-			if !ok {
+			switch locator := sel.V.(type) {
+			case *Locator_Oneof:
+				continue
+			case *Locator_Field:
+				fieldDescriptor := getField(locator.Field, c)
+				value = c.Get(fieldDescriptor)
+				if !c.Has(fieldDescriptor) {
+					// avoid assignment to nil maps or pointers
+					value = c.NewField(fieldDescriptor)
+					c.Set(fieldDescriptor, value)
+				}
+				setter = func(value protoreflect.Value) {
+					c.Set(fieldDescriptor, value)
+				}
+			default:
 				panic(fmt.Sprintf("field locator expected to find message, got %T", sel.V))
 			}
-			fieldDescriptor := getField(field, c)
-			value = c.Get(fieldDescriptor)
-
-			if !c.Has(fieldDescriptor) {
-				// avoid assignment to nil maps or pointers
-				value = c.NewField(fieldDescriptor)
-				c.Set(fieldDescriptor, value)
-			}
-			setter = func(value protoreflect.Value) {
-				c.Set(fieldDescriptor, value)
-			}
-
 		case protoreflect.List:
 			index, ok := sel.V.(*Locator_Index)
 			if !ok {
@@ -812,7 +856,7 @@ func getLocation(m protoreflect.Message, loc []*Locator) (interface{}, func(prot
 }
 
 func MustMarshalAny(m proto.Message) *anypb.Any {
-	a, err := ptypes.MarshalAny(m)
+	a, err := ptypes.MarshalAny(proto1.MessageV1(m))
 	if err != nil {
 		panic(err)
 	}
@@ -835,6 +879,9 @@ func CopyAndAppend(in []*Locator, v *Locator) []*Locator {
 	return out
 }
 
+func CopyAndAppendOneof(in []*Locator, name string, fields ...*Field) []*Locator {
+	return CopyAndAppend(in, NewLocatorOneof(name, fields...))
+}
 func CopyAndAppendField(in []*Locator, name string, number int32) []*Locator {
 	return CopyAndAppend(in, NewLocatorField(name, number))
 }
@@ -860,6 +907,9 @@ func CopyAndAppendKeyUint64(in []*Locator, key uint64) []*Locator {
 	return CopyAndAppend(in, NewLocatorKeyUint64(key))
 }
 
+func NewLocatorOneof(name string, fields ...*Field) *Locator {
+	return &Locator{V: &Locator_Oneof{Oneof: &Oneof{Name: name, Fields: fields}}}
+}
 func NewLocatorField(name string, number int32) *Locator {
 	return &Locator{V: &Locator_Field{Field: &Field{Name: name, Number: number}}}
 }
@@ -907,6 +957,52 @@ func TreeRelationship(p1, p2 []*Locator) TreeRelationshipType {
 	default:
 		return TREE_NONE
 	}
+}
+
+func SplitCommonOneofAncestor(p1, p2 []*Locator) (found bool, oneof []*Locator) {
+	// Searches the locations for a "oneof" ancestor that they both share. Only returns true if they use different
+	// oneof values. e.g.:
+	// Op().Chooser().Choice().Dbl().Set(2), Op().Chooser().Choice().Str().Set("a") => true, Op().Chooser().Choice()
+	// but
+	// Op().Chooser().Choice().Dbl().Set(2), Op().Chooser().Choice().Dbl().Set(3) => false, nil
+	// ... the second example is false because both ops are acting on the same value inside the oneof.
+	for i := 0; i < len(p1) && i < len(p2); i++ {
+		l1 := p1[i]
+		l2 := p2[i]
+		if !proto.Equal(l1, l2) {
+			return false, nil
+		}
+		if _, ok := l1.V.(*Locator_Oneof); !ok {
+			// we know they're equal, so only need to investigate one of them
+			continue
+		}
+		// we've found a common oneof among the ancestors! however, we need to investigate the next locators because if
+		// they're identical we can just continue.
+		hasNext1 := i < len(p1)-1
+		hasNext2 := i < len(p2)-1
+		switch {
+		case !hasNext1 && !hasNext2:
+			// the only operations that finish at a oneof locator are operations that delete the whole oneof. We can
+			// continue of this is the case.
+			continue
+		case !hasNext1 || !hasNext2:
+			// one of the operations is deleting the whole oneof, and one is manipulating inside. this deserves special
+			// attention so we return true.
+			return true, p1[0 : i+1]
+		case hasNext1 && hasNext2:
+			next1 := p1[i+1]
+			next2 := p2[i+1]
+			if proto.Equal(next1, next2) {
+				// both operations are acting on the same value in the oneof. We can ignore this and continue searching
+				// the ancestors for more oneofs.
+				continue
+			}
+			return true, p1[0 : i+1]
+		default:
+			panic("")
+		}
+	}
+	return false, nil
 }
 
 func isAncestor(ancestor, descendent []*Locator) bool {

@@ -277,3 +277,73 @@ class Item extends $pb.GeneratedMessage {
   $core.List<$core.String> get flags => $_getList(2);
 }
 
+enum Chooser_Choice {
+  str, 
+  dbl, 
+  itm, 
+  notSet
+}
+
+class Chooser extends $pb.GeneratedMessage {
+  static const $core.Map<$core.int, Chooser_Choice> _Chooser_ChoiceByTag = {
+    1 : Chooser_Choice.str,
+    2 : Chooser_Choice.dbl,
+    3 : Chooser_Choice.itm,
+    0 : Chooser_Choice.notSet
+  };
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Chooser', package: const $pb.PackageName('tests'), createEmptyInstance: create)
+    ..oo(0, [1, 2, 3])
+    ..aOS(1, 'str')
+    ..a<$core.double>(2, 'dbl', $pb.PbFieldType.OD)
+    ..aOM<Item>(3, 'itm', subBuilder: Item.create)
+    ..hasRequiredFields = false
+  ;
+
+  Chooser._() : super();
+  factory Chooser() => create();
+  factory Chooser.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory Chooser.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  Chooser clone() => Chooser()..mergeFromMessage(this);
+  Chooser copyWith(void Function(Chooser) updates) => super.copyWith((message) => updates(message as Chooser));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static Chooser create() => Chooser._();
+  Chooser createEmptyInstance() => create();
+  static $pb.PbList<Chooser> createRepeated() => $pb.PbList<Chooser>();
+  @$core.pragma('dart2js:noInline')
+  static Chooser getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Chooser>(create);
+  static Chooser _defaultInstance;
+
+  Chooser_Choice whichChoice() => _Chooser_ChoiceByTag[$_whichOneof(0)];
+  void clearChoice() => clearField($_whichOneof(0));
+
+  @$pb.TagNumber(1)
+  $core.String get str => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set str($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasStr() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearStr() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.double get dbl => $_getN(1);
+  @$pb.TagNumber(2)
+  set dbl($core.double v) { $_setDouble(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasDbl() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearDbl() => clearField(2);
+
+  @$pb.TagNumber(3)
+  Item get itm => $_getN(2);
+  @$pb.TagNumber(3)
+  set itm(Item v) { setField(3, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasItm() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearItm() => clearField(3);
+  @$pb.TagNumber(3)
+  Item ensureItm() => $_ensure(2);
+}
+

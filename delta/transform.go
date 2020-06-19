@@ -22,10 +22,7 @@ func (t *Op) Transform(op *Op, priority bool) *Op {
 		case len(transformed) == 1:
 			return transformed[0]
 		default:
-			return &Op{
-				Type: Op_Compound,
-				Ops:  transformed,
-			}
+			return Compound(transformed...)
 		}
 	}
 	if t.Type == Op_Compound {
@@ -37,6 +34,52 @@ func (t *Op) Transform(op *Op, priority bool) *Op {
 			}
 		}
 		return out
+	}
+	found, oneofLocation := SplitCommonOneofAncestor(t.Location, op.Location)
+	if found {
+		// t and op have a common oneof ancestor, and are acting on separate values. Any operation on the descendant of
+		// a oneof value will delete the entire tree under all the other oneof values.
+
+		var priorityOp, notOp *Op
+		if priority {
+			priorityOp = t
+			notOp = op
+		} else {
+			priorityOp = op
+			notOp = t
+		}
+
+		valid := map[Op_Type]bool{
+			Op_Set:    true,
+			Op_Edit:   false,
+			Op_Insert: true,
+			Op_Move:   false,
+			Op_Rename: false,
+			Op_Delete: false,
+		}
+
+		if !valid[priorityOp.Type] && valid[notOp.Type] {
+			// if notOp is valid and priorityOp is not, we can swap them round so a set/insert always takes priority
+			// over an edit/move/rename/delete.
+			priorityOp, notOp = notOp, priorityOp
+		}
+
+		if valid[priorityOp.Type] {
+			// nuke everything, and re-run the priority operation (if it's a set / insert).
+			return Compound(
+				&Op{
+					Type:     Op_Delete,
+					Location: oneofLocation,
+				},
+				proto.Clone(priorityOp).(*Op),
+			)
+		} else {
+			// nuke everything.
+			return &Op{
+				Type:     Op_Delete,
+				Location: oneofLocation,
+			}
+		}
 	}
 	return t.transform(op, priority)
 }

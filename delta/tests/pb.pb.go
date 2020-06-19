@@ -386,6 +386,101 @@ func (x *Item) GetFlags() []string {
 	return nil
 }
 
+// [proto:data]
+type Chooser struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Types that are assignable to Choice:
+	//	*Chooser_Str
+	//	*Chooser_Dbl
+	//	*Chooser_Itm
+	Choice isChooser_Choice `protobuf_oneof:"choice"`
+}
+
+func (x *Chooser) Reset() {
+	*x = Chooser{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_pb_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Chooser) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Chooser) ProtoMessage() {}
+
+func (x *Chooser) ProtoReflect() protoreflect.Message {
+	mi := &file_pb_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Chooser.ProtoReflect.Descriptor instead.
+func (*Chooser) Descriptor() ([]byte, []int) {
+	return file_pb_proto_rawDescGZIP(), []int{4}
+}
+
+func (m *Chooser) GetChoice() isChooser_Choice {
+	if m != nil {
+		return m.Choice
+	}
+	return nil
+}
+
+func (x *Chooser) GetStr() string {
+	if x, ok := x.GetChoice().(*Chooser_Str); ok {
+		return x.Str
+	}
+	return ""
+}
+
+func (x *Chooser) GetDbl() float64 {
+	if x, ok := x.GetChoice().(*Chooser_Dbl); ok {
+		return x.Dbl
+	}
+	return 0
+}
+
+func (x *Chooser) GetItm() *Item {
+	if x, ok := x.GetChoice().(*Chooser_Itm); ok {
+		return x.Itm
+	}
+	return nil
+}
+
+type isChooser_Choice interface {
+	isChooser_Choice()
+}
+
+type Chooser_Str struct {
+	Str string `protobuf:"bytes,1,opt,name=str,proto3,oneof"`
+}
+
+type Chooser_Dbl struct {
+	Dbl float64 `protobuf:"fixed64,2,opt,name=dbl,proto3,oneof"`
+}
+
+type Chooser_Itm struct {
+	Itm *Item `protobuf:"bytes,3,opt,name=itm,proto3,oneof"`
+}
+
+func (*Chooser_Str) isChooser_Choice() {}
+
+func (*Chooser_Dbl) isChooser_Choice() {}
+
+func (*Chooser_Itm) isChooser_Choice() {}
+
 type Person_Embed struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -397,7 +492,7 @@ type Person_Embed struct {
 func (x *Person_Embed) Reset() {
 	*x = Person_Embed{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_proto_msgTypes[4]
+		mi := &file_pb_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -410,7 +505,7 @@ func (x *Person_Embed) String() string {
 func (*Person_Embed) ProtoMessage() {}
 
 func (x *Person_Embed) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_proto_msgTypes[4]
+	mi := &file_pb_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -500,10 +595,16 @@ var file_pb_proto_rawDesc = []byte{
 	0x1f, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x12, 0x12, 0x0a, 0x04,
 	0x64, 0x6f, 0x6e, 0x65, 0x18, 0x22, 0x20, 0x01, 0x28, 0x08, 0x52, 0x04, 0x64, 0x6f, 0x6e, 0x65,
 	0x12, 0x14, 0x0a, 0x05, 0x66, 0x6c, 0x61, 0x67, 0x73, 0x18, 0x23, 0x20, 0x03, 0x28, 0x09, 0x52,
-	0x05, 0x66, 0x6c, 0x61, 0x67, 0x73, 0x42, 0x2a, 0x5a, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
-	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x61, 0x76, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x64,
-	0x2f, 0x64, 0x65, 0x6c, 0x74, 0x61, 0x2f, 0x74, 0x65, 0x73, 0x74, 0x73, 0x3b, 0x74, 0x65, 0x73,
-	0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x05, 0x66, 0x6c, 0x61, 0x67, 0x73, 0x22, 0x5c, 0x0a, 0x07, 0x43, 0x68, 0x6f, 0x6f, 0x73, 0x65,
+	0x72, 0x12, 0x12, 0x0a, 0x03, 0x73, 0x74, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x48, 0x00,
+	0x52, 0x03, 0x73, 0x74, 0x72, 0x12, 0x12, 0x0a, 0x03, 0x64, 0x62, 0x6c, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x01, 0x48, 0x00, 0x52, 0x03, 0x64, 0x62, 0x6c, 0x12, 0x1f, 0x0a, 0x03, 0x69, 0x74, 0x6d,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x73, 0x2e, 0x49,
+	0x74, 0x65, 0x6d, 0x48, 0x00, 0x52, 0x03, 0x69, 0x74, 0x6d, 0x42, 0x08, 0x0a, 0x06, 0x63, 0x68,
+	0x6f, 0x69, 0x63, 0x65, 0x42, 0x2a, 0x5a, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x64, 0x61, 0x76, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x64, 0x2f, 0x64,
+	0x65, 0x6c, 0x74, 0x61, 0x2f, 0x74, 0x65, 0x73, 0x74, 0x73, 0x3b, 0x74, 0x65, 0x73, 0x74, 0x73,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -519,37 +620,39 @@ func file_pb_proto_rawDescGZIP() []byte {
 }
 
 var file_pb_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_pb_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_pb_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_pb_proto_goTypes = []interface{}{
 	(Person_Type)(0),     // 0: tests.Person.Type
 	(*Person)(nil),       // 1: tests.Person
 	(*Company)(nil),      // 2: tests.Company
 	(*Case)(nil),         // 3: tests.Case
 	(*Item)(nil),         // 4: tests.Item
-	(*Person_Embed)(nil), // 5: tests.Person.Embed
-	nil,                  // 6: tests.Person.CasesEntry
-	nil,                  // 7: tests.Person.TypeMapEntry
-	nil,                  // 8: tests.Company.FlagsEntry
-	nil,                  // 9: tests.Case.FlagsEntry
+	(*Chooser)(nil),      // 5: tests.Chooser
+	(*Person_Embed)(nil), // 6: tests.Person.Embed
+	nil,                  // 7: tests.Person.CasesEntry
+	nil,                  // 8: tests.Person.TypeMapEntry
+	nil,                  // 9: tests.Company.FlagsEntry
+	nil,                  // 10: tests.Case.FlagsEntry
 }
 var file_pb_proto_depIdxs = []int32{
-	6,  // 0: tests.Person.cases:type_name -> tests.Person.CasesEntry
+	7,  // 0: tests.Person.cases:type_name -> tests.Person.CasesEntry
 	2,  // 1: tests.Person.company:type_name -> tests.Company
 	0,  // 2: tests.Person.type:type_name -> tests.Person.Type
 	0,  // 3: tests.Person.typeList:type_name -> tests.Person.Type
-	7,  // 4: tests.Person.typeMap:type_name -> tests.Person.TypeMapEntry
-	5,  // 5: tests.Person.embedded:type_name -> tests.Person.Embed
-	8,  // 6: tests.Company.flags:type_name -> tests.Company.FlagsEntry
+	8,  // 4: tests.Person.typeMap:type_name -> tests.Person.TypeMapEntry
+	6,  // 5: tests.Person.embedded:type_name -> tests.Person.Embed
+	9,  // 6: tests.Company.flags:type_name -> tests.Company.FlagsEntry
 	1,  // 7: tests.Company.ceo:type_name -> tests.Person
 	4,  // 8: tests.Case.items:type_name -> tests.Item
-	9,  // 9: tests.Case.flags:type_name -> tests.Case.FlagsEntry
-	3,  // 10: tests.Person.CasesEntry.value:type_name -> tests.Case
-	0,  // 11: tests.Person.TypeMapEntry.value:type_name -> tests.Person.Type
-	12, // [12:12] is the sub-list for method output_type
-	12, // [12:12] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	10, // 9: tests.Case.flags:type_name -> tests.Case.FlagsEntry
+	4,  // 10: tests.Chooser.itm:type_name -> tests.Item
+	3,  // 11: tests.Person.CasesEntry.value:type_name -> tests.Case
+	0,  // 12: tests.Person.TypeMapEntry.value:type_name -> tests.Person.Type
+	13, // [13:13] is the sub-list for method output_type
+	13, // [13:13] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_pb_proto_init() }
@@ -607,6 +710,18 @@ func file_pb_proto_init() {
 			}
 		}
 		file_pb_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Chooser); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_pb_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Person_Embed); i {
 			case 0:
 				return &v.state
@@ -619,13 +734,18 @@ func file_pb_proto_init() {
 			}
 		}
 	}
+	file_pb_proto_msgTypes[4].OneofWrappers = []interface{}{
+		(*Chooser_Str)(nil),
+		(*Chooser_Dbl)(nil),
+		(*Chooser_Itm)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_pb_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   9,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -45,3 +45,12 @@ message Item {
   bool done = 34;
   repeated string flags = 35;
 }
+
+// [proto:data]
+message Chooser {
+  oneof choice {
+    string str = 1;
+    double dbl = 2;
+    Item itm = 3;
+  }
+}
