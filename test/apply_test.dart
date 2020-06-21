@@ -31,6 +31,24 @@ class testInfo {
 void main() {
   List<testInfo> tests = [
     testInfo(
+      name: "set enum in map",
+      op: Op().Person().TypeMap().Key("a").Set(Person_Type.Charlie),
+      data: Person(),
+      expected: Person()..typeMap["a"] = Person_Type.Charlie,
+    ),
+    testInfo(
+      name: "set enum in list",
+      op: Op().Person().TypeList().Insert(0, Person_Type.Bravo),
+      data: Person(),
+      expected: Person()..typeList.add(Person_Type.Bravo),
+    ),
+    testInfo(
+      name: "set enum",
+      op: Op().Person().Type().Set(Person_Type.Alpha),
+      data: Person(),
+      expected: Person()..type = Person_Type.Alpha,
+    ),
+    testInfo(
       // TODO: failing test because of: https://github.com/dart-lang/protobuf/issues/373
       name: "nil map",
       op: Op().Company().Flags().Key(1).Set("b"),

@@ -752,11 +752,11 @@ func (s *state) genDart() error {
 					sb.WriteString("\n")
 					/*
 						delta.Op Move(int from, int to) {
-						  return delta.moveList(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
+						  return delta.move(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
 						}
 					*/
 					sb.WriteString("  delta.Op Move(int from, int to) {\n")
-					sb.WriteString("    return delta.moveList(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));\n")
+					sb.WriteString("    return delta.move(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));\n")
 					sb.WriteString("  }\n")
 					sb.WriteString("\n")
 
@@ -773,11 +773,11 @@ func (s *state) genDart() error {
 
 					/*
 						delta.Op Rename(int from, int to) {
-						  return delta.moveMap(delta.copyAndAppendIndex(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
+						  return delta.rename(delta.copyAndAppendIndex(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
 						}
 					*/
 					sb.WriteString(fmt.Sprintf("  delta.Op Rename(%s from, %s to) {\n", DartTypesConvenience[typ.Key], DartTypesConvenience[typ.Key]))
-					sb.WriteString(fmt.Sprintf("    return delta.moveMap(delta.copyAndAppendKey%s(location, %s), delta.key%s(%s));\n", strings.Title(typ.Key), DartTypesConversion[typ.Key]("from"), strings.Title(typ.Key), DartTypesConversion[typ.Key]("to")))
+					sb.WriteString(fmt.Sprintf("    return delta.rename(delta.copyAndAppendKey%s(location, %s), delta.key%s(%s));\n", strings.Title(typ.Key), DartTypesConversion[typ.Key]("from"), strings.Title(typ.Key), DartTypesConversion[typ.Key]("to")))
 					sb.WriteString("  }\n")
 					sb.WriteString("\n")
 				}
@@ -787,7 +787,7 @@ func (s *state) genDart() error {
 						switch field.ValueType {
 						case SCALAR:
 							qualifiedTypeName = fmt.Sprintf("delta.%s", field.ValueLocator)
-						case MESSAGE:
+						default:
 							if field.ValueDartPackage == field.Message.File.Package.DartPackagePath {
 								qualifiedTypeName = field.ValueLocator
 							} else {

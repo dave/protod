@@ -24,7 +24,7 @@ class Double_scalar_list extends delta.Location {
   }
 
   delta.Op Move(int from, int to) {
-    return delta.moveList(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
+    return delta.move(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
   }
 
   delta.Op Delete() {
@@ -43,7 +43,7 @@ class Double_scalar_bool_map extends delta.Location {
     return Double_scalar(delta.copyAndAppendKeyBool(location, key));
   }
   delta.Op Rename(bool from, bool to) {
-    return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
+    return delta.rename(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
   }
 
   delta.Op Delete() {
@@ -62,7 +62,7 @@ class Double_scalar_int32_map extends delta.Location {
     return Double_scalar(delta.copyAndAppendKeyInt32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
+    return delta.rename(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
   }
 
   delta.Op Delete() {
@@ -81,7 +81,7 @@ class Double_scalar_int64_map extends delta.Location {
     return Double_scalar(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -100,7 +100,7 @@ class Double_scalar_uint32_map extends delta.Location {
     return Double_scalar(delta.copyAndAppendKeyUint32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
+    return delta.rename(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
   }
 
   delta.Op Delete() {
@@ -119,7 +119,7 @@ class Double_scalar_uint64_map extends delta.Location {
     return Double_scalar(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -138,7 +138,7 @@ class Double_scalar_string_map extends delta.Location {
     return Double_scalar(delta.copyAndAppendKeyString(location, key));
   }
   delta.Op Rename(String from, String to) {
-    return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
+    return delta.rename(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
   }
 
   delta.Op Delete() {
@@ -173,7 +173,7 @@ class Float_scalar_list extends delta.Location {
   }
 
   delta.Op Move(int from, int to) {
-    return delta.moveList(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
+    return delta.move(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
   }
 
   delta.Op Delete() {
@@ -192,7 +192,7 @@ class Float_scalar_bool_map extends delta.Location {
     return Float_scalar(delta.copyAndAppendKeyBool(location, key));
   }
   delta.Op Rename(bool from, bool to) {
-    return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
+    return delta.rename(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
   }
 
   delta.Op Delete() {
@@ -211,7 +211,7 @@ class Float_scalar_int32_map extends delta.Location {
     return Float_scalar(delta.copyAndAppendKeyInt32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
+    return delta.rename(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
   }
 
   delta.Op Delete() {
@@ -230,7 +230,7 @@ class Float_scalar_int64_map extends delta.Location {
     return Float_scalar(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -249,7 +249,7 @@ class Float_scalar_uint32_map extends delta.Location {
     return Float_scalar(delta.copyAndAppendKeyUint32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
+    return delta.rename(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
   }
 
   delta.Op Delete() {
@@ -268,7 +268,7 @@ class Float_scalar_uint64_map extends delta.Location {
     return Float_scalar(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -287,7 +287,7 @@ class Float_scalar_string_map extends delta.Location {
     return Float_scalar(delta.copyAndAppendKeyString(location, key));
   }
   delta.Op Rename(String from, String to) {
-    return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
+    return delta.rename(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
   }
 
   delta.Op Delete() {
@@ -322,7 +322,7 @@ class Int32_scalar_list extends delta.Location {
   }
 
   delta.Op Move(int from, int to) {
-    return delta.moveList(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
+    return delta.move(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
   }
 
   delta.Op Delete() {
@@ -341,7 +341,7 @@ class Int32_scalar_bool_map extends delta.Location {
     return Int32_scalar(delta.copyAndAppendKeyBool(location, key));
   }
   delta.Op Rename(bool from, bool to) {
-    return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
+    return delta.rename(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
   }
 
   delta.Op Delete() {
@@ -360,7 +360,7 @@ class Int32_scalar_int32_map extends delta.Location {
     return Int32_scalar(delta.copyAndAppendKeyInt32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
+    return delta.rename(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
   }
 
   delta.Op Delete() {
@@ -379,7 +379,7 @@ class Int32_scalar_int64_map extends delta.Location {
     return Int32_scalar(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -398,7 +398,7 @@ class Int32_scalar_uint32_map extends delta.Location {
     return Int32_scalar(delta.copyAndAppendKeyUint32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
+    return delta.rename(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
   }
 
   delta.Op Delete() {
@@ -417,7 +417,7 @@ class Int32_scalar_uint64_map extends delta.Location {
     return Int32_scalar(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -436,7 +436,7 @@ class Int32_scalar_string_map extends delta.Location {
     return Int32_scalar(delta.copyAndAppendKeyString(location, key));
   }
   delta.Op Rename(String from, String to) {
-    return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
+    return delta.rename(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
   }
 
   delta.Op Delete() {
@@ -471,7 +471,7 @@ class Int64_scalar_list extends delta.Location {
   }
 
   delta.Op Move(int from, int to) {
-    return delta.moveList(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
+    return delta.move(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
   }
 
   delta.Op Delete() {
@@ -490,7 +490,7 @@ class Int64_scalar_bool_map extends delta.Location {
     return Int64_scalar(delta.copyAndAppendKeyBool(location, key));
   }
   delta.Op Rename(bool from, bool to) {
-    return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
+    return delta.rename(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
   }
 
   delta.Op Delete() {
@@ -509,7 +509,7 @@ class Int64_scalar_int32_map extends delta.Location {
     return Int64_scalar(delta.copyAndAppendKeyInt32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
+    return delta.rename(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
   }
 
   delta.Op Delete() {
@@ -528,7 +528,7 @@ class Int64_scalar_int64_map extends delta.Location {
     return Int64_scalar(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -547,7 +547,7 @@ class Int64_scalar_uint32_map extends delta.Location {
     return Int64_scalar(delta.copyAndAppendKeyUint32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
+    return delta.rename(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
   }
 
   delta.Op Delete() {
@@ -566,7 +566,7 @@ class Int64_scalar_uint64_map extends delta.Location {
     return Int64_scalar(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -585,7 +585,7 @@ class Int64_scalar_string_map extends delta.Location {
     return Int64_scalar(delta.copyAndAppendKeyString(location, key));
   }
   delta.Op Rename(String from, String to) {
-    return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
+    return delta.rename(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
   }
 
   delta.Op Delete() {
@@ -620,7 +620,7 @@ class Uint32_scalar_list extends delta.Location {
   }
 
   delta.Op Move(int from, int to) {
-    return delta.moveList(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
+    return delta.move(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
   }
 
   delta.Op Delete() {
@@ -639,7 +639,7 @@ class Uint32_scalar_bool_map extends delta.Location {
     return Uint32_scalar(delta.copyAndAppendKeyBool(location, key));
   }
   delta.Op Rename(bool from, bool to) {
-    return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
+    return delta.rename(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
   }
 
   delta.Op Delete() {
@@ -658,7 +658,7 @@ class Uint32_scalar_int32_map extends delta.Location {
     return Uint32_scalar(delta.copyAndAppendKeyInt32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
+    return delta.rename(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
   }
 
   delta.Op Delete() {
@@ -677,7 +677,7 @@ class Uint32_scalar_int64_map extends delta.Location {
     return Uint32_scalar(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -696,7 +696,7 @@ class Uint32_scalar_uint32_map extends delta.Location {
     return Uint32_scalar(delta.copyAndAppendKeyUint32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
+    return delta.rename(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
   }
 
   delta.Op Delete() {
@@ -715,7 +715,7 @@ class Uint32_scalar_uint64_map extends delta.Location {
     return Uint32_scalar(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -734,7 +734,7 @@ class Uint32_scalar_string_map extends delta.Location {
     return Uint32_scalar(delta.copyAndAppendKeyString(location, key));
   }
   delta.Op Rename(String from, String to) {
-    return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
+    return delta.rename(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
   }
 
   delta.Op Delete() {
@@ -769,7 +769,7 @@ class Uint64_scalar_list extends delta.Location {
   }
 
   delta.Op Move(int from, int to) {
-    return delta.moveList(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
+    return delta.move(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
   }
 
   delta.Op Delete() {
@@ -788,7 +788,7 @@ class Uint64_scalar_bool_map extends delta.Location {
     return Uint64_scalar(delta.copyAndAppendKeyBool(location, key));
   }
   delta.Op Rename(bool from, bool to) {
-    return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
+    return delta.rename(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
   }
 
   delta.Op Delete() {
@@ -807,7 +807,7 @@ class Uint64_scalar_int32_map extends delta.Location {
     return Uint64_scalar(delta.copyAndAppendKeyInt32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
+    return delta.rename(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
   }
 
   delta.Op Delete() {
@@ -826,7 +826,7 @@ class Uint64_scalar_int64_map extends delta.Location {
     return Uint64_scalar(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -845,7 +845,7 @@ class Uint64_scalar_uint32_map extends delta.Location {
     return Uint64_scalar(delta.copyAndAppendKeyUint32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
+    return delta.rename(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
   }
 
   delta.Op Delete() {
@@ -864,7 +864,7 @@ class Uint64_scalar_uint64_map extends delta.Location {
     return Uint64_scalar(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -883,7 +883,7 @@ class Uint64_scalar_string_map extends delta.Location {
     return Uint64_scalar(delta.copyAndAppendKeyString(location, key));
   }
   delta.Op Rename(String from, String to) {
-    return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
+    return delta.rename(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
   }
 
   delta.Op Delete() {
@@ -918,7 +918,7 @@ class Sint32_scalar_list extends delta.Location {
   }
 
   delta.Op Move(int from, int to) {
-    return delta.moveList(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
+    return delta.move(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
   }
 
   delta.Op Delete() {
@@ -937,7 +937,7 @@ class Sint32_scalar_bool_map extends delta.Location {
     return Sint32_scalar(delta.copyAndAppendKeyBool(location, key));
   }
   delta.Op Rename(bool from, bool to) {
-    return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
+    return delta.rename(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
   }
 
   delta.Op Delete() {
@@ -956,7 +956,7 @@ class Sint32_scalar_int32_map extends delta.Location {
     return Sint32_scalar(delta.copyAndAppendKeyInt32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
+    return delta.rename(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
   }
 
   delta.Op Delete() {
@@ -975,7 +975,7 @@ class Sint32_scalar_int64_map extends delta.Location {
     return Sint32_scalar(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -994,7 +994,7 @@ class Sint32_scalar_uint32_map extends delta.Location {
     return Sint32_scalar(delta.copyAndAppendKeyUint32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
+    return delta.rename(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
   }
 
   delta.Op Delete() {
@@ -1013,7 +1013,7 @@ class Sint32_scalar_uint64_map extends delta.Location {
     return Sint32_scalar(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -1032,7 +1032,7 @@ class Sint32_scalar_string_map extends delta.Location {
     return Sint32_scalar(delta.copyAndAppendKeyString(location, key));
   }
   delta.Op Rename(String from, String to) {
-    return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
+    return delta.rename(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
   }
 
   delta.Op Delete() {
@@ -1067,7 +1067,7 @@ class Sint64_scalar_list extends delta.Location {
   }
 
   delta.Op Move(int from, int to) {
-    return delta.moveList(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
+    return delta.move(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
   }
 
   delta.Op Delete() {
@@ -1086,7 +1086,7 @@ class Sint64_scalar_bool_map extends delta.Location {
     return Sint64_scalar(delta.copyAndAppendKeyBool(location, key));
   }
   delta.Op Rename(bool from, bool to) {
-    return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
+    return delta.rename(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
   }
 
   delta.Op Delete() {
@@ -1105,7 +1105,7 @@ class Sint64_scalar_int32_map extends delta.Location {
     return Sint64_scalar(delta.copyAndAppendKeyInt32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
+    return delta.rename(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
   }
 
   delta.Op Delete() {
@@ -1124,7 +1124,7 @@ class Sint64_scalar_int64_map extends delta.Location {
     return Sint64_scalar(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -1143,7 +1143,7 @@ class Sint64_scalar_uint32_map extends delta.Location {
     return Sint64_scalar(delta.copyAndAppendKeyUint32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
+    return delta.rename(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
   }
 
   delta.Op Delete() {
@@ -1162,7 +1162,7 @@ class Sint64_scalar_uint64_map extends delta.Location {
     return Sint64_scalar(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -1181,7 +1181,7 @@ class Sint64_scalar_string_map extends delta.Location {
     return Sint64_scalar(delta.copyAndAppendKeyString(location, key));
   }
   delta.Op Rename(String from, String to) {
-    return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
+    return delta.rename(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
   }
 
   delta.Op Delete() {
@@ -1216,7 +1216,7 @@ class Fixed32_scalar_list extends delta.Location {
   }
 
   delta.Op Move(int from, int to) {
-    return delta.moveList(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
+    return delta.move(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
   }
 
   delta.Op Delete() {
@@ -1235,7 +1235,7 @@ class Fixed32_scalar_bool_map extends delta.Location {
     return Fixed32_scalar(delta.copyAndAppendKeyBool(location, key));
   }
   delta.Op Rename(bool from, bool to) {
-    return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
+    return delta.rename(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
   }
 
   delta.Op Delete() {
@@ -1254,7 +1254,7 @@ class Fixed32_scalar_int32_map extends delta.Location {
     return Fixed32_scalar(delta.copyAndAppendKeyInt32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
+    return delta.rename(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
   }
 
   delta.Op Delete() {
@@ -1273,7 +1273,7 @@ class Fixed32_scalar_int64_map extends delta.Location {
     return Fixed32_scalar(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -1292,7 +1292,7 @@ class Fixed32_scalar_uint32_map extends delta.Location {
     return Fixed32_scalar(delta.copyAndAppendKeyUint32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
+    return delta.rename(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
   }
 
   delta.Op Delete() {
@@ -1311,7 +1311,7 @@ class Fixed32_scalar_uint64_map extends delta.Location {
     return Fixed32_scalar(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -1330,7 +1330,7 @@ class Fixed32_scalar_string_map extends delta.Location {
     return Fixed32_scalar(delta.copyAndAppendKeyString(location, key));
   }
   delta.Op Rename(String from, String to) {
-    return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
+    return delta.rename(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
   }
 
   delta.Op Delete() {
@@ -1365,7 +1365,7 @@ class Fixed64_scalar_list extends delta.Location {
   }
 
   delta.Op Move(int from, int to) {
-    return delta.moveList(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
+    return delta.move(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
   }
 
   delta.Op Delete() {
@@ -1384,7 +1384,7 @@ class Fixed64_scalar_bool_map extends delta.Location {
     return Fixed64_scalar(delta.copyAndAppendKeyBool(location, key));
   }
   delta.Op Rename(bool from, bool to) {
-    return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
+    return delta.rename(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
   }
 
   delta.Op Delete() {
@@ -1403,7 +1403,7 @@ class Fixed64_scalar_int32_map extends delta.Location {
     return Fixed64_scalar(delta.copyAndAppendKeyInt32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
+    return delta.rename(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
   }
 
   delta.Op Delete() {
@@ -1422,7 +1422,7 @@ class Fixed64_scalar_int64_map extends delta.Location {
     return Fixed64_scalar(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -1441,7 +1441,7 @@ class Fixed64_scalar_uint32_map extends delta.Location {
     return Fixed64_scalar(delta.copyAndAppendKeyUint32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
+    return delta.rename(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
   }
 
   delta.Op Delete() {
@@ -1460,7 +1460,7 @@ class Fixed64_scalar_uint64_map extends delta.Location {
     return Fixed64_scalar(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -1479,7 +1479,7 @@ class Fixed64_scalar_string_map extends delta.Location {
     return Fixed64_scalar(delta.copyAndAppendKeyString(location, key));
   }
   delta.Op Rename(String from, String to) {
-    return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
+    return delta.rename(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
   }
 
   delta.Op Delete() {
@@ -1514,7 +1514,7 @@ class Sfixed32_scalar_list extends delta.Location {
   }
 
   delta.Op Move(int from, int to) {
-    return delta.moveList(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
+    return delta.move(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
   }
 
   delta.Op Delete() {
@@ -1533,7 +1533,7 @@ class Sfixed32_scalar_bool_map extends delta.Location {
     return Sfixed32_scalar(delta.copyAndAppendKeyBool(location, key));
   }
   delta.Op Rename(bool from, bool to) {
-    return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
+    return delta.rename(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
   }
 
   delta.Op Delete() {
@@ -1552,7 +1552,7 @@ class Sfixed32_scalar_int32_map extends delta.Location {
     return Sfixed32_scalar(delta.copyAndAppendKeyInt32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
+    return delta.rename(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
   }
 
   delta.Op Delete() {
@@ -1571,7 +1571,7 @@ class Sfixed32_scalar_int64_map extends delta.Location {
     return Sfixed32_scalar(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -1590,7 +1590,7 @@ class Sfixed32_scalar_uint32_map extends delta.Location {
     return Sfixed32_scalar(delta.copyAndAppendKeyUint32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
+    return delta.rename(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
   }
 
   delta.Op Delete() {
@@ -1609,7 +1609,7 @@ class Sfixed32_scalar_uint64_map extends delta.Location {
     return Sfixed32_scalar(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -1628,7 +1628,7 @@ class Sfixed32_scalar_string_map extends delta.Location {
     return Sfixed32_scalar(delta.copyAndAppendKeyString(location, key));
   }
   delta.Op Rename(String from, String to) {
-    return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
+    return delta.rename(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
   }
 
   delta.Op Delete() {
@@ -1663,7 +1663,7 @@ class Sfixed64_scalar_list extends delta.Location {
   }
 
   delta.Op Move(int from, int to) {
-    return delta.moveList(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
+    return delta.move(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
   }
 
   delta.Op Delete() {
@@ -1682,7 +1682,7 @@ class Sfixed64_scalar_bool_map extends delta.Location {
     return Sfixed64_scalar(delta.copyAndAppendKeyBool(location, key));
   }
   delta.Op Rename(bool from, bool to) {
-    return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
+    return delta.rename(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
   }
 
   delta.Op Delete() {
@@ -1701,7 +1701,7 @@ class Sfixed64_scalar_int32_map extends delta.Location {
     return Sfixed64_scalar(delta.copyAndAppendKeyInt32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
+    return delta.rename(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
   }
 
   delta.Op Delete() {
@@ -1720,7 +1720,7 @@ class Sfixed64_scalar_int64_map extends delta.Location {
     return Sfixed64_scalar(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -1739,7 +1739,7 @@ class Sfixed64_scalar_uint32_map extends delta.Location {
     return Sfixed64_scalar(delta.copyAndAppendKeyUint32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
+    return delta.rename(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
   }
 
   delta.Op Delete() {
@@ -1758,7 +1758,7 @@ class Sfixed64_scalar_uint64_map extends delta.Location {
     return Sfixed64_scalar(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -1777,7 +1777,7 @@ class Sfixed64_scalar_string_map extends delta.Location {
     return Sfixed64_scalar(delta.copyAndAppendKeyString(location, key));
   }
   delta.Op Rename(String from, String to) {
-    return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
+    return delta.rename(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
   }
 
   delta.Op Delete() {
@@ -1812,7 +1812,7 @@ class Bool_scalar_list extends delta.Location {
   }
 
   delta.Op Move(int from, int to) {
-    return delta.moveList(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
+    return delta.move(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
   }
 
   delta.Op Delete() {
@@ -1831,7 +1831,7 @@ class Bool_scalar_bool_map extends delta.Location {
     return Bool_scalar(delta.copyAndAppendKeyBool(location, key));
   }
   delta.Op Rename(bool from, bool to) {
-    return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
+    return delta.rename(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
   }
 
   delta.Op Delete() {
@@ -1850,7 +1850,7 @@ class Bool_scalar_int32_map extends delta.Location {
     return Bool_scalar(delta.copyAndAppendKeyInt32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
+    return delta.rename(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
   }
 
   delta.Op Delete() {
@@ -1869,7 +1869,7 @@ class Bool_scalar_int64_map extends delta.Location {
     return Bool_scalar(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -1888,7 +1888,7 @@ class Bool_scalar_uint32_map extends delta.Location {
     return Bool_scalar(delta.copyAndAppendKeyUint32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
+    return delta.rename(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
   }
 
   delta.Op Delete() {
@@ -1907,7 +1907,7 @@ class Bool_scalar_uint64_map extends delta.Location {
     return Bool_scalar(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -1926,7 +1926,7 @@ class Bool_scalar_string_map extends delta.Location {
     return Bool_scalar(delta.copyAndAppendKeyString(location, key));
   }
   delta.Op Rename(String from, String to) {
-    return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
+    return delta.rename(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
   }
 
   delta.Op Delete() {
@@ -1965,7 +1965,7 @@ class String_scalar_list extends delta.Location {
   }
 
   delta.Op Move(int from, int to) {
-    return delta.moveList(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
+    return delta.move(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
   }
 
   delta.Op Delete() {
@@ -1984,7 +1984,7 @@ class String_scalar_bool_map extends delta.Location {
     return String_scalar(delta.copyAndAppendKeyBool(location, key));
   }
   delta.Op Rename(bool from, bool to) {
-    return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
+    return delta.rename(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
   }
 
   delta.Op Delete() {
@@ -2003,7 +2003,7 @@ class String_scalar_int32_map extends delta.Location {
     return String_scalar(delta.copyAndAppendKeyInt32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
+    return delta.rename(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
   }
 
   delta.Op Delete() {
@@ -2022,7 +2022,7 @@ class String_scalar_int64_map extends delta.Location {
     return String_scalar(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -2041,7 +2041,7 @@ class String_scalar_uint32_map extends delta.Location {
     return String_scalar(delta.copyAndAppendKeyUint32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
+    return delta.rename(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
   }
 
   delta.Op Delete() {
@@ -2060,7 +2060,7 @@ class String_scalar_uint64_map extends delta.Location {
     return String_scalar(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -2079,7 +2079,7 @@ class String_scalar_string_map extends delta.Location {
     return String_scalar(delta.copyAndAppendKeyString(location, key));
   }
   delta.Op Rename(String from, String to) {
-    return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
+    return delta.rename(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
   }
 
   delta.Op Delete() {
@@ -2114,7 +2114,7 @@ class Bytes_scalar_list extends delta.Location {
   }
 
   delta.Op Move(int from, int to) {
-    return delta.moveList(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
+    return delta.move(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
   }
 
   delta.Op Delete() {
@@ -2133,7 +2133,7 @@ class Bytes_scalar_bool_map extends delta.Location {
     return Bytes_scalar(delta.copyAndAppendKeyBool(location, key));
   }
   delta.Op Rename(bool from, bool to) {
-    return delta.moveMap(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
+    return delta.rename(delta.copyAndAppendKeyBool(location, from), delta.keyBool(to));
   }
 
   delta.Op Delete() {
@@ -2152,7 +2152,7 @@ class Bytes_scalar_int32_map extends delta.Location {
     return Bytes_scalar(delta.copyAndAppendKeyInt32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
+    return delta.rename(delta.copyAndAppendKeyInt32(location, from), delta.keyInt32(to));
   }
 
   delta.Op Delete() {
@@ -2171,7 +2171,7 @@ class Bytes_scalar_int64_map extends delta.Location {
     return Bytes_scalar(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -2190,7 +2190,7 @@ class Bytes_scalar_uint32_map extends delta.Location {
     return Bytes_scalar(delta.copyAndAppendKeyUint32(location, key));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
+    return delta.rename(delta.copyAndAppendKeyUint32(location, from), delta.keyUint32(to));
   }
 
   delta.Op Delete() {
@@ -2209,7 +2209,7 @@ class Bytes_scalar_uint64_map extends delta.Location {
     return Bytes_scalar(delta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
   }
   delta.Op Rename(int from, int to) {
-    return delta.moveMap(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
+    return delta.rename(delta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), delta.keyUint64(fixnum.Int64(to)));
   }
 
   delta.Op Delete() {
@@ -2228,7 +2228,7 @@ class Bytes_scalar_string_map extends delta.Location {
     return Bytes_scalar(delta.copyAndAppendKeyString(location, key));
   }
   delta.Op Rename(String from, String to) {
-    return delta.moveMap(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
+    return delta.rename(delta.copyAndAppendKeyString(location, from), delta.keyString(to));
   }
 
   delta.Op Delete() {
