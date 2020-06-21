@@ -4,6 +4,7 @@ package delta;
 import "google/protobuf/any.proto";
 
 option go_package = "github.com/dave/protod/delta;delta";
+// option dart_package = "protod";
 
 message Op {
   enum Type {

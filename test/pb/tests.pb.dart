@@ -1,6 +1,6 @@
 ///
 //  Generated code. Do not modify.
-//  source: pb.proto
+//  source: tests.proto
 //
 // @dart = 2.3
 // ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type
@@ -10,9 +10,12 @@ import 'dart:core' as $core;
 import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:protobuf/protobuf.dart' as $pb;
 
-import 'pb.pbenum.dart';
+import 'package:protod/delta.pb.dart' as $0;
+import 'package:protod/google/protobuf/any.pb.dart' as $1;
 
-export 'pb.pbenum.dart';
+import 'tests.pbenum.dart';
+
+export 'tests.pbenum.dart';
 
 class Person_Embed extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('Person.Embed', package: const $pb.PackageName('tests'), createEmptyInstance: create)
@@ -345,5 +348,195 @@ class Chooser extends $pb.GeneratedMessage {
   void clearItm() => clearField(3);
   @$pb.TagNumber(3)
   Item ensureItm() => $_ensure(2);
+}
+
+class ApplyTestCase extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('ApplyTestCase', package: const $pb.PackageName('tests'), createEmptyInstance: create)
+    ..aOB(1, 'solo')
+    ..aOS(2, 'name')
+    ..aOM<$0.Op>(3, 'op', subBuilder: $0.Op.create)
+    ..aOM<$1.Any>(4, 'data', subBuilder: $1.Any.create)
+    ..aOM<$1.Any>(5, 'expected', subBuilder: $1.Any.create)
+    ..hasRequiredFields = false
+  ;
+
+  ApplyTestCase._() : super();
+  factory ApplyTestCase() => create();
+  factory ApplyTestCase.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ApplyTestCase.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  ApplyTestCase clone() => ApplyTestCase()..mergeFromMessage(this);
+  ApplyTestCase copyWith(void Function(ApplyTestCase) updates) => super.copyWith((message) => updates(message as ApplyTestCase));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static ApplyTestCase create() => ApplyTestCase._();
+  ApplyTestCase createEmptyInstance() => create();
+  static $pb.PbList<ApplyTestCase> createRepeated() => $pb.PbList<ApplyTestCase>();
+  @$core.pragma('dart2js:noInline')
+  static ApplyTestCase getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ApplyTestCase>(create);
+  static ApplyTestCase _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.bool get solo => $_getBF(0);
+  @$pb.TagNumber(1)
+  set solo($core.bool v) { $_setBool(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasSolo() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearSolo() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get name => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set name($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasName() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearName() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $0.Op get op => $_getN(2);
+  @$pb.TagNumber(3)
+  set op($0.Op v) { setField(3, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasOp() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearOp() => clearField(3);
+  @$pb.TagNumber(3)
+  $0.Op ensureOp() => $_ensure(2);
+
+  @$pb.TagNumber(4)
+  $1.Any get data => $_getN(3);
+  @$pb.TagNumber(4)
+  set data($1.Any v) { setField(4, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasData() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearData() => clearField(4);
+  @$pb.TagNumber(4)
+  $1.Any ensureData() => $_ensure(3);
+
+  @$pb.TagNumber(5)
+  $1.Any get expected => $_getN(4);
+  @$pb.TagNumber(5)
+  set expected($1.Any v) { setField(5, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasExpected() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearExpected() => clearField(5);
+  @$pb.TagNumber(5)
+  $1.Any ensureExpected() => $_ensure(4);
+}
+
+class TransformTestCase extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('TransformTestCase', package: const $pb.PackageName('tests'), createEmptyInstance: create)
+    ..aOB(1, 'solo')
+    ..aOS(2, 'name')
+    ..aOM<$0.Op>(3, 'op1', subBuilder: $0.Op.create)
+    ..aOM<$0.Op>(4, 'op2', subBuilder: $0.Op.create)
+    ..aOM<$1.Any>(5, 'data', subBuilder: $1.Any.create)
+    ..aOM<$1.Any>(6, 'expected', subBuilder: $1.Any.create)
+    ..aOM<$1.Any>(7, 'expected1', subBuilder: $1.Any.create)
+    ..aOM<$1.Any>(8, 'expected2', subBuilder: $1.Any.create)
+    ..hasRequiredFields = false
+  ;
+
+  TransformTestCase._() : super();
+  factory TransformTestCase() => create();
+  factory TransformTestCase.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory TransformTestCase.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  TransformTestCase clone() => TransformTestCase()..mergeFromMessage(this);
+  TransformTestCase copyWith(void Function(TransformTestCase) updates) => super.copyWith((message) => updates(message as TransformTestCase));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static TransformTestCase create() => TransformTestCase._();
+  TransformTestCase createEmptyInstance() => create();
+  static $pb.PbList<TransformTestCase> createRepeated() => $pb.PbList<TransformTestCase>();
+  @$core.pragma('dart2js:noInline')
+  static TransformTestCase getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<TransformTestCase>(create);
+  static TransformTestCase _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.bool get solo => $_getBF(0);
+  @$pb.TagNumber(1)
+  set solo($core.bool v) { $_setBool(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasSolo() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearSolo() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get name => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set name($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasName() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearName() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $0.Op get op1 => $_getN(2);
+  @$pb.TagNumber(3)
+  set op1($0.Op v) { setField(3, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasOp1() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearOp1() => clearField(3);
+  @$pb.TagNumber(3)
+  $0.Op ensureOp1() => $_ensure(2);
+
+  @$pb.TagNumber(4)
+  $0.Op get op2 => $_getN(3);
+  @$pb.TagNumber(4)
+  set op2($0.Op v) { setField(4, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasOp2() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearOp2() => clearField(4);
+  @$pb.TagNumber(4)
+  $0.Op ensureOp2() => $_ensure(3);
+
+  @$pb.TagNumber(5)
+  $1.Any get data => $_getN(4);
+  @$pb.TagNumber(5)
+  set data($1.Any v) { setField(5, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasData() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearData() => clearField(5);
+  @$pb.TagNumber(5)
+  $1.Any ensureData() => $_ensure(4);
+
+  @$pb.TagNumber(6)
+  $1.Any get expected => $_getN(5);
+  @$pb.TagNumber(6)
+  set expected($1.Any v) { setField(6, v); }
+  @$pb.TagNumber(6)
+  $core.bool hasExpected() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearExpected() => clearField(6);
+  @$pb.TagNumber(6)
+  $1.Any ensureExpected() => $_ensure(5);
+
+  @$pb.TagNumber(7)
+  $1.Any get expected1 => $_getN(6);
+  @$pb.TagNumber(7)
+  set expected1($1.Any v) { setField(7, v); }
+  @$pb.TagNumber(7)
+  $core.bool hasExpected1() => $_has(6);
+  @$pb.TagNumber(7)
+  void clearExpected1() => clearField(7);
+  @$pb.TagNumber(7)
+  $1.Any ensureExpected1() => $_ensure(6);
+
+  @$pb.TagNumber(8)
+  $1.Any get expected2 => $_getN(7);
+  @$pb.TagNumber(8)
+  set expected2($1.Any v) { setField(8, v); }
+  @$pb.TagNumber(8)
+  $core.bool hasExpected2() => $_has(7);
+  @$pb.TagNumber(8)
+  void clearExpected2() => clearField(8);
+  @$pb.TagNumber(8)
+  $1.Any ensureExpected2() => $_ensure(7);
 }
 

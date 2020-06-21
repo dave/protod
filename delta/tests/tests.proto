@@ -2,7 +2,7 @@ syntax = "proto3";
 package tests;
 
 import "google/protobuf/any.proto";
-import "proto/delta.proto";
+import "protod/delta.proto";
 
 option go_package = "github.com/dave/protod/delta/tests;tests";
 

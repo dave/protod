@@ -394,7 +394,7 @@ pb.Op edit(List<pb.Locator> location, String from, String to) {
     ..delta = delta;
 }
 
-pb.Op replace(List<pb.Locator> location, dynamic value) {
+pb.Op set(List<pb.Locator> location, dynamic value) {
   var op = pb.Op()
     ..type = pb.Op_Type.Edit
     ..location.addAll(location);

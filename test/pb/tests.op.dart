@@ -1,7 +1,7 @@
 import 'package:protod/delta.dart' as delta;
 import 'package:protod/delta.pb.dart' as delta;
 import 'package:fixnum/fixnum.dart' as fixnum;
-import 'pb.pb.dart' as pb;
+import 'tests.pb.dart' as pb;
 
 Op_root_type Op() {
   return Op_root_type();

@@ -879,6 +879,9 @@ func (s *state) genDart() error {
 					if typ.CollectionType != BASE {
 						continue
 					}
+					if typ.ValueType != MESSAGE {
+						continue
+					}
 					sb.WriteString(fmt.Sprintf("  %s.%s(),\n", pkg.DartPackageAlias, typ.ValueName))
 				}
 			}

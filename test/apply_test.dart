@@ -6,9 +6,9 @@ import 'package:protod/delta.dart' as delta;
 import 'package:protod/delta.pb.dart' as pb;
 import 'package:test/test.dart';
 
-import 'pb/pb.pb.dart';
 import 'pb/registry.dart' as registry;
 import 'pb/tests.op.dart';
+import 'pb/tests.pb.dart';
 
 class testInfo {
   final String name;
@@ -258,7 +258,7 @@ void main() {
     ),
     testInfo(
       name: "move: map scalar",
-      op: Op().Company().Flags().Move(2, 5),
+      op: Op().Company().Flags().Rename(2, 5),
       data: Company()
         ..flags[fixnum.Int64(1)] = "a"
         ..flags[fixnum.Int64(2)] = "b",
@@ -268,7 +268,7 @@ void main() {
     ),
     testInfo(
       name: "move: map message",
-      op: Op().Person().Cases().Move("b", "c"),
+      op: Op().Person().Cases().Rename("b", "c"),
       data: Person()
         ..cases["a"] = (Case()..name = "a")
         ..cases["b"] = (Case()..name = "b"),
@@ -278,31 +278,31 @@ void main() {
     ),
     testInfo(
       name: "replace: scalar",
-      op: Op().Person().Name().Replace("john"),
+      op: Op().Person().Name().Set("john"),
       data: Person()..name = "dave",
       expected: Person()..name = "john",
     ),
     testInfo(
       name: "replace: field scalar",
-      op: Op().Person().Company().Name().Replace("apple"),
+      op: Op().Person().Company().Name().Set("apple"),
       data: Person()..company = (Company()..name = "google"),
       expected: Person()..company = (Company()..name = "apple"),
     ),
     testInfo(
       name: "replace: field",
-      op: Op().Person().Company().Replace(Company()..name = "apple"),
+      op: Op().Person().Company().Set(Company()..name = "apple"),
       data: Person()..company = (Company()..name = "google"),
       expected: Person()..company = (Company()..name = "apple"),
     ),
     testInfo(
       name: "replace: index scalar",
-      op: Op().Person().Alias().Index(1).Replace("alex"),
+      op: Op().Person().Alias().Index(1).Set("alex"),
       data: Person()..alias.addAll(["jim", "bob", "dave"]),
       expected: Person()..alias.addAll(["jim", "alex", "dave"]),
     ),
     testInfo(
       name: "replace: index field",
-      op: Op().Case().Items().Index(1).Replace(Item()..title = "baz"),
+      op: Op().Case().Items().Index(1).Set(Item()..title = "baz"),
       data: Case()
         ..items.addAll([Item()..title = "foo", Item()..title = "bar"]),
       expected: Case()
@@ -310,7 +310,7 @@ void main() {
     ),
     testInfo(
       name: "replace: index field scalar",
-      op: Op().Case().Items().Index(0).Title().Replace("baz"),
+      op: Op().Case().Items().Index(0).Title().Set("baz"),
       data: Case()
         ..items.addAll([Item()..title = "foo", Item()..title = "bar"]),
       expected: Case()
@@ -318,7 +318,7 @@ void main() {
     ),
     testInfo(
       name: "replace: map scalar",
-      op: Op().Company().Flags().Key(2).Replace("qux"),
+      op: Op().Company().Flags().Key(2).Set("qux"),
       data: Company()
         ..flags[fixnum.Int64(1)] = "foo"
         ..flags[fixnum.Int64(2)] = "bar"
@@ -330,7 +330,7 @@ void main() {
     ),
     testInfo(
       name: "replace: map field",
-      op: Op().Person().Cases().Key("c").Replace(Case()..name = "foo"),
+      op: Op().Person().Cases().Key("c").Set(Case()..name = "foo"),
       data: Person()
         ..cases["a"] = (Case()..name = "caseA")
         ..cases["b"] = (Case()..name = "caseB")
@@ -342,7 +342,7 @@ void main() {
     ),
     testInfo(
       name: "replace: map field scalar",
-      op: Op().Person().Cases().Key("a").Name().Replace("foo"),
+      op: Op().Person().Cases().Key("a").Name().Set("foo"),
       data: Person()
         ..cases["a"] = (Case()..name = "caseA")
         ..cases["b"] = (Case()..name = "caseB"),
@@ -352,14 +352,16 @@ void main() {
     ),
     testInfo(
       name: "replace: replace list scalar",
-      op: Op().Person().Alias().Replace(["x", "y"]),
+      op: Op().Person().Alias().Set(["x", "y"]),
       data: Person()..alias.addAll(["a", "b"]),
       expected: Person()..alias.addAll(["x", "y"]),
     ),
     testInfo(
       name: "replace: replace list message",
-      op: Op().Case().Items().Replace(
-          [Item()..title = "x", Item()..title = "y", Item()..title = "z"]),
+      op: Op()
+          .Case()
+          .Items()
+          .Set([Item()..title = "x", Item()..title = "y", Item()..title = "z"]),
       data: Case()..items.addAll([Item()..title = "a", Item()..title = "b"]),
       expected: Case()
         ..items.addAll(
@@ -367,7 +369,7 @@ void main() {
     ),
     testInfo(
       name: "replace: replace map message",
-      op: Op().Person().Cases().Replace({
+      op: Op().Person().Cases().Set({
         "x": Case()..name = "x",
         "y": Case()..name = "y",
         "z": Case()..name = "z"
@@ -385,7 +387,7 @@ void main() {
       op: Op()
           .Company()
           .Flags()
-          .Replace({fixnum.Int64(10): "x", fixnum.Int64(11): "y"}),
+          .Set({fixnum.Int64(10): "x", fixnum.Int64(11): "y"}),
       data: Company()
         ..flags[fixnum.Int64(1)] = "a"
         ..flags[fixnum.Int64(2)] = "b",
