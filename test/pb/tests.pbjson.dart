@@ -50,9 +50,10 @@ const Person_TypeMapEntry$json = const {
 const Person_Type$json = const {
   '1': 'Type',
   '2': const [
-    const {'1': 'Alpha', '2': 0},
-    const {'1': 'Bravo', '2': 1},
-    const {'1': 'Charlie', '2': 2},
+    const {'1': 'Null', '2': 0},
+    const {'1': 'Alpha', '2': 1},
+    const {'1': 'Bravo', '2': 2},
+    const {'1': 'Charlie', '2': 3},
   ],
 };
 

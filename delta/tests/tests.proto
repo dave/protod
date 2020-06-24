@@ -9,9 +9,10 @@ option go_package = "github.com/dave/protod/delta/tests;tests";
 // [proto:data]
 message Person {
   enum Type {
-    Alpha = 0;
-    Bravo = 1;
-    Charlie = 2;
+    Null = 0;
+    Alpha = 1;
+    Bravo = 2;
+    Charlie = 3;
   }
   message Embed {
     string name = 1;

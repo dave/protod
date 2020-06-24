@@ -781,7 +781,7 @@ func (s *state) genDart() error {
 					sb.WriteString("  }\n")
 					sb.WriteString("\n")
 				}
-				if typ.CollectionType == BASE && typ.ValueType == MESSAGE {
+				if typ.CollectionType == BASE && (typ.ValueType == MESSAGE || typ.ValueType == ONEOF) {
 					for _, field := range typ.Fields {
 						var qualifiedTypeName string
 						switch field.ValueType {
@@ -800,7 +800,19 @@ func (s *state) genDart() error {
 							}
 						*/
 						sb.WriteString(fmt.Sprintf("  %s %s() {\n", qualifiedTypeName, field.NameTitle))
-						sb.WriteString(fmt.Sprintf("    return %s(delta.copyAndAppendField(location, %q, %d));\n", qualifiedTypeName, field.Name, field.Number))
+						switch field.ValueType {
+						case ONEOF:
+							var fields string
+							for i, oneofField := range field.OneofFields {
+								if i > 0 {
+									fields += ", "
+								}
+								fields += fmt.Sprintf("delta.Field()..name=%q..number=%d", oneofField.Name, oneofField.Number)
+							}
+							sb.WriteString(fmt.Sprintf("    return %s(delta.copyAndAppendOneof(location, %q, [%s]));\n", qualifiedTypeName, field.Name, fields))
+						default:
+							sb.WriteString(fmt.Sprintf("    return %s(delta.copyAndAppendField(location, %q, %d));\n", qualifiedTypeName, field.Name, field.Number))
+						}
 						sb.WriteString("  }\n")
 					}
 				}
@@ -814,15 +826,17 @@ func (s *state) genDart() error {
 				sb.WriteString("    return delta.delete(location);\n")
 				sb.WriteString("  }\n")
 				sb.WriteString("\n")
-				/*
-					delta.Op Set(pb.Company value) {
-					  return delta.set(location, value);
-					}
-				*/
-				sb.WriteString(fmt.Sprintf("  delta.Op Set(%s value) {\n", typ.DartCollectionType()))
-				sb.WriteString(fmt.Sprintf("    return delta.set(location, %s);\n", typ.DartCollectionConversion("value")))
-				sb.WriteString("  }\n")
-				sb.WriteString("\n")
+				if typ.ValueType != ONEOF {
+					/*
+						delta.Op Set(pb.Company value) {
+						  return delta.set(location, value);
+						}
+					*/
+					sb.WriteString(fmt.Sprintf("  delta.Op Set(%s value) {\n", typ.DartCollectionType()))
+					sb.WriteString(fmt.Sprintf("    return delta.set(location, %s);\n", typ.DartCollectionConversion("value")))
+					sb.WriteString("  }\n")
+					sb.WriteString("\n")
+				}
 				if typ.CollectionType == BASE && typ.ValueType == SCALAR && typ.Value == "string" {
 					/*
 						delta.Op Edit(String from, String to) {
@@ -854,7 +868,7 @@ func (s *state) genDart() error {
 		var sb strings.Builder
 
 		//import 'package:protobuf/protobuf.dart';
-		sb.WriteString(fmt.Sprintf("import 'package:protobuf/protobuf.dart';\n"))
+		sb.WriteString(fmt.Sprintf("import 'package:protobuf/protobuf.dart' as protobuf;\n"))
 		for _, pkg := range s.packages {
 			for _, file := range pkg.Files {
 				importPath, err := s.dartImportPath(s.dartPkg, pkg.DartPackagePath+"/"+file.ProtoFilename+".pb.dart")
@@ -872,7 +886,7 @@ func (s *state) genDart() error {
 			  storepb_share.Share(),
 			]);
 		*/
-		sb.WriteString(fmt.Sprintf("final types = TypeRegistry([\n"))
+		sb.WriteString(fmt.Sprintf("final types = protobuf.TypeRegistry([\n"))
 		for _, pkg := range s.packages {
 			for _, file := range pkg.Files {
 				for _, typ := range file.Types {
@@ -1184,7 +1198,7 @@ func (t *Type) EmitGo(f *jen.File) {
 			jen.Return(jen.Qual(deltaPath, "Set").Call(jen.Id("b").Dot("location"), t.GoCollectionConversion("value"))),
 		)
 	}
-	if t.CollectionType == BASE && t.Value == "string" {
+	if t.CollectionType == BASE && t.ValueType == SCALAR && t.Value == "string" {
 		/*
 			func (b Person_type) Edit(from, to string) *delta.Op {
 				return delta.Edit(b.location, from, to)

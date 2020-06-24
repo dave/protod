@@ -8,13 +8,14 @@ option go_package = "github.com/dave/protod/delta;delta";
 
 message Op {
   enum Type {
-    Set = 0;      // set the value
-    Edit = 1;     // edit the text value with a diff
-    Insert = 2;   // insert at a specific location in a list
-    Move = 3;     // move in a list
-    Rename = 4;   // change the key in a map
-    Delete = 5;   // delete from a list or map, or unset the value
-    Compound = 6; // several operations combined into one
+    Null = 0;
+    Set = 1;      // set the value
+    Edit = 2;     // edit the text value with a diff
+    Insert = 3;   // insert at a specific location in a list
+    Move = 4;     // move in a list
+    Rename = 5;   // change the key in a map
+    Delete = 6;   // delete from a list or map, or unset the value
+    Compound = 7; // several operations combined into one
   }
   Type type = 1;
   repeated Locator location = 2;

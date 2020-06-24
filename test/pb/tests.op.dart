@@ -992,7 +992,7 @@ class Item_type_string_map extends delta.Location {
 class Chooser_type extends delta.Location {
   Chooser_type(List<delta.Locator> location) : super(location);
   Chooser_Choice_oneof Choice() {
-    return Chooser_Choice_oneof(delta.copyAndAppendField(location, "choice", -1));
+    return Chooser_Choice_oneof(delta.copyAndAppendOneof(location, "choice", [delta.Field()..name="str"..number=1, delta.Field()..name="dbl"..number=2, delta.Field()..name="itm"..number=3]));
   }
   delta.Op Delete() {
     return delta.delete(location);
@@ -1143,12 +1143,17 @@ class Chooser_type_string_map extends delta.Location {
 
 class Chooser_Choice_oneof extends delta.Location {
   Chooser_Choice_oneof(List<delta.Locator> location) : super(location);
+  delta.String_scalar Str() {
+    return delta.String_scalar(delta.copyAndAppendField(location, "str", 1));
+  }
+  delta.Double_scalar Dbl() {
+    return delta.Double_scalar(delta.copyAndAppendField(location, "dbl", 2));
+  }
+  Item_type Itm() {
+    return Item_type(delta.copyAndAppendField(location, "itm", 3));
+  }
   delta.Op Delete() {
     return delta.delete(location);
-  }
-
-  delta.Op Set(pb.Chooser_Choice value) {
-    return delta.set(location, value);
   }
 
 }

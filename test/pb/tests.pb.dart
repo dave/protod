@@ -55,7 +55,7 @@ class Person extends $pb.GeneratedMessage {
     ..m<$core.String, Case>(4, 'cases', entryClassName: 'Person.CasesEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OM, valueCreator: Case.create, packageName: const $pb.PackageName('tests'))
     ..aOM<Company>(5, 'company', subBuilder: Company.create)
     ..pPS(6, 'alias')
-    ..e<Person_Type>(7, 'type', $pb.PbFieldType.OE, defaultOrMaker: Person_Type.Alpha, valueOf: Person_Type.valueOf, enumValues: Person_Type.values)
+    ..e<Person_Type>(7, 'type', $pb.PbFieldType.OE, defaultOrMaker: Person_Type.Null, valueOf: Person_Type.valueOf, enumValues: Person_Type.values)
     ..pc<Person_Type>(8, 'typeList', $pb.PbFieldType.PE, protoName: 'typeList', valueOf: Person_Type.valueOf, enumValues: Person_Type.values)
     ..m<$core.String, Person_Type>(9, 'typeMap', protoName: 'typeMap', entryClassName: 'Person.TypeMapEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OE, valueOf: Person_Type.valueOf, enumValues: Person_Type.values, packageName: const $pb.PackageName('tests'))
     ..aOM<Person_Embed>(10, 'embedded', subBuilder: Person_Embed.create)

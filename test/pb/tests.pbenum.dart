@@ -10,11 +10,13 @@ import 'dart:core' as $core;
 import 'package:protobuf/protobuf.dart' as $pb;
 
 class Person_Type extends $pb.ProtobufEnum {
-  static const Person_Type Alpha = Person_Type._(0, 'Alpha');
-  static const Person_Type Bravo = Person_Type._(1, 'Bravo');
-  static const Person_Type Charlie = Person_Type._(2, 'Charlie');
+  static const Person_Type Null = Person_Type._(0, 'Null');
+  static const Person_Type Alpha = Person_Type._(1, 'Alpha');
+  static const Person_Type Bravo = Person_Type._(2, 'Bravo');
+  static const Person_Type Charlie = Person_Type._(3, 'Charlie');
 
   static const $core.List<Person_Type> values = <Person_Type> [
+    Null,
     Alpha,
     Bravo,
     Charlie,

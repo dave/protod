@@ -15,8 +15,36 @@ setDefaultRegistry(protobuf.TypeRegistry r) {
   _defaultTypeRegistry = r;
 }
 
+protobuf.GeneratedMessage unpack(any.Any packed, [protobuf.TypeRegistry r]) {
+  if (r == null) {
+    r = _defaultTypeRegistry;
+  }
+  if (packed == null || packed.typeUrl == "") {
+    return null;
+  }
+  final name = packed.typeUrl.substring(20);
+  final info = r.lookup(name);
+  if (info == null) {
+    throw Exception("can't find ${packed.typeUrl} in registry");
+  }
+  var message = info.createEmptyInstance();
+  packed.unpackInto(message);
+  return message;
+}
+
+pb.Op compound(List<pb.Op> ops) {
+  return pb.Op()
+    ..type = pb.Op_Type.Compound
+    ..ops.addAll(ops);
+}
+
 apply(pb.Op op, protobuf.GeneratedMessage m, [protobuf.TypeRegistry r]) {
   switch (op.type) {
+    case pb.Op_Type.Compound:
+      op.ops.forEach((o) {
+        apply(o, m, r);
+      });
+      break;
     case pb.Op_Type.Edit:
       applySetEdit(op, m, r);
       break;
@@ -41,7 +69,8 @@ apply(pb.Op op, protobuf.GeneratedMessage m, [protobuf.TypeRegistry r]) {
 int getFieldNumber(protobuf.GeneratedMessage message, pb.Field field) {
   final number = message.getTagNumber(field.name);
   if (number != field.number) {
-    throw Exception('field name / number mismatch');
+    throw Exception(
+        'field name / number mismatch for ${field.name}: expect ${field.number}, found ${number}');
   }
   return number;
 }
@@ -52,6 +81,7 @@ Tuple2<dynamic, protobuf.ValueOfFunc> getLocation(
 ) {
   dynamic current = m;
   protobuf.ValueOfFunc currentValueOf = null;
+  pb.Locator previous;
   location.forEach((locator) {
     if (locator.hasField_1()) {
       if (current is protobuf.GeneratedMessage) {
@@ -63,6 +93,19 @@ Tuple2<dynamic, protobuf.ValueOfFunc> getLocation(
           currentValueOf = fi.mapEntryBuilderInfo.byIndex[1].valueOf;
         } else {
           currentValueOf = fi.valueOf;
+        }
+
+        if (current is protobuf.GeneratedMessage) {
+          final currentMessage = current as protobuf.GeneratedMessage;
+          if (currentMessage.isFrozen && previous.hasOneof()) {
+            previous.oneof.fields.forEach((field) {
+              // clear other oneof items
+              final fieldNumber = getFieldNumber(msg, field);
+              msg.clearField(fieldNumber);
+            });
+            msg.setField(fieldNumber, fi.subBuilder());
+            current = msg.getField(fieldNumber);
+          }
         }
       } else {
         throw Exception(
@@ -82,7 +125,12 @@ Tuple2<dynamic, protobuf.ValueOfFunc> getLocation(
         throw Exception(
             'key locator expected to find map, got ${current.runtimeType}');
       }
+    } else if (locator.hasOneof()) {
+      // ignore
+    } else {
+      throw Exception('invalid locator $locator');
     }
+    previous = locator;
   });
   return Tuple2(current, currentValueOf);
 }
@@ -220,6 +268,17 @@ applySetEdit(pb.Op op, protobuf.GeneratedMessage input,
   if (r == null) {
     r = _defaultTypeRegistry;
   }
+  if (op.location.length == 0) {
+    input.clear();
+    final value = getValue(
+      input,
+      op,
+      r,
+      null,
+    );
+    input.mergeFromMessage(value);
+    return;
+  }
   final itemLocator = op.location.removeLast();
   final parentLocator = op.location;
   final parentLocationResult = getLocation(input, parentLocator);
@@ -280,6 +339,8 @@ applySetEdit(pb.Op op, protobuf.GeneratedMessage input,
     } else {
       throw Exception("can't apply map locator to ${parent.runtimeType}");
     }
+  } else {
+    throw Exception("invalid op");
   }
 }
 
@@ -316,6 +377,8 @@ applyInsert(pb.Op op, protobuf.GeneratedMessage input,
     }
   } else if (itemLocator.hasKey()) {
     throw Exception("can't insert with a key locator");
+  } else {
+    throw Exception("invalid op");
   }
 }
 
@@ -332,19 +395,33 @@ applyMove(pb.Op op, protobuf.GeneratedMessage input,
     throw Exception("can't move with a field locator");
   } else if (itemLocator.hasIndex()) {
     if (parent is protobuf.PbList) {
-      final from = itemLocator.index.toInt();
       if (!op.hasIndex()) {
         throw Exception("can't move in list with ${op.runtimeType} value");
       }
-      final to = op.index.toInt();
+      final from = itemLocator.index.toInt();
+      var to = op.index.toInt();
+      if (to > from) {
+        // the index in the "to" location is in the frame of reference of the original list. If moving forward,
+        // that location is shifted backwards by the removal of the value that we're moving, so we decrement "to".
+        to--;
+      }
+      if (from == to) {
+        return null;
+      }
       final item = parent.removeAt(from);
-      parent.insert(to, item);
+      if (to >= parent.length) {
+        parent.add(item);
+      } else {
+        parent.insert(to, item);
+      }
     } else {
       throw Exception(
           "can't insert with list locator in ${parent.runtimeType}");
     }
   } else if (itemLocator.hasKey()) {
     throw Exception("can't move with a key locator");
+  } else {
+    throw Exception("invalid op");
   }
 }
 
@@ -373,6 +450,8 @@ applyRename(pb.Op op, protobuf.GeneratedMessage input,
     } else {
       throw Exception("can't insert with map locator in ${parent.runtimeType}");
     }
+  } else {
+    throw Exception("invalid op");
   }
 }
 
@@ -380,6 +459,10 @@ applyDelete(pb.Op op, protobuf.GeneratedMessage input,
     [protobuf.TypeRegistry r]) {
   if (r == null) {
     r = _defaultTypeRegistry;
+  }
+  if (op.location.length == 0) {
+    input.clear();
+    return;
   }
   final itemLocator = op.location.removeLast();
   final parentLocator = op.location;
@@ -406,6 +489,17 @@ applyDelete(pb.Op op, protobuf.GeneratedMessage input,
     } else {
       throw Exception("can't delete map locator from ${parent.runtimeType}");
     }
+  } else if (itemLocator.hasOneof()) {
+    if (parent is protobuf.GeneratedMessage) {
+      itemLocator.oneof.fields.forEach((pb.Field f) {
+        final field = getFieldNumber(parent, f);
+        parent.clearField(field);
+      });
+    } else {
+      throw Exception("can't delete oneof locator from ${parent.runtimeType}");
+    }
+  } else {
+    throw Exception("invalid op");
   }
 }
 
@@ -597,6 +691,11 @@ pb.Scalar scalarBytes(List<int> value) {
   return pb.Scalar()..bytes = value;
 }
 
+List<pb.Locator> copyAndAppendOneof(
+    List<pb.Locator> location, String name, List<pb.Field> fields) {
+  return [...location]..add(newLocatorOneof(name, fields));
+}
+
 List<pb.Locator> copyAndAppendField(
     List<pb.Locator> location, String name, int number) {
   return [...location]..add(newLocatorField(name, number));
@@ -631,6 +730,13 @@ List<pb.Locator> copyAndAppendKeyUint32(List<pb.Locator> location, int key) {
 List<pb.Locator> copyAndAppendKeyUint64(
     List<pb.Locator> location, fixnum.Int64 key) {
   return [...location]..add(newLocatorKeyUint64(key));
+}
+
+pb.Locator newLocatorOneof(String name, List<pb.Field> fields) {
+  return pb.Locator()
+    ..oneof = (pb.Oneof()
+      ..name = name
+      ..fields.addAll(fields));
 }
 
 pb.Locator newLocatorField(String name, int number) {

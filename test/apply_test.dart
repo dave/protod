@@ -31,6 +31,69 @@ class testInfo {
 void main() {
   List<testInfo> tests = [
     testInfo(
+      name: "delete root",
+      op: Op().Person().Delete(),
+      data: Person()..name = "a",
+      expected: Person(),
+    ),
+    testInfo(
+      name: "oneof set inner",
+      op: Op().Chooser().Choice().Itm().Title().Set("a"),
+      data: Chooser(),
+      expected: Chooser()..itm = (Item()..title = "a"),
+    ),
+    testInfo(
+      name: "oneof set inner set outer first",
+      op: delta.compound([
+        Op().Chooser().Choice().Itm().Set(Item()),
+        Op().Chooser().Choice().Itm().Title().Set("a"),
+      ]),
+      data: Chooser(),
+      expected: Chooser()..itm = (Item()..title = "a"),
+    ),
+    testInfo(
+      name: "oneof_insert_inner",
+      op: Op().Chooser().Choice().Itm().Flags().Insert(0, "a"),
+      data: Chooser()..dbl = 1.1,
+      expected: Chooser()..itm = (Item()..flags.add("a")),
+    ),
+    testInfo(
+      name: "oneof set inner with other oneof",
+      op: Op().Chooser().Choice().Itm().Title().Set("a"),
+      data: Chooser()..dbl = 1.1,
+      expected: Chooser()..itm = (Item()..title = "a"),
+    ),
+    testInfo(
+      name: "oneof set str with other oneof",
+      op: Op().Chooser().Choice().Str().Set("a"),
+      data: Chooser()..dbl = 1.1,
+      expected: Chooser()..str = "a",
+    ),
+    testInfo(
+      name: "insert_into_null",
+      op: Op().Item().Flags().Insert(0, "a"),
+      data: Item(),
+      expected: Item()..flags.add("a"),
+    ),
+    testInfo(
+      name: "oneof delete",
+      op: Op().Chooser().Choice().Delete(),
+      data: Chooser()..str = "a",
+      expected: Chooser(),
+    ),
+    testInfo(
+      name: "oneof set str",
+      op: Op().Chooser().Choice().Str().Set("a"),
+      data: Chooser(),
+      expected: Chooser()..str = "a",
+    ),
+    testInfo(
+      name: "set enum in map",
+      op: Op().Person().TypeMap().Key("a").Set(Person_Type.Charlie),
+      data: Person(),
+      expected: Person()..typeMap["a"] = Person_Type.Charlie,
+    ),
+    testInfo(
       name: "set enum in map",
       op: Op().Person().TypeMap().Key("a").Set(Person_Type.Charlie),
       data: Person(),

@@ -1,6 +1,34 @@
-package tests
+import 'dart:convert';
 
-const applyCases = `{"name":"insert_out_of_range", "op":{"type":"Insert", "location":[{"field":{"name":"alias", "number":6}}, {"index":"10"}], "scalar":{"string":"b"}}, "data":{"@type":"type.googleapis.com/tests.Person", "alias":["a"]}, "expected":{"@type":"type.googleapis.com/tests.Person", "alias":["a", "b"]}}
+import 'package:protod/delta.dart' as delta;
+import 'package:test/test.dart';
+
+import 'pb/registry.dart' as registry;
+import 'pb/tests.pb.dart';
+
+void main() {
+  delta.setDefaultRegistry(registry.types);
+  final cases = CASES.split("\n").map((str) {
+    var a = ApplyTestCase();
+    a.mergeFromProto3Json(jsonDecode(str), typeRegistry: registry.types);
+    return a;
+  });
+  final solo = cases.any((info) => info.solo ?? false);
+  cases.forEach((ApplyTestCase info) {
+    if (solo && !(info.solo ?? false)) {
+      return;
+    }
+    test(info.name, () {
+      var data = delta.unpack(info.data);
+      var expected = delta.unpack(info.expected);
+      delta.apply(info.op, data);
+      expect(data, expected);
+    });
+  });
+}
+
+const CASES =
+    '''{"name":"insert_out_of_range", "op":{"type":"Insert", "location":[{"field":{"name":"alias", "number":6}}, {"index":"10"}], "scalar":{"string":"b"}}, "data":{"@type":"type.googleapis.com/tests.Person", "alias":["a"]}, "expected":{"@type":"type.googleapis.com/tests.Person", "alias":["a", "b"]}}
 {"name":"oneof_delete_choice", "op":{"type":"Delete", "location":[{"oneof":{"name":"choice", "fields":[{"name":"str", "number":1}, {"name":"dbl", "number":2}, {"name":"itm", "number":3}]}}]}, "data":{"@type":"type.googleapis.com/tests.Chooser", "itm":{"flags":["a"]}}, "expected":{"@type":"type.googleapis.com/tests.Chooser"}}
 {"name":"oneof_delete_itm", "op":{"type":"Delete", "location":[{"oneof":{"name":"choice", "fields":[{"name":"str", "number":1}, {"name":"dbl", "number":2}, {"name":"itm", "number":3}]}}, {"field":{"name":"itm", "number":3}}]}, "data":{"@type":"type.googleapis.com/tests.Chooser", "itm":{"flags":["a"]}}, "expected":{"@type":"type.googleapis.com/tests.Chooser"}}
 {"name":"oneof_delete_flags", "op":{"type":"Delete", "location":[{"oneof":{"name":"choice", "fields":[{"name":"str", "number":1}, {"name":"dbl", "number":2}, {"name":"itm", "number":3}]}}, {"field":{"name":"itm", "number":3}}, {"field":{"name":"flags", "number":35}}]}, "data":{"@type":"type.googleapis.com/tests.Chooser", "itm":{"flags":["a"]}}, "expected":{"@type":"type.googleapis.com/tests.Chooser", "itm":{}}}
@@ -62,4 +90,4 @@ const applyCases = `{"name":"insert_out_of_range", "op":{"type":"Insert", "locat
 {"name":"replace_replace_map_message", "op":{"location":[{"field":{"name":"cases", "number":4}}], "object":{"mapString":{"map":{"x":{"message":{"@type":"type.googleapis.com/tests.Case", "name":"x"}}, "y":{"message":{"@type":"type.googleapis.com/tests.Case", "name":"y"}}, "z":{"message":{"@type":"type.googleapis.com/tests.Case", "name":"z"}}}}}}, "data":{"@type":"type.googleapis.com/tests.Person", "cases":{"a":{"name":"a"}, "b":{"name":"b"}}}, "expected":{"@type":"type.googleapis.com/tests.Person", "cases":{"x":{"name":"x"}, "y":{"name":"y"}, "z":{"name":"z"}}}}
 {"name":"replace_replace_map_scalar", "op":{"location":[{"field":{"name":"flags", "number":13}}], "object":{"mapInt64":{"map":{"10":{"scalar":{"string":"x"}}, "11":{"scalar":{"string":"y"}}}}}}, "data":{"@type":"type.googleapis.com/tests.Company", "flags":{"1":"a", "2":"b"}}, "expected":{"@type":"type.googleapis.com/tests.Company", "flags":{"10":"x", "11":"y"}}}
 {"name":"edit_lorem_ipsum", "op":{"type":"Edit", "location":[{"field":{"name":"name", "number":1}}], "delta":{"ops":[{"retain":"6"}, {"delete":"11"}, {"insert":"dolor sit amet"}, {"retain":"1"}]}}, "data":{"@type":"type.googleapis.com/tests.Person", "name":"Lorem ipsum dolor."}, "expected":{"@type":"type.googleapis.com/tests.Person", "name":"Lorem dolor sit amet."}}
-{"name":"edit_quick_brown_fox", "op":{"type":"Edit", "location":[{"field":{"name":"name", "number":1}}], "delta":{"ops":[{"retain":"10"}, {"delete":"5"}, {"insert":"orange"}, {"retain":"17"}, {"delete":"12"}, {"insert":"me"}, {"retain":"1"}]}}, "data":{"@type":"type.googleapis.com/tests.Person", "name":"the quick brown fox jumped over the lazy dog."}, "expected":{"@type":"type.googleapis.com/tests.Person", "name":"the quick orange fox jumped over me."}}`
+{"name":"edit_quick_brown_fox", "op":{"type":"Edit", "location":[{"field":{"name":"name", "number":1}}], "delta":{"ops":[{"retain":"10"}, {"delete":"5"}, {"insert":"orange"}, {"retain":"17"}, {"delete":"12"}, {"insert":"me"}, {"retain":"1"}]}}, "data":{"@type":"type.googleapis.com/tests.Person", "name":"the quick brown fox jumped over the lazy dog."}, "expected":{"@type":"type.googleapis.com/tests.Person", "name":"the quick orange fox jumped over me."}}''';

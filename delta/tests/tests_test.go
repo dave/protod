@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/dave/protod/delta"
-	"github.com/golang/protobuf/jsonpb"
 	proto1 "github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	any "github.com/golang/protobuf/ptypes/any"
@@ -819,12 +818,11 @@ func TestTransform(t *testing.T) {
 				Expected1: expected1Any,
 				Expected2: expected2Any,
 			}
-			var m jsonpb.Marshaler
-			s, err := m.MarshalToString(tc)
+			sb, err := protojson.Marshal(tc)
 			if err != nil {
 				t.Fatal(err)
 			}
-			cases += s + "\n"
+			cases += string(sb) + "\n"
 
 			runTransformTest(t, tc)
 
@@ -866,34 +864,34 @@ func runTransformTest(t *testing.T, tc *TransformTestCase) {
 	}
 
 	data1p1 := mustUnmarshalAny(tc.Data)
-	if err := delta.ApplyPointer(tc.Op1, &data1p1); err != nil {
+	if err := delta.Apply(tc.Op1, data1p1); err != nil {
 		t.Fatal(err)
 	}
-	if err := delta.ApplyPointer(op2xp1, &data1p1); err != nil {
+	if err := delta.Apply(op2xp1, data1p1); err != nil {
 		t.Fatal(err)
 	}
 
 	data2p1 := mustUnmarshalAny(tc.Data)
-	if err := delta.ApplyPointer(tc.Op2, &data2p1); err != nil {
+	if err := delta.Apply(tc.Op2, data2p1); err != nil {
 		t.Fatal(err)
 	}
-	if err := delta.ApplyPointer(op1xp1, &data2p1); err != nil {
+	if err := delta.Apply(op1xp1, data2p1); err != nil {
 		t.Fatal(err)
 	}
 
 	data1p2 := mustUnmarshalAny(tc.Data)
-	if err := delta.ApplyPointer(tc.Op1, &data1p2); err != nil {
+	if err := delta.Apply(tc.Op1, data1p2); err != nil {
 		t.Fatal(err)
 	}
-	if err := delta.ApplyPointer(op2xp2, &data1p2); err != nil {
+	if err := delta.Apply(op2xp2, data1p2); err != nil {
 		t.Fatal(err)
 	}
 
 	data2p2 := mustUnmarshalAny(tc.Data)
-	if err := delta.ApplyPointer(tc.Op2, &data2p2); err != nil {
+	if err := delta.Apply(tc.Op2, data2p2); err != nil {
 		t.Fatal(err)
 	}
-	if err := delta.ApplyPointer(op1xp2, &data2p2); err != nil {
+	if err := delta.Apply(op1xp2, data2p2); err != nil {
 		t.Fatal(err)
 	}
 
@@ -1052,7 +1050,7 @@ func TestApply(t *testing.T) {
 			name:     "delete_root",
 			op:       Op().Person().Delete(),
 			data:     &Person{Name: "a"},
-			expected: nil,
+			expected: &Person{},
 		},
 		{
 			name:     "replace_root",
@@ -1381,12 +1379,11 @@ func TestApply(t *testing.T) {
 				Data:     dataAny,
 				Expected: expectedAny,
 			}
-			var m jsonpb.Marshaler
-			s, err := m.MarshalToString(tc)
+			sb, err := protojson.Marshal(tc)
 			if err != nil {
 				t.Fatal(err)
 			}
-			cases += s + "\n"
+			cases += string(sb) + "\n"
 
 			runApplyTest(t, tc)
 
@@ -1418,7 +1415,7 @@ func runApplyTest(t *testing.T, tc *ApplyTestCase) {
 	data := mustUnmarshalAny(tc.Data)
 	expected := mustUnmarshalAny(tc.Expected)
 
-	if err := delta.ApplyPointer(tc.Op, &data); err != nil {
+	if err := delta.Apply(tc.Op, data); err != nil {
 		t.Fatal(err)
 	}
 	var resultBytes, expectedBytes []byte
@@ -1990,34 +1987,34 @@ func testTwoOpsConverge(t *testing.T, opA, opB *delta.Op, descA, descB string, d
 	}
 
 	dataApA := proto.Clone(data)
-	if err := delta.ApplyPointer(opA, &dataApA); err != nil {
+	if err := delta.Apply(opA, dataApA); err != nil {
 		t.Fatal(err)
 	}
-	if err := delta.ApplyPointer(opBxpA, &dataApA); err != nil {
+	if err := delta.Apply(opBxpA, dataApA); err != nil {
 		t.Fatal(err)
 	}
 
 	dataBpA := proto.Clone(data)
-	if err := delta.ApplyPointer(opB, &dataBpA); err != nil {
+	if err := delta.Apply(opB, dataBpA); err != nil {
 		t.Fatal(err)
 	}
-	if err := delta.ApplyPointer(opAxpA, &dataBpA); err != nil {
+	if err := delta.Apply(opAxpA, dataBpA); err != nil {
 		t.Fatal(err)
 	}
 
 	dataApB := proto.Clone(data)
-	if err := delta.ApplyPointer(opA, &dataApB); err != nil {
+	if err := delta.Apply(opA, dataApB); err != nil {
 		t.Fatal(err)
 	}
-	if err := delta.ApplyPointer(opBxpB, &dataApB); err != nil {
+	if err := delta.Apply(opBxpB, dataApB); err != nil {
 		t.Fatal(err)
 	}
 
 	dataBpB := proto.Clone(data)
-	if err := delta.ApplyPointer(opB, &dataBpB); err != nil {
+	if err := delta.Apply(opB, dataBpB); err != nil {
 		t.Fatal(err)
 	}
-	if err := delta.ApplyPointer(opAxpB, &dataBpB); err != nil {
+	if err := delta.Apply(opAxpB, dataBpB); err != nil {
 		t.Fatal(err)
 	}
 

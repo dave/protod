@@ -1,7 +1,6 @@
 package delta
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -36,37 +35,29 @@ func Transform(op1, op2 *Op, op1priority bool) (op1x *Op, op2x *Op, err error) {
 }
 
 func Apply(op *Op, input proto.Message) error {
-	return applyPointer(op, &input, true)
-}
-
-func ApplyPointer(op *Op, input *proto.Message) error {
-	return applyPointer(op, input, false)
-}
-
-func applyPointer(op *Op, input *proto.Message, errorOnPointer bool) error {
 	if op == nil {
 		return nil
 	}
 	switch op.Type {
 	case Op_Compound:
 		for _, o := range op.Ops {
-			if err := applyPointer(o, input, errorOnPointer); err != nil {
+			if err := Apply(o, input); err != nil {
 				return err
 			}
 		}
 		return nil
 	case Op_Edit:
-		return ApplySet(op, input, errorOnPointer)
+		return applySet(op, input)
 	case Op_Set:
-		return ApplySet(op, input, errorOnPointer)
+		return applySet(op, input)
 	case Op_Insert:
-		return ApplyInsert(op, *input)
+		return applyInsert(op, input)
 	case Op_Move:
-		return ApplyMove(op, *input)
+		return applyMove(op, input)
 	case Op_Rename:
-		return ApplyRename(op, *input)
+		return applyRename(op, input)
 	case Op_Delete:
-		return ApplyDelete(op, input, errorOnPointer)
+		return applyDelete(op, input)
 	}
 	return fmt.Errorf("unknown op type %v", op.Type)
 }
@@ -78,17 +69,14 @@ func Compound(ops ...*Op) *Op {
 	}
 }
 
-func ApplySet(op *Op, inputAddr *proto.Message, errorOnPointer bool) error {
+func applySet(op *Op, input proto.Message) error {
 	if op.Location == nil {
 		// root
-		if errorOnPointer {
-			return errors.New("in order to apply a Set operation to the root node, ApplyPointer must be used")
-		}
-		v := getValue(protoreflect.ValueOfMessage((*inputAddr).ProtoReflect()), op.Value)
-		*inputAddr = v.Message().Interface()
+		v := getValue(protoreflect.ValueOfMessage(input.ProtoReflect()), op.Value)
+		proto.Reset(input)
+		proto.Merge(input, v.Message().Interface())
 		return nil
 	}
-	input := *inputAddr
 	parentLocator, itemLocator := pop(op.Location)
 	parent, _ := getLocation(input.ProtoReflect(), parentLocator)
 	switch locator := itemLocator.V.(type) {
@@ -138,7 +126,7 @@ func (o *Op) SetToIndex(i int64) {
 	o.Value.(*Op_Index).Index = i
 }
 
-func ApplyInsert(op *Op, input proto.Message) error {
+func applyInsert(op *Op, input proto.Message) error {
 	parentLocator, itemLocator := pop(op.Location)
 	parent, setter := getLocation(input.ProtoReflect(), parentLocator)
 	switch locator := itemLocator.V.(type) {
@@ -175,7 +163,7 @@ func ApplyInsert(op *Op, input proto.Message) error {
 	return nil
 }
 
-func ApplyMove(op *Op, input proto.Message) error {
+func applyMove(op *Op, input proto.Message) error {
 	parentLocator, itemLocator := pop(op.Location)
 	parent, _ := getLocation(input.ProtoReflect(), parentLocator)
 	switch locator := itemLocator.V.(type) {
@@ -220,7 +208,7 @@ func ApplyMove(op *Op, input proto.Message) error {
 	return nil
 }
 
-func ApplyRename(op *Op, input proto.Message) error {
+func applyRename(op *Op, input proto.Message) error {
 	parentLocator, itemLocator := pop(op.Location)
 	parent, _ := getLocation(input.ProtoReflect(), parentLocator)
 	switch locator := itemLocator.V.(type) {
@@ -254,16 +242,12 @@ func ApplyRename(op *Op, input proto.Message) error {
 	return nil
 }
 
-func ApplyDelete(op *Op, inputAddr *proto.Message, errorOnPointer bool) error {
+func applyDelete(op *Op, input proto.Message) error {
 	if op.Location == nil {
 		// root
-		if errorOnPointer {
-			return errors.New("in order to apply a Delete operation to the root node, ApplyPointer must be used")
-		}
-		*inputAddr = nil
+		proto.Reset(input)
 		return nil
 	}
-	input := *inputAddr
 	parentLocator, itemLocator := pop(op.Location)
 	parent, setter := getLocation(input.ProtoReflect(), parentLocator)
 	switch locator := itemLocator.V.(type) {
