@@ -5,8 +5,11 @@ import (
 )
 
 func (t *Op) Transform(op *Op, priority bool) *Op {
-	if t == nil || op == nil {
+	if op == nil {
 		return nil
+	}
+	if t == nil {
+		return proto.Clone(op).(*Op)
 	}
 	if op.Type == Op_Compound {
 		var transformed []*Op

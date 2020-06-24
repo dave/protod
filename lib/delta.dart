@@ -873,3 +873,34 @@ pb.Scalar getScalar(dynamic value) {
   }
   throw Exception("unknown type ${value.runtimeType} in getScalar");
 }
+
+pb.Locator last(pb.Op op) {
+  if (op == null || op.location.length == 0) {
+    // TODO: work out if this breaks anything. In order for operations that act on the root node to be transformed
+    // TODO: correctly, we need to consider them as Field locations. We must be able to do a type switch on item.V
+    return pb.Locator()..field_1 = pb.Field();
+  }
+  final cloned = op.clone(); // don't modify op
+  return cloned.location.removeLast();
+}
+
+Tuple2<List<pb.Locator>, pb.Locator> pop(pb.Op op) {
+  if (op == null || op.location.length == 0) {
+    // TODO: work out if this breaks anything. In order for operations that act on the root node to be transformed
+    // TODO: correctly, we need to consider them as Field locations. We must be able to do a type switch on item.V
+    return Tuple2(null, pb.Locator()..field_1 = pb.Field());
+  }
+  final cloned = op.clone(); // don't modify op
+  final last = cloned.location.removeLast();
+  return Tuple2(cloned.location, last);
+}
+
+//Tuple2<List<pb.Locator>, pb.Locator> pop(List<pb.Locator> v) {
+//  if (v == null || v.length == 0) {
+//    // TODO: work out if this breaks anything. In order for operations that act on the root node to be transformed
+//    // TODO: correctly, we need to consider them as Field locations. We must be able to do a type switch on item.V
+//    return Tuple2(null, pb.Locator()..field_1 = pb.Field());
+//  }
+//  final last = v.removeLast();
+//  return Tuple2(v, last);
+//}

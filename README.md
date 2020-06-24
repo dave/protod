@@ -1,6 +1,8 @@
-# Protocol Buffer Deltas
+# Experimental!
 
-Experimental!
+Still very early in development. This code is not expected to run now.
+
+### Protocol Buffer Deltas
 
 Go / Dart package to describe a change to a GeneratedMessage.
 

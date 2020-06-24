@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"strings"
 
 	. "github.com/dave/jennifer/jen"
 )
@@ -9,6 +11,95 @@ import (
 const PATH = "github.com/dave/protod/delta"
 
 func main() {
+	genGo()
+	genDart()
+}
+
+func genDart() {
+	var sb strings.Builder
+
+	////pb.Op _transform(pb.Op t, pb.Op op, bool priority) {
+	////  switch (t.type) {
+	////  case pb.Op_Type.Edit:
+	////    final tItem = last(t);
+	////    if (tItem.hasField_1()) {
+	////      switch (op.type) {
+	////        case pb.Op_Type.Edit:
+	//        final opItem = last(op);
+	//        if (opItem.hasField_1()) {
+	//          return tEditFieldEditField(t, op, priority);
+	//        } else if (opItem.hasIndex()) {
+	//          return tIndependent(t, op);
+	//        } // ...
+	//        break;
+	//        // ...
+	//      }
+	////    } else if (tItem.hasIndex()) {} // ...
+	////    break;
+	////  }
+	////}
+
+	sb.WriteString("import 'package:protod/delta.dart';\n")
+	sb.WriteString("import 'package:protod/delta.pb.dart' as pb;\n")
+	sb.WriteString("\n")
+
+	sb.WriteString("pb.Op _transform(pb.Op t, pb.Op op, bool priority) {\n")
+	sb.WriteString("  switch (t.type) {\n")
+	for _, op := range OpTypes {
+		tData := Behaviours[op]
+		sb.WriteString(fmt.Sprintf("  case pb.Op_Type.%s:\n", tData.Name))
+		sb.WriteString("    final tItem = last(t);\n")
+		for i, tLocType := range tData.Locators {
+			tLoc := Locators[tLocType]
+			var elseString = ""
+			if i > 0 {
+				elseString = "} else "
+			}
+			sb.WriteString(fmt.Sprintf("    %sif (tItem.%s()) {\n", elseString, tLoc.Dart))
+			sb.WriteString("      switch (op.type) {\n")
+			for _, op := range OpTypes {
+				opData := Behaviours[op]
+				sb.WriteString(fmt.Sprintf("      case pb.Op_Type.%s:\n", opData.Name))
+				sb.WriteString("        final opItem = last(op);\n")
+				for i, opLocType := range opData.Locators {
+					opLoc := Locators[opLocType]
+					//opLoc.Type
+					var elseString = ""
+					if i > 0 {
+						elseString = "} else "
+					}
+					sb.WriteString(fmt.Sprintf("        %sif (opItem.%s()) {\n", elseString, opLoc.Dart))
+					if tLoc.Name == opLoc.Name {
+						sb.WriteString(fmt.Sprintf("          return t%s%s%s%s(t, op, priority);\n", tData.Name, tLoc.Name, opData.Name, opLoc.Name))
+					} else {
+						sb.WriteString("          return tIndependent(t, op);\n")
+					}
+				}
+				sb.WriteString("        } else {\n")
+				sb.WriteString("          throw Exception('invalid op');\n")
+				sb.WriteString("        }\n")
+				sb.WriteString("        break;\n")
+			}
+			sb.WriteString("      default:\n")
+			sb.WriteString("        throw Exception('invalid op');\n")
+			sb.WriteString("      }\n")
+		}
+		sb.WriteString("    } else {\n")
+		sb.WriteString("      throw Exception('invalid op');\n")
+		sb.WriteString("    }\n")
+		sb.WriteString("    break;\n")
+	}
+	sb.WriteString("  default:\n")
+	sb.WriteString("    throw Exception('invalid op');\n")
+	sb.WriteString("  }\n")
+	sb.WriteString("}\n")
+	if err := ioutil.WriteFile("lib/delta_transform_generated.dart", []byte(sb.String()), 0666); err != nil {
+		panic(err)
+	}
+
+}
+
+func genGo() {
 	f := NewFilePathName(PATH, "delta")
 	// func (t *Op) transform(op *Op, priority bool) *Op {
 	f.Func().Params(

@@ -65,19 +65,23 @@ var Behaviours = map[OpType]OpData{
 type LocatorData struct {
 	Name string
 	Type string
+	Dart string
 }
 
 var Locators = map[LocatorType]LocatorData{
 	FIELD: {
 		Name: "Field",
 		Type: "Locator_Field",
+		Dart: "hasField_1",
 	},
 	INDEX: {
 		Name: "Index",
 		Type: "Locator_Index",
+		Dart: "hasIndex",
 	},
 	KEY: {
 		Name: "Key",
 		Type: "Locator_Key",
+		Dart: "hasKey",
 	},
 }
