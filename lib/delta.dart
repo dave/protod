@@ -171,16 +171,7 @@ dynamic getValue(
     return valueOf(op.enum_5);
   } else if (op.hasDelta()) {
     final prevString = previous as String;
-    var dlt = quill.Delta();
-    op.delta.ops.forEach((q) {
-      if (q.hasInsert()) {
-        dlt.insert(q.insert);
-      } else if (q.hasRetain()) {
-        dlt.retain(q.retain.toInt());
-      } else if (q.hasDelete()) {
-        dlt.delete(q.delete.toInt());
-      }
-    });
+    final dlt = quillFromDelta(op.delta);
     final prevDelta = quill.Delta()..insert(prevString);
     final out = prevDelta.compose(dlt);
     var outString = "";
@@ -874,14 +865,31 @@ pb.Scalar getScalar(dynamic value) {
   throw Exception("unknown type ${value.runtimeType} in getScalar");
 }
 
-pb.Locator last(pb.Op op) {
-  if (op == null || op.location.length == 0) {
-    // TODO: work out if this breaks anything. In order for operations that act on the root node to be transformed
-    // TODO: correctly, we need to consider them as Field locations. We must be able to do a type switch on item.V
-    return pb.Locator()..field_1 = pb.Field();
+List<pb.Locator> toLoc(pb.Op o) {
+  final op = o.clone();
+  if (op.type != pb.Op_Type.Move && op.type != pb.Op_Type.Rename) {
+    return [];
   }
-  final cloned = op.clone(); // don't modify op
-  return cloned.location.removeLast();
+  final tup = pop(op);
+  final path = tup.item1;
+  final value = tup.item2;
+  if (value.hasIndex()) {
+    path.add(pb.Locator()..index = value.index);
+    return path;
+  } else if (value.hasKey()) {
+    path.add(pb.Locator()..key = value.key);
+    return path;
+  } else {
+    throw Exception("invalid op");
+  }
+}
+
+List<pb.Locator> parent(pb.Op op) {
+  return pop(op).item1;
+}
+
+pb.Locator item(pb.Op op) {
+  return pop(op).item2;
 }
 
 Tuple2<List<pb.Locator>, pb.Locator> pop(pb.Op op) {
@@ -904,3 +912,153 @@ Tuple2<List<pb.Locator>, pb.Locator> pop(pb.Op op) {
 //  final last = v.removeLast();
 //  return Tuple2(v, last);
 //}
+
+List<pb.Locator> splitCommonOneofAncestor(
+  List<pb.Locator> p1,
+  List<pb.Locator> p2,
+) {
+  // Searches the locations for a "oneof" ancestor that they both share. Only returns non-null if they use different
+  // oneof values. e.g.:
+  // Op().Chooser().Choice().Dbl().Set(2), Op().Chooser().Choice().Str().Set("a") => true, Op().Chooser().Choice()
+  // but
+  // Op().Chooser().Choice().Dbl().Set(2), Op().Chooser().Choice().Dbl().Set(3) => false, nil
+  // ... the second example is false because both ops are acting on the same value inside the oneof.
+  for (var i = 0; i < p1.length && i < p2.length; i++) {
+    final l1 = p1[i];
+    final l2 = p2[i];
+    if (l1 != l2) {
+      return null;
+    }
+    if (!l1.hasOneof()) {
+      // we know they're equal, so only need to investigate one of them
+      continue;
+    }
+    // we've found a common oneof among the ancestors! however, we need to investigate the next locators because if
+    // they're identical we can just continue.
+    final hasNext1 = i < p1.length - 1;
+    final hasNext2 = i < p2.length - 1;
+    if (!hasNext1 && !hasNext2) {
+      // the only operations that finish at a oneof locator are operations that delete the whole oneof. We can
+      // continue of this is the case.
+      continue;
+    } else if (!hasNext1 || !hasNext2) {
+      // one of the operations is deleting the whole oneof, and one is manipulating inside. this deserves special
+      // attention so we return true.
+      return p1.sublist(0, i + 1);
+    } else if (hasNext1 && hasNext2) {
+      final next1 = p1[i + 1];
+      final next2 = p2[i + 1];
+      if (next1 == next2) {
+        // both operations are acting on the same value in the oneof. We can ignore this and continue searching
+        // the ancestors for more oneofs.
+        continue;
+      }
+      return p1.sublist(0, i + 1);
+    } else {
+      // impossible
+    }
+  }
+  return null;
+}
+
+enum TreeRelationshipType {
+  NONE,
+  EQUAL,
+  ANCESTOR,
+  DESCENDENT,
+}
+
+TreeRelationshipType treeRelationship(
+  List<pb.Locator> p1,
+  List<pb.Locator> p2,
+) {
+  final ancestor = isAncestor(p1, p2);
+  final descendent = isAncestor(p2, p1);
+  if (ancestor && descendent) {
+    return TreeRelationshipType.EQUAL;
+  } else if (ancestor) {
+    return TreeRelationshipType.ANCESTOR;
+  } else if (descendent) {
+    return TreeRelationshipType.DESCENDENT;
+  } else {
+    return TreeRelationshipType.NONE;
+  }
+}
+
+bool isAncestor(List<pb.Locator> ancestor, List<pb.Locator> descendent) {
+  if (ancestor.length > descendent.length) {
+    return false;
+  }
+  for (var i = 0; i < ancestor.length; i++) {
+    final al = ancestor[i];
+    final dl = descendent[i];
+    if (al != dl) {
+      return false;
+    }
+  }
+  return true;
+}
+
+int itemIndex(pb.Op op) {
+  return item(op).index.toInt();
+}
+
+setItemIndex(pb.Op op, int i) {
+  item(op).index = fixnum.Int64(i);
+}
+
+int toIndex(pb.Op op) {
+  return op.index.toInt();
+}
+
+setToIndex(pb.Op op, int i) {
+  op.index = fixnum.Int64(i);
+}
+
+quill.Delta quillFromDelta(pb.Delta d) {
+  var dlt = quill.Delta();
+  d.ops.forEach((q) {
+    if (q.hasInsert()) {
+      dlt.insert(q.insert);
+    } else if (q.hasRetain()) {
+      dlt.retain(q.retain.toInt());
+    } else if (q.hasDelete()) {
+      dlt.delete(q.delete.toInt());
+    }
+  });
+  return dlt;
+}
+
+pb.Delta deltaFromQuill(quill.Delta q) {
+  var dlt = pb.Delta();
+  q.toList().forEach((op) {
+    if (op.key == "insert") {
+      dlt.ops.add(pb.Quill()..insert = op.data);
+    } else if (op.key == "delete") {
+      dlt.ops.add(pb.Quill()..delete = fixnum.Int64(op.length));
+    } else if (op.key == "retain") {
+      dlt.ops.add(pb.Quill()..retain = fixnum.Int64(op.length));
+    } else {
+      throw Exception("invalid quill delta");
+    }
+  });
+  return dlt;
+}
+
+bool isNullMove(pb.Op op) {
+  if (op.type != pb.Op_Type.Move && op.type != pb.Op_Type.Rename) {
+    return false;
+  }
+  final itm = item(op);
+  if (itm.hasIndex()) {
+    final from = itm.index;
+    final to = op.index;
+    return from == to || from == to - 1;
+  } else if (itm.hasKey()) {
+    final from = itm.key;
+    final to = op.key;
+    return from == to;
+  } else {
+    throw Exception("invalid op");
+  }
+}

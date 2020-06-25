@@ -17,7 +17,7 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
-const OUTPUT_CASES = true
+const OUTPUT_CASES = false
 
 func TestTransform(t *testing.T) {
 	type itemType struct {

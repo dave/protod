@@ -23,13 +23,6 @@ const (
 
 var LocatorTypes = []LocatorType{FIELD, INDEX, KEY}
 
-type OpData struct {
-	Name     string
-	Type     string
-	Locators []LocatorType
-	Data     map[LocatorType]OpBehaviour
-}
-
 type OpBehaviour struct {
 	ItemIsDeleted        bool
 	ValueIsDeleted       bool
@@ -39,205 +32,159 @@ type OpBehaviour struct {
 	KeyShifter           func(*Op, *Op) func(*Key) *Key
 }
 
-var Behaviours = map[OpType]OpData{
+var Behaviours = map[OpType]map[LocatorType]OpBehaviour{
 	EDIT: {
-		Name:     "Edit",
-		Type:     "Op_Edit",
-		Locators: []LocatorType{FIELD, INDEX, KEY},
-		Data: map[LocatorType]OpBehaviour{
-			FIELD: {
-				ValueIsLocation:      false,
-				ItemIsDeleted:        false,
-				ValueIsDeleted:       false,
-				IndexValueShifter:    nil,
-				IndexLocationShifter: nil,
-				KeyShifter:           nil,
-			},
-			INDEX: {
-				ValueIsLocation:      false,
-				ItemIsDeleted:        false,
-				ValueIsDeleted:       false,
-				IndexValueShifter:    nil,
-				IndexLocationShifter: nil,
-				KeyShifter:           nil,
-			},
-			KEY: {
-				ValueIsLocation:      false,
-				ItemIsDeleted:        false,
-				ValueIsDeleted:       false,
-				IndexValueShifter:    nil,
-				IndexLocationShifter: nil,
-				KeyShifter:           nil,
-			},
+		FIELD: {
+			ValueIsLocation:      false,
+			ItemIsDeleted:        false,
+			ValueIsDeleted:       false,
+			IndexValueShifter:    nil,
+			IndexLocationShifter: nil,
+			KeyShifter:           nil,
+		},
+		INDEX: {
+			ValueIsLocation:      false,
+			ItemIsDeleted:        false,
+			ValueIsDeleted:       false,
+			IndexValueShifter:    nil,
+			IndexLocationShifter: nil,
+			KeyShifter:           nil,
+		},
+		KEY: {
+			ValueIsLocation:      false,
+			ItemIsDeleted:        false,
+			ValueIsDeleted:       false,
+			IndexValueShifter:    nil,
+			IndexLocationShifter: nil,
+			KeyShifter:           nil,
 		},
 	},
 	SET: {
-		Name:     "Set",
-		Type:     "Op_Set",
-		Locators: []LocatorType{FIELD, INDEX, KEY},
-		Data: map[LocatorType]OpBehaviour{
-			FIELD: {
-				ValueIsLocation:      false,
-				ItemIsDeleted:        true,
-				ValueIsDeleted:       false,
-				IndexValueShifter:    nil,
-				IndexLocationShifter: nil,
-				KeyShifter:           nil,
-			},
-			INDEX: {
-				ValueIsLocation:      false,
-				ItemIsDeleted:        true,
-				ValueIsDeleted:       false,
-				IndexValueShifter:    nil,
-				IndexLocationShifter: nil,
-				KeyShifter:           nil,
-			},
-			KEY: {
-				ValueIsLocation:      false,
-				ItemIsDeleted:        true,
-				ValueIsDeleted:       false,
-				IndexValueShifter:    nil,
-				IndexLocationShifter: nil,
-				KeyShifter:           nil,
-			},
+		FIELD: {
+			ValueIsLocation:      false,
+			ItemIsDeleted:        true,
+			ValueIsDeleted:       false,
+			IndexValueShifter:    nil,
+			IndexLocationShifter: nil,
+			KeyShifter:           nil,
+		},
+		INDEX: {
+			ValueIsLocation:      false,
+			ItemIsDeleted:        true,
+			ValueIsDeleted:       false,
+			IndexValueShifter:    nil,
+			IndexLocationShifter: nil,
+			KeyShifter:           nil,
+		},
+		KEY: {
+			ValueIsLocation:      false,
+			ItemIsDeleted:        true,
+			ValueIsDeleted:       false,
+			IndexValueShifter:    nil,
+			IndexLocationShifter: nil,
+			KeyShifter:           nil,
 		},
 	},
 	INSERT: {
-		Name:     "Insert",
-		Type:     "Op_Insert",
-		Locators: []LocatorType{INDEX},
-		Data: map[LocatorType]OpBehaviour{
-			INDEX: {
-				ValueIsLocation: false,
-				ItemIsDeleted:   false,
-				ValueIsDeleted:  false,
-				IndexValueShifter: func(transformer, op *Op) func(int64) int64 {
-					return insertValueShifter(transformer.Item().V.(*Locator_Index).Index)
-				},
-				IndexLocationShifter: func(transformer, op *Op) func(int64) int64 {
-					return insertLocationShifter(transformer.Item().V.(*Locator_Index).Index, false, false)
-				},
-				KeyShifter: nil,
+		INDEX: {
+			ValueIsLocation: false,
+			ItemIsDeleted:   false,
+			ValueIsDeleted:  false,
+			IndexValueShifter: func(t, op *Op) func(int64) int64 {
+				return insertValueShifter(t.Item().V.(*Locator_Index).Index)
 			},
+			IndexLocationShifter: func(t, op *Op) func(int64) int64 {
+				return insertLocationShifter(t.Item().V.(*Locator_Index).Index, false, false)
+			},
+			KeyShifter: nil,
 		},
 	},
 	MOVE: {
-		Name:     "Move",
-		Type:     "Op_Move",
-		Locators: []LocatorType{INDEX},
-		Data: map[LocatorType]OpBehaviour{
-			INDEX: {
-				ValueIsLocation: true,
-				ItemIsDeleted:   false,
-				ValueIsDeleted:  false,
-				IndexValueShifter: func(transformer, op *Op) func(int64) int64 {
-					return moveValueShifter(transformer.Item().V.(*Locator_Index).Index, transformer.Value.(*Op_Index).Index)
-				},
-				IndexLocationShifter: func(transformer, op *Op) func(int64) int64 {
-					return moveLocationShifter(transformer.Item().V.(*Locator_Index).Index, transformer.Value.(*Op_Index).Index, false, false)
-				},
-				KeyShifter: nil,
+		INDEX: {
+			ValueIsLocation: true,
+			ItemIsDeleted:   false,
+			ValueIsDeleted:  false,
+			IndexValueShifter: func(t, op *Op) func(int64) int64 {
+				return moveValueShifter(t.Item().V.(*Locator_Index).Index, t.Value.(*Op_Index).Index)
 			},
+			IndexLocationShifter: func(t, op *Op) func(int64) int64 {
+				return moveLocationShifter(t.Item().V.(*Locator_Index).Index, t.Value.(*Op_Index).Index, false, false)
+			},
+			KeyShifter: nil,
 		},
 	},
 	RENAME: {
-		Name:     "Rename",
-		Type:     "Op_Rename",
-		Locators: []LocatorType{KEY},
-		Data: map[LocatorType]OpBehaviour{
-			KEY: {
-				ValueIsLocation:      true,
-				ItemIsDeleted:        false,
-				ValueIsDeleted:       true,
-				IndexValueShifter:    nil,
-				IndexLocationShifter: nil,
-				KeyShifter: func(op *Op, op2 *Op) func(*Key) *Key {
-					return renameShifter(op.Item().V.(*Locator_Key).Key, op.Value.(*Op_Key).Key)
-				},
+		KEY: {
+			ValueIsLocation:      true,
+			ItemIsDeleted:        false,
+			ValueIsDeleted:       true,
+			IndexValueShifter:    nil,
+			IndexLocationShifter: nil,
+			KeyShifter: func(t *Op, op *Op) func(*Key) *Key {
+				return renameShifter(t.Item().V.(*Locator_Key).Key, t.Value.(*Op_Key).Key)
 			},
 		},
 	},
 	DELETE: {
-		Name:     "Delete",
-		Type:     "Op_Delete",
-		Locators: []LocatorType{FIELD, INDEX, KEY},
-		Data: map[LocatorType]OpBehaviour{
-			FIELD: {
-				ValueIsLocation:      false,
-				ItemIsDeleted:        true,
-				ValueIsDeleted:       false,
-				IndexValueShifter:    nil,
-				IndexLocationShifter: nil,
-				KeyShifter:           nil,
+		FIELD: {
+			ValueIsLocation:      false,
+			ItemIsDeleted:        true,
+			ValueIsDeleted:       false,
+			IndexValueShifter:    nil,
+			IndexLocationShifter: nil,
+			KeyShifter:           nil,
+		},
+		INDEX: {
+			ValueIsLocation: false,
+			ItemIsDeleted:   true,
+			ValueIsDeleted:  false,
+			IndexValueShifter: func(t, op *Op) func(int64) int64 {
+				return deleteShifter(t.Item().V.(*Locator_Index).Index)
 			},
-			INDEX: {
-				ValueIsLocation: false,
-				ItemIsDeleted:   true,
-				ValueIsDeleted:  false,
-				IndexValueShifter: func(transformer, op *Op) func(int64) int64 {
-					return deleteShifter(transformer.Item().V.(*Locator_Index).Index)
-				},
-				IndexLocationShifter: func(transformer, op *Op) func(int64) int64 {
-					return deleteShifter(transformer.Item().V.(*Locator_Index).Index)
-				},
-				KeyShifter: nil,
+			IndexLocationShifter: func(t, op *Op) func(int64) int64 {
+				return deleteShifter(t.Item().V.(*Locator_Index).Index)
 			},
-			KEY: {
-				ValueIsLocation:      false,
-				ItemIsDeleted:        false,
-				ValueIsDeleted:       true,
-				IndexValueShifter:    nil,
-				IndexLocationShifter: nil,
-				KeyShifter:           nil,
-			},
+			KeyShifter: nil,
+		},
+		KEY: {
+			ValueIsLocation:      false,
+			ItemIsDeleted:        false,
+			ValueIsDeleted:       true,
+			IndexValueShifter:    nil,
+			IndexLocationShifter: nil,
+			KeyShifter:           nil,
 		},
 	},
 }
 
-type LocatorData struct {
-	Name string
-	Type string
-}
-
-var Locators = map[LocatorType]LocatorData{
-	FIELD: {
-		Name: "Field",
-		Type: "Locator_Field",
-	},
-	INDEX: {
-		Name: "Index",
-		Type: "Locator_Index",
-	},
-	KEY: {
-		Name: "Key",
-		Type: "Locator_Key",
-	},
-}
-
 func GetBehaviour(op *Op) OpBehaviour {
-	var data OpData
-	var behaviour OpBehaviour
+	var opType OpType
+	var locatorType LocatorType
 	switch op.Type {
 	case Op_Edit:
-		data = Behaviours[EDIT]
+		opType = EDIT
 	case Op_Set:
-		data = Behaviours[SET]
+		opType = SET
 	case Op_Insert:
-		data = Behaviours[INSERT]
+		opType = INSERT
 	case Op_Move:
-		data = Behaviours[MOVE]
+		opType = MOVE
 	case Op_Rename:
-		data = Behaviours[RENAME]
+		opType = RENAME
 	case Op_Delete:
-		data = Behaviours[DELETE]
+		opType = DELETE
+	default:
+		panic("invalid op")
 	}
 	switch op.Item().V.(type) {
 	case *Locator_Field:
-		behaviour = data.Data[FIELD]
+		locatorType = FIELD
 	case *Locator_Index:
-		behaviour = data.Data[INDEX]
+		locatorType = INDEX
 	case *Locator_Key:
-		behaviour = data.Data[KEY]
+		locatorType = KEY
+	default:
+		panic("invalid op")
 	}
-	return behaviour
+	return Behaviours[opType][locatorType]
 }

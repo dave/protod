@@ -21,11 +21,11 @@ func genDart() {
 	////pb.Op _transform(pb.Op t, pb.Op op, bool priority) {
 	////  switch (t.type) {
 	////  case pb.Op_Type.Edit:
-	////    final tItem = last(t);
+	////    final tItem = item(t);
 	////    if (tItem.hasField_1()) {
 	////      switch (op.type) {
 	////        case pb.Op_Type.Edit:
-	//        final opItem = last(op);
+	//        final opItem = item(op);
 	//        if (opItem.hasField_1()) {
 	//          return tEditFieldEditField(t, op, priority);
 	//        } else if (opItem.hasIndex()) {
@@ -43,12 +43,12 @@ func genDart() {
 	sb.WriteString("import 'package:protod/delta.pb.dart' as pb;\n")
 	sb.WriteString("\n")
 
-	sb.WriteString("pb.Op _transform(pb.Op t, pb.Op op, bool priority) {\n")
+	sb.WriteString("pb.Op transformGenerated(pb.Op t, pb.Op op, bool priority) {\n")
 	sb.WriteString("  switch (t.type) {\n")
 	for _, op := range OpTypes {
 		tData := Behaviours[op]
 		sb.WriteString(fmt.Sprintf("  case pb.Op_Type.%s:\n", tData.Name))
-		sb.WriteString("    final tItem = last(t);\n")
+		sb.WriteString("    final tItem = item(t);\n")
 		for i, tLocType := range tData.Locators {
 			tLoc := Locators[tLocType]
 			var elseString = ""
@@ -60,7 +60,7 @@ func genDart() {
 			for _, op := range OpTypes {
 				opData := Behaviours[op]
 				sb.WriteString(fmt.Sprintf("      case pb.Op_Type.%s:\n", opData.Name))
-				sb.WriteString("        final opItem = last(op);\n")
+				sb.WriteString("        final opItem = item(op);\n")
 				for i, opLocType := range opData.Locators {
 					opLoc := Locators[opLocType]
 					//opLoc.Type

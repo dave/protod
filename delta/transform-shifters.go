@@ -139,6 +139,8 @@ func moveLocationShifter(fromIndex, toIndex int64, priority, usePriority bool) f
 			//   xy         1 -> 1
 			// xy           0 -> 0
 
+			// TODO: comments to explain why we don't do toIndex-- in here too.
+
 			switch {
 			case i > toIndex:
 				return i

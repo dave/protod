@@ -1021,23 +1021,22 @@ func (o *Op) IsNullMove() bool {
 }
 
 func (o *Op) To() []*Locator {
-	if o.Type != Op_Move && o.Type != Op_Rename {
+	op := proto.Clone(o).(*Op)
+
+	if op.Type != Op_Move && op.Type != Op_Rename {
 		return []*Locator{}
 	}
-	path, value := o.Pop()
+
+	path, value := op.Pop()
 	switch value.V.(type) {
 	case *Locator_Index:
-		return append(
-			append([]*Locator(nil), path...),
-			&Locator{V: &Locator_Index{Index: o.Value.(*Op_Index).Index}},
-		)
+		path = append(path, &Locator{V: &Locator_Index{Index: op.Value.(*Op_Index).Index}})
+		return path
 	case *Locator_Key:
-		return append(
-			append([]*Locator(nil), path...),
-			&Locator{V: &Locator_Key{Key: o.Value.(*Op_Key).Key}},
-		)
+		path = append(path, &Locator{V: &Locator_Key{Key: op.Value.(*Op_Key).Key}})
+		return path
 	default:
-		panic(fmt.Sprintf("invalid location %T in To()", value.V))
+		panic("invalid op")
 	}
 }
 
