@@ -90,6 +90,7 @@ pb.Op tIndependent(pb.Op t, pb.Op op) {
     // Op is acting on a value that is a descendent of a value that t deleted. We should delete op.
     return null;
   }
+
   if (behaviour.valueIsLocation &&
       behaviour.valueIsDeleted &&
       treeRelationship(toLoc(t), op.location) ==
@@ -502,281 +503,267 @@ pb.Op tInsertIndexInsertIndex(pb.Op t, pb.Op op, bool priority) {
   return out;
 }
 
-//func tInsertIndexInsertIndex(t, op *Op, priority bool) *Op {
-//	if treeRelationship(t.location, op.location) != TreeRelationshipType.EQUAL {
-//		return tIndependent(t, op)
-//	}
-//	// Both operations are inserting at the same index. We should use priority to determine which is shifted.
-//	shifter := insertLocationShifter(itemIndex(t), priority, true)
-//	out := op.clone()
-//	out.SetItemIndex(shifter(itemIndex(op)))
-//	return out
-//}
-//
-pb.Op t(pb.Op t, pb.Op op, bool priority) {}
-//func tInsertIndexMoveIndex(t, op *Op, priority bool) *Op {
-//	if (isNullMove(op)) {
-//		return null
-//	}
-//	final from = treeRelationship(t.location, op.location)
-//	final to = treeRelationship(t.location, toLoc(op))
-//	switch {
-//	case from != TreeRelationshipType.EQUAL && to != TreeRelationshipType.EQUAL:
-//		return tIndependent(t, op)
-//	case from == TreeRelationshipType.EQUAL:
-//		// op is trying to move the value that was at the same index as t inserted at. We can just apply the shifter
-//		// function to both from and to locations and the operations are independent. This is handled correctly by
-//		// tIndependent.
-//		return tIndependent(t, op)
-//	case to == TreeRelationshipType.EQUAL:
-//		// op is trying to move a value to the same index that t inserted at. We can use priority to determine
-//		// which is shifted, but the destination index should be shifted without taking account of priority.
-//		locationShifter := insertLocationShifter(itemIndex(t), priority, true)
-//		valueShifter := insertValueShifter(itemIndex(t))
-//		out := op.clone()
-//		out.SetItemIndex(valueShifter(itemIndex(op)))
-//		out.SetToIndex(locationShifter(op.ToIndex()))
-//		return out
-//	} else {
-//		throw Exception("");
-//	}
-//}
-pb.Op t(pb.Op t, pb.Op op, bool priority) {}
-//func tMoveIndexInsertIndex(t, op *Op, priority bool) *Op {
-//	if (isNullMove(t)) {
-//		return op.clone()
-//	}
-//	final from = treeRelationship(t.location, op.location)
-//	final to = treeRelationship(toLoc(t), op.location)
-//	switch {
-//	case from != TreeRelationshipType.EQUAL && to != TreeRelationshipType.EQUAL:
-//		return tIndependent(t, op)
-//	case from == TreeRelationshipType.EQUAL:
-//		// op is inserting a new value at the same location that t moved from. Operations are independent, but we don't
-//		// want to use tIndependent because that would make the insert move with the moved value (it uses the
-//		// moveValueShifter shifter variant). We manually use moveLocationShifter to shift the location:
-//
-//		// Note: priority doesn't matter here because it is only used when (i == to) || (from < to && i == to+1)
-//		// Since we know i == from, it cannot be used. Set to false to demonstrate this:
-//		shifter := moveLocationShifter(itemIndex(t), t.ToIndex(), false, false)
-//		out := op.clone()
-//		out.SetItemIndex(shifter(itemIndex(op)))
-//		return out
-//	case to == TreeRelationshipType.EQUAL:
-//		// op is inserting a new value at the same location that t moved to. We can priority to determine which
-//		// operation is shifted.
-//		shifter := moveLocationShifter(itemIndex(t), t.ToIndex(), priority, true)
-//		out := op.clone()
-//		out.SetItemIndex(shifter(itemIndex(op)))
-//		return out
-//	} else {
-//		throw Exception("");
-//	}
-//}
-//
-pb.Op t(pb.Op t, pb.Op op, bool priority) {}
-//func tInsertIndexDeleteIndex(t, op *Op, priority bool) *Op {
-//	// op is deleting at the same index that t has inserted. op will delete at the shifted index and will be
-//	// independent. This is handled by tIndependent.
-//	return tIndependent(t, op)
-//}
-pb.Op t(pb.Op t, pb.Op op, bool priority) {}
-//func tDeleteIndexInsertIndex(t, op *Op, priority bool) *Op {
-//	// op is trying to insert at the same index as t deleted from. Operations are independent.
-//	return tIndependent(t, op)
-//}
-//
-pb.Op t(pb.Op t, pb.Op op, bool priority) {}
-//func tMoveIndexMoveIndex(t, op *Op, priority bool) *Op {
-//	if (isNullMove(op)) {
-//		return null
-//	}
-//	if (isNullMove(t)) {
-//		return op.clone()
-//	}
-//	fromFrom := treeRelationship(t.location, op.location)
-//	fromTo := treeRelationship(t.location, toLoc(op))
-//	toFrom := treeRelationship(toLoc(t), op.location)
-//	toTo := treeRelationship(toLoc(t), toLoc(op))
-//	switch {
-//	case fromFrom == TreeRelationshipType.EQUAL && toTo == TreeRelationshipType.EQUAL:
-//		// Op is trying to move the value that t already moved, and the "to" locations are the same. Operations are
-//		// identical so we can simply delete op.
-//		return null
-//	case fromFrom == TreeRelationshipType.EQUAL:
-//		// Op is trying to move the value that t already moved, and the "to" locations are different. So we can use
-//		// priority ot determine which operation should win. If the transformer has priority, we can just remove op.
-//		// If not, we use the index shifter to update the from and to location so that op moves the correct value to
-//		// the intended location.
-//		if priority {
-//			return null
-//		}
-//
-//		// Here all we need to do is modify the from location of op so that is uses the value at the to location of t.
-//		// We don't need to use the shifter.
-//		locationShifter := moveLocationShifter(itemIndex(t), t.ToIndex(), priority, true)
-//		out := op.clone()
-//		// must use location locationShifter here because that was used to shift t.To
-//		out.SetItemIndex(locationShifter(t.ToIndex()))
-//		out.SetToIndex(locationShifter(op.ToIndex()))
-//		return out
-//	case toTo == TreeRelationshipType.EQUAL:
-//		// Op is trying to move another value to the same index that t just moved a value to. We can use priority to
-//		// determine which value is shifted.
-//		locationShifter := moveLocationShifter(itemIndex(t), t.ToIndex(), priority, true)
-//		valueShifter := moveValueShifter(itemIndex(t), t.ToIndex())
-//		out := op.clone()
-//		out.SetItemIndex(valueShifter(itemIndex(op)))
-//		out.SetToIndex(locationShifter(op.ToIndex()))
-//		return out
-//	case fromTo == TreeRelationshipType.EQUAL && toFrom == TreeRelationshipType.EQUAL:
-//		// Op is trying to move the value at the to index of the move that t has just done, and move to the from index.
-//		// Since both moves are non destructive and shift the other values around these operations are independent and
-//		// can be handled by tIndependent.
-//		return tIndependent(t, op)
-//	case fromTo == TreeRelationshipType.EQUAL:
-//		// Op is trying to move to the index that t just moved from. Operations are independent and can be handled by
-//		// tIndependent.
-//		return tIndependent(t, op)
-//	case toFrom == TreeRelationshipType.EQUAL:
-//		// Op is trying to move from the index that t just moved to. Operations are independent and can be handled by
-//		// tIndependent.
-//		return tIndependent(t, op)
-//	} else {
-//		// Operations are independent.
-//		return tIndependent(t, op)
-//	}
-//}
-//
-pb.Op t(pb.Op t, pb.Op op, bool priority) {}
-//func tRenameKeyRenameKey(t, op *Op, priority bool) *Op {
-//	if (isNullMove(op)) {
-//		return null
-//	}
-//	if (isNullMove(t)) {
-//		return op.clone()
-//	}
-//	// t has moved the value from t.location and overwritten toLoc(t).
-//	// op wants to move from op.location and overwrite toLoc(op)
-//	toFrom := treeRelationship(toLoc(t), op.location)
-//	toTo := treeRelationship(toLoc(t), toLoc(op))
-//	fromFrom := treeRelationship(t.location, op.location)
-//	fromTo := treeRelationship(t.location, toLoc(op))
-//	switch {
-//	case fromFrom == TreeRelationshipType.EQUAL && toTo == TreeRelationshipType.EQUAL:
-//		// Op is trying to move the value that t already moved, and the "to" locations are the same. We can simply
-//		// remove op.
-//		return null
-//	case fromFrom == TreeRelationshipType.EQUAL:
-//		// Op is trying to move the value that t already moved, and the "to" locations are different. We can use
-//		// priority to determine which to location is used. If t has priority, delete the op. If not, we change the
-//		// From location to move the correct value. If we remove op, we must replace with an operation that deletes
-//		// the "to" location.
-//		if priority {
-//			return &Op{
-//				Type:     Op_Delete,
-//				Location: op.clone().To(),
-//			}
-//		}
-//		out := op.clone()
-//		out.Location = proto.Clone(t).(*Op).To()
-//		return out
-//	case toTo == TreeRelationshipType.EQUAL:
-//		// Op is trying to move a value and overwrite the value that t already overwrote. We can use priority to
-//		// determine which value is used. If the transformer has priority, remove op. If not, continue with op. If
-//		// we remove op, we must replace with an operation that deletes the "from" location.
-//		if priority {
-//			return &Op{
-//				Type:     Op_Delete,
-//				Location: op.clone().Location,
-//			}
-//		}
-//		return op.clone()
-//	case fromTo == TreeRelationshipType.EQUAL && toFrom == TreeRelationshipType.EQUAL:
-//		// Op is trying to move the value that t has already overwritten, and the "to" location is the value that
-//		// t moved. In order to converge, we must delete both values, so we replace op with a delete that removes at
-//		// the From location.
-//		return &Op{
-//			Type:     Op_Delete,
-//			Location: op.clone().Location,
-//		}
-//	case fromTo == TreeRelationshipType.EQUAL:
-//		// Op is trying to overwrite the value that t already moved. We can simply run op with an updated "to"
-//		// location.
-//		out := op.clone()
-//		out.Value.(*Op_Key).Key = proto.Clone(t).(*Op).Value.(*Op_Key).Key
-//		return out
-//	case toFrom == TreeRelationshipType.EQUAL:
-//		// Op is trying to move the value that t already overwrote. We can continue with op.
-//		return op.clone()
-//	} else {
-//		// independent operations
-//		return op.clone()
-//	}
-//}
-//
-pb.Op t(pb.Op t, pb.Op op, bool priority) {}
-//func tRenameKeyDeleteKey(t, op *Op, priority bool) *Op {
-//	if (isNullMove(t)) {
-//		return op.clone()
-//	}
-//	final from = treeRelationship(t.location, op.location)
-//	final to = treeRelationship(toLoc(t), op.location)
-//	switch {
-//	case from != TreeRelationshipType.EQUAL && to != TreeRelationshipType.EQUAL:
-//		return tIndependent(t, op)
-//	case from == TreeRelationshipType.EQUAL:
-//		// op is trying to delete the value that t moved. Op can continue with shifted key, which is correctly handled
-//		// by tIndependent.
-//		return tIndependent(t, op)
-//	case to == TreeRelationshipType.EQUAL:
-//		// op is trying to delete the value that t has already overwritten. We can simply remove op.
-//		return null
-//	} else {
-//		throw Exception("");
-//	}
-//}
-pb.Op t(pb.Op t, pb.Op op, bool priority) {}
-//func tDeleteKeyRenameKey(t, op *Op, priority bool) *Op {
-//	if (isNullMove(op)) {
-//		return null
-//	}
-//	final from = treeRelationship(t.location, op.location)
-//	final to = treeRelationship(t.location, toLoc(op))
-//	switch {
-//	case from != TreeRelationshipType.EQUAL && to != TreeRelationshipType.EQUAL:
-//		return tIndependent(t, op)
-//	case from == TreeRelationshipType.EQUAL:
-//		// op is trying to move the value that op already deleted. In order to converge we must remove op and replace
-//		// with an operation that deletes the "to" value.
-//		return &Op{
-//			Type:     Op_Delete,
-//			Location: op.clone().To(),
-//		}
-//	case to == TreeRelationshipType.EQUAL:
-//		// op is trying to overwrite the value that op already deleted. continue with op.
-//		return op.clone()
-//	} else {
-//		throw Exception("");
-//	}
-//}
-//
-pb.Op t(pb.Op t, pb.Op op, bool priority) {}
-//func tDelete(t, op *Op) *Op {
-//	// Used by:
-//	// tDeleteFieldDeleteField
-//	// tDeleteIndexDeleteIndex
-//	// tDeleteKeyDeleteKey
-//
-//	if treeRelationship(t.location, op.location) != TreeRelationshipType.EQUAL {
-//		return tIndependent(t, op)
-//	}
-//	// op and t are both deleting the same value. We can remove op.
-//	return null
-//}
-pb.Op t(pb.Op t, pb.Op op, bool priority) {}
-pb.Op t(pb.Op t, pb.Op op, bool priority) {}
-pb.Op t(pb.Op t, pb.Op op, bool priority) {}
-//func tDeleteFieldDeleteField(t, op *Op, priority bool) *Op { return tDelete(t, op) }
-//func tDeleteIndexDeleteIndex(t, op *Op, priority bool) *Op { return tDelete(t, op) }
-//func tDeleteKeyDeleteKey(t, op *Op, priority bool) *Op     { return tDelete(t, op) }
+pb.Op tInsertIndexMoveIndex(pb.Op t, pb.Op op, bool priority) {
+  if (isNullMove(op)) {
+    return null;
+  }
+  final from = treeRelationship(t.location, op.location);
+  final to = treeRelationship(t.location, toLoc(op));
+  if (from != TreeRelationshipType.EQUAL && to != TreeRelationshipType.EQUAL) {
+    return tIndependent(t, op);
+  } else if (from == TreeRelationshipType.EQUAL) {
+    // op is trying to move the value that was at the same index as t inserted at. We can just apply the shifter
+    // function to both from and to locations and the operations are independent. This is handled correctly by
+    // tIndependent.
+    return tIndependent(t, op);
+  } else if (to == TreeRelationshipType.EQUAL) {
+    // op is trying to move a value to the same index that t inserted at. We can use priority to determine
+    // which is shifted, but the destination index should be shifted without taking account of priority.
+    final locationShifter = insertLocationShifter(itemIndex(t), priority, true);
+    final valueShifter = insertValueShifter(itemIndex(t));
+    var out = op.clone();
+    setItemIndex(out, valueShifter(itemIndex(op)));
+    setToIndex(out, locationShifter(toIndex(op)));
+    return out;
+  } else {
+    throw Exception("");
+  }
+}
+
+pb.Op tMoveIndexInsertIndex(pb.Op t, pb.Op op, bool priority) {
+  if (isNullMove(t)) {
+    return op.clone();
+  }
+  final from = treeRelationship(t.location, op.location);
+  final to = treeRelationship(toLoc(t), op.location);
+  if (from != TreeRelationshipType.EQUAL && to != TreeRelationshipType.EQUAL) {
+    return tIndependent(t, op);
+  } else if (from == TreeRelationshipType.EQUAL) {
+    // op is inserting a new value at the same location that t moved from. Operations are independent, but we don't
+    // want to use tIndependent because that would make the insert move with the moved value (it uses the
+    // moveValueShifter shifter variant). We manually use moveLocationShifter to shift the location:
+
+    // Note: priority doesn't matter here because it is only used when (i == to) || (from < to && i == to+1)
+    // Since we know i == from, it cannot be used. Set to false to demonstrate this:
+    final shifter = moveLocationShifter(itemIndex(t), toIndex(t), false, false);
+    var out = op.clone();
+    setItemIndex(out, shifter(itemIndex(op)));
+    return out;
+  } else if (to == TreeRelationshipType.EQUAL) {
+    // op is inserting a new value at the same location that t moved to. We can priority to determine which
+    // operation is shifted.
+    final shifter =
+        moveLocationShifter(itemIndex(t), toIndex(t), priority, true);
+    var out = op.clone();
+    setItemIndex(out, shifter(itemIndex(op)));
+    return out;
+  } else {
+    throw Exception("");
+  }
+}
+
+pb.Op tInsertIndexDeleteIndex(pb.Op t, pb.Op op, bool priority) {
+  // op is deleting at the same index that t has inserted. op will delete at the shifted index and will be
+  // independent. This is handled by tIndependent.
+  return tIndependent(t, op);
+}
+
+pb.Op tDeleteIndexInsertIndex(pb.Op t, pb.Op op, bool priority) {
+  // op is trying to insert at the same index as t deleted from. Operations are independent.
+  return tIndependent(t, op);
+}
+
+pb.Op tMoveIndexMoveIndex(pb.Op t, pb.Op op, bool priority) {
+  if (isNullMove(op)) {
+    return null;
+  }
+  if (isNullMove(t)) {
+    return op.clone();
+  }
+  final fromFrom = treeRelationship(t.location, op.location);
+  final fromTo = treeRelationship(t.location, toLoc(op));
+  final toFrom = treeRelationship(toLoc(t), op.location);
+  final toTo = treeRelationship(toLoc(t), toLoc(op));
+  if (fromFrom == TreeRelationshipType.EQUAL &&
+      toTo == TreeRelationshipType.EQUAL) {
+    // Op is trying to move the value that t already moved, and the "to" locations are the same. Operations are
+    // identical so we can simply delete op.
+    return null;
+  } else if (fromFrom == TreeRelationshipType.EQUAL) {
+    // Op is trying to move the value that t already moved, and the "to" locations are different. So we can use
+    // priority ot determine which operation should win. If the transformer has priority, we can just remove op.
+    // If not, we use the index shifter to update the from and to location so that op moves the correct value to
+    // the intended location.
+    if (priority) {
+      return null;
+    }
+    // Here all we need to do is modify the from location of op so that is uses the value at the to location of t.
+    // We don't need to use the shifter.
+    final locationShifter =
+        moveLocationShifter(itemIndex(t), toIndex(t), priority, true);
+    var out = op.clone();
+    // must use location locationShifter here because that was used to shift t.To
+    setItemIndex(out, locationShifter(toIndex(t)));
+    setToIndex(out, locationShifter(toIndex(op)));
+    return out;
+  } else if (toTo == TreeRelationshipType.EQUAL) {
+    // Op is trying to move another value to the same index that t just moved a value to. We can use priority to
+    // determine which value is shifted.
+    final locationShifter =
+        moveLocationShifter(itemIndex(t), toIndex(t), priority, true);
+    final valueShifter = moveValueShifter(itemIndex(t), toIndex(t));
+    var out = op.clone();
+    setItemIndex(out, valueShifter(itemIndex(op)));
+    setToIndex(out, locationShifter(toIndex(op)));
+    return out;
+  } else if (fromTo == TreeRelationshipType.EQUAL &&
+      toFrom == TreeRelationshipType.EQUAL) {
+    // Op is trying to move the value at the to index of the move that t has just done, and move to the from index.
+    // Since both moves are non destructive and shift the other values around these operations are independent and
+    // can be handled by tIndependent.
+    return tIndependent(t, op);
+  } else if (fromTo == TreeRelationshipType.EQUAL) {
+    // Op is trying to move to the index that t just moved from. Operations are independent and can be handled by
+    // tIndependent.
+    return tIndependent(t, op);
+  } else if (toFrom == TreeRelationshipType.EQUAL) {
+    // Op is trying to move from the index that t just moved to. Operations are independent and can be handled by
+    // tIndependent.
+    return tIndependent(t, op);
+  } else {
+    // Operations are independent.
+    return tIndependent(t, op);
+  }
+}
+
+pb.Op tRenameKeyRenameKey(pb.Op t, pb.Op op, bool priority) {
+  if (isNullMove(op)) {
+    return null;
+  }
+  if (isNullMove(t)) {
+    return op.clone();
+  }
+  // t has moved the value from t.location and overwritten toLoc(t).
+  // op wants to move from op.location and overwrite toLoc(op)
+  final toFrom = treeRelationship(toLoc(t), op.location);
+  final toTo = treeRelationship(toLoc(t), toLoc(op));
+  final fromFrom = treeRelationship(t.location, op.location);
+  final fromTo = treeRelationship(t.location, toLoc(op));
+  if (fromFrom == TreeRelationshipType.EQUAL &&
+      toTo == TreeRelationshipType.EQUAL) {
+    // Op is trying to move the value that t already moved, and the "to" locations are the same. We can simply
+    // remove op.
+    return null;
+  } else if (fromFrom == TreeRelationshipType.EQUAL) {
+    // Op is trying to move the value that t already moved, and the "to" locations are different. We can use
+    // priority to determine which to location is used. If t has priority, delete the op. If not, we change the
+    // From location to move the correct value. If we remove op, we must replace with an operation that deletes
+    // the "to" location.
+    if (priority) {
+      return pb.Op()
+        ..type = pb.Op_Type.Delete
+        ..location.addAll(toLoc(op));
+    }
+    var out = op.clone();
+    out.location.clear();
+    out.location.addAll(toLoc(t));
+    return out;
+  } else if (toTo == TreeRelationshipType.EQUAL) {
+    // Op is trying to move a value and overwrite the value that t already overwrote. We can use priority to
+    // determine which value is used. If the transformer has priority, remove op. If not, continue with op. If
+    // we remove op, we must replace with an operation that deletes the "from" location.
+    if (priority) {
+      return pb.Op()
+        ..type = pb.Op_Type.Delete
+        ..location.addAll(op.clone().location);
+    }
+    return op.clone();
+  } else if (fromTo == TreeRelationshipType.EQUAL &&
+      toFrom == TreeRelationshipType.EQUAL) {
+    // Op is trying to move the value that t has already overwritten, and the "to" location is the value that
+    // t moved. In order to converge, we must delete both values, so we replace op with a delete that removes at
+    // the From location.
+    return pb.Op()
+      ..type = pb.Op_Type.Delete
+      ..location.addAll(op.clone().location);
+  } else if (fromTo == TreeRelationshipType.EQUAL) {
+    // Op is trying to overwrite the value that t already moved. We can simply run op with an updated "to"
+    // location.
+    var out = op.clone();
+    out.key = t.clone().key;
+    return out;
+  } else if (toFrom == TreeRelationshipType.EQUAL) {
+    // Op is trying to move the value that t already overwrote. We can continue with op.
+    return op.clone();
+  } else {
+    // independent operations
+    return op.clone();
+  }
+}
+
+pb.Op tRenameKeyDeleteKey(pb.Op t, pb.Op op, bool priority) {
+  if (isNullMove(t)) {
+    return op.clone();
+  }
+  final from = treeRelationship(t.location, op.location);
+  final to = treeRelationship(toLoc(t), op.location);
+  if (from != TreeRelationshipType.EQUAL && to != TreeRelationshipType.EQUAL) {
+    return tIndependent(t, op);
+  } else if (from == TreeRelationshipType.EQUAL) {
+    // op is trying to delete the value that t moved. Op can continue with shifted key, which is correctly handled
+    // by tIndependent.
+    return tIndependent(t, op);
+  } else if (to == TreeRelationshipType.EQUAL) {
+    // op is trying to delete the value that t has already overwritten. We can simply remove op.
+    return null;
+  } else {
+    throw Exception("");
+  }
+}
+
+pb.Op tDeleteKeyRenameKey(pb.Op t, pb.Op op, bool priority) {
+  if (isNullMove(op)) {
+    return null;
+  }
+  final from = treeRelationship(t.location, op.location);
+  final to = treeRelationship(t.location, toLoc(op));
+  if (from != TreeRelationshipType.EQUAL && to != TreeRelationshipType.EQUAL) {
+    return tIndependent(t, op);
+  } else if (from == TreeRelationshipType.EQUAL) {
+    // op is trying to move the value that op already deleted. In order to converge we must remove op and replace
+    // with an operation that deletes the "to" value.
+    return pb.Op()
+      ..type = pb.Op_Type.Delete
+      ..location.addAll(toLoc(op));
+  } else if (to == TreeRelationshipType.EQUAL) {
+    // op is trying to overwrite the value that op already deleted. continue with op.
+    return op.clone();
+  } else {
+    throw Exception("");
+  }
+}
+
+pb.Op tDelete(pb.Op t, pb.Op op) {
+  // Used by:
+  // tDeleteFieldDeleteField
+  // tDeleteIndexDeleteIndex
+  // tDeleteKeyDeleteKey
+
+  if (treeRelationship(t.location, op.location) != TreeRelationshipType.EQUAL) {
+    return tIndependent(t, op);
+  }
+  // op and t are both deleting the same value. We can remove op.
+  return null;
+}
+
+pb.Op tDeleteFieldDeleteField(pb.Op t, pb.Op op, bool priority) {
+  return tDelete(t, op);
+}
+
+pb.Op tDeleteIndexDeleteIndex(pb.Op t, pb.Op op, bool priority) {
+  return tDelete(t, op);
+}
+
+pb.Op tDeleteKeyDeleteKey(pb.Op t, pb.Op op, bool priority) {
+  return tDelete(t, op);
+}

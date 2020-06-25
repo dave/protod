@@ -39,6 +39,9 @@ pb.Op compound(List<pb.Op> ops) {
 }
 
 apply(pb.Op op, protobuf.GeneratedMessage m, [protobuf.TypeRegistry r]) {
+  if (op == null) {
+    return;
+  }
   switch (op.type) {
     case pb.Op_Type.Compound:
       op.ops.forEach((o) {
@@ -87,8 +90,13 @@ Tuple2<dynamic, protobuf.ValueOfFunc> getLocation(
       if (current is protobuf.GeneratedMessage) {
         final msg = current as protobuf.GeneratedMessage;
         final fieldNumber = getFieldNumber(msg, locator.field_1);
-        current = msg.getField(fieldNumber);
         final fi = msg.info_.fieldInfo[fieldNumber];
+        if (!msg.hasField(fieldNumber)) {
+          if (fi.subBuilder != null) {
+            msg.setField(fieldNumber, fi.subBuilder());
+          }
+        }
+        current = msg.getField(fieldNumber);
         if (fi is protobuf.MapFieldInfo) {
           currentValueOf = fi.mapEntryBuilderInfo.byIndex[1].valueOf;
         } else {
@@ -97,7 +105,9 @@ Tuple2<dynamic, protobuf.ValueOfFunc> getLocation(
 
         if (current is protobuf.GeneratedMessage) {
           final currentMessage = current as protobuf.GeneratedMessage;
-          if (currentMessage.isFrozen && previous.hasOneof()) {
+          if (currentMessage.isFrozen &&
+              previous != null &&
+              previous.hasOneof()) {
             previous.oneof.fields.forEach((field) {
               // clear other oneof items
               final fieldNumber = getFieldNumber(msg, field);
@@ -172,7 +182,7 @@ dynamic getValue(
   } else if (op.hasDelta()) {
     final prevString = previous as String;
     final dlt = quillFromDelta(op.delta);
-    final prevDelta = quill.Delta()..insert(prevString);
+    final prevDelta = quill.Delta()..insert(prevString ?? "");
     final out = prevDelta.compose(dlt);
     var outString = "";
     out.toList().forEach((op) {
@@ -254,11 +264,12 @@ dynamic fromObject(pb.Object value, protobuf.TypeRegistry r) {
   }
 }
 
-applySetEdit(pb.Op op, protobuf.GeneratedMessage input,
+applySetEdit(pb.Op o, protobuf.GeneratedMessage input,
     [protobuf.TypeRegistry r]) {
   if (r == null) {
     r = _defaultTypeRegistry;
   }
+  var op = o.clone();
   if (op.location.length == 0) {
     input.clear();
     final value = getValue(
@@ -335,11 +346,12 @@ applySetEdit(pb.Op op, protobuf.GeneratedMessage input,
   }
 }
 
-applyInsert(pb.Op op, protobuf.GeneratedMessage input,
+applyInsert(pb.Op o, protobuf.GeneratedMessage input,
     [protobuf.TypeRegistry r]) {
   if (r == null) {
     r = _defaultTypeRegistry;
   }
+  var op = o.clone();
   final itemLocator = op.location.removeLast();
   final parentLocator = op.location;
   final parentLocationResult = getLocation(input, parentLocator);
@@ -373,11 +385,11 @@ applyInsert(pb.Op op, protobuf.GeneratedMessage input,
   }
 }
 
-applyMove(pb.Op op, protobuf.GeneratedMessage input,
-    [protobuf.TypeRegistry r]) {
+applyMove(pb.Op o, protobuf.GeneratedMessage input, [protobuf.TypeRegistry r]) {
   if (r == null) {
     r = _defaultTypeRegistry;
   }
+  var op = o.clone();
   final itemLocator = op.location.removeLast();
   final parentLocator = op.location;
   final parentLocationResult = getLocation(input, parentLocator);
@@ -416,11 +428,12 @@ applyMove(pb.Op op, protobuf.GeneratedMessage input,
   }
 }
 
-applyRename(pb.Op op, protobuf.GeneratedMessage input,
+applyRename(pb.Op o, protobuf.GeneratedMessage input,
     [protobuf.TypeRegistry r]) {
   if (r == null) {
     r = _defaultTypeRegistry;
   }
+  var op = o.clone();
   final itemLocator = op.location.removeLast();
   final parentLocator = op.location;
   final parentLocationResult = getLocation(input, parentLocator);
@@ -446,11 +459,12 @@ applyRename(pb.Op op, protobuf.GeneratedMessage input,
   }
 }
 
-applyDelete(pb.Op op, protobuf.GeneratedMessage input,
+applyDelete(pb.Op o, protobuf.GeneratedMessage input,
     [protobuf.TypeRegistry r]) {
   if (r == null) {
     r = _defaultTypeRegistry;
   }
+  var op = o.clone();
   if (op.location.length == 0) {
     input.clear();
     return;
@@ -523,7 +537,7 @@ pb.Op edit(List<pb.Locator> location, String from, String to) {
         delta.ops.add(pb.Quill()..retain = fixnum.Int64(diff.text.length));
         break;
       case diff_match_patch.DIFF_INSERT:
-        delta.ops.add(pb.Quill()..insert = diff.text);
+        delta.ops.add(pb.Quill()..insert = diff.text ?? "");
     }
   });
   return pb.Op()
@@ -872,12 +886,12 @@ List<pb.Locator> toLoc(pb.Op o) {
   }
   final tup = pop(op);
   final path = tup.item1;
-  final value = tup.item2;
-  if (value.hasIndex()) {
-    path.add(pb.Locator()..index = value.index);
+  final itm = tup.item2;
+  if (itm.hasIndex()) {
+    path.add(pb.Locator()..index = op.index);
     return path;
-  } else if (value.hasKey()) {
-    path.add(pb.Locator()..key = value.key);
+  } else if (itm.hasKey()) {
+    path.add(pb.Locator()..key = op.key);
     return path;
   } else {
     throw Exception("invalid op");
@@ -892,15 +906,15 @@ pb.Locator item(pb.Op op) {
   return pop(op).item2;
 }
 
-Tuple2<List<pb.Locator>, pb.Locator> pop(pb.Op op) {
-  if (op == null || op.location.length == 0) {
+Tuple2<List<pb.Locator>, pb.Locator> pop(pb.Op o) {
+  if (o == null || o.location.length == 0) {
     // TODO: work out if this breaks anything. In order for operations that act on the root node to be transformed
     // TODO: correctly, we need to consider them as Field locations. We must be able to do a type switch on item.V
     return Tuple2(null, pb.Locator()..field_1 = pb.Field());
   }
-  final cloned = op.clone(); // don't modify op
-  final last = cloned.location.removeLast();
-  return Tuple2(cloned.location, last);
+  var op = o.clone();
+  final last = op.location.removeLast();
+  return Tuple2(op.location, last);
 }
 
 //Tuple2<List<pb.Locator>, pb.Locator> pop(List<pb.Locator> v) {
@@ -1004,7 +1018,7 @@ int itemIndex(pb.Op op) {
 }
 
 setItemIndex(pb.Op op, int i) {
-  item(op).index = fixnum.Int64(i);
+  op.location[op.location.length - 1].index = fixnum.Int64(i);
 }
 
 int toIndex(pb.Op op) {
@@ -1032,11 +1046,11 @@ quill.Delta quillFromDelta(pb.Delta d) {
 pb.Delta deltaFromQuill(quill.Delta q) {
   var dlt = pb.Delta();
   q.toList().forEach((op) {
-    if (op.key == "insert") {
-      dlt.ops.add(pb.Quill()..insert = op.data);
-    } else if (op.key == "delete") {
+    if (op.isInsert) {
+      dlt.ops.add(pb.Quill()..insert = op.data ?? "");
+    } else if (op.isDelete) {
       dlt.ops.add(pb.Quill()..delete = fixnum.Int64(op.length));
-    } else if (op.key == "retain") {
+    } else if (op.isRetain) {
       dlt.ops.add(pb.Quill()..retain = fixnum.Int64(op.length));
     } else {
       throw Exception("invalid quill delta");

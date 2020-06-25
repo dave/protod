@@ -31,6 +31,21 @@ class testInfo {
 void main() {
   List<testInfo> tests = [
     testInfo(
+      name: "edit bug",
+      op: Op().Company().Flags().Key(2).Edit("b", "c"),
+      data: Company()
+        ..flags.addAll({fixnum.Int64(1): "a", fixnum.Int64(2): "b"}),
+      expected: Company()
+        ..flags.addAll({fixnum.Int64(1): "a", fixnum.Int64(2): "c"}),
+    ),
+    testInfo(
+      name: "key set unset parent",
+      op: Op().Person().Company().Flags().Key(1).Set("a"),
+      data: Person(),
+      expected: Person()
+        ..company = (Company()..flags.addAll({fixnum.Int64(1): "a"})),
+    ),
+    testInfo(
       name: "delete root",
       op: Op().Person().Delete(),
       data: Person()..name = "a",
@@ -268,26 +283,32 @@ void main() {
         ..flags[fixnum.Int64(3)] = "c",
     ),
     testInfo(
-      name: "move: list scalar start-next",
+      name: "move: list scalar start-next-1",
       op: Op().Person().Alias().Move(0, 1),
+      data: Person()..alias.addAll(["a", "b", "c", "d", "e"]),
+      expected: Person()..alias.addAll(["a", "b", "c", "d", "e"]),
+    ),
+    testInfo(
+      name: "move: list scalar start-next",
+      op: Op().Person().Alias().Move(0, 2),
       data: Person()..alias.addAll(["a", "b", "c", "d", "e"]),
       expected: Person()..alias.addAll(["b", "a", "c", "d", "e"]),
     ),
     testInfo(
       name: "move: list scalar start-mid",
-      op: Op().Person().Alias().Move(0, 2),
+      op: Op().Person().Alias().Move(0, 3),
       data: Person()..alias.addAll(["a", "b", "c", "d", "e"]),
       expected: Person()..alias.addAll(["b", "c", "a", "d", "e"]),
     ),
     testInfo(
       name: "move: list scalar start-end",
-      op: Op().Person().Alias().Move(0, 4),
+      op: Op().Person().Alias().Move(0, 5),
       data: Person()..alias.addAll(["a", "b", "c", "d", "e"]),
       expected: Person()..alias.addAll(["b", "c", "d", "e", "a"]),
     ),
     testInfo(
       name: "move: list scalar mid-next",
-      op: Op().Person().Alias().Move(2, 3),
+      op: Op().Person().Alias().Move(2, 4),
       data: Person()..alias.addAll(["a", "b", "c", "d", "e"]),
       expected: Person()..alias.addAll(["a", "b", "d", "c", "e"]),
     ),
@@ -299,7 +320,7 @@ void main() {
     ),
     testInfo(
       name: "move: list scalar mid-end",
-      op: Op().Person().Alias().Move(2, 4),
+      op: Op().Person().Alias().Move(2, 5),
       data: Person()..alias.addAll(["a", "b", "c", "d", "e"]),
       expected: Person()..alias.addAll(["a", "b", "d", "e", "c"]),
     ),
@@ -329,7 +350,7 @@ void main() {
     ),
     testInfo(
       name: "move: list message",
-      op: Op().Case().Items().Move(0, 2),
+      op: Op().Case().Items().Move(0, 3),
       data: Case()
         ..items.addAll(
             [Item()..title = "a", Item()..title = "b", Item()..title = "c"]),

@@ -18,29 +18,9 @@ func main() {
 func genDart() {
 	var sb strings.Builder
 
-	////pb.Op _transform(pb.Op t, pb.Op op, bool priority) {
-	////  switch (t.type) {
-	////  case pb.Op_Type.Edit:
-	////    final tItem = item(t);
-	////    if (tItem.hasField_1()) {
-	////      switch (op.type) {
-	////        case pb.Op_Type.Edit:
-	//        final opItem = item(op);
-	//        if (opItem.hasField_1()) {
-	//          return tEditFieldEditField(t, op, priority);
-	//        } else if (opItem.hasIndex()) {
-	//          return tIndependent(t, op);
-	//        } // ...
-	//        break;
-	//        // ...
-	//      }
-	////    } else if (tItem.hasIndex()) {} // ...
-	////    break;
-	////  }
-	////}
-
 	sb.WriteString("import 'package:protod/delta.dart';\n")
 	sb.WriteString("import 'package:protod/delta.pb.dart' as pb;\n")
+	sb.WriteString("import 'package:protod/delta_transform.dart';\n")
 	sb.WriteString("\n")
 
 	sb.WriteString("pb.Op transformGenerated(pb.Op t, pb.Op op, bool priority) {\n")

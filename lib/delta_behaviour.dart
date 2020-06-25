@@ -139,7 +139,7 @@ final Map<OpType, Map<LocatorType, OpBehaviour>> Behaviours = {
       indexValueShifter: null,
       indexLocationShifter: null,
       keyShifter: (pb.Op t, pb.Op op) {
-        return renameShifter(item(t).key, op.key);
+        return renameShifter(item(t).key, t.key);
       },
     ),
   },

@@ -943,12 +943,6 @@ func runTransformTest(t *testing.T, tc *TransformTestCase) {
 	}
 
 	if !compareJson(string(result1p1), string(expectedp1)) || !compareJson(string(result1p2), string(expectedp2)) || !compareJson(string(result2p1), string(expectedp1)) || !compareJson(string(result2p2), string(expectedp2)) {
-		//fmt.Println("op1", item.op1)
-		//fmt.Println("op2xp1", op2xp1)
-		//fmt.Println("op2xp2", op2xp2)
-		//fmt.Println("op2", item.op2)
-		//fmt.Println("op1xp1", op1xp1)
-		//fmt.Println("op1xp2", op1xp2)
 		if expected != nil {
 			t.Fatalf("\ndata:        %s\nresult1-p1:  %s\nresult2-p1:  %s\nresult1-p2:  %s\nresult2-p2:  %s\nexpected:    %s", string(input), string(result1p1), string(result2p1), string(result1p2), string(result2p2), string(expectedp1))
 		} else {
