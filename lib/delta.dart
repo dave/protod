@@ -8,6 +8,7 @@ import 'package:tuple/tuple.dart';
 import 'google/protobuf/any.pb.dart' as any;
 
 export 'delta.op.dart';
+export 'delta_transform.dart';
 
 protobuf.TypeRegistry _defaultTypeRegistry;
 
