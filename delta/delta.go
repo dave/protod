@@ -18,6 +18,16 @@ import (
 //quill "github.com/fmpwizard/go-quilljs-delta/delta"
 
 func Transform(op1, op2 *Op, op1priority bool) (op1x *Op, op2x *Op, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			switch r := r.(type) {
+			case error:
+				err = r
+			default:
+				err = fmt.Errorf("recovered from panic: %v", r)
+			}
+		}
+	}()
 	if op1 == nil && op2 == nil {
 		return nil, nil, nil
 	}
