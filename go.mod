@@ -9,4 +9,5 @@ require (
 	github.com/sergi/go-diff v1.1.0
 	github.com/yoheimuta/go-protoparser/v4 v4.2.0
 	google.golang.org/protobuf v1.21.0
+	cloud.google.com/go/firestore v1.2.0
 )

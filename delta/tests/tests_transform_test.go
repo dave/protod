@@ -26,6 +26,31 @@ func TestTransform(t *testing.T) {
 	}
 	items := []itemType{
 		{
+			name: "compound",
+			op1: delta.Compound(
+				Op().Person().Alias().Insert(0, "a"),
+				Op().Person().Alias().Index(0).Edit("a", "b"),
+			),
+			op2:       Op().Person().Alias().Insert(0, "c"),
+			data:      &Person{},
+			expected1: &Person{Alias: []string{"b", "c"}},
+			expected2: &Person{Alias: []string{"c", "b"}},
+		},
+		{
+			name: "compound-2",
+			op1: delta.Compound(
+				Op().Person().Alias().Insert(0, "a"),
+				Op().Person().Alias().Index(0).Edit("a", "b"),
+			),
+			op2: delta.Compound(
+				Op().Person().Alias().Insert(0, "c"),
+				Op().Person().Alias().Index(0).Edit("c", "d"),
+			),
+			data:      &Person{},
+			expected1: &Person{Alias: []string{"b", "d"}},
+			expected2: &Person{Alias: []string{"d", "b"}},
+		},
+		{
 			name:      "oneof_insert_set",
 			op1:       Op().Chooser().Choice().Itm().Flags().Insert(1, "b"),
 			op2:       Op().Chooser().Choice().Dbl().Set(1),

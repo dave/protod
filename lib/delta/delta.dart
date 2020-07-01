@@ -1,11 +1,10 @@
 import 'package:diff_match_patch/diff_match_patch.dart' as diff_match_patch;
 import 'package:fixnum/fixnum.dart' as fixnum;
 import 'package:protobuf/protobuf.dart' as protobuf;
-import 'package:protod/delta.pb.dart' as pb;
+import 'package:protod/delta/delta.pb.dart' as pb;
+import 'package:protod/google/protobuf/any.pb.dart' as any;
 import 'package:quill_delta/quill_delta.dart' as quill;
 import 'package:tuple/tuple.dart';
-
-import 'google/protobuf/any.pb.dart' as any;
 
 export 'delta.op.dart';
 export 'delta_transform.dart';

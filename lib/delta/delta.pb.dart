@@ -1,6 +1,6 @@
 ///
 //  Generated code. Do not modify.
-//  source: protod/delta.proto
+//  source: delta/delta.proto
 //
 // @dart = 2.3
 // ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type
@@ -10,7 +10,7 @@ import 'dart:core' as $core;
 import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:protobuf/protobuf.dart' as $pb;
 
-import '../google/protobuf/any.pb.dart' as $1;
+import '../google/protobuf/any.pb.dart' as $0;
 
 import 'delta.pbenum.dart';
 
@@ -45,7 +45,7 @@ class Op extends $pb.GeneratedMessage {
     ..pc<Op>(3, 'ops', $pb.PbFieldType.PM, subBuilder: Op.create)
     ..aOM<Scalar>(4, 'scalar', subBuilder: Scalar.create)
     ..a<$core.int>(5, 'enum', $pb.PbFieldType.O3)
-    ..aOM<$1.Any>(6, 'message', subBuilder: $1.Any.create)
+    ..aOM<$0.Any>(6, 'message', subBuilder: $0.Any.create)
     ..aOM<Object>(7, 'object', subBuilder: Object.create)
     ..aOM<Delta>(8, 'delta', subBuilder: Delta.create)
     ..aInt64(9, 'index')
@@ -107,15 +107,15 @@ class Op extends $pb.GeneratedMessage {
   void clearEnum_5() => clearField(5);
 
   @$pb.TagNumber(6)
-  $1.Any get message => $_getN(5);
+  $0.Any get message => $_getN(5);
   @$pb.TagNumber(6)
-  set message($1.Any v) { setField(6, v); }
+  set message($0.Any v) { setField(6, v); }
   @$pb.TagNumber(6)
   $core.bool hasMessage() => $_has(5);
   @$pb.TagNumber(6)
   void clearMessage() => clearField(6);
   @$pb.TagNumber(6)
-  $1.Any ensureMessage() => $_ensure(5);
+  $0.Any ensureMessage() => $_ensure(5);
 
   @$pb.TagNumber(7)
   Object get object => $_getN(6);
@@ -772,7 +772,7 @@ class Object extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('Object', package: const $pb.PackageName('delta'), createEmptyInstance: create)
     ..oo(0, [1, 2, 3, 4, 5, 6, 7, 8, 9])
     ..aOM<Scalar>(1, 'scalar', subBuilder: Scalar.create)
-    ..aOM<$1.Any>(2, 'message', subBuilder: $1.Any.create)
+    ..aOM<$0.Any>(2, 'message', subBuilder: $0.Any.create)
     ..aOM<List_>(3, 'list', subBuilder: List_.create)
     ..aOM<MapBool>(4, 'mapBool', protoName: 'mapBool', subBuilder: MapBool.create)
     ..aOM<MapInt32>(5, 'mapInt32', protoName: 'mapInt32', subBuilder: MapInt32.create)
@@ -813,15 +813,15 @@ class Object extends $pb.GeneratedMessage {
   Scalar ensureScalar() => $_ensure(0);
 
   @$pb.TagNumber(2)
-  $1.Any get message => $_getN(1);
+  $0.Any get message => $_getN(1);
   @$pb.TagNumber(2)
-  set message($1.Any v) { setField(2, v); }
+  set message($0.Any v) { setField(2, v); }
   @$pb.TagNumber(2)
   $core.bool hasMessage() => $_has(1);
   @$pb.TagNumber(2)
   void clearMessage() => clearField(2);
   @$pb.TagNumber(2)
-  $1.Any ensureMessage() => $_ensure(1);
+  $0.Any ensureMessage() => $_ensure(1);
 
   @$pb.TagNumber(3)
   List_ get list => $_getN(2);

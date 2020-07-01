@@ -1,6 +1,6 @@
-import 'package:protod/delta.dart';
-import 'package:protod/delta.pb.dart' as pb;
-import 'package:protod/delta_shifters.dart';
+import 'package:protod/delta/delta.dart';
+import 'package:protod/delta/delta.pb.dart' as pb;
+import 'package:protod/delta/delta_shifters.dart';
 
 enum OpType {
   EDIT,

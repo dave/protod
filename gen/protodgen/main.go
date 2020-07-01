@@ -653,8 +653,8 @@ func (s *state) genDart() error {
 
 		var sb strings.Builder
 
-		sb.WriteString("import 'package:protod/delta.dart' as delta;\n")
-		sb.WriteString("import 'package:protod/delta.pb.dart' as delta;\n")
+		sb.WriteString("import 'package:protod/delta/delta.dart' as delta;\n")
+		sb.WriteString("import 'package:protod/delta/delta.pb.dart' as delta;\n")
 		sb.WriteString("import 'package:fixnum/fixnum.dart' as fixnum;\n")
 		for dartPath, dartAlias := range pkg.DartImports {
 			if dartPath == "protod/delta.dart" {

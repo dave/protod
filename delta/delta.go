@@ -1084,3 +1084,89 @@ func (d *Delta) Quill() *quill.Delta {
 	}
 	return quill.New(ops)
 }
+
+func (o *Op) DebugSingleLine() string {
+	return o.debug(-1)
+}
+func (o *Op) Debug() string {
+	return o.debug(0)
+}
+func (o *Op) debug(indent int) string {
+	keyToString := func(key *Key) string {
+		switch key := key.V.(type) {
+		case *Key_Bool:
+			return fmt.Sprintf("[%v]", key.Bool)
+		case *Key_Int32:
+			return fmt.Sprintf("[%v]", key.Int32)
+		case *Key_Int64:
+			return fmt.Sprintf("[%v]", key.Int64)
+		case *Key_Uint32:
+			return fmt.Sprintf("[%v]", key.Uint32)
+		case *Key_Uint64:
+			return fmt.Sprintf("[%v]", key.Uint64)
+		case *Key_String_:
+			return fmt.Sprintf("[%q]", key.String_)
+		}
+		return ""
+	}
+	locatorToString := func(loc *Locator) string {
+		switch locator := loc.V.(type) {
+		case *Locator_Field:
+			return locator.Field.Name
+		case *Locator_Index:
+			return fmt.Sprint(locator.Index)
+		case *Locator_Key:
+			return keyToString(locator.Key)
+		case *Locator_Oneof:
+			return fmt.Sprint(locator.Oneof.Name)
+		}
+		return ""
+	}
+	locationToString := func(loc []*Locator) string {
+		var parts []string
+		for _, locator := range loc {
+			parts = append(parts, locatorToString(locator))
+		}
+		return strings.Join(parts, "/")
+	}
+	var out string
+	for i := 0; i < indent; i++ {
+		out += "\t"
+	}
+	switch o.Type {
+	case Op_Null:
+		return out + "NULL"
+	case Op_Set:
+		return out + fmt.Sprintf("SET(%s, %s)", locationToString(o.Location), o.Value)
+	case Op_Edit:
+		return out + fmt.Sprintf("EDIT(%s, %v)", locationToString(o.Location), o.Value.(*Op_Delta).Delta)
+	case Op_Insert:
+		return out + fmt.Sprintf("INSERT(%s, %v)", locationToString(o.Location), o.Value)
+	case Op_Move:
+		return out + fmt.Sprintf("MOVE(%s, %v)", locationToString(o.Location), o.Value.(*Op_Index).Index)
+	case Op_Rename:
+		return out + fmt.Sprintf("RENAME(%s, %v)", locationToString(o.Location), keyToString(o.Value.(*Op_Key).Key))
+	case Op_Delete:
+		return out + fmt.Sprintf("DELETE(%s)", locationToString(o.Location))
+	case Op_Compound:
+		if indent == -1 {
+			// all on one line
+			out := "COMPOUND("
+			for i, op := range o.Ops {
+				if i > 0 {
+					out += ", "
+				}
+				out += op.debug(-1)
+			}
+			out += ")"
+			return out
+		}
+		out := "COMPOUND("
+		for _, op := range o.Ops {
+			out += "\n" + op.debug(indent+1)
+		}
+		out += "\n)"
+		return out
+	}
+	return ""
+}

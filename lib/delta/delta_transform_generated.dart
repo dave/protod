@@ -1,6 +1,6 @@
-import 'package:protod/delta.dart';
-import 'package:protod/delta.pb.dart' as pb;
-import 'package:protod/delta_transform.dart';
+import 'package:protod/delta/delta.dart';
+import 'package:protod/delta/delta.pb.dart' as pb;
+import 'package:protod/delta/delta_transform.dart';
 
 pb.Op transformGenerated(pb.Op t, pb.Op op, bool priority) {
   switch (t.type) {

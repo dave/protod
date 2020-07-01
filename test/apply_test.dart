@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:fixnum/fixnum.dart' as fixnum;
 import 'package:protobuf/protobuf.dart' as protobuf;
-import 'package:protod/delta.dart' as delta;
-import 'package:protod/delta.pb.dart' as pb;
+import 'package:protod/delta/delta.dart' as delta;
+import 'package:protod/delta/delta.pb.dart' as pb;
 import 'package:test/test.dart';
 
 import 'pb/registry.dart' as registry;

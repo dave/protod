@@ -11,10 +11,15 @@ func (t *Op) Transform(op *Op, priority bool) *Op {
 	if t == nil {
 		return proto.Clone(op).(*Op)
 	}
+	t1 := t
 	if op.Type == Op_Compound {
 		var transformed []*Op
 		for _, o := range op.Ops {
-			ox := t.Transform(o, priority)
+			ox := t1.Transform(o, priority)
+
+			// we must transform t against ox to get the correct t for the next item in the compound operation
+			t1 = ox.Transform(t1, !priority)
+
 			if ox != nil {
 				transformed = append(transformed, ox)
 			}

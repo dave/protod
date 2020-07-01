@@ -1,4 +1,4 @@
-import 'package:protod/delta.pb.dart' as pb;
+import 'package:protod/delta/delta.pb.dart' as pb;
 
 int Function(int) deleteShifter(int deleteIndex) {
   int f(int i) {

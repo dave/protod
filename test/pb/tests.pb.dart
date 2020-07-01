@@ -10,7 +10,7 @@ import 'dart:core' as $core;
 import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:protobuf/protobuf.dart' as $pb;
 
-import 'package:protod/delta.pb.dart' as $0;
+import 'package:protod/delta/delta.pb.dart' as $0;
 import 'package:protod/google/protobuf/any.pb.dart' as $1;
 
 import 'tests.pbenum.dart';

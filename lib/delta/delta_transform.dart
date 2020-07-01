@@ -1,8 +1,8 @@
-import 'package:protod/delta.dart';
-import 'package:protod/delta.pb.dart' as pb;
-import 'package:protod/delta_behaviour.dart';
-import 'package:protod/delta_shifters.dart';
-import 'package:protod/delta_transform_generated.dart';
+import 'package:protod/delta/delta.dart';
+import 'package:protod/delta/delta.pb.dart' as pb;
+import 'package:protod/delta/delta_behaviour.dart';
+import 'package:protod/delta/delta_shifters.dart';
+import 'package:protod/delta/delta_transform_generated.dart';
 
 pb.Op transform(pb.Op t, pb.Op op, bool priority) {
   if (op == null) {
@@ -13,8 +13,13 @@ pb.Op transform(pb.Op t, pb.Op op, bool priority) {
   }
   if (op.type == pb.Op_Type.Compound) {
     var transformed = List<pb.Op>();
+    var t1 = t;
     op.ops.forEach((o) {
-      final ox = transform(t, o, priority);
+      final ox = transform(t1, o, priority);
+
+      // we must transform t against ox to get the correct t for the next item in the compound operation
+      t1 = transform(ox, t1, !priority);
+
       if (ox != null) {
         transformed.add(ox);
       }

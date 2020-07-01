@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:protod/delta.dart' as delta;
+import 'package:protod/delta/delta.dart' as delta;
 import 'package:test/test.dart';
 
 import 'cases_transform_test.dart';

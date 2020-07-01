@@ -1,7 +1,7 @@
 import 'package:fixnum/fixnum.dart';
 import 'package:protobuf/protobuf.dart';
-import 'package:protod/delta.dart' as delta;
-import 'package:protod/delta.pb.dart' as pb;
+import 'package:protod/delta/delta.dart' as delta;
+import 'package:protod/delta/delta.pb.dart' as pb;
 import 'package:test/test.dart';
 
 import 'cases_transform_test.dart';
