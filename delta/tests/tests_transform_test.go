@@ -51,6 +51,19 @@ func TestTransform(t *testing.T) {
 			expected2: &Person{Alias: []string{"d", "b"}},
 		},
 		{
+			name: "compound-3",
+			op1: delta.Compound(
+				Op().Person().Alias().Insert(0, "a"),
+				Op().Person().Alias().Index(0).Edit("a", "b"),
+				Op().Person().Alias().Insert(0, "c"),
+				Op().Person().Alias().Index(0).Edit("a", "d"),
+			),
+			op2:       Op().Person().Alias().Insert(0, "e"),
+			data:      &Person{},
+			expected1: &Person{Alias: []string{"d", "b", "e"}},
+			expected2: &Person{Alias: []string{"e", "d", "b"}},
+		},
+		{
 			name:      "oneof_insert_set",
 			op1:       Op().Chooser().Choice().Itm().Flags().Insert(1, "b"),
 			op2:       Op().Chooser().Choice().Dbl().Set(1),
