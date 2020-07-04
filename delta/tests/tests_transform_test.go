@@ -37,7 +37,7 @@ func TestTransform(t *testing.T) {
 			expected2: &Person{Alias: []string{"c", "b"}},
 		},
 		{
-			name: "compound-2",
+			name: "compound_2",
 			op1: delta.Compound(
 				Op().Person().Alias().Insert(0, "a"),
 				Op().Person().Alias().Index(0).Edit("a", "b"),
@@ -51,7 +51,7 @@ func TestTransform(t *testing.T) {
 			expected2: &Person{Alias: []string{"d", "b"}},
 		},
 		{
-			name: "compound-3",
+			name: "compound_3",
 			op1: delta.Compound(
 				Op().Person().Alias().Insert(0, "a"),
 				Op().Person().Alias().Index(0).Edit("a", "b"),
