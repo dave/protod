@@ -1170,3 +1170,7 @@ func (o *Op) debug(indent int) string {
 	}
 	return ""
 }
+
+func ToOpValue(in interface{}) isOp_Value {
+	return in.(isOp_Value)
+}
