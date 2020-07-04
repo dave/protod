@@ -151,10 +151,11 @@ pb.Op tEdit(pb.Op t, pb.Op op, bool priority) {
     return tIndependent(t, op);
   }
   // Two delta edits operating on the same value - use Quill library to transform the operation.
-  final tQuill = quillFromDelta(t.delta);
-  final opQuill = quillFromDelta(op.delta);
+  final tQuill = quillFromDelta(t.delta.quill);
+  final opQuill = quillFromDelta(op.delta.quill);
   var out = op.clone();
-  out.delta = deltaFromQuill(tQuill.transform(opQuill, priority));
+  final q = deltaFromQuill(tQuill.transform(opQuill, priority));
+  out.delta = pb.Delta()..quill = q;
   return out;
 }
 

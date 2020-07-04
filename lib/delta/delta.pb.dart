@@ -638,9 +638,19 @@ class Scalar extends $pb.GeneratedMessage {
   void clearBytes() => clearField(15);
 }
 
+enum Delta_V {
+  quill, 
+  notSet
+}
+
 class Delta extends $pb.GeneratedMessage {
+  static const $core.Map<$core.int, Delta_V> _Delta_VByTag = {
+    1 : Delta_V.quill,
+    0 : Delta_V.notSet
+  };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('Delta', package: const $pb.PackageName('delta'), createEmptyInstance: create)
-    ..pc<Quill>(1, 'ops', $pb.PbFieldType.PM, subBuilder: Quill.create)
+    ..oo(0, [1])
+    ..aOM<QuillDelta>(1, 'quill', subBuilder: QuillDelta.create)
     ..hasRequiredFields = false
   ;
 
@@ -658,6 +668,42 @@ class Delta extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static Delta getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Delta>(create);
   static Delta _defaultInstance;
+
+  Delta_V whichV() => _Delta_VByTag[$_whichOneof(0)];
+  void clearV() => clearField($_whichOneof(0));
+
+  @$pb.TagNumber(1)
+  QuillDelta get quill => $_getN(0);
+  @$pb.TagNumber(1)
+  set quill(QuillDelta v) { setField(1, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasQuill() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearQuill() => clearField(1);
+  @$pb.TagNumber(1)
+  QuillDelta ensureQuill() => $_ensure(0);
+}
+
+class QuillDelta extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('QuillDelta', package: const $pb.PackageName('delta'), createEmptyInstance: create)
+    ..pc<Quill>(1, 'ops', $pb.PbFieldType.PM, subBuilder: Quill.create)
+    ..hasRequiredFields = false
+  ;
+
+  QuillDelta._() : super();
+  factory QuillDelta() => create();
+  factory QuillDelta.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory QuillDelta.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  QuillDelta clone() => QuillDelta()..mergeFromMessage(this);
+  QuillDelta copyWith(void Function(QuillDelta) updates) => super.copyWith((message) => updates(message as QuillDelta));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static QuillDelta create() => QuillDelta._();
+  QuillDelta createEmptyInstance() => create();
+  static $pb.PbList<QuillDelta> createRepeated() => $pb.PbList<QuillDelta>();
+  @$core.pragma('dart2js:noInline')
+  static QuillDelta getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<QuillDelta>(create);
+  static QuillDelta _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.List<Quill> get ops => $_getList(0);

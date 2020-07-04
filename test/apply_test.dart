@@ -527,7 +527,7 @@ void main() {
     }
     test(info.name, () {
       if (info.diff != null) {
-        expect(info.op.delta.toProto3Json(), jsonDecode(info.diff));
+        expect(info.op.delta.quill.toProto3Json(), jsonDecode(info.diff));
       }
       delta.apply(info.op, info.data);
       expect(info.data, info.expected);

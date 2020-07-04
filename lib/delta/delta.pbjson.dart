@@ -110,6 +110,16 @@ const Scalar$json = const {
 const Delta$json = const {
   '1': 'Delta',
   '2': const [
+    const {'1': 'quill', '3': 1, '4': 1, '5': 11, '6': '.delta.QuillDelta', '9': 0, '10': 'quill'},
+  ],
+  '8': const [
+    const {'1': 'v'},
+  ],
+};
+
+const QuillDelta$json = const {
+  '1': 'QuillDelta',
+  '2': const [
     const {'1': 'ops', '3': 1, '4': 3, '5': 11, '6': '.delta.Quill', '10': 'ops'},
   ],
 };

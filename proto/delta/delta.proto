@@ -10,7 +10,7 @@ message Op {
   enum Type {
     Null = 0;
     Set = 1;      // set the value
-    Edit = 2;     // edit the text value with a diff
+    Edit = 2;     // modify a scalar value - quill, math etc.
     Insert = 3;   // insert at a specific location in a list
     Move = 4;     // move in a list
     Rename = 5;   // change the key in a map
@@ -25,7 +25,7 @@ message Op {
     int32 enum = 5;                  // new value [Set, Insert]
     google.protobuf.Any message = 6; // new value [Set, Insert]
     Object object = 7;               // new value [Set, Insert]
-    Delta delta = 8;                 // quill text delta [Edit]
+    Delta delta = 8;                 // modification of a scalar value - quill, math etc [Edit]
     int64 index = 9;                 // new index [Move]
     Key key = 10;                    // new key [Rename]
   }
@@ -82,6 +82,13 @@ message Scalar {
 }
 
 message Delta {
+  oneof v {
+    QuillDelta quill = 1;
+    // TODO: add math operations for numeric values - just ADD?
+  }
+}
+
+message QuillDelta {
   repeated Quill ops = 1;
 }
 

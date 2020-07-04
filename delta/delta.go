@@ -369,7 +369,7 @@ func getValueField(parent protoreflect.Message, field protoreflect.FieldDescript
 		return reflectValueOfScalar(value.Scalar)
 	case *Op_Delta:
 		prevString := current.String()
-		dlt := value.Delta.Quill()
+		dlt := value.Delta.V.(*Delta_Quill).Quill.Quill()
 
 		// TODO: Is there a better way of applying the delta to prevString?
 		out := quill.New(nil).Insert(prevString, nil).Compose(*dlt)
@@ -516,7 +516,7 @@ func Edit(location []*Locator, from, to string) *Op {
 	dmp := diffmatchpatch.New()
 	dmp.DiffTimeout = time.Millisecond * 100
 	diffs := dmp.DiffCleanupSemantic(dmp.DiffMain(from, to, false))
-	d := &Delta{}
+	d := &QuillDelta{}
 	for _, diff := range diffs {
 		switch diff.Type {
 		case diffmatchpatch.DiffDelete:
@@ -530,7 +530,7 @@ func Edit(location []*Locator, from, to string) *Op {
 	return &Op{
 		Type:     Op_Edit,
 		Location: location,
-		Value:    &Op_Delta{Delta: d},
+		Value:    &Op_Delta{Delta: &Delta{V: &Delta_Quill{Quill: d}}},
 	}
 }
 
@@ -1050,8 +1050,8 @@ func (o *Op) To() []*Locator {
 	}
 }
 
-func DeltaFromQuill(qd *quill.Delta) *Delta {
-	delta := &Delta{}
+func DeltaFromQuill(qd *quill.Delta) *QuillDelta {
+	delta := &QuillDelta{}
 	delta.Ops = make([]*Quill, len(qd.Ops))
 	for i, op := range qd.Ops {
 		switch {
@@ -1068,7 +1068,7 @@ func DeltaFromQuill(qd *quill.Delta) *Delta {
 	return delta
 }
 
-func (d *Delta) Quill() *quill.Delta {
+func (d *QuillDelta) Quill() *quill.Delta {
 	ptr := func(i int) *int { return &i }
 	ops := make([]quill.Op, len(d.Ops))
 

@@ -29,7 +29,7 @@ func TestDiffs(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		diff, err := protojson.Marshal(tc.op.Value.(*delta.Op_Delta).Delta)
+		diff, err := protojson.Marshal(tc.op.Value.(*delta.Op_Delta).Delta.V.(*delta.Delta_Quill).Quill)
 		if err != nil {
 			t.Fatal(err)
 		}

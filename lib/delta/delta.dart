@@ -181,7 +181,7 @@ dynamic getValue(
     return valueOf(op.enum_5);
   } else if (op.hasDelta()) {
     final prevString = previous as String;
-    final dlt = quillFromDelta(op.delta);
+    final dlt = quillFromDelta(op.delta.quill);
     final prevDelta = quill.Delta()..insert(prevString ?? "");
     final out = prevDelta.compose(dlt);
     var outString = "";
@@ -527,23 +527,23 @@ dynamic valueFromKey(pb.Key k) {
 pb.Op edit(List<pb.Locator> location, String from, String to) {
   final diffs = diff_match_patch.diff(from, to);
   diff_match_patch.cleanupSemantic(diffs);
-  var delta = pb.Delta();
+  var q = pb.QuillDelta();
   diffs.forEach((diff) {
     switch (diff.operation) {
       case diff_match_patch.DIFF_DELETE:
-        delta.ops.add(pb.Quill()..delete = fixnum.Int64(diff.text.length));
+        q.ops.add(pb.Quill()..delete = fixnum.Int64(diff.text.length));
         break;
       case diff_match_patch.DIFF_EQUAL:
-        delta.ops.add(pb.Quill()..retain = fixnum.Int64(diff.text.length));
+        q.ops.add(pb.Quill()..retain = fixnum.Int64(diff.text.length));
         break;
       case diff_match_patch.DIFF_INSERT:
-        delta.ops.add(pb.Quill()..insert = diff.text ?? "");
+        q.ops.add(pb.Quill()..insert = diff.text ?? "");
     }
   });
   return pb.Op()
     ..type = pb.Op_Type.Edit
     ..location.addAll(location)
-    ..delta = delta;
+    ..delta = (pb.Delta()..quill = q);
 }
 
 pb.Op set(List<pb.Locator> location, dynamic value) {
@@ -1029,7 +1029,7 @@ setToIndex(pb.Op op, int i) {
   op.index = fixnum.Int64(i);
 }
 
-quill.Delta quillFromDelta(pb.Delta d) {
+quill.Delta quillFromDelta(pb.QuillDelta d) {
   var dlt = quill.Delta();
   d.ops.forEach((q) {
     if (q.hasInsert()) {
@@ -1043,8 +1043,8 @@ quill.Delta quillFromDelta(pb.Delta d) {
   return dlt;
 }
 
-pb.Delta deltaFromQuill(quill.Delta q) {
-  var dlt = pb.Delta();
+pb.QuillDelta deltaFromQuill(quill.Delta q) {
+  var dlt = pb.QuillDelta();
   q.toList().forEach((op) {
     if (op.isInsert) {
       dlt.ops.add(pb.Quill()..insert = op.data ?? "");

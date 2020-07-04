@@ -150,10 +150,10 @@ func tEdit(t, op *Op, priority bool) *Op {
 		return tIndependent(t, op)
 	}
 	// Two delta edits operating on the same value - use Quill library to transform the operation.
-	tQuill := t.Value.(*Op_Delta).Delta.Quill()
-	opQuill := op.Value.(*Op_Delta).Delta.Quill()
+	tQuill := t.Value.(*Op_Delta).Delta.V.(*Delta_Quill).Quill.Quill()
+	opQuill := op.Value.(*Op_Delta).Delta.V.(*Delta_Quill).Quill.Quill()
 	out := proto.Clone(op).(*Op)
-	out.Value = &Op_Delta{Delta: DeltaFromQuill(tQuill.Transform(*opQuill, priority))}
+	out.Value = &Op_Delta{Delta: &Delta{V: &Delta_Quill{Quill: DeltaFromQuill(tQuill.Transform(*opQuill, priority))}}}
 	return out
 }
 func tEditFieldEditField(t, op *Op, priority bool) *Op { return tEdit(t, op, priority) }
