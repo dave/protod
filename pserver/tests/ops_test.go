@@ -125,6 +125,7 @@ func TestBasic(t *testing.T) {
 }
 
 func check(t *testing.T, label string, value proto.Message, state int64, expectedValue proto.Message, expectedState int64) {
+	t.Helper()
 	if !proto.Equal(value, expectedValue) {
 		t.Fatalf("%s value got [%v], expected [%v]", label, value, expectedValue)
 	}
@@ -134,6 +135,7 @@ func check(t *testing.T, label string, value proto.Message, state int64, expecte
 }
 
 func handle(t *testing.T, err error) {
+	t.Helper()
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -42,9 +42,8 @@ func (s *Server) MarshalToBlob(m proto.Message) (*Blob, error) {
 	return &Blob{Value: b}, nil
 }
 
-func (s *Server) Changes(ctx context.Context, tx *firestore.Transaction, t DocumentType, ref *firestore.DocumentRef, before, after int64, f func(*delta.Op) error) (count int, state int64, err error) {
-	query := ref.Collection(STATES_COLLECTION).
-		Where(t.StateFieldSelector("State"), ">", before)
+func (s *Server) Changes(ctx context.Context, tx *firestore.Transaction, t DocumentType, ref *firestore.DocumentRef, before, after int64, f func(*delta.Op) error) (state int64, err error) {
+	query := ref.Collection(STATES_COLLECTION).Where(t.StateFieldSelector("State"), ">", before)
 	if after != 0 {
 		query = query.Where(t.StateFieldSelector("State"), "<", after)
 	}
@@ -62,40 +61,35 @@ func (s *Server) Changes(ctx context.Context, tx *firestore.Transaction, t Docum
 			break
 		}
 		if err != nil {
-			return 0, 0, fmt.Errorf("iterating state data: %w", err)
+			return 0, fmt.Errorf("iterating state data: %w", err)
 		}
 		state, op, err := s.UnpackState(stateDoc, t)
 		if err != nil {
-			return 0, 0, fmt.Errorf("unpacking state data: %w", err)
+			return 0, fmt.Errorf("unpacking state data: %w", err)
 		}
 		if state.State != current+1 {
-			return 0, 0, fmt.Errorf("can't apply op (state %d) to state %d", state.State, current)
+			return 0, fmt.Errorf("can't apply op (state %d) to state %d", state.State, current)
 		}
 		if err := f(op); err != nil {
-			return 0, 0, err
+			return 0, err
 		}
 		current = state.State
-		count++
 	}
-	return count, current, nil
+	return current, nil
 }
 
 func (s *Server) QueryState(ctx context.Context, tx *firestore.Transaction, t DocumentType, ref *firestore.DocumentRef, request string) (*firestore.DocumentSnapshot, error) {
 	// get by request id
 	query := ref.Collection(STATES_COLLECTION).Where(t.StateFieldSelector("Request"), "==", request)
-	var docs []*firestore.DocumentSnapshot
+	var iter *firestore.DocumentIterator
 	if tx == nil {
-		var err error
-		docs, err = query.Documents(ctx).GetAll()
-		if err != nil {
-			return nil, fmt.Errorf("getting state document: %w", err)
-		}
+		iter = query.Documents(ctx)
 	} else {
-		var err error
-		docs, err = tx.Documents(query).GetAll()
-		if err != nil {
-			return nil, fmt.Errorf("getting state document: %w", err)
-		}
+		iter = tx.Documents(query)
+	}
+	docs, err := iter.GetAll()
+	if err != nil {
+		return nil, fmt.Errorf("getting state document: %w", err)
 	}
 	switch {
 	case len(docs) == 1:
@@ -110,19 +104,15 @@ func (s *Server) QueryState(ctx context.Context, tx *firestore.Transaction, t Do
 func (s *Server) QuerySnapshot(ctx context.Context, tx *firestore.Transaction, t DocumentType, request string) (*firestore.DocumentRef, error) {
 	// get by request id
 	query := s.Firestore.Collection(t.Collection).Where(t.SnapshotFieldSelector("Request"), "==", request)
-	var docs []*firestore.DocumentSnapshot
+	var iter *firestore.DocumentIterator
 	if tx == nil {
-		var err error
-		docs, err = query.Documents(ctx).GetAll()
-		if err != nil {
-			return nil, fmt.Errorf("getting snapshot document: %w", err)
-		}
+		iter = query.Documents(ctx)
 	} else {
-		var err error
-		docs, err = tx.Documents(query).GetAll()
-		if err != nil {
-			return nil, fmt.Errorf("getting snapshot document: %w", err)
-		}
+		iter = tx.Documents(query)
+	}
+	docs, err := iter.GetAll()
+	if err != nil {
+		return nil, fmt.Errorf("getting snapshot document: %w", err)
 	}
 	switch {
 	case len(docs) == 1:
@@ -156,13 +146,11 @@ func (s *Server) UnpackState(doc *firestore.DocumentSnapshot, t DocumentType) (*
 func (s *Server) UnpackSnapshot(ctx context.Context, tx *firestore.Transaction, t DocumentType, ref *firestore.DocumentRef) (state int64, document proto.Message, snapshot proto.Message, err error) {
 	var doc *firestore.DocumentSnapshot
 	if tx == nil {
-		var err error
 		doc, err = ref.Get(ctx)
 		if err != nil {
 			return 0, nil, nil, fmt.Errorf("getting snapshot document: %w", err)
 		}
 	} else {
-		var err error
 		doc, err = tx.Get(ref)
 		if err != nil {
 			return 0, nil, nil, fmt.Errorf("getting snapshot document: %w", err)
@@ -172,23 +160,31 @@ func (s *Server) UnpackSnapshot(ctx context.Context, tx *firestore.Transaction, 
 	if err != nil {
 		return 0, nil, nil, fmt.Errorf("unpacking snapshot: %w", err)
 	}
-	snapshotBytes, err := s.FromBlob(serverSnapshot.Value)
+	documentBytes, err := s.FromBlob(serverSnapshot.Value)
 	if err != nil {
 		return 0, nil, nil, fmt.Errorf("getting snapshot value from blob: %w", err)
 	}
-	if len(snapshotBytes) == 0 {
+	if len(documentBytes) == 0 {
 		return serverSnapshot.State, nil, nil, nil
 	}
-	value := t.Document()
-	if err := proto.Unmarshal(snapshotBytes, value); err != nil {
+	documentMessage := t.Document()
+	if err := proto.Unmarshal(documentBytes, documentMessage); err != nil {
 		return 0, nil, nil, fmt.Errorf("unmarshaling value: %w", err)
 	}
-	return serverSnapshot.State, value, snapshotMessage, nil
+	return serverSnapshot.State, documentMessage, snapshotMessage, nil
 }
 
 func (s *Server) Transform(ctx context.Context, tx *firestore.Transaction, t DocumentType, ref *firestore.DocumentRef, op2 *delta.Op, before, after int64) (state int64, op1x, op2x *delta.Op, err error) {
+	if after > 0 && before+1 == after {
+		// after is set and there are no states between before and after => no need to run query... the
+		// client was applying to the latest version, so no transform needed e.g. op1 == nil
+		op1x = nil
+		op2x = op2
+		return after, op1x, op2x, nil
+	}
+
 	var ops []*delta.Op
-	count, state, err := s.Changes(ctx, tx, t, ref, before, after, func(op *delta.Op) error {
+	state, err = s.Changes(ctx, tx, t, ref, before, after, func(op *delta.Op) error {
 		ops = append(ops, op)
 		return nil
 	})
@@ -196,23 +192,24 @@ func (s *Server) Transform(ctx context.Context, tx *firestore.Transaction, t Doc
 		return 0, nil, nil, err
 	}
 
-	if count == 0 {
+	if len(ops) == 0 {
 		// the client was applying to the latest version, so no transform needed e.g. op1 == nil
 		op1x = nil
 		op2x = op2
+		return state, op1x, op2x, nil
+	}
+
+	// 4) OP1.transform(OP2) = OP2x
+	// 5) OP2.transform(OP1) = OP1x
+	var op1 *delta.Op
+	if len(ops) == 1 {
+		op1 = ops[0]
 	} else {
-		// 4) OP1.transform(OP2) = OP2x
-		// 5) OP2.transform(OP1) = OP1x
-		var op1 *delta.Op
-		if count == 1 {
-			op1 = ops[0]
-		} else {
-			op1 = delta.Compound(ops...)
-		}
-		op1x, op2x, err = delta.Transform(op1, op2, true)
-		if err != nil {
-			return 0, nil, nil, fmt.Errorf("transforming: %w", err)
-		}
+		op1 = delta.Compound(ops...)
+	}
+	op1x, op2x, err = delta.Transform(op1, op2, true)
+	if err != nil {
+		return 0, nil, nil, fmt.Errorf("transforming: %w", err)
 	}
 	return state, op1x, op2x, nil
 }

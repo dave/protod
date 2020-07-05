@@ -21,7 +21,7 @@ func Get(ctx context.Context, server *pserver.Server, t pserver.DocumentType, id
 		return 0, nil, err
 	}
 
-	_, state, err = server.Changes(ctx, nil, t, ref, state, 0, func(op *delta.Op) error {
+	state, err = server.Changes(ctx, nil, t, ref, state, 0, func(op *delta.Op) error {
 		if err := delta.Apply(op, value); err != nil {
 			return err
 		}
@@ -92,14 +92,14 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, r
 	if op == nil {
 		// just request an update (no need to store state)
 		var ops []*delta.Op
-		count, state, err := server.Changes(ctx, nil, t, ref, state, 0, func(op *delta.Op) error {
+		state, err := server.Changes(ctx, nil, t, ref, state, 0, func(op *delta.Op) error {
 			ops = append(ops, op)
 			return nil
 		})
 		if err != nil {
 			return 0, nil, err
 		}
-		switch count {
+		switch len(ops) {
 		case 0:
 			return state, nil, nil
 		case 1:
@@ -156,6 +156,8 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, r
 			return 0, nil, err
 		}
 
+		// note that the state provided by the client is the "before" state for the transform, and the
+		// state from the duplicate record is the "after" state in the transform:
 		_, op1x, _, err = server.Transform(ctx, nil, t, ref, op2, state, duplicateState.State)
 		if err != nil {
 			return 0, nil, err
@@ -164,10 +166,9 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, r
 		return duplicateState.State, op1x, nil
 	}
 
-	// update the snapshot less frequently, and outside the transaction!
+	// Update the snapshot less frequently, and outside the transaction!
 	// TODO: Can we just start this in a goroutine and run asynchronously? Hmm... in App Engine?
-	updateSnapshot := after%UPDATE_SNAPSHOT_FREQUENCY == 0
-	if updateSnapshot {
+	if after%UPDATE_SNAPSHOT_FREQUENCY == 0 {
 		if err := UpdateSnapshot(ctx, server, t, ref); err != nil {
 			return 0, nil, err
 		}
@@ -178,11 +179,11 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, r
 }
 
 func UpdateSnapshot(ctx context.Context, server *pserver.Server, t pserver.DocumentType, ref *firestore.DocumentRef) error {
-	// update the value snapshot. this doesn't need to be inside a transaction, because if the
+	// Update the value snapshot. this doesn't need to be inside a transaction, because if the
 	// snapshot is slightly out of date it doesn't matter.
-	state, document, _, err := server.UnpackSnapshot(ctx, nil, t, ref)
+	snapshotState, document, _, err := server.UnpackSnapshot(ctx, nil, t, ref)
 
-	count, state, err := server.Changes(ctx, nil, t, ref, state, 0, func(op *delta.Op) error {
+	state, err := server.Changes(ctx, nil, t, ref, snapshotState, 0, func(op *delta.Op) error {
 		if err := delta.Apply(op, document); err != nil {
 			return err
 		}
@@ -191,7 +192,7 @@ func UpdateSnapshot(ctx context.Context, server *pserver.Server, t pserver.Docum
 	if err != nil {
 		return err
 	}
-	if count == 0 {
+	if state == snapshotState {
 		return nil
 	}
 	documentBlob, err := server.MarshalToBlob(document)
