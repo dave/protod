@@ -31,6 +31,43 @@ class testInfo {
 void main() {
   List<testInfo> tests = [
     testInfo(
+      name: "set item",
+      op: Op().Person().Cases().Key("a").Items().Insert(0, Item()..done = true),
+      data: Person()..name = "a",
+      expected: Person()
+        ..name = "a"
+        ..cases.addAll({"a": Case()..items.add(Item()..done = true)}),
+    ),
+    testInfo(
+      name: "set list enum item",
+      op: Op().Person().TypeList().Index(0).Set(Person_Type.Bravo),
+      data: Person()
+        ..name = "a"
+        ..typeList.add(Person_Type.Alpha),
+      expected: Person()
+        ..name = "a"
+        ..typeList.addAll([Person_Type.Bravo]),
+    ),
+    testInfo(
+      name: "set list enum",
+      op: Op()
+          .Person()
+          .TypeList()
+          .Set([Person_Type.Charlie, Person_Type.Alpha]),
+      data: Person()..name = "a",
+      expected: Person()
+        ..name = "a"
+        ..typeList.addAll([Person_Type.Charlie, Person_Type.Alpha]),
+    ),
+    testInfo(
+      name: "set map enum",
+      op: Op().Person().TypeMap().Set({"a": Person_Type.Charlie}),
+      data: Person()..name = "a",
+      expected: Person()
+        ..name = "a"
+        ..typeMap.addAll({"a": Person_Type.Charlie}),
+    ),
+    testInfo(
       name: "edit bug",
       op: Op().Company().Flags().Key(2).Edit("b", "c"),
       data: Company()

@@ -77,3 +77,8 @@ message TransformTestCase {
   google.protobuf.Any expected1 = 7;
   google.protobuf.Any expected2 = 8;
 }
+
+message RandomTestItem {
+  delta.Op op = 1;
+  Person expected = 2;
+}

@@ -22,7 +22,6 @@ message Op {
   repeated Op ops = 3; // children for compound operations
   oneof value {
     Scalar scalar = 4;               // new value [Set, Insert]
-    int32 enum = 5;                  // new value [Set, Insert]
     google.protobuf.Any message = 6; // new value [Set, Insert]
     Object object = 7;               // new value [Set, Insert]
     Delta delta = 8;                 // modification of a scalar value - quill, math etc [Edit]
@@ -78,6 +77,7 @@ message Scalar {
     bool bool = 13;
     string string = 14;
     bytes bytes = 15;
+    int32 enum = 16;
   }
 }
 

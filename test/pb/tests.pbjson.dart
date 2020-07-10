@@ -142,3 +142,11 @@ const TransformTestCase$json = const {
   ],
 };
 
+const RandomTestItem$json = const {
+  '1': 'RandomTestItem',
+  '2': const [
+    const {'1': 'op', '3': 1, '4': 1, '5': 11, '6': '.delta.Op', '10': 'op'},
+    const {'1': 'expected', '3': 2, '4': 1, '5': 11, '6': '.tests.Person', '10': 'expected'},
+  ],
+};
+

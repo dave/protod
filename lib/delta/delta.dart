@@ -83,6 +83,7 @@ Tuple2<dynamic, protobuf.ValueOfFunc> getLocation(
   List<pb.Locator> location,
 ) {
   dynamic current = m;
+  protobuf.FieldInfo fi = null;
   protobuf.ValueOfFunc currentValueOf = null;
   pb.Locator previous;
   location.forEach((locator) {
@@ -90,15 +91,18 @@ Tuple2<dynamic, protobuf.ValueOfFunc> getLocation(
       if (current is protobuf.GeneratedMessage) {
         final msg = current as protobuf.GeneratedMessage;
         final fieldNumber = getFieldNumber(msg, locator.field_1);
-        final fi = msg.info_.fieldInfo[fieldNumber];
+        fi = msg.info_.fieldInfo[fieldNumber];
         if (!msg.hasField(fieldNumber)) {
-          if (fi.subBuilder != null) {
+          if (!fi.isRepeated && fi.subBuilder != null) {
             msg.setField(fieldNumber, fi.subBuilder());
           }
         }
         current = msg.getField(fieldNumber);
         if (fi is protobuf.MapFieldInfo) {
-          currentValueOf = fi.mapEntryBuilderInfo.byIndex[1].valueOf;
+          currentValueOf = (fi as protobuf.MapFieldInfo)
+              .mapEntryBuilderInfo
+              .byIndex[1]
+              .valueOf;
         } else {
           currentValueOf = fi.valueOf;
         }
@@ -113,7 +117,9 @@ Tuple2<dynamic, protobuf.ValueOfFunc> getLocation(
               final fieldNumber = getFieldNumber(msg, field);
               msg.clearField(fieldNumber);
             });
-            msg.setField(fieldNumber, fi.subBuilder());
+            if (!fi.isRepeated) {
+              msg.setField(fieldNumber, fi.subBuilder());
+            }
             current = msg.getField(fieldNumber);
           }
         }
@@ -130,7 +136,11 @@ Tuple2<dynamic, protobuf.ValueOfFunc> getLocation(
       }
     } else if (locator.hasKey()) {
       if (current is protobuf.PbMap) {
-        current = current[valueFromKey(locator.key)];
+        final k = valueFromKey(locator.key);
+        if (current[k] == null) {
+          current[k] = (fi as protobuf.MapFieldInfo).valueCreator();
+        }
+        current = current[k];
       } else {
         throw Exception(
             'key locator expected to find map, got ${current.runtimeType}');
@@ -171,14 +181,14 @@ dynamic getValue(
       return scalar.string;
     } else if (scalar.hasBytes()) {
       return scalar.bytes;
+    } else if (scalar.hasEnum_16()) {
+      return valueOf(scalar.enum_16);
     } else {
       //			//case *Scalar_Sint32, *Scalar_Sint64:
       //			//case *Scalar_Fixed32, *Scalar_Fixed64:
       //			//case *Scalar_Sfixed32, *Scalar_Sfixed64:
       throw Exception('unsupported scalar ${scalar.runtimeType} in getValue');
     }
-  } else if (op.hasEnum_5()) {
-    return valueOf(op.enum_5);
   } else if (op.hasDelta()) {
     final prevString = previous as String;
     final dlt = quillFromDelta(op.delta.quill);
@@ -295,19 +305,30 @@ applySetEdit(pb.Op o, protobuf.GeneratedMessage input,
         r,
         parent.info_.valueOfFunc(field),
       );
-      if (parent.info_.fieldInfo[field].isRepeated) {
+      final fi = parent.info_.fieldInfo[field];
+      if (fi.isRepeated) {
         var valueList = value as List;
         var fieldList = parent.getField(field) as protobuf.PbList;
         fieldList.clear();
         valueList.forEach((element) {
-          fieldList.add(element);
+          if (element is protobuf.ProtobufEnum) {
+            fieldList.add(fi.valueOf(element.value));
+          } else {
+            fieldList.add(element);
+          }
         });
-      } else if (parent.info_.fieldInfo[field].isMapField) {
+      } else if (fi.isMapField) {
         var valueMap = value as Map;
         var fieldMap = parent.getField(field) as protobuf.PbMap;
+        final mfi = fi as protobuf.MapFieldInfo;
         fieldMap.clear();
         valueMap.forEach((key, value) {
-          fieldMap[key] = value;
+          if (value is protobuf.ProtobufEnum) {
+            fieldMap[key] =
+                mfi.mapEntryBuilderInfo.fieldInfo[2].valueOf(value.value);
+          } else {
+            fieldMap[key] = value;
+          }
         });
       } else {
         parent.setField(field, value);
@@ -556,7 +577,7 @@ pb.Op set(List<pb.Locator> location, dynamic value) {
   } else if (value is protobuf.GeneratedMessage) {
     op.message = any.Any.pack(value);
   } else if (value is protobuf.ProtobufEnum) {
-    op.enum_5 = value.value;
+    op.scalar = pb.Scalar()..enum_16 = value.value;
   } else {
     op.object = getObject(value);
   }
@@ -580,7 +601,7 @@ pb.Op insert(List<pb.Locator> location, dynamic value) {
   } else if (value is protobuf.GeneratedMessage) {
     op.message = any.Any.pack(value);
   } else if (value is protobuf.ProtobufEnum) {
-    op.enum_5 = value.value;
+    op.scalar = pb.Scalar()..enum_16 = value.value;
   } else {
     op.object = getObject(value);
   }
@@ -609,7 +630,8 @@ bool isScalar(dynamic v) {
       v is String ||
       v is double ||
       v is bool ||
-      v is List<int>;
+      v is List<int> ||
+      v is protobuf.ProtobufEnum;
 }
 
 pb.Key keyString(String key) {
@@ -634,6 +656,10 @@ pb.Key keyUint32(int key) {
 
 pb.Key keyUint64(fixnum.Int64 key) {
   return pb.Key()..uint64 = key;
+}
+
+pb.Scalar scalarEnum(protobuf.ProtobufEnum value) {
+  return pb.Scalar()..enum_16 = value.value;
 }
 
 pb.Scalar scalarDouble(double value) {
@@ -815,6 +841,8 @@ dynamic valueFromScalar(pb.Scalar s) {
     return s.uint32;
   } else if (s.hasUint64()) {
     return s.uint64;
+  } else if (s.hasEnum_16()) {
+    return protobuf.ProtobufEnum(s.enum_16, "");
   }
 }
 
@@ -875,6 +903,8 @@ pb.Scalar getScalar(dynamic value) {
     return pb.Scalar()..bool_13 = value;
   } else if (value is List<int>) {
     return pb.Scalar()..bytes = value;
+  } else if (value is protobuf.ProtobufEnum) {
+    return pb.Scalar()..enum_16 = value.value;
   }
   throw Exception("unknown type ${value.runtimeType} in getScalar");
 }

@@ -1279,6 +1279,8 @@ func (t *Type) DartValueType() string {
 func (t *Type) DartValueConversion(name string) string {
 	if t.ValueType == SCALAR {
 		return fmt.Sprintf("delta.scalar%s(%s)", strings.Title(t.Value), DartTypesConversion[t.Value](name))
+	} else if t.ValueType == ENUM {
+		return fmt.Sprintf("delta.scalarEnum(%s)", name)
 	} else {
 		return name
 	}
@@ -1307,9 +1309,11 @@ func (t *Type) DartCollectionType() string {
 }
 
 func (t *Type) DartCollectionConversion(name string) string {
-	if t.ValueType == SCALAR {
-		if t.CollectionType == BASE {
+	if t.CollectionType == BASE {
+		if t.ValueType == SCALAR {
 			return fmt.Sprintf("delta.scalar%s(%s)", strings.Title(t.Value), DartTypesConversion[t.Value](name))
+		} else if t.ValueType == ENUM {
+			return fmt.Sprintf("delta.scalarEnum(%s)", name)
 		} else {
 			return name
 		}

@@ -540,3 +540,48 @@ class TransformTestCase extends $pb.GeneratedMessage {
   $1.Any ensureExpected2() => $_ensure(7);
 }
 
+class RandomTestItem extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('RandomTestItem', package: const $pb.PackageName('tests'), createEmptyInstance: create)
+    ..aOM<$0.Op>(1, 'op', subBuilder: $0.Op.create)
+    ..aOM<Person>(2, 'expected', subBuilder: Person.create)
+    ..hasRequiredFields = false
+  ;
+
+  RandomTestItem._() : super();
+  factory RandomTestItem() => create();
+  factory RandomTestItem.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory RandomTestItem.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  RandomTestItem clone() => RandomTestItem()..mergeFromMessage(this);
+  RandomTestItem copyWith(void Function(RandomTestItem) updates) => super.copyWith((message) => updates(message as RandomTestItem));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static RandomTestItem create() => RandomTestItem._();
+  RandomTestItem createEmptyInstance() => create();
+  static $pb.PbList<RandomTestItem> createRepeated() => $pb.PbList<RandomTestItem>();
+  @$core.pragma('dart2js:noInline')
+  static RandomTestItem getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<RandomTestItem>(create);
+  static RandomTestItem _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $0.Op get op => $_getN(0);
+  @$pb.TagNumber(1)
+  set op($0.Op v) { setField(1, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasOp() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearOp() => clearField(1);
+  @$pb.TagNumber(1)
+  $0.Op ensureOp() => $_ensure(0);
+
+  @$pb.TagNumber(2)
+  Person get expected => $_getN(1);
+  @$pb.TagNumber(2)
+  set expected(Person v) { setField(2, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasExpected() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearExpected() => clearField(2);
+  @$pb.TagNumber(2)
+  Person ensureExpected() => $_ensure(1);
+}
+

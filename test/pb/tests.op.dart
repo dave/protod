@@ -218,7 +218,7 @@ class Person_Type_type extends delta.Location {
   }
 
   delta.Op Set(pb.Person_Type value) {
-    return delta.set(location, value);
+    return delta.set(location, delta.scalarEnum(value));
   }
 
 }
@@ -229,7 +229,7 @@ class Person_Type_type_list extends delta.Location {
     return Person_Type_type(delta.copyAndAppendIndex(location, fixnum.Int64(i)));
   }
   delta.Op Insert(int index, pb.Person_Type value) {
-    return delta.insert(delta.copyAndAppendIndex(location, fixnum.Int64(index)), value);
+    return delta.insert(delta.copyAndAppendIndex(location, fixnum.Int64(index)), delta.scalarEnum(value));
   }
 
   delta.Op Move(int from, int to) {

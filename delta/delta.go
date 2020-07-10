@@ -82,7 +82,7 @@ func Compound(ops ...*Op) *Op {
 func applySet(op *Op, input proto.Message) error {
 	if op.Location == nil {
 		// root
-		v := getValue(protoreflect.ValueOfMessage(input.ProtoReflect()), op.Value)
+		v := getValue(nil, protoreflect.ValueOfMessage(input.ProtoReflect()), op.Value)
 		proto.Reset(input)
 		proto.Merge(input, v.Message().Interface())
 		return nil
@@ -98,23 +98,38 @@ func applySet(op *Op, input proto.Message) error {
 			return fmt.Errorf("can't apply field locator to %T", parent)
 		}
 		field := getField(locator.Field, parent)
-		value := getValueField(parent, field, parent.Get(field), op.Value)
+		factory := func() protoreflect.Value { return parent.NewField(field) }
+		value := getValueField(factory, parent.Get(field), op.Value)
 		parent.Set(field, value)
 	case *Locator_Index:
+
 		parent, ok := parent.(protoreflect.List)
 		if !ok {
 			return fmt.Errorf("can't apply list locator to %T", parent)
 		}
+		parentParentLocator, parentParentItemLocator := pop(parentLocator)
+		parentParent, _ := getLocation(input.ProtoReflect(), parentParentLocator)
+		parentParentMessage := parentParent.(protoreflect.Message)
+		parentParentField := getField(parentParentItemLocator.V.(*Locator_Field).Field, parentParentMessage)
+		factory := func() protoreflect.Value { return parentParentMessage.NewField(parentParentField) }
+
 		index := int(locator.Index)
-		value := getValue(parent.Get(index), op.Value)
+		value := getValue(factory, parent.Get(index), op.Value)
 		parent.Set(index, value)
 	case *Locator_Key:
 		parent, ok := parent.(protoreflect.Map)
 		if !ok {
 			return fmt.Errorf("can't apply map locator to %T", parent)
 		}
+
+		parentParentLocator, parentParentItemLocator := pop(parentLocator)
+		parentParent, _ := getLocation(input.ProtoReflect(), parentParentLocator)
+		parentParentMessage := parentParent.(protoreflect.Message)
+		parentParentField := getField(parentParentItemLocator.V.(*Locator_Field).Field, parentParentMessage)
+		factory := func() protoreflect.Value { return parentParentMessage.NewField(parentParentField) }
+
 		key := getMapKey(locator.Key)
-		value := getValue(parent.Get(key), op.Value)
+		value := getValue(factory, parent.Get(key), op.Value)
 		parent.Set(key, value)
 	}
 	return nil
@@ -149,7 +164,8 @@ func applyInsert(op *Op, input proto.Message) error {
 		if !ok {
 			return fmt.Errorf("can't insert with list locator in %T", parent)
 		}
-		value := getValue(protoreflect.Value{}, op.Value)
+
+		value := getValue(parent.NewElement, protoreflect.ValueOfList(parent), op.Value)
 		index := int(locator.Index)
 		length := parent.Len()
 		if index > length {
@@ -324,6 +340,8 @@ func reflectValueOfScalar(scalar *Scalar) protoreflect.Value {
 		return protoreflect.ValueOfString(value.String_)
 	case *Scalar_Bytes:
 		return protoreflect.ValueOfBytes(value.Bytes)
+	case *Scalar_Enum:
+		return protoreflect.ValueOfEnum(protoreflect.EnumNumber(value.Enum))
 	default:
 		//case *Scalar_Sint32, *Scalar_Sint64:
 		//case *Scalar_Fixed32, *Scalar_Fixed64:
@@ -352,19 +370,19 @@ func valueOfScalar(scalar *Scalar) interface{} {
 		return value.String_
 	case *Scalar_Bytes:
 		return value.Bytes
+	case *Scalar_Enum:
+		return protoreflect.EnumNumber(value.Enum)
 	default:
 		panic(fmt.Sprintf("unsupported scalar %T in valueOfScalar", value))
 	}
 }
 
-func getValue(current protoreflect.Value, value isOp_Value) protoreflect.Value {
-	return getValueField(nil, nil, current, value)
+func getValue(factory func() protoreflect.Value, current protoreflect.Value, value isOp_Value) protoreflect.Value {
+	return getValueField(factory, current, value)
 }
 
-func getValueField(parent protoreflect.Message, field protoreflect.FieldDescriptor, current protoreflect.Value, value isOp_Value) protoreflect.Value {
+func getValueField(factory func() protoreflect.Value, current protoreflect.Value, value isOp_Value) protoreflect.Value {
 	switch value := value.(type) {
-	case *Op_Enum:
-		return reflectValueOfEnum(value.Enum)
 	case *Op_Scalar:
 		return reflectValueOfScalar(value.Scalar)
 	case *Op_Delta:
@@ -386,7 +404,7 @@ func getValueField(parent protoreflect.Message, field protoreflect.FieldDescript
 		reflectMessage := proto1.MessageReflect(dynamicAny.Message)
 		return protoreflect.ValueOfMessage(reflectMessage)
 	case *Op_Object:
-		return fromObject(parent, field, value.Object)
+		return fromObject(factory, value.Object)
 	default:
 		//	*Op_Index
 		//	*Op_Key
@@ -395,7 +413,7 @@ func getValueField(parent protoreflect.Message, field protoreflect.FieldDescript
 	}
 }
 
-func fromObject(parent protoreflect.Message, field protoreflect.FieldDescriptor, object *Object) protoreflect.Value {
+func fromObject(factory func() protoreflect.Value, object *Object) protoreflect.Value {
 	switch value := object.V.(type) {
 	case *Object_Scalar:
 		return reflectValueOfScalar(value.Scalar)
@@ -404,45 +422,45 @@ func fromObject(parent protoreflect.Message, field protoreflect.FieldDescriptor,
 		reflectMessage := proto1.MessageReflect(dynamicAny.Message)
 		return protoreflect.ValueOfMessage(reflectMessage)
 	case *Object_List:
-		list := parent.NewField(field).List()
+		list := factory().List()
 		for _, o := range value.List.List {
-			list.Append(fromObject(nil, nil, o))
+			list.Append(fromObject(nil, o))
 		}
 		return protoreflect.ValueOfList(list)
 	case *Object_MapBool:
-		m := parent.NewField(field).Map()
+		m := factory().Map()
 		for k, o := range value.MapBool.Map {
-			m.Set(protoreflect.ValueOfBool(k).MapKey(), fromObject(nil, nil, o))
+			m.Set(protoreflect.ValueOfBool(k).MapKey(), fromObject(nil, o))
 		}
 		return protoreflect.ValueOfMap(m)
 	case *Object_MapInt32:
-		m := parent.NewField(field).Map()
+		m := factory().Map()
 		for k, o := range value.MapInt32.Map {
-			m.Set(protoreflect.ValueOfInt32(k).MapKey(), fromObject(nil, nil, o))
+			m.Set(protoreflect.ValueOfInt32(k).MapKey(), fromObject(nil, o))
 		}
 		return protoreflect.ValueOfMap(m)
 	case *Object_MapInt64:
-		m := parent.NewField(field).Map()
+		m := factory().Map()
 		for k, o := range value.MapInt64.Map {
-			m.Set(protoreflect.ValueOfInt64(k).MapKey(), fromObject(nil, nil, o))
+			m.Set(protoreflect.ValueOfInt64(k).MapKey(), fromObject(nil, o))
 		}
 		return protoreflect.ValueOfMap(m)
 	case *Object_MapUint32:
-		m := parent.NewField(field).Map()
+		m := factory().Map()
 		for k, o := range value.MapUint32.Map {
-			m.Set(protoreflect.ValueOfUint32(k).MapKey(), fromObject(nil, nil, o))
+			m.Set(protoreflect.ValueOfUint32(k).MapKey(), fromObject(nil, o))
 		}
 		return protoreflect.ValueOfMap(m)
 	case *Object_MapUint64:
-		m := parent.NewField(field).Map()
+		m := factory().Map()
 		for k, o := range value.MapUint64.Map {
-			m.Set(protoreflect.ValueOfUint64(k).MapKey(), fromObject(nil, nil, o))
+			m.Set(protoreflect.ValueOfUint64(k).MapKey(), fromObject(nil, o))
 		}
 		return protoreflect.ValueOfMap(m)
 	case *Object_MapString:
-		m := parent.NewField(field).Map()
+		m := factory().Map()
 		for k, o := range value.MapString.Map {
-			m.Set(protoreflect.ValueOfString(k).MapKey(), fromObject(nil, nil, o))
+			m.Set(protoreflect.ValueOfString(k).MapKey(), fromObject(nil, o))
 		}
 		return protoreflect.ValueOfMap(m)
 	default:
@@ -646,12 +664,10 @@ type ProtoEnum interface {
 
 func opValue(value interface{}) isOp_Value {
 	switch value := value.(type) {
-	case int, string, float64, float32, int64, int32, uint64, uint32, bool, []byte:
+	case int, string, float64, float32, int64, int32, uint64, uint32, bool, []byte, ProtoEnum:
 		return &Op_Scalar{Scalar: getScalar(value)}
 	case proto.Message:
 		return &Op_Message{Message: MustMarshalAny(value)}
-	case ProtoEnum:
-		return &Op_Enum{Enum: int32(value.Number())}
 	default:
 		return &Op_Object{Object: NewObject(value)}
 	}
@@ -782,6 +798,9 @@ func getScalar(value interface{}) *Scalar {
 	case []byte:
 		return &Scalar{V: &Scalar_Bytes{Bytes: value}}
 
+	case ProtoEnum:
+		return &Scalar{V: &Scalar_Enum{Enum: int32(value.Number())}}
+
 	default:
 		panic(fmt.Sprintf("invalid type %T for scalar", value))
 	}
@@ -828,6 +847,10 @@ func getLocation(m protoreflect.Message, loc []*Locator) (interface{}, func(prot
 			}
 			mapKey := getMapKey(key.Key)
 			value = c.Get(mapKey)
+			if !c.Has(mapKey) {
+				value = c.NewValue()
+				c.Set(mapKey, value)
+			}
 			setter = func(value protoreflect.Value) {
 				c.Set(mapKey, value)
 			}
@@ -843,6 +866,7 @@ func getLocation(m protoreflect.Message, loc []*Locator) (interface{}, func(prot
 		case protoreflect.Map:
 			current = valueInterface
 		default:
+			fmt.Printf("%T\n", value.Interface())
 			current = value
 		}
 	}
@@ -927,6 +951,9 @@ func NewLocatorKeyUint32(key uint32) *Locator {
 }
 func NewLocatorKeyUint64(key uint64) *Locator {
 	return &Locator{V: &Locator_Key{Key: &Key{V: &Key_Uint64{Uint64: key}}}}
+}
+func NewLocatorKey(key *Key) *Locator {
+	return &Locator{V: &Locator_Key{Key: key}}
 }
 
 type TreeRelationshipType int
@@ -1092,23 +1119,7 @@ func (o *Op) Debug() string {
 	return o.debug(0)
 }
 func (o *Op) debug(indent int) string {
-	keyToString := func(key *Key) string {
-		switch key := key.V.(type) {
-		case *Key_Bool:
-			return fmt.Sprintf("[%v]", key.Bool)
-		case *Key_Int32:
-			return fmt.Sprintf("[%v]", key.Int32)
-		case *Key_Int64:
-			return fmt.Sprintf("[%v]", key.Int64)
-		case *Key_Uint32:
-			return fmt.Sprintf("[%v]", key.Uint32)
-		case *Key_Uint64:
-			return fmt.Sprintf("[%v]", key.Uint64)
-		case *Key_String_:
-			return fmt.Sprintf("[%q]", key.String_)
-		}
-		return ""
-	}
+
 	locatorToString := func(loc *Locator) string {
 		switch locator := loc.V.(type) {
 		case *Locator_Field:
@@ -1137,13 +1148,13 @@ func (o *Op) debug(indent int) string {
 	case Op_Null:
 		return out + "NULL"
 	case Op_Set:
-		return out + fmt.Sprintf("SET(%s, %s)", locationToString(o.Location), o.Value)
+		return out + fmt.Sprintf("SET(%s, %v)", locationToString(o.Location), debugValue(o.Value))
 	case Op_Edit:
-		return out + fmt.Sprintf("EDIT(%s, %v)", locationToString(o.Location), o.Value.(*Op_Delta).Delta)
+		return out + fmt.Sprintf("EDIT(%s, %v)", locationToString(o.Location), debugValue(o.Value))
 	case Op_Insert:
-		return out + fmt.Sprintf("INSERT(%s, %v)", locationToString(o.Location), o.Value)
+		return out + fmt.Sprintf("INSERT(%s, %v)", locationToString(o.Location), debugValue(o.Value))
 	case Op_Move:
-		return out + fmt.Sprintf("MOVE(%s, %v)", locationToString(o.Location), o.Value.(*Op_Index).Index)
+		return out + fmt.Sprintf("MOVE(%s, %v)", locationToString(o.Location), debugValue(o.Value))
 	case Op_Rename:
 		return out + fmt.Sprintf("RENAME(%s, %v)", locationToString(o.Location), keyToString(o.Value.(*Op_Key).Key))
 	case Op_Delete:
@@ -1167,6 +1178,73 @@ func (o *Op) debug(indent int) string {
 		}
 		out += "\n)"
 		return out
+	}
+	return ""
+}
+func debugValue(v isOp_Value) string {
+	switch v := v.(type) {
+	case *Op_Scalar:
+		switch v := v.Scalar.V.(type) {
+		case *Scalar_Double:
+			return fmt.Sprintf("%v", v.Double)
+		case *Scalar_Float:
+			return fmt.Sprintf("%v", v.Float)
+		case *Scalar_Int32:
+			return fmt.Sprintf("%v", v.Int32)
+		case *Scalar_Int64:
+			return fmt.Sprintf("%v", v.Int64)
+		case *Scalar_Uint32:
+			return fmt.Sprintf("%v", v.Uint32)
+		case *Scalar_Uint64:
+			return fmt.Sprintf("%v", v.Uint64)
+		case *Scalar_Sint32:
+			return fmt.Sprintf("%v", v.Sint32)
+		case *Scalar_Sint64:
+			return fmt.Sprintf("%v", v.Sint64)
+		case *Scalar_Fixed32:
+			return fmt.Sprintf("%v", v.Fixed32)
+		case *Scalar_Fixed64:
+			return fmt.Sprintf("%v", v.Fixed64)
+		case *Scalar_Sfixed32:
+			return fmt.Sprintf("%v", v.Sfixed32)
+		case *Scalar_Sfixed64:
+			return fmt.Sprintf("%v", v.Sfixed64)
+		case *Scalar_Bool:
+			return fmt.Sprintf("%v", v.Bool)
+		case *Scalar_String_:
+			return fmt.Sprintf("%q", v.String_)
+		case *Scalar_Bytes:
+			return fmt.Sprintf("bytes[%d]", len(v.Bytes))
+		case *Scalar_Enum:
+			return fmt.Sprintf("enum[%d]", v.Enum)
+		}
+	case *Op_Message:
+		return fmt.Sprintf("message[%v]", v.Message.TypeUrl[20:])
+	case *Op_Object:
+		return fmt.Sprintf("%v", v.Object)
+	case *Op_Delta:
+		return fmt.Sprintf("%v", v.Delta.GetQuill().Quill())
+	case *Op_Index:
+		return fmt.Sprintf("index[%d]", v.Index)
+	case *Op_Key:
+		return fmt.Sprintf("key[%d]", keyToString(v.Key))
+	}
+	return ""
+}
+func keyToString(key *Key) string {
+	switch key := key.V.(type) {
+	case *Key_Bool:
+		return fmt.Sprintf("[%v]", key.Bool)
+	case *Key_Int32:
+		return fmt.Sprintf("[%v]", key.Int32)
+	case *Key_Int64:
+		return fmt.Sprintf("[%v]", key.Int64)
+	case *Key_Uint32:
+		return fmt.Sprintf("[%v]", key.Uint32)
+	case *Key_Uint64:
+		return fmt.Sprintf("[%v]", key.Uint64)
+	case *Key_String_:
+		return fmt.Sprintf("[%q]", key.String_)
 	}
 	return ""
 }

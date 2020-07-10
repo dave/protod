@@ -14,6 +14,7 @@ import (
 )
 
 func TestApply(t *testing.T) {
+
 	type itemType struct {
 		solo     bool
 		name     string
@@ -22,6 +23,24 @@ func TestApply(t *testing.T) {
 		expected proto.Message
 	}
 	items := []itemType{
+		{
+			name:     "list_enum_set",
+			op:       Op().Person().TypeList().Set([]Person_Type{Person_Charlie, Person_Alpha}),
+			data:     &Person{Name: "a"},
+			expected: &Person{Name: "a", TypeList: []Person_Type{Person_Charlie, Person_Alpha}},
+		},
+		{
+			name:     "map_enum_set",
+			op:       Op().Person().TypeMap().Set(map[string]Person_Type{"b": Person_Charlie}),
+			data:     &Person{Name: "a"},
+			expected: &Person{Name: "a", TypeMap: map[string]Person_Type{"b": Person_Charlie}},
+		},
+		{
+			name:     "key_missing_map_value",
+			op:       Op().Person().Cases().Key("b").Name().Set("c"),
+			data:     &Person{Name: "a"},
+			expected: &Person{Name: "a", Cases: map[string]*Case{"b": {Name: "c"}}},
+		},
 		{
 			name:     "insert_out_of_range",
 			op:       Op().Person().Alias().Insert(10, "b"),

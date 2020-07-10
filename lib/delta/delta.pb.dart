@@ -18,7 +18,6 @@ export 'delta.pbenum.dart';
 
 enum Op_Value {
   scalar, 
-  enum_5, 
   message, 
   object, 
   delta, 
@@ -30,7 +29,6 @@ enum Op_Value {
 class Op extends $pb.GeneratedMessage {
   static const $core.Map<$core.int, Op_Value> _Op_ValueByTag = {
     4 : Op_Value.scalar,
-    5 : Op_Value.enum_5,
     6 : Op_Value.message,
     7 : Op_Value.object,
     8 : Op_Value.delta,
@@ -39,12 +37,11 @@ class Op extends $pb.GeneratedMessage {
     0 : Op_Value.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('Op', package: const $pb.PackageName('delta'), createEmptyInstance: create)
-    ..oo(0, [4, 5, 6, 7, 8, 9, 10])
+    ..oo(0, [4, 6, 7, 8, 9, 10])
     ..e<Op_Type>(1, 'type', $pb.PbFieldType.OE, defaultOrMaker: Op_Type.Null, valueOf: Op_Type.valueOf, enumValues: Op_Type.values)
     ..pc<Locator>(2, 'location', $pb.PbFieldType.PM, subBuilder: Locator.create)
     ..pc<Op>(3, 'ops', $pb.PbFieldType.PM, subBuilder: Op.create)
     ..aOM<Scalar>(4, 'scalar', subBuilder: Scalar.create)
-    ..a<$core.int>(5, 'enum', $pb.PbFieldType.O3)
     ..aOM<$0.Any>(6, 'message', subBuilder: $0.Any.create)
     ..aOM<Object>(7, 'object', subBuilder: Object.create)
     ..aOM<Delta>(8, 'delta', subBuilder: Delta.create)
@@ -97,67 +94,58 @@ class Op extends $pb.GeneratedMessage {
   @$pb.TagNumber(4)
   Scalar ensureScalar() => $_ensure(3);
 
-  @$pb.TagNumber(5)
-  $core.int get enum_5 => $_getIZ(4);
-  @$pb.TagNumber(5)
-  set enum_5($core.int v) { $_setSignedInt32(4, v); }
-  @$pb.TagNumber(5)
-  $core.bool hasEnum_5() => $_has(4);
-  @$pb.TagNumber(5)
-  void clearEnum_5() => clearField(5);
-
   @$pb.TagNumber(6)
-  $0.Any get message => $_getN(5);
+  $0.Any get message => $_getN(4);
   @$pb.TagNumber(6)
   set message($0.Any v) { setField(6, v); }
   @$pb.TagNumber(6)
-  $core.bool hasMessage() => $_has(5);
+  $core.bool hasMessage() => $_has(4);
   @$pb.TagNumber(6)
   void clearMessage() => clearField(6);
   @$pb.TagNumber(6)
-  $0.Any ensureMessage() => $_ensure(5);
+  $0.Any ensureMessage() => $_ensure(4);
 
   @$pb.TagNumber(7)
-  Object get object => $_getN(6);
+  Object get object => $_getN(5);
   @$pb.TagNumber(7)
   set object(Object v) { setField(7, v); }
   @$pb.TagNumber(7)
-  $core.bool hasObject() => $_has(6);
+  $core.bool hasObject() => $_has(5);
   @$pb.TagNumber(7)
   void clearObject() => clearField(7);
   @$pb.TagNumber(7)
-  Object ensureObject() => $_ensure(6);
+  Object ensureObject() => $_ensure(5);
 
   @$pb.TagNumber(8)
-  Delta get delta => $_getN(7);
+  Delta get delta => $_getN(6);
   @$pb.TagNumber(8)
   set delta(Delta v) { setField(8, v); }
   @$pb.TagNumber(8)
-  $core.bool hasDelta() => $_has(7);
+  $core.bool hasDelta() => $_has(6);
   @$pb.TagNumber(8)
   void clearDelta() => clearField(8);
   @$pb.TagNumber(8)
-  Delta ensureDelta() => $_ensure(7);
+  Delta ensureDelta() => $_ensure(6);
 
   @$pb.TagNumber(9)
-  $fixnum.Int64 get index => $_getI64(8);
+  $fixnum.Int64 get index => $_getI64(7);
   @$pb.TagNumber(9)
-  set index($fixnum.Int64 v) { $_setInt64(8, v); }
+  set index($fixnum.Int64 v) { $_setInt64(7, v); }
   @$pb.TagNumber(9)
-  $core.bool hasIndex() => $_has(8);
+  $core.bool hasIndex() => $_has(7);
   @$pb.TagNumber(9)
   void clearIndex() => clearField(9);
 
   @$pb.TagNumber(10)
-  Key get key => $_getN(9);
+  Key get key => $_getN(8);
   @$pb.TagNumber(10)
   set key(Key v) { setField(10, v); }
   @$pb.TagNumber(10)
-  $core.bool hasKey() => $_has(9);
+  $core.bool hasKey() => $_has(8);
   @$pb.TagNumber(10)
   void clearKey() => clearField(10);
   @$pb.TagNumber(10)
-  Key ensureKey() => $_ensure(9);
+  Key ensureKey() => $_ensure(8);
 }
 
 enum Locator_V {
@@ -442,6 +430,7 @@ enum Scalar_V {
   bool_13, 
   string, 
   bytes, 
+  enum_16, 
   notSet
 }
 
@@ -462,10 +451,11 @@ class Scalar extends $pb.GeneratedMessage {
     13 : Scalar_V.bool_13,
     14 : Scalar_V.string,
     15 : Scalar_V.bytes,
+    16 : Scalar_V.enum_16,
     0 : Scalar_V.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('Scalar', package: const $pb.PackageName('delta'), createEmptyInstance: create)
-    ..oo(0, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+    ..oo(0, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
     ..a<$core.double>(1, 'double', $pb.PbFieldType.OD)
     ..a<$core.double>(2, 'float', $pb.PbFieldType.OF)
     ..a<$core.int>(3, 'int32', $pb.PbFieldType.O3)
@@ -481,6 +471,7 @@ class Scalar extends $pb.GeneratedMessage {
     ..aOB(13, 'bool')
     ..aOS(14, 'string')
     ..a<$core.List<$core.int>>(15, 'bytes', $pb.PbFieldType.OY)
+    ..a<$core.int>(16, 'enum', $pb.PbFieldType.O3)
     ..hasRequiredFields = false
   ;
 
@@ -636,6 +627,15 @@ class Scalar extends $pb.GeneratedMessage {
   $core.bool hasBytes() => $_has(14);
   @$pb.TagNumber(15)
   void clearBytes() => clearField(15);
+
+  @$pb.TagNumber(16)
+  $core.int get enum_16 => $_getIZ(15);
+  @$pb.TagNumber(16)
+  set enum_16($core.int v) { $_setSignedInt32(15, v); }
+  @$pb.TagNumber(16)
+  $core.bool hasEnum_16() => $_has(15);
+  @$pb.TagNumber(16)
+  void clearEnum_16() => clearField(16);
 }
 
 enum Delta_V {

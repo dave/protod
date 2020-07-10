@@ -12,7 +12,6 @@ const Op$json = const {
     const {'1': 'location', '3': 2, '4': 3, '5': 11, '6': '.delta.Locator', '10': 'location'},
     const {'1': 'ops', '3': 3, '4': 3, '5': 11, '6': '.delta.Op', '10': 'ops'},
     const {'1': 'scalar', '3': 4, '4': 1, '5': 11, '6': '.delta.Scalar', '9': 0, '10': 'scalar'},
-    const {'1': 'enum', '3': 5, '4': 1, '5': 5, '9': 0, '10': 'enum'},
     const {'1': 'message', '3': 6, '4': 1, '5': 11, '6': '.google.protobuf.Any', '9': 0, '10': 'message'},
     const {'1': 'object', '3': 7, '4': 1, '5': 11, '6': '.delta.Object', '9': 0, '10': 'object'},
     const {'1': 'delta', '3': 8, '4': 1, '5': 11, '6': '.delta.Delta', '9': 0, '10': 'delta'},
@@ -101,6 +100,7 @@ const Scalar$json = const {
     const {'1': 'bool', '3': 13, '4': 1, '5': 8, '9': 0, '10': 'bool'},
     const {'1': 'string', '3': 14, '4': 1, '5': 9, '9': 0, '10': 'string'},
     const {'1': 'bytes', '3': 15, '4': 1, '5': 12, '9': 0, '10': 'bytes'},
+    const {'1': 'enum', '3': 16, '4': 1, '5': 5, '9': 0, '10': 'enum'},
   ],
   '8': const [
     const {'1': 'v'},
