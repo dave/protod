@@ -38,7 +38,7 @@ void main() {
 //      print("expect: " +
 //          jsonEncode(info.expected.toProto3Json(typeRegistry: registry.types)));
       delta.apply(info.op, p);
-      expect(toObject(info.expected), toObject(p));
+      expect(toObject(p), toObject(info.expected));
     });
   });
 }

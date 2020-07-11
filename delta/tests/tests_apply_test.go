@@ -24,6 +24,18 @@ func TestApply(t *testing.T) {
 	}
 	items := []itemType{
 		{
+			name:     "edit_null_string_in_map",
+			op:       Op().Company().Flags().Key(1).Edit("", "a"),
+			data:     &Company{},
+			expected: &Company{Flags: map[int64]string{1: "a"}},
+		},
+		{
+			name:     "edit_null_string",
+			op:       Op().Person().Name().Edit("", "a"),
+			data:     &Person{},
+			expected: &Person{Name: "a"},
+		},
+		{
 			name:     "list_enum_set",
 			op:       Op().Person().TypeList().Set([]Person_Type{Person_Charlie, Person_Alpha}),
 			data:     &Person{Name: "a"},

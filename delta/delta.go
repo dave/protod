@@ -102,11 +102,11 @@ func applySet(op *Op, input proto.Message) error {
 		value := getValueField(factory, parent.Get(field), op.Value)
 		parent.Set(field, value)
 	case *Locator_Index:
-
 		parent, ok := parent.(protoreflect.List)
 		if !ok {
 			return fmt.Errorf("can't apply list locator to %T", parent)
 		}
+
 		parentParentLocator, parentParentItemLocator := pop(parentLocator)
 		parentParent, _ := getLocation(input.ProtoReflect(), parentParentLocator)
 		parentParentMessage := parentParent.(protoreflect.Message)
@@ -386,7 +386,10 @@ func getValueField(factory func() protoreflect.Value, current protoreflect.Value
 	case *Op_Scalar:
 		return reflectValueOfScalar(value.Scalar)
 	case *Op_Delta:
-		prevString := current.String()
+		var prevString string
+		if current.IsValid() {
+			prevString = current.String()
+		}
 		dlt := value.Delta.V.(*Delta_Quill).Quill.Quill()
 
 		// TODO: Is there a better way of applying the delta to prevString?

@@ -25,7 +25,8 @@ func TestSingle(t *testing.T) {
 func TestRandom(t *testing.T) {
 	p := &Person{Name: "a"}
 	var sb strings.Builder
-	for i := 0; i < 100000; i++ {
+	sb.WriteString("const RANDOM_CASES = '''")
+	for i := 0; i < 1000; i++ {
 		op := Random(p, func() protoreflect.Value { return protoreflect.ValueOfMessage((&Person{}).ProtoReflect()) })
 		if err := delta.Apply(op, p); err != nil {
 			t.Fatal(err)
@@ -38,12 +39,13 @@ func TestRandom(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if sb.Len() > 0 {
+		if i > 0 {
 			sb.WriteString("\n")
 		}
 		sb.Write(b)
 	}
-	if err := ioutil.WriteFile("data.txt", []byte(sb.String()), 0666); err != nil {
+	sb.WriteString("''';")
+	if err := ioutil.WriteFile("../../test/random_cases.dart", []byte(sb.String()), 0666); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -76,7 +78,20 @@ func mustJson(message proto.Message) string {
 // Random creates a random op that is valid to apply to message, for testing and benchmarking.
 func Random(message proto.Message, factory func() protoreflect.Value) *delta.Op {
 	ops := gatherValidOperationsMessage(nil, 0, message.ProtoReflect().Descriptor(), message.ProtoReflect(), factory, true)
-	return ops[rand.Intn(len(ops))].op
+	var total float64
+	for _, op := range ops {
+		total += op.weight()
+	}
+	target := rand.Float64() * total
+	var count float64
+	for _, op := range ops {
+		count += op.weight()
+		if count > target {
+			return op.op
+		}
+	}
+	panic("")
+	//return ops[rand.Intn(len(ops))].op
 }
 
 func gatherValidOperations(location []*delta.Locator, set int, field protoreflect.FieldDescriptor, value protoreflect.Value, factory func() protoreflect.Value, exists bool) []opData {
@@ -131,6 +146,13 @@ func gatherValidOperationsScalar(location []*delta.Locator, set int, field proto
 		ops = append(ops, opData{exists: exists, op: &delta.Op{Type: delta.Op_Delete, Location: location}})
 	}
 	ops = append(ops, opData{exists: exists, op: &delta.Op{Type: delta.Op_Set, Location: location, Value: randomOpValueIgnoreCollection(location, set, field, nil).(*delta.Op_Scalar)}})
+	if field.Kind() == protoreflect.StringKind {
+		var val string
+		if exists {
+			val = value.(string)
+		}
+		ops = append(ops, opData{exists: exists, op: delta.Edit(location, val, randomString())})
+	}
 	return ops
 }
 func gatherValidOperationsList(location []*delta.Locator, set int, field protoreflect.FieldDescriptor, list protoreflect.List, factory func() protoreflect.Value, exists bool) []opData {
@@ -153,13 +175,15 @@ func gatherValidOperationsList(location []*delta.Locator, set int, field protore
 
 	// DONE move
 	if list != nil && list.Len() > 0 {
-		randomSourceIndex := rand.Intn(list.Len())
-		randomDestinationIndex := rand.Intn(list.Len() + 1)
-		ops = append(ops, opData{exists: exists, op: &delta.Op{
-			Type:     delta.Op_Move,
-			Location: delta.CopyAndAppendIndex(location, int64(randomSourceIndex)),
-			Value:    &delta.Op_Index{Index: int64(randomDestinationIndex)},
-		}})
+		for i := 0; i < list.Len(); i++ { // repeat this n times where n=list length
+			randomSourceIndex := rand.Intn(list.Len())
+			randomDestinationIndex := rand.Intn(list.Len() + 1)
+			ops = append(ops, opData{exists: exists, op: &delta.Op{
+				Type:     delta.Op_Move,
+				Location: delta.CopyAndAppendIndex(location, int64(randomSourceIndex)),
+				Value:    &delta.Op_Index{Index: int64(randomDestinationIndex)},
+			}})
+		}
 	}
 
 	childFactory := func() protoreflect.Value { return factory().List().NewElement() }
@@ -212,21 +236,23 @@ func gatherValidOperationsMap(location []*delta.Locator, set int, field protoref
 	}
 
 	if len(keys) > 0 {
-		existingKey1 := deltaMapKey(keys[rand.Intn(len(keys))].Interface())
-		existingKey2 := deltaMapKey(keys[rand.Intn(len(keys))].Interface())
-		newKey := deltaMapKey(getRandomKey(field.MapKey()))
-
-		// DONE rename to existing key
-		ops = append(ops, opData{exists: exists, op: &delta.Op{
-			Type:     delta.Op_Rename,
-			Location: delta.CopyAndAppend(location, newLocatorKey(existingKey1)),
-			Value:    &delta.Op_Key{Key: existingKey2},
-		}})
+		for i := 0; i < len(keys); i++ { // repeat this n times where n=map length
+			existingKey1 := deltaMapKey(keys[rand.Intn(len(keys))].Interface())
+			existingKey2 := deltaMapKey(keys[rand.Intn(len(keys))].Interface())
+			// DONE rename to existing key
+			ops = append(ops, opData{exists: exists, op: &delta.Op{
+				Type:     delta.Op_Rename,
+				Location: delta.CopyAndAppend(location, newLocatorKey(existingKey1)),
+				Value:    &delta.Op_Key{Key: existingKey2},
+			}})
+		}
 
 		// rename to new key
+		existingKey := deltaMapKey(keys[rand.Intn(len(keys))].Interface())
+		newKey := deltaMapKey(getRandomKey(field.MapKey()))
 		ops = append(ops, opData{exists: exists, op: &delta.Op{
 			Type:     delta.Op_Rename,
-			Location: delta.CopyAndAppend(location, newLocatorKey(existingKey1)),
+			Location: delta.CopyAndAppend(location, newLocatorKey(existingKey)),
 			Value:    &delta.Op_Key{Key: newKey},
 		}})
 	}
@@ -579,4 +605,27 @@ func init() {
 type opData struct {
 	op     *delta.Op
 	exists bool // does this field / index / key already exist in the object?
+}
+
+func (o opData) weight() float64 {
+	var weight float64
+	switch o.op.Type {
+	case delta.Op_Set:
+		if o.exists {
+			weight = 1
+		} else {
+			weight = 2
+		}
+	case delta.Op_Edit:
+		weight = 5
+	case delta.Op_Insert:
+		weight = 2
+	case delta.Op_Move:
+		weight = 5
+	case delta.Op_Rename:
+		weight = 5
+	case delta.Op_Delete:
+		weight = 1
+	}
+	return weight
 }
