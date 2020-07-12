@@ -1051,6 +1051,22 @@ setItemIndex(pb.Op op, int i) {
   op.location[op.location.length - 1].index = fixnum.Int64(i);
 }
 
+setIndexAt(pb.Op op, int locationIndex, int valueIndex) {
+  op.location[locationIndex].index = fixnum.Int64(valueIndex);
+}
+
+int getIndexAt(pb.Op op, int locationIndex) {
+  return op.location[locationIndex].index.toInt();
+}
+
+setKeyAt(pb.Op op, int index, pb.Key key) {
+  op.location[index] = pb.Locator()..key = key;
+}
+
+pb.Key getKeyAt(pb.Op op, int index) {
+  return op.location[index].key;
+}
+
 int toIndex(pb.Op op) {
   return op.index.toInt();
 }

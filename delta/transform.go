@@ -111,9 +111,11 @@ func tIndependent(t, op *Op) *Op {
 	if behaviour.IndexValueShifter != nil && TreeRelationship(t.Parent(), op.Location) == TREE_ANCESTOR {
 		// Op is acting on a value that is a descendent of a value that may have had it's list index shifted by t.
 		// We should update the list index of the locator using the index shifter function.
-		valueShifter := behaviour.IndexValueShifter(t, op)
+		shifter := behaviour.IndexValueShifter(t, op)
+		index := len(t.Location) - 1
+		value := op.GetIndexAt(index)
 		out := proto.Clone(op).(*Op)
-		out.SetItemIndex(valueShifter(op.ItemIndex()))
+		out.SetIndexAt(index, shifter(value))
 		if opBehaviour.ValueIsLocation && TreeRelationship(t.Parent(), op.Parent()) == TREE_EQUAL {
 			// If t and op both act on values within the same list (have the same parent), AND op has a location at
 			// it's value, then we update the location using the location shifter. Example is two moves which are
@@ -129,9 +131,9 @@ func tIndependent(t, op *Op) *Op {
 		// should update the map key of the locator using the index shifter function.
 		shifter := behaviour.KeyShifter(t, op)
 		index := len(t.Location) - 1
-		value := op.Location[index].V.(*Locator_Key).Key
+		value := op.GetKeyAt(index)
 		out := proto.Clone(op).(*Op)
-		out.Location[index] = &Locator{V: &Locator_Key{Key: shifter(value)}}
+		out.SetKeyAt(index, shifter(value))
 		// We don't need to worry about updating the value because all possible instances where the value key would
 		// need updating are handled by special cases. e.g. conflicting map moves.
 		return out

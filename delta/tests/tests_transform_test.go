@@ -26,6 +26,13 @@ func TestTransform(t *testing.T) {
 	}
 	items := []itemType{
 		{
+			name:     "index_shifter_ancestor",
+			op1:      Op().Person().Cases().Key("a").Items().Index(1).Done().Set(true),
+			op2:      Op().Person().Cases().Key("a").Items().Index(2).Delete(),
+			data:     &Person{Cases: map[string]*Case{"a": {Items: []*Item{{Title: "a"}, {Title: "b"}, {Title: "c"}}}}},
+			expected: &Person{Cases: map[string]*Case{"a": {Items: []*Item{{Title: "a"}, {Title: "b", Done: true}}}}},
+		},
+		{
 			name: "compound",
 			op1: delta.Compound(
 				Op().Person().Alias().Insert(0, "a"),

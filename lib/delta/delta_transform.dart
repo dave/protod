@@ -109,9 +109,11 @@ pb.Op tIndependent(pb.Op t, pb.Op op) {
           TreeRelationshipType.ANCESTOR) {
     // Op is acting on a value that is a descendent of a value that may have had it's list index shifted by t.
     // We should update the list index of the locator using the index shifter function.
-    final valueShifter = behaviour.indexValueShifter(t, op);
+    final shifter = behaviour.indexValueShifter(t, op);
+    final index = t.location.length - 1;
+    final value = getIndexAt(op, index);
     var out = op.clone();
-    setItemIndex(out, valueShifter(itemIndex(op)));
+    setIndexAt(out, index, shifter(value));
     if (opBehaviour.valueIsLocation &&
         treeRelationship(parent(t), parent(op)) == TreeRelationshipType.EQUAL) {
       // If t and op both act on values within the same list (have the same parent), AND op has a location at
@@ -130,9 +132,9 @@ pb.Op tIndependent(pb.Op t, pb.Op op) {
     // should update the map key of the locator using the index shifter function.
     final shifter = behaviour.keyShifter(t, op);
     final index = t.location.length - 1;
-    final value = op.location[index].key;
+    final value = getKeyAt(op, index);
     var out = op.clone();
-    out.location[index] = pb.Locator()..key = shifter(value);
+    setKeyAt(op, index, shifter(value));
     // We don't need to worry about updating the value because all possible instances where the value key would
     // need updating are handled by special cases. e.g. conflicting map moves.
     return out;

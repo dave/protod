@@ -1,83 +1,26 @@
-package tests
+package randop
 
 import (
 	"fmt"
-	"io/ioutil"
 	"math/rand"
-	"strings"
-	"testing"
 	"time"
 
 	"github.com/dave/protod/delta"
-	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-func TestSingle(t *testing.T) {
-	p := mustPerson(`{"name":"a","cases":{"Cr2XdBjb3UcylPTJ6EU5":{"name":"MGAlPoo2h5yGPSG06GJB"}},"company":{"flags":{"-872":"gYacSXXsUH2gs3nijFSA"},"ceo":{"cases":{"gPVX7vGHN8gM50w3Nd8C":{"name":"jIGLrc4toMyDFeNbH49C","items":[{"title":"BGVvSkLSHYkwqcOg9FOM"},{"title":"viEAyVWRxrVRbEBlmAHW"}],"flags":{"-57":"RnvYVzuWx9TwFBYiwqN6"}}},"company":{"ceo":{"name":"ahmyWZL0rvz9Xb4AkE1n"}}}}}`)
-	op := mustOp(`{"type":"Insert","location":[{"field":{"name":"company","number":5}},{"field":{"name":"ceo","number":14}},{"field":{"name":"typeList","number":8}},{"index":"0"}],"scalar":{"enum":1}}`)
-	if err := delta.Apply(op, p); err != nil {
-		t.Fatal(err)
+// Get creates a random op that is valid to apply to message, for testing and benchmarking.
+func Get(message proto.Message) *delta.Op {
+	factory := func() protoreflect.Value {
+		clone := proto.Clone(message)
+		proto.Reset(clone)
+		return protoreflect.ValueOfMessage(clone.ProtoReflect())
 	}
-}
-
-func TestRandom(t *testing.T) {
-	p := &Person{Name: "a"}
-	var sb strings.Builder
-	sb.WriteString("const RANDOM_CASES = '''")
-	for i := 0; i < 1000; i++ {
-		op := Random(p, func() protoreflect.Value { return protoreflect.ValueOfMessage((&Person{}).ProtoReflect()) })
-		if err := delta.Apply(op, p); err != nil {
-			t.Fatal(err)
-		}
-		item := &RandomTestItem{
-			Op:       op,
-			Expected: proto.Clone(p).(*Person),
-		}
-		b, err := protojson.Marshal(item)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if i > 0 {
-			sb.WriteString("\n")
-		}
-		sb.Write(b)
-	}
-	sb.WriteString("''';")
-	if err := ioutil.WriteFile("../../test/random_cases.dart", []byte(sb.String()), 0666); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func mustPerson(s string) *Person {
-	value := &Person{}
-	err := protojson.Unmarshal([]byte(s), value)
-	if err != nil {
-		panic(err)
-	}
-	return value
-}
-func mustOp(s string) *delta.Op {
-	value := &delta.Op{}
-	err := protojson.Unmarshal([]byte(s), value)
-	if err != nil {
-		panic(err)
-	}
-	return value
-}
-
-func mustJson(message proto.Message) string {
-	b, err := protojson.Marshal(message)
-	if err != nil {
-		panic(err)
-	}
-	return string(b)
-}
-
-// Random creates a random op that is valid to apply to message, for testing and benchmarking.
-func Random(message proto.Message, factory func() protoreflect.Value) *delta.Op {
 	ops := gatherValidOperationsMessage(nil, 0, message.ProtoReflect().Descriptor(), message.ProtoReflect(), factory, true)
+	if len(ops) == 0 {
+		panic("")
+	}
 	var total float64
 	for _, op := range ops {
 		total += op.weight()
@@ -86,12 +29,39 @@ func Random(message proto.Message, factory func() protoreflect.Value) *delta.Op 
 	var count float64
 	for _, op := range ops {
 		count += op.weight()
-		if count > target {
+		if count >= target {
 			return op.op
 		}
 	}
 	panic("")
-	//return ops[rand.Intn(len(ops))].op
+}
+
+func List(message proto.Message, length int) []*delta.Op {
+	factory := func() protoreflect.Value {
+		clone := proto.Clone(message)
+		proto.Reset(clone)
+		return protoreflect.ValueOfMessage(clone.ProtoReflect())
+	}
+	ops := gatherValidOperationsMessage(nil, 0, message.ProtoReflect().Descriptor(), message.ProtoReflect(), factory, true)
+	if len(ops) == 0 {
+		panic("")
+	}
+	var total float64
+	for _, op := range ops {
+		total += op.weight()
+	}
+	var out []*delta.Op
+	for i := 0; i < length; i++ {
+		target := rand.Float64() * total
+		var count float64
+		for _, op := range ops {
+			count += op.weight()
+			if count >= target {
+				out = append(out, op.op)
+			}
+		}
+	}
+	return out
 }
 
 func gatherValidOperations(location []*delta.Locator, set int, field protoreflect.FieldDescriptor, value protoreflect.Value, factory func() protoreflect.Value, exists bool) []opData {
@@ -336,21 +306,22 @@ func randomObjectValue(location []*delta.Locator, set int, field protoreflect.Fi
 }
 func randomProtoList(location []*delta.Locator, set int, field protoreflect.FieldDescriptor, factory func() protoreflect.Value) protoreflect.List {
 	list := factory().List()
-	for i := 0; i < rand.Intn(3); i++ {
+	for i := 0; i < rand.Intn(RANDOM_COLLECTION_MAX_ITEMS); i++ {
 		list.Append(randomProtoValueIgnoreCollection(delta.CopyAndAppendIndex(location, int64(i)), set, field, list.NewElement))
 	}
 	return list
 }
+
 func randomDeltaList(location []*delta.Locator, set int, field protoreflect.FieldDescriptor, factory func() protoreflect.Value) *delta.Object {
 	var obs []*delta.Object
-	for i := 0; i < rand.Intn(3); i++ {
+	for i := 0; i < rand.Intn(RANDOM_COLLECTION_MAX_ITEMS); i++ {
 		obs = append(obs, randomObjectValue(delta.CopyAndAppendIndex(location, int64(i)), set, field, factory().List().NewElement))
 	}
 	return &delta.Object{V: &delta.Object_List{List: &delta.List{List: obs}}}
 }
 func randomProtoMap(location []*delta.Locator, set int, keyField, valueField protoreflect.FieldDescriptor, factory func() protoreflect.Value) protoreflect.Map {
 	m := factory().Map()
-	for i := 0; i < rand.Intn(3); i++ {
+	for i := 0; i < rand.Intn(RANDOM_COLLECTION_MAX_ITEMS); i++ {
 		k := getRandomKey(keyField)
 		protoKey := protoMapKey(k)
 		deltaKey := deltaMapKey(k)
@@ -363,7 +334,7 @@ func randomDeltaMap(location []*delta.Locator, set int, keyField, valueField pro
 	switch keyField.Kind() {
 	case protoreflect.BoolKind:
 		m := map[bool]*delta.Object{}
-		for i := 0; i < rand.Intn(3); i++ {
+		for i := 0; i < rand.Intn(RANDOM_COLLECTION_MAX_ITEMS); i++ {
 			key := rand.Intn(1) == 0
 			value := randomObjectValue(delta.CopyAndAppendKeyBool(location, key), set, valueField, factory().Map().NewValue)
 			m[key] = value
@@ -371,7 +342,7 @@ func randomDeltaMap(location []*delta.Locator, set int, keyField, valueField pro
 		return &delta.Object{V: &delta.Object_MapBool{MapBool: &delta.MapBool{Map: m}}}
 	case protoreflect.Int32Kind:
 		m := map[int32]*delta.Object{}
-		for i := 0; i < rand.Intn(3); i++ {
+		for i := 0; i < rand.Intn(RANDOM_COLLECTION_MAX_ITEMS); i++ {
 			key := int32(rand.Intn(2048) - 1024)
 			value := randomObjectValue(delta.CopyAndAppendKeyInt32(location, key), set, valueField, factory().Map().NewValue)
 			m[key] = value
@@ -379,7 +350,7 @@ func randomDeltaMap(location []*delta.Locator, set int, keyField, valueField pro
 		return &delta.Object{V: &delta.Object_MapInt32{MapInt32: &delta.MapInt32{Map: m}}}
 	case protoreflect.Int64Kind:
 		m := map[int64]*delta.Object{}
-		for i := 0; i < rand.Intn(3); i++ {
+		for i := 0; i < rand.Intn(RANDOM_COLLECTION_MAX_ITEMS); i++ {
 			key := int64(rand.Intn(2048) - 1024)
 			value := randomObjectValue(delta.CopyAndAppendKeyInt64(location, key), set, valueField, factory().Map().NewValue)
 			m[key] = value
@@ -387,7 +358,7 @@ func randomDeltaMap(location []*delta.Locator, set int, keyField, valueField pro
 		return &delta.Object{V: &delta.Object_MapInt64{MapInt64: &delta.MapInt64{Map: m}}}
 	case protoreflect.Uint32Kind:
 		m := map[uint32]*delta.Object{}
-		for i := 0; i < rand.Intn(3); i++ {
+		for i := 0; i < rand.Intn(RANDOM_COLLECTION_MAX_ITEMS); i++ {
 			key := uint32(rand.Intn(1024))
 			value := randomObjectValue(delta.CopyAndAppendKeyUint32(location, key), set, valueField, factory().Map().NewValue)
 			m[key] = value
@@ -395,7 +366,7 @@ func randomDeltaMap(location []*delta.Locator, set int, keyField, valueField pro
 		return &delta.Object{V: &delta.Object_MapUint32{MapUint32: &delta.MapUint32{Map: m}}}
 	case protoreflect.Uint64Kind:
 		m := map[uint64]*delta.Object{}
-		for i := 0; i < rand.Intn(3); i++ {
+		for i := 0; i < rand.Intn(RANDOM_COLLECTION_MAX_ITEMS); i++ {
 			key := uint64(rand.Intn(1024))
 			value := randomObjectValue(delta.CopyAndAppendKeyUint64(location, key), set, valueField, factory().Map().NewValue)
 			m[key] = value
@@ -403,7 +374,7 @@ func randomDeltaMap(location []*delta.Locator, set int, keyField, valueField pro
 		return &delta.Object{V: &delta.Object_MapUint64{MapUint64: &delta.MapUint64{Map: m}}}
 	case protoreflect.StringKind:
 		m := map[string]*delta.Object{}
-		for i := 0; i < rand.Intn(3); i++ {
+		for i := 0; i < rand.Intn(RANDOM_COLLECTION_MAX_ITEMS); i++ {
 			key := randomString()
 			value := randomObjectValue(delta.CopyAndAppendKeyString(location, key), set, valueField, factory().Map().NewValue)
 			m[key] = value
@@ -589,18 +560,29 @@ func randomString() string {
 	return string(b)
 }
 
-func shouldIterate(location []*delta.Locator, set int) bool {
-	unset := len(location) - set
-
-	if unset > 3 {
-		return rand.Float64() < 0.3
-	}
-	return rand.Float64() < 0.7
-}
-
 func init() {
 	rand.Seed(time.Now().Unix())
 }
+
+func shouldIterate(location []*delta.Locator, set int) bool {
+	unset := len(location) - set
+
+	switch {
+	case unset >= 4:
+		return false
+	case unset == 3:
+		return rand.Float64() < 0.1
+	case unset == 2:
+		return rand.Float64() < 0.2
+	case unset == 1:
+		return rand.Float64() < 0.4
+	case unset == 0:
+		return rand.Float64() < 0.6
+	}
+	panic("")
+}
+
+const RANDOM_COLLECTION_MAX_ITEMS = 5
 
 type opData struct {
 	op     *delta.Op
@@ -614,16 +596,16 @@ func (o opData) weight() float64 {
 		if o.exists {
 			weight = 1
 		} else {
-			weight = 2
+			weight = 5
 		}
 	case delta.Op_Edit:
 		weight = 5
 	case delta.Op_Insert:
-		weight = 2
+		weight = 5
 	case delta.Op_Move:
-		weight = 5
+		weight = 10
 	case delta.Op_Rename:
-		weight = 5
+		weight = 10
 	case delta.Op_Delete:
 		weight = 1
 	}

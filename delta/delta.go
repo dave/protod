@@ -139,6 +139,22 @@ func (o *Op) ItemIndex() int64 {
 	return o.Item().V.(*Locator_Index).Index
 }
 
+func (o *Op) SetIndexAt(locationIndex int, valueIndex int64) {
+	o.Location[locationIndex].V.(*Locator_Index).Index = valueIndex
+}
+
+func (o *Op) GetIndexAt(locationIndex int) int64 {
+	return o.Location[locationIndex].V.(*Locator_Index).Index
+}
+
+func (o *Op) SetKeyAt(index int, key *Key) {
+	o.Location[index] = &Locator{V: &Locator_Key{Key: key}}
+}
+
+func (o *Op) GetKeyAt(index int) *Key {
+	return o.Location[index].V.(*Locator_Key).Key
+}
+
 func (o *Op) SetItemIndex(i int64) {
 	o.Item().V.(*Locator_Index).Index = i
 }
