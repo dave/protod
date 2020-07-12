@@ -32,9 +32,6 @@ func Get(ctx context.Context, server *pserver.Server, t pserver.DocumentType, id
 	if err != nil {
 		return 0, nil, err
 	}
-	if document == nil {
-		return 0, nil, fmt.Errorf("document not found")
-	}
 
 	state, err = server.Changes(ctx, nil, t, ref, state, 0, func(op *delta.Op) error {
 		if err := delta.Apply(op, document); err != nil {
@@ -199,9 +196,6 @@ func UpdateSnapshot(ctx context.Context, server *pserver.Server, t pserver.Docum
 	snapshotState, document, _, err := server.UnpackSnapshot(ctx, nil, t, ref)
 	if err != nil {
 		return fmt.Errorf("unpacking snapshot: %w", err)
-	}
-	if document == nil {
-		return fmt.Errorf("document not found")
 	}
 
 	state, err := server.Changes(ctx, nil, t, ref, snapshotState, 0, func(op *delta.Op) error {
