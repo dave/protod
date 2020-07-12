@@ -420,6 +420,9 @@ func getValueField(factory func() protoreflect.Value, current protoreflect.Value
 		return protoreflect.ValueOfString(sb.String())
 	case *Op_Message:
 		dynamicAny := MustUnmarshalAny(value.Message)
+		//if dynamicAny == nil {
+		//	return protoreflect.Value{}
+		//}
 		reflectMessage := proto1.MessageReflect(dynamicAny.Message)
 		return protoreflect.ValueOfMessage(reflectMessage)
 	case *Op_Object:
@@ -438,6 +441,9 @@ func fromObject(factory func() protoreflect.Value, object *Object) protoreflect.
 		return reflectValueOfScalar(value.Scalar)
 	case *Object_Message:
 		dynamicAny := MustUnmarshalAny(value.Message)
+		//if dynamicAny == nil {
+		//	return protoreflect.Value{}
+		//}
 		reflectMessage := proto1.MessageReflect(dynamicAny.Message)
 		return protoreflect.ValueOfMessage(reflectMessage)
 	case *Object_List:
@@ -893,6 +899,9 @@ func getLocation(m protoreflect.Message, loc []*Locator) (interface{}, func(prot
 }
 
 func MustMarshalAny(m proto.Message) *anypb.Any {
+	//if m == nil || !m.ProtoReflect().IsValid() {
+	//	return nil
+	//}
 	a, err := ptypes.MarshalAny(proto1.MessageV1(m))
 	if err != nil {
 		panic(err)
@@ -901,6 +910,9 @@ func MustMarshalAny(m proto.Message) *anypb.Any {
 }
 
 func MustUnmarshalAny(any *anypb.Any) *ptypes.DynamicAny {
+	//if any == nil {
+	//	return nil
+	//}
 	da := &ptypes.DynamicAny{}
 	err := ptypes.UnmarshalAny(any.ProtoReflect().Interface().(*anypb.Any), da)
 	if err != nil {

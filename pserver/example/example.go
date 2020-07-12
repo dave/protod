@@ -1,7 +1,8 @@
-package tests
+package example
 
 import (
 	"context"
+	"testing"
 
 	"cloud.google.com/go/firestore"
 	"github.com/dave/protod/delta"
@@ -11,6 +12,15 @@ import (
 )
 
 const UPDATE_SNAPSHOT_FREQUENCY = 5 // would be higher for real server
+const PROJECT_ID = "pserver-testing"
+
+func New(ctx context.Context, t *testing.T) *pserver.Server {
+	fc, err := firestore.NewClient(ctx, PROJECT_ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return pserver.New(fc)
+}
 
 func Get(ctx context.Context, server *pserver.Server, t pserver.DocumentType, id string) (int64, proto.Message, error) {
 

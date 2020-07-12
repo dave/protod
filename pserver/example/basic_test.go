@@ -1,4 +1,4 @@
-package tests
+package example
 
 import (
 	"context"
@@ -8,27 +8,15 @@ import (
 	"os"
 	"testing"
 
-	"cloud.google.com/go/firestore"
 	"github.com/dave/protod/delta"
 	"github.com/dave/protod/delta/tests"
-	"github.com/dave/protod/pserver"
 	"google.golang.org/protobuf/proto"
 )
-
-const PROJECT_ID = "pserver-testing"
-
-func getServer(ctx context.Context, t *testing.T) *pserver.Server {
-	fc, err := firestore.NewClient(ctx, PROJECT_ID)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return pserver.New(fc)
-}
 
 func TestBasic(t *testing.T) {
 	ctx := context.Background()
 	resetDatabase(t)
-	server := getServer(ctx, t)
+	server := New(ctx, t)
 	defer server.Close()
 
 	var err error
