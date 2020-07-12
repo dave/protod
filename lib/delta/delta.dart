@@ -568,6 +568,10 @@ pb.Op edit(List<pb.Locator> location, String from, String to) {
 }
 
 pb.Op set(List<pb.Locator> location, dynamic value) {
+  if (value == null) {
+    throw Exception("null value used in set operation");
+  }
+
   var op = pb.Op()
     ..type = pb.Op_Type.Set
     ..location.addAll(location);
@@ -592,6 +596,10 @@ pb.Op delete(List<pb.Locator> location) {
 }
 
 pb.Op insert(List<pb.Locator> location, dynamic value) {
+  if (value == null) {
+    throw Exception("null value used in set operation");
+  }
+
   var op = pb.Op()
     ..type = pb.Op_Type.Insert
     ..location.addAll(location);

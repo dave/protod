@@ -83,6 +83,9 @@ func applySet(op *Op, input proto.Message) error {
 	if op.Location == nil {
 		// root
 		v := getValue(nil, protoreflect.ValueOfMessage(input.ProtoReflect()), op.Value)
+		if !v.IsValid() {
+			return fmt.Errorf("invalid value in applySet (root)")
+		}
 		proto.Reset(input)
 		proto.Merge(input, v.Message().Interface())
 		return nil
@@ -100,13 +103,15 @@ func applySet(op *Op, input proto.Message) error {
 		field := getField(locator.Field, parent)
 		factory := func() protoreflect.Value { return parent.NewField(field) }
 		value := getValueField(factory, parent.Get(field), op.Value)
+		if !value.IsValid() {
+			return fmt.Errorf("invalid value in applySet (field)")
+		}
 		parent.Set(field, value)
 	case *Locator_Index:
 		parent, ok := parent.(protoreflect.List)
 		if !ok {
 			return fmt.Errorf("can't apply list locator to %T", parent)
 		}
-
 		parentParentLocator, parentParentItemLocator := pop(parentLocator)
 		parentParent, _ := getLocation(input.ProtoReflect(), parentParentLocator)
 		parentParentMessage := parentParent.(protoreflect.Message)
@@ -115,6 +120,9 @@ func applySet(op *Op, input proto.Message) error {
 
 		index := int(locator.Index)
 		value := getValue(factory, parent.Get(index), op.Value)
+		if !value.IsValid() {
+			return fmt.Errorf("invalid value in applySet (index)")
+		}
 		parent.Set(index, value)
 	case *Locator_Key:
 		parent, ok := parent.(protoreflect.Map)
@@ -130,6 +138,9 @@ func applySet(op *Op, input proto.Message) error {
 
 		key := getMapKey(locator.Key)
 		value := getValue(factory, parent.Get(key), op.Value)
+		if !value.IsValid() {
+			return fmt.Errorf("invalid value in applySet (key)")
+		}
 		parent.Set(key, value)
 	}
 	return nil
@@ -420,9 +431,6 @@ func getValueField(factory func() protoreflect.Value, current protoreflect.Value
 		return protoreflect.ValueOfString(sb.String())
 	case *Op_Message:
 		dynamicAny := MustUnmarshalAny(value.Message)
-		//if dynamicAny == nil {
-		//	return protoreflect.Value{}
-		//}
 		reflectMessage := proto1.MessageReflect(dynamicAny.Message)
 		return protoreflect.ValueOfMessage(reflectMessage)
 	case *Op_Object:
@@ -441,9 +449,6 @@ func fromObject(factory func() protoreflect.Value, object *Object) protoreflect.
 		return reflectValueOfScalar(value.Scalar)
 	case *Object_Message:
 		dynamicAny := MustUnmarshalAny(value.Message)
-		//if dynamicAny == nil {
-		//	return protoreflect.Value{}
-		//}
 		reflectMessage := proto1.MessageReflect(dynamicAny.Message)
 		return protoreflect.ValueOfMessage(reflectMessage)
 	case *Object_List:
@@ -626,6 +631,9 @@ func Rename(location []*Locator, to interface{}) *Op {
 }
 
 func Insert(location []*Locator, value interface{}) *Op {
+	if value == nil {
+		panic("nil value used in insert operation")
+	}
 	return &Op{
 		Type:     Op_Insert,
 		Location: location,
@@ -634,6 +642,9 @@ func Insert(location []*Locator, value interface{}) *Op {
 }
 
 func Set(location []*Locator, value interface{}) *Op {
+	if value == nil {
+		panic("nil value used in set operation")
+	}
 	return &Op{
 		Type:     Op_Set,
 		Location: location,
@@ -899,9 +910,6 @@ func getLocation(m protoreflect.Message, loc []*Locator) (interface{}, func(prot
 }
 
 func MustMarshalAny(m proto.Message) *anypb.Any {
-	//if m == nil || !m.ProtoReflect().IsValid() {
-	//	return nil
-	//}
 	a, err := ptypes.MarshalAny(proto1.MessageV1(m))
 	if err != nil {
 		panic(err)
@@ -910,9 +918,6 @@ func MustMarshalAny(m proto.Message) *anypb.Any {
 }
 
 func MustUnmarshalAny(any *anypb.Any) *ptypes.DynamicAny {
-	//if any == nil {
-	//	return nil
-	//}
 	da := &ptypes.DynamicAny{}
 	err := ptypes.UnmarshalAny(any.ProtoReflect().Interface().(*anypb.Any), da)
 	if err != nil {

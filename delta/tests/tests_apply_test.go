@@ -23,12 +23,6 @@ func TestApply(t *testing.T) {
 		expected proto.Message
 	}
 	items := []itemType{
-		//{
-		//	name:     "set_nil",
-		//	op:       Op().Company().Set(nil),
-		//	data:     &Company{Name: "a"},
-		//	expected: &Company{},
-		//},
 		{
 			name:     "edit_null_string_in_map",
 			op:       Op().Company().Flags().Key(1).Edit("", "a"),
