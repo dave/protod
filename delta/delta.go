@@ -10,6 +10,7 @@ import (
 	proto1 "github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/sergi/go-diff/diffmatchpatch"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -18,6 +19,14 @@ import (
 //quill "github.com/fmpwizard/go-quilljs-delta/delta"
 
 func Transform(op1, op2 *Op, op1priority bool) (op1x *Op, op2x *Op, err error) {
+	//defer func() {
+	//	if r := recover(); r != nil {
+	//		fmt.Println(r)
+	//		fmt.Println(op1.Debug())
+	//		fmt.Println(op2.Debug())
+	//		panic(r)
+	//	}
+	//}()
 	defer func() {
 		if r := recover(); r != nil {
 			switch r := r.(type) {
@@ -45,7 +54,17 @@ func Transform(op1, op2 *Op, op1priority bool) (op1x *Op, op2x *Op, err error) {
 }
 
 func Apply(op *Op, input proto.Message) error {
-	if op == nil {
+	//defer func() {
+	//	if r := recover(); r != nil {
+	//		fmt.Println(r)
+	//		fmt.Println(op.Debug())
+	//		fmt.Println(input == nil)
+	//		fmt.Println(input)
+	//		fmt.Println(mustJson(input))
+	//		panic(r)
+	//	}
+	//}()
+	if op == nil || op.Type == Op_Null {
 		return nil
 	}
 	switch op.Type {
@@ -193,6 +212,9 @@ func applyInsert(op *Op, input proto.Message) error {
 		}
 
 		value := getValue(parent.NewElement, protoreflect.ValueOfList(parent), op.Value)
+		if !value.IsValid() {
+			return fmt.Errorf("invalid value in applyInsert")
+		}
 		index := int(locator.Index)
 		length := parent.Len()
 		if index > length {
@@ -1170,6 +1192,9 @@ func (o *Op) debug(indent int) string {
 		return ""
 	}
 	locationToString := func(loc []*Locator) string {
+		if len(loc) == 0 {
+			return "[root]"
+		}
 		var parts []string
 		for _, locator := range loc {
 			parts = append(parts, locatorToString(locator))
@@ -1287,4 +1312,12 @@ func keyToString(key *Key) string {
 
 func ToOpValue(in interface{}) isOp_Value {
 	return in.(isOp_Value)
+}
+
+func mustJson(message proto.Message) string {
+	b, err := protojson.Marshal(message)
+	if err != nil {
+		panic(err)
+	}
+	return string(b)
 }

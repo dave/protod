@@ -164,12 +164,11 @@ func (s *Server) UnpackSnapshot(ctx context.Context, tx *firestore.Transaction, 
 	if err != nil {
 		return 0, nil, nil, fmt.Errorf("getting snapshot value from blob: %w", err)
 	}
-	if len(documentBytes) == 0 {
-		return serverSnapshot.State, nil, nil, nil
-	}
-	documentMessage := t.Document()
-	if err := proto.Unmarshal(documentBytes, documentMessage); err != nil {
-		return 0, nil, nil, fmt.Errorf("unmarshaling value: %w", err)
+	documentMessage := t.Document.ProtoReflect().New().Interface()
+	if len(documentBytes) > 0 {
+		if err := proto.Unmarshal(documentBytes, documentMessage); err != nil {
+			return 0, nil, nil, fmt.Errorf("unmarshaling value: %w", err)
+		}
 	}
 	return serverSnapshot.State, documentMessage, snapshotMessage, nil
 }
@@ -218,7 +217,7 @@ type DocumentType struct {
 	Collection    string
 	Snapshot      func(*firestore.DocumentSnapshot) (*Snapshot, proto.Message, error)
 	State         func(*firestore.DocumentSnapshot) (*State, proto.Message, error)
-	Document      func() proto.Message
+	Document      proto.Message
 	StateField    string
 	SnapshotField string
 }

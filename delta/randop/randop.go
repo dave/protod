@@ -13,9 +13,7 @@ import (
 // Get creates a random op that is valid to apply to message, for testing and benchmarking.
 func Get(message proto.Message) *delta.Op {
 	factory := func() protoreflect.Value {
-		clone := proto.Clone(message)
-		proto.Reset(clone)
-		return protoreflect.ValueOfMessage(clone.ProtoReflect())
+		return protoreflect.ValueOfMessage(message.ProtoReflect().New())
 	}
 	ops := gatherValidOperationsMessage(nil, 0, message.ProtoReflect().Descriptor(), message.ProtoReflect(), factory, true)
 	if len(ops) == 0 {
@@ -38,9 +36,7 @@ func Get(message proto.Message) *delta.Op {
 
 func List(message proto.Message, length int) []*delta.Op {
 	factory := func() protoreflect.Value {
-		clone := proto.Clone(message)
-		proto.Reset(clone)
-		return protoreflect.ValueOfMessage(clone.ProtoReflect())
+		return protoreflect.ValueOfMessage(message.ProtoReflect().New())
 	}
 	ops := gatherValidOperationsMessage(nil, 0, message.ProtoReflect().Descriptor(), message.ProtoReflect(), factory, true)
 	if len(ops) == 0 {

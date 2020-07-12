@@ -39,7 +39,7 @@ pb.Op compound(List<pb.Op> ops) {
 }
 
 apply(pb.Op op, protobuf.GeneratedMessage m, [protobuf.TypeRegistry r]) {
-  if (op == null) {
+  if (op == null || op.type == pb.Op_Type.Null) {
     return;
   }
   switch (op.type) {

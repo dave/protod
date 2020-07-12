@@ -2,12 +2,14 @@ package example
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"cloud.google.com/go/firestore"
 	"github.com/dave/protod/delta"
 	"github.com/dave/protod/delta/tests"
 	"github.com/dave/protod/pserver"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -26,13 +28,16 @@ func Get(ctx context.Context, server *pserver.Server, t pserver.DocumentType, id
 
 	ref := server.Firestore.Collection(t.Collection).Doc(id)
 
-	state, value, _, err := server.UnpackSnapshot(ctx, nil, t, ref)
+	state, document, _, err := server.UnpackSnapshot(ctx, nil, t, ref)
 	if err != nil {
 		return 0, nil, err
 	}
+	if document == nil {
+		return 0, nil, fmt.Errorf("document not found")
+	}
 
 	state, err = server.Changes(ctx, nil, t, ref, state, 0, func(op *delta.Op) error {
-		if err := delta.Apply(op, value); err != nil {
+		if err := delta.Apply(op, document); err != nil {
 			return err
 		}
 		return nil
@@ -41,7 +46,7 @@ func Get(ctx context.Context, server *pserver.Server, t pserver.DocumentType, id
 		return 0, nil, err
 	}
 
-	return state, value, nil
+	return state, document, nil
 }
 
 func Add(ctx context.Context, server *pserver.Server, t pserver.DocumentType, request string, document proto.Message) (string, error) {
@@ -192,6 +197,12 @@ func UpdateSnapshot(ctx context.Context, server *pserver.Server, t pserver.Docum
 	// Update the value snapshot. this doesn't need to be inside a transaction, because if the
 	// snapshot is slightly out of date it doesn't matter.
 	snapshotState, document, _, err := server.UnpackSnapshot(ctx, nil, t, ref)
+	if err != nil {
+		return fmt.Errorf("unpacking snapshot: %w", err)
+	}
+	if document == nil {
+		return fmt.Errorf("document not found")
+	}
 
 	state, err := server.Changes(ctx, nil, t, ref, snapshotState, 0, func(op *delta.Op) error {
 		if err := delta.Apply(op, document); err != nil {
@@ -220,14 +231,14 @@ var COMPANY = pserver.DocumentType{
 	Collection: "company",
 	Snapshot:   unpackSnapshot,
 	State:      unpackState,
-	Document:   func() proto.Message { return &tests.Company{} },
+	Document:   &tests.Company{},
 }
 
 var PERSON = pserver.DocumentType{
 	Collection: "person",
 	Snapshot:   unpackSnapshot,
 	State:      unpackState,
-	Document:   func() proto.Message { return &tests.Person{} },
+	Document:   &tests.Person{},
 }
 
 func unpackSnapshot(s *firestore.DocumentSnapshot) (*pserver.Snapshot, proto.Message, error) {
@@ -244,4 +255,12 @@ func unpackState(s *firestore.DocumentSnapshot) (*pserver.State, proto.Message, 
 		return nil, nil, err
 	}
 	return state, state, nil
+}
+
+func mustJson(message proto.Message) string {
+	b, err := protojson.Marshal(message)
+	if err != nil {
+		panic(err)
+	}
+	return string(b)
 }

@@ -5,10 +5,10 @@ import 'package:protod/delta/delta_shifters.dart';
 import 'package:protod/delta/delta_transform_generated.dart';
 
 pb.Op transform(pb.Op t, pb.Op op, bool priority) {
-  if (op == null) {
+  if (op == null || op.type == pb.Op_Type.Null) {
     return null;
   }
-  if (t == null) {
+  if (t == null || t.type == pb.Op_Type.Null) {
     return op.clone();
   }
   if (op.type == pb.Op_Type.Compound) {

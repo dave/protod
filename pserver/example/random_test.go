@@ -12,7 +12,6 @@ import (
 	"github.com/dave/protod/delta/randop"
 	"github.com/dave/protod/delta/tests"
 	"github.com/dave/protod/pserver"
-	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -26,11 +25,11 @@ func TestRandom(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	//u1 := &User{user: 1, t: t, server: server}
+	u1 := &User{user: 1, t: t, server: server}
 	u2 := &User{user: 2, t: t, server: server}
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
-	//go u1.Run(id, wg)
+	go u1.Run(id, wg)
 	go u2.Run(id, wg)
 	wg.Wait()
 }
@@ -47,6 +46,7 @@ type User struct {
 const REPEATS = 1000
 
 func (u *User) Run(id string, wg *sync.WaitGroup) {
+	time.Sleep(time.Duration(rand.Intn(200)) * time.Millisecond)
 	u.Get(id)
 	for i := 0; i < REPEATS; i++ {
 		time.Sleep(time.Duration(rand.Intn(200)) * time.Millisecond)
@@ -98,12 +98,4 @@ func (u *User) Refresh() {
 	}
 	u.state = state
 	fmt.Printf("%d) REFRESH %d %s\n", u.user, u.state, mustJson(u.document))
-}
-
-func mustJson(message proto.Message) string {
-	b, err := protojson.Marshal(message)
-	if err != nil {
-		panic(err)
-	}
-	return string(b)
 }

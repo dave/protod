@@ -5,10 +5,10 @@ import (
 )
 
 func (t *Op) Transform(op *Op, priority bool) *Op {
-	if op == nil {
+	if op == nil || op.Type == Op_Null {
 		return nil
 	}
-	if t == nil {
+	if t == nil || t.Type == Op_Null {
 		return proto.Clone(op).(*Op)
 	}
 	t1 := t
