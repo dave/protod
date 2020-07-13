@@ -3,6 +3,7 @@ package example
 import (
 	"context"
 	"fmt"
+	"sync"
 	"testing"
 
 	"cloud.google.com/go/firestore"
@@ -15,6 +16,8 @@ import (
 
 const UPDATE_SNAPSHOT_FREQUENCY = 5 // would be higher for real server
 const PROJECT_ID = "pserver-testing"
+
+var locks = map[string]*sync.Mutex{}
 
 func New(ctx context.Context, t *testing.T) *pserver.Server {
 	fc, err := firestore.NewClient(ctx, PROJECT_ID)
@@ -92,10 +95,16 @@ func Add(ctx context.Context, server *pserver.Server, t pserver.DocumentType, re
 		return "", err
 	}
 
+	locks[id] = &sync.Mutex{}
+
 	return id, nil
 }
 
 func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, request, id string, state int64, op *delta.Op) (int64, *delta.Op, error) {
+
+	locks[id].Lock()
+	defer func() { locks[id].Unlock() }()
+
 	// 3) Let's refer to op as OP2
 	op2 := op
 

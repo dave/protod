@@ -134,7 +134,7 @@ pb.Op tIndependent(pb.Op t, pb.Op op) {
     final index = t.location.length - 1;
     final value = getKeyAt(op, index);
     var out = op.clone();
-    setKeyAt(op, index, shifter(value));
+    setKeyAt(out, index, shifter(value));
     // We don't need to worry about updating the value because all possible instances where the value key would
     // need updating are handled by special cases. e.g. conflicting map moves.
     return out;

@@ -1068,7 +1068,7 @@ int getIndexAt(pb.Op op, int locationIndex) {
 }
 
 setKeyAt(pb.Op op, int index, pb.Key key) {
-  op.location[index] = pb.Locator()..key = key;
+  op.location[index] = (pb.Locator()..key = key);
 }
 
 pb.Key getKeyAt(pb.Op op, int index) {

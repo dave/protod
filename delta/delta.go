@@ -1,6 +1,7 @@
 package delta
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strings"
@@ -15,8 +16,6 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/anypb"
 )
-
-//quill "github.com/fmpwizard/go-quilljs-delta/delta"
 
 func Transform(op1, op2 *Op, op1priority bool) (op1x *Op, op2x *Op, err error) {
 	//defer func() {
@@ -58,8 +57,6 @@ func Apply(op *Op, input proto.Message) error {
 	//	if r := recover(); r != nil {
 	//		fmt.Println(r)
 	//		fmt.Println(op.Debug())
-	//		fmt.Println(input == nil)
-	//		fmt.Println(input)
 	//		fmt.Println(mustJson(input))
 	//		panic(r)
 	//	}
@@ -1177,7 +1174,6 @@ func (o *Op) Debug() string {
 	return o.debug(0)
 }
 func (o *Op) debug(indent int) string {
-
 	locatorToString := func(loc *Locator) string {
 		switch locator := loc.V.(type) {
 		case *Locator_Field:
@@ -1204,6 +1200,9 @@ func (o *Op) debug(indent int) string {
 	var out string
 	for i := 0; i < indent; i++ {
 		out += "\t"
+	}
+	if o == nil {
+		return out + "NIL"
 	}
 	switch o.Type {
 	case Op_Null:
@@ -1284,7 +1283,7 @@ func debugValue(v isOp_Value) string {
 	case *Op_Object:
 		return fmt.Sprintf("%v", v.Object)
 	case *Op_Delta:
-		return fmt.Sprintf("%v", v.Delta.GetQuill().Quill())
+		return fmt.Sprintf("%v", func() string { b, _ := json.Marshal(v.Delta.GetQuill().Quill()); return string(b) }())
 	case *Op_Index:
 		return fmt.Sprintf("index[%d]", v.Index)
 	case *Op_Key:
@@ -1315,7 +1314,13 @@ func ToOpValue(in interface{}) isOp_Value {
 }
 
 func mustJson(message proto.Message) string {
-	b, err := protojson.Marshal(message)
+	if message == nil {
+		return "[nil]"
+	}
+	if !message.ProtoReflect().IsValid() {
+		return "[invalid]"
+	}
+	b, err := protojson.MarshalOptions{Indent: "\t"}.Marshal(message)
 	if err != nil {
 		panic(err)
 	}

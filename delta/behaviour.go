@@ -148,8 +148,8 @@ var Behaviours = map[OpType]map[LocatorType]OpBehaviour{
 		},
 		KEY: {
 			ValueIsLocation:      false,
-			ItemIsDeleted:        false,
-			ValueIsDeleted:       true,
+			ItemIsDeleted:        true,
+			ValueIsDeleted:       false,
 			IndexValueShifter:    nil,
 			IndexLocationShifter: nil,
 			KeyShifter:           nil,

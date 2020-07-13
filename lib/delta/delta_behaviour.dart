@@ -166,8 +166,8 @@ final Map<OpType, Map<LocatorType, OpBehaviour>> Behaviours = {
     ),
     LocatorType.KEY: OpBehaviour(
       valueIsLocation: false,
-      itemIsDeleted: false,
-      valueIsDeleted: true,
+      itemIsDeleted: true,
+      valueIsDeleted: false,
       indexValueShifter: null,
       indexLocationShifter: null,
       keyShifter: null,

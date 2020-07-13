@@ -13,6 +13,50 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+func TestConflict(t *testing.T) {
+	ctx := context.Background()
+	resetDatabase(t)
+	server := New(ctx, t)
+	defer server.Close()
+
+	var err error
+	var msg proto.Message
+	var id string
+	var op *delta.Op
+
+	var user1State = int64(1)
+	var user1Value = &tests.Person{Name: "a", Cases: map[string]*tests.Case{"b": {Name: "c"}}}
+
+	var user2State int64
+	var user2Value *tests.Person
+
+	// user1 adds value
+	id, err = Add(ctx, server, PERSON, uniqueID(), user1Value)
+	handle(t, err)
+
+	// user2 gets value
+	user2State, msg, err = Get(ctx, server, PERSON, id)
+	handle(t, err)
+	user2Value = msg.(*tests.Person)
+	check(t, "user2 get", user2Value, user2State, user1Value, user1State)
+
+	// user1 sets name
+	op = tests.Op().Person().Cases().Key("b").Name().Edit("c", "d")
+	handle(t, delta.Apply(op, user1Value))
+	user1State, op, err = Edit(ctx, server, PERSON, uniqueID(), id, user1State, op)
+	handle(t, err)
+	handle(t, delta.Apply(op, user1Value))
+	check(t, "user1 edit 1", user1Value, user1State, &tests.Person{Name: "a", Cases: map[string]*tests.Case{"b": {Name: "d"}}}, 2)
+
+	// user2 deletes name
+	op = tests.Op().Person().Cases().Key("b").Delete()
+	handle(t, delta.Apply(op, user2Value))
+	user2State, op, err = Edit(ctx, server, PERSON, uniqueID(), id, user2State, op)
+	handle(t, err)
+	handle(t, delta.Apply(op, user2Value))
+	check(t, "user2 edit 1", user2Value, user2State, &tests.Person{Name: "a", Cases: map[string]*tests.Case{}}, 4)
+}
+
 func TestBasic(t *testing.T) {
 	ctx := context.Background()
 	resetDatabase(t)

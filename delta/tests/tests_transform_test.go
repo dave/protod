@@ -26,6 +26,13 @@ func TestTransform(t *testing.T) {
 	}
 	items := []itemType{
 		{
+			name:     "delete_key_edit_inside",
+			op1:      Op().Person().Cases().Key("b").Name().Edit("c", "d"),
+			op2:      Op().Person().Cases().Key("b").Delete(),
+			data:     &Person{Name: "a", Cases: map[string]*Case{"b": {Name: "c"}}},
+			expected: &Person{Name: "a", Cases: map[string]*Case{}},
+		},
+		{
 			name:     "index_shifter_ancestor",
 			op1:      Op().Person().Cases().Key("a").Items().Index(1).Done().Set(true),
 			op2:      Op().Person().Cases().Key("a").Items().Index(2).Delete(),

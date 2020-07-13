@@ -156,21 +156,22 @@ func (s *Server) UnpackSnapshot(ctx context.Context, tx *firestore.Transaction, 
 			return 0, nil, nil, fmt.Errorf("getting snapshot document: %w", err)
 		}
 	}
-	serverSnapshot, snapshotMessage, err := t.Snapshot(doc)
+	var serverSnapshot *Snapshot
+	serverSnapshot, snapshot, err = t.Snapshot(doc)
 	if err != nil {
 		return 0, nil, nil, fmt.Errorf("unpacking snapshot: %w", err)
 	}
-	documentBytes, err := s.FromBlob(serverSnapshot.Value)
+	b, err := s.FromBlob(serverSnapshot.Value)
 	if err != nil {
 		return 0, nil, nil, fmt.Errorf("getting snapshot value from blob: %w", err)
 	}
-	documentMessage := t.Document.ProtoReflect().New().Interface()
-	if len(documentBytes) > 0 {
-		if err := proto.Unmarshal(documentBytes, documentMessage); err != nil {
+	document = t.Document.ProtoReflect().New().Interface()
+	if len(b) > 0 {
+		if err := proto.Unmarshal(b, document); err != nil {
 			return 0, nil, nil, fmt.Errorf("unmarshaling value: %w", err)
 		}
 	}
-	return serverSnapshot.State, documentMessage, snapshotMessage, nil
+	return serverSnapshot.State, document, snapshot, nil
 }
 
 func (s *Server) Transform(ctx context.Context, tx *firestore.Transaction, t DocumentType, ref *firestore.DocumentRef, op2 *delta.Op, before, after int64) (state int64, op1x, op2x *delta.Op, err error) {
