@@ -13,6 +13,58 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+func TestRenameConflict(t *testing.T) {
+	ctx := context.Background()
+	resetDatabase(t)
+	server := New(ctx, t)
+	defer server.Close()
+
+	var err error
+	var msg proto.Message
+	var id string
+	var op *delta.Op
+
+	var user1State = int64(1)
+	var user1Value = &tests.Person{Cases: map[string]*tests.Case{"a": {Name: "x", Flags: map[int64]string{1: "a", 2: "b"}}}}
+
+	var user2State int64
+	var user2Value *tests.Person
+
+	// user1 adds value
+	id, err = Add(ctx, server, PERSON, uniqueID(), user1Value)
+	handle(t, err)
+
+	// user2 gets value
+	user2State, msg, err = Get(ctx, server, PERSON, id)
+	handle(t, err)
+	user2Value = msg.(*tests.Person)
+	check(t, "user2 get", user2Value, user2State, user1Value, user1State)
+
+	// user1 renames key
+	op = tests.Op().Person().Cases().Rename("a", "b")
+	handle(t, delta.Apply(op, user1Value))
+	user1State, op, err = Edit(ctx, server, PERSON, uniqueID(), id, user1State, op)
+	handle(t, err)
+	handle(t, delta.Apply(op, user1Value))
+	check(t, "user1 rename key", user1Value, user1State, &tests.Person{Cases: map[string]*tests.Case{"b": {Name: "x", Flags: map[int64]string{1: "a", 2: "b"}}}}, 2)
+
+	// user2 set inside renamed key
+	op = tests.Op().Person().Cases().Key("a").Flags().Rename(1, 3)
+	handle(t, delta.Apply(op, user2Value))
+	user2State, op, err = Edit(ctx, server, PERSON, uniqueID(), id, user2State, op)
+	handle(t, err)
+	handle(t, delta.Apply(op, user2Value))
+	check(t, "user2 set inside renamed key", user2Value, user2State, &tests.Person{Cases: map[string]*tests.Case{"b": {Name: "x", Flags: map[int64]string{3: "a", 2: "b"}}}}, 3)
+
+	// user1 renames key
+	op = tests.Op().Person().Cases().Key("b").Name().Set("y")
+	handle(t, delta.Apply(op, user1Value))
+	user1State, op, err = Edit(ctx, server, PERSON, uniqueID(), id, user1State, op)
+	handle(t, err)
+	handle(t, delta.Apply(op, user1Value))
+	check(t, "user1 rename key", user1Value, user1State, &tests.Person{Cases: map[string]*tests.Case{"b": {Name: "y", Flags: map[int64]string{3: "a", 2: "b"}}}}, 4)
+}
+
 func TestConflict(t *testing.T) {
 	ctx := context.Background()
 	resetDatabase(t)

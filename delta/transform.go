@@ -616,7 +616,7 @@ func tRenameKeyRenameKey(t, op *Op, priority bool) *Op {
 		return proto.Clone(op).(*Op)
 	default:
 		// independent operations
-		return proto.Clone(op).(*Op)
+		return tIndependent(t, op)
 	}
 }
 

@@ -26,6 +26,21 @@ func TestTransform(t *testing.T) {
 	}
 	items := []itemType{
 		{
+			name:     "renames_bug",
+			op1:      Op().Person().Cases().Rename("a", "b"),
+			op2:      Op().Person().Cases().Key("a").Flags().Rename(1, 3),
+			data:     &Person{Cases: map[string]*Case{"a": {Name: "b", Flags: map[int64]string{1: "c"}}}},
+			expected: &Person{Cases: map[string]*Case{"b": {Name: "b", Flags: map[int64]string{3: "c"}}}},
+		},
+		{
+			name:      "renames",
+			op1:       Op().Person().Cases().Rename("a", "b"),
+			op2:       Op().Person().Cases().Rename("a", "c"),
+			data:      &Person{Cases: map[string]*Case{"a": {Name: "x"}}},
+			expected1: &Person{Cases: map[string]*Case{"b": {Name: "x"}}},
+			expected2: &Person{Cases: map[string]*Case{"c": {Name: "x"}}},
+		},
+		{
 			name:     "delete_key_edit_inside",
 			op1:      Op().Person().Cases().Key("b").Name().Edit("c", "d"),
 			op2:      Op().Person().Cases().Key("b").Delete(),

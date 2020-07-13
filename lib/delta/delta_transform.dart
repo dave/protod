@@ -705,7 +705,7 @@ pb.Op tRenameKeyRenameKey(pb.Op t, pb.Op op, bool priority) {
     return op.clone();
   } else {
     // independent operations
-    return op.clone();
+    return tIndependent(t, op);
   }
 }
 

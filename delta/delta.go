@@ -305,6 +305,10 @@ func applyRename(op *Op, input proto.Message) error {
 		from := getMapKey(locator.Key)
 		to := getMapKey(value.Key)
 
+		if !parent.Has(from) {
+			return fmt.Errorf("map key %v not found when applying rename operation", from.Interface())
+		}
+
 		v := parent.Get(from)
 
 		parent.Set(to, v)

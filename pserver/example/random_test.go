@@ -77,7 +77,9 @@ func (u *User) Edit() {
 		}
 	}
 	op := delta.Compound(ops...)
+	//fmt.Println(u.user, "op", op.Debug())
 	state, opx, err := Edit(context.Background(), u.server, PERSON, uniqueID(), u.id, u.state, op)
+	//fmt.Println(u.user, "opx", opx.Debug())
 	if err != nil {
 		u.t.Fatal(err)
 	}
