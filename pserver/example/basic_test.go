@@ -13,6 +13,63 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+func TestRenameChain(t *testing.T) {
+	ctx := context.Background()
+	resetDatabase(t)
+	server := New(ctx, t)
+	defer server.Close()
+
+	var err error
+	var msg proto.Message
+	var id string
+	var op *delta.Op
+
+	var user1State = int64(1)
+	var user1Value = &tests.Company{Flags: map[int64]string{1: "a"}}
+
+	var user2State int64
+	var user2Value *tests.Company
+
+	// user1 adds value
+	id, err = Add(ctx, server, COMPANY, uniqueID(), user1Value)
+	handle(t, err)
+
+	// user2 gets document
+	user2State, msg, err = Get(ctx, server, COMPANY, id)
+	handle(t, err)
+	user2Value = msg.(*tests.Company)
+	check(t, "user2 get", user2Value, user2State, user1Value, user1State)
+
+	// user1 renames key
+	op = tests.Op().Company().Flags().Rename(1, 4)
+	handle(t, delta.Apply(op, user1Value))
+	user1State, op, err = Edit(ctx, server, COMPANY, uniqueID(), id, user1State, op)
+	handle(t, err)
+	handle(t, delta.Apply(op, user1Value))
+	check(t, "user1 rename key", user1Value, user1State, &tests.Company{Flags: map[int64]string{4: "a"}}, 2)
+
+	// user2 set inside renamed key
+	op = delta.Compound(
+		tests.Op().Company().Flags().Rename(1, 2),
+		tests.Op().Company().Flags().Rename(2, 3),
+	)
+	handle(t, delta.Apply(op, user2Value))
+	user2State, op, err = Edit(ctx, server, COMPANY, uniqueID(), id, user2State, op)
+	handle(t, err)
+	handle(t, delta.Apply(op, user2Value))
+	check(t, "user2 multi rename", user2Value, user2State, &tests.Company{Flags: map[int64]string{4: "a"}}, 3)
+
+	// user1 renames key
+	op = tests.Op().Company().Name().Set("a")
+	handle(t, delta.Apply(op, user1Value))
+	user1State, op, err = Edit(ctx, server, COMPANY, uniqueID(), id, user1State, op)
+	handle(t, err)
+	fmt.Println(op.Debug())
+	handle(t, delta.Apply(op, user1Value))
+	check(t, "user1 rename key", user1Value, user1State, &tests.Company{Name: "a", Flags: map[int64]string{4: "a"}}, 4)
+
+}
+
 func TestRenameConflict(t *testing.T) {
 	ctx := context.Background()
 	resetDatabase(t)
@@ -106,7 +163,7 @@ func TestConflict(t *testing.T) {
 	user2State, op, err = Edit(ctx, server, PERSON, uniqueID(), id, user2State, op)
 	handle(t, err)
 	handle(t, delta.Apply(op, user2Value))
-	check(t, "user2 edit 1", user2Value, user2State, &tests.Person{Name: "a", Cases: map[string]*tests.Case{}}, 4)
+	check(t, "user2 edit 1", user2Value, user2State, &tests.Person{Name: "a", Cases: map[string]*tests.Case{}}, 3)
 }
 
 func TestBasic(t *testing.T) {

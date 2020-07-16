@@ -89,9 +89,16 @@ func Apply(op *Op, input proto.Message) error {
 }
 
 func Compound(ops ...*Op) *Op {
-	return &Op{
-		Type: Op_Compound,
-		Ops:  ops,
+	switch len(ops) {
+	case 0:
+		return nil
+	case 1:
+		return ops[0]
+	default:
+		return &Op{
+			Type: Op_Compound,
+			Ops:  ops,
+		}
 	}
 }
 
@@ -925,7 +932,6 @@ func getLocation(m protoreflect.Message, loc []*Locator) (interface{}, func(prot
 		case protoreflect.Map:
 			current = valueInterface
 		default:
-			fmt.Printf("%T\n", value.Interface())
 			current = value
 		}
 	}
@@ -964,6 +970,9 @@ func CopyAndAppendField(in []*Locator, name string, number int32) []*Locator {
 }
 func CopyAndAppendIndex(in []*Locator, index int64) []*Locator {
 	return CopyAndAppend(in, NewLocatorIndex(index))
+}
+func CopyAndAppendKey(in []*Locator, key *Key) []*Locator {
+	return CopyAndAppend(in, NewLocatorKey(key))
 }
 func CopyAndAppendKeyString(in []*Locator, key string) []*Locator {
 	return CopyAndAppend(in, NewLocatorKeyString(key))

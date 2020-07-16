@@ -26,6 +26,17 @@ func TestTransform(t *testing.T) {
 	}
 	items := []itemType{
 		{
+			name: "compound_rename_bug",
+			op1:  Op().Company().Flags().Rename(1, 4),
+			op2: delta.Compound(
+				Op().Company().Flags().Rename(1, 2),
+				Op().Company().Flags().Rename(2, 3),
+			),
+			data:      &Company{Flags: map[int64]string{1: "a"}},
+			expected1: &Company{Flags: map[int64]string{4: "a"}},
+			expected2: &Company{Flags: map[int64]string{3: "a"}},
+		},
+		{
 			name:     "renames_bug",
 			op1:      Op().Person().Cases().Rename("a", "b"),
 			op2:      Op().Person().Cases().Key("a").Flags().Rename(1, 3),
@@ -637,6 +648,7 @@ func TestTransform(t *testing.T) {
 			op2:      Op().Company().Flags().Rename(2, 3),
 			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
 			expected: &Company{Flags: map[int64]string{3: "a"}},
+			// TODO: should this be {2: "a"}?
 		},
 		{
 			name:     "chained_move_1_reversed",
@@ -644,6 +656,7 @@ func TestTransform(t *testing.T) {
 			op2:      Op().Company().Flags().Rename(1, 2),
 			data:     &Company{Flags: map[int64]string{1: "a", 2: "b"}},
 			expected: &Company{Flags: map[int64]string{3: "a"}},
+			// TODO: should this be {2: "a"}?
 		},
 		{
 			name:     "chained_move_1a",
@@ -651,6 +664,7 @@ func TestTransform(t *testing.T) {
 			op2:      Op().Company().Flags().Rename(2, 3),
 			data:     &Company{Flags: map[int64]string{1: "a", 2: "b", 3: "c"}},
 			expected: &Company{Flags: map[int64]string{3: "a"}},
+			// TODO: should this be {2: "a"}?
 		},
 		{
 			name:     "chained_move_3",

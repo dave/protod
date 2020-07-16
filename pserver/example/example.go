@@ -120,14 +120,7 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, r
 		if err != nil {
 			return 0, nil, err
 		}
-		switch len(ops) {
-		case 0:
-			return state, nil, nil
-		case 1:
-			return state, ops[0], nil
-		default:
-			return state, delta.Compound(ops...), nil
-		}
+		return state, delta.Compound(ops...), nil
 	}
 
 	var after int64

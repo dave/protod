@@ -201,12 +201,7 @@ func (s *Server) Transform(ctx context.Context, tx *firestore.Transaction, t Doc
 
 	// 4) OP1.transform(OP2) = OP2x
 	// 5) OP2.transform(OP1) = OP1x
-	var op1 *delta.Op
-	if len(ops) == 1 {
-		op1 = ops[0]
-	} else {
-		op1 = delta.Compound(ops...)
-	}
+	op1 := delta.Compound(ops...)
 	op1x, op2x, err = delta.Transform(op1, op2, true)
 	if err != nil {
 		return 0, nil, nil, fmt.Errorf("transforming: %w", err)

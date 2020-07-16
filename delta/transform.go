@@ -11,37 +11,37 @@ func (t *Op) Transform(op *Op, priority bool) *Op {
 	if t == nil || t.Type == Op_Null {
 		return proto.Clone(op).(*Op)
 	}
-	t1 := t
 	if op.Type == Op_Compound {
+		var tx *Op
 		var transformed []*Op
-		for _, o := range op.Ops {
-			ox := t1.Transform(o, priority)
+		for i, o := range op.Ops {
 
-			// we must transform t against ox to get the correct t for the next item in the compound operation
-			t1 = ox.Transform(t1, !priority)
+			switch i {
+			case 0:
+				tx = t
+			default:
+				// we must transform tx against the previous operation
+				previous := op.Ops[i-1]
+				tx = previous.Transform(tx, !priority)
+			}
+
+			ox := tx.Transform(o, priority)
 
 			if ox != nil {
 				transformed = append(transformed, ox)
 			}
 		}
-		switch {
-		case len(transformed) == 0:
-			return nil
-		case len(transformed) == 1:
-			return transformed[0]
-		default:
-			return Compound(transformed...)
-		}
+		return Compound(transformed...)
 	}
 	if t.Type == Op_Compound {
-		out := proto.Clone(op).(*Op)
-		for _, t := range t.Ops {
-			out = t.Transform(out, priority)
-			if out == nil {
+		opx := proto.Clone(op).(*Op)
+		for _, tx := range t.Ops {
+			opx = tx.Transform(opx, priority)
+			if opx == nil {
 				return nil
 			}
 		}
-		return out
+		return opx
 	}
 	found, oneofLocation := SplitCommonOneofAncestor(t.Location, op.Location)
 	if found {
@@ -75,6 +75,7 @@ func (t *Op) Transform(op *Op, priority bool) *Op {
 		if valid[priorityOp.Type] {
 			// nuke everything, and re-run the priority operation (if it's a set / insert).
 			return Compound(
+				// TODO: this is probably broken - add tests
 				&Op{
 					Type:     Op_Delete,
 					Location: oneofLocation,
@@ -83,6 +84,7 @@ func (t *Op) Transform(op *Op, priority bool) *Op {
 			)
 		} else {
 			// nuke everything.
+			// TODO: this is probably broken - add tests
 			return &Op{
 				Type:     Op_Delete,
 				Location: oneofLocation,
@@ -650,14 +652,14 @@ func tDeleteKeyRenameKey(t, op *Op, priority bool) *Op {
 	case from != TREE_EQUAL && to != TREE_EQUAL:
 		return tIndependent(t, op)
 	case from == TREE_EQUAL:
-		// op is trying to move the value that op already deleted. In order to converge we must remove op and replace
+		// op is trying to move the value that t already deleted. In order to converge we must remove op and replace
 		// with an operation that deletes the "to" value.
 		return &Op{
 			Type:     Op_Delete,
 			Location: proto.Clone(op).(*Op).To(),
 		}
 	case to == TREE_EQUAL:
-		// op is trying to overwrite the value that op already deleted. continue with op.
+		// op is trying to overwrite the value that t already deleted. continue with op.
 		return proto.Clone(op).(*Op)
 	default:
 		panic("")

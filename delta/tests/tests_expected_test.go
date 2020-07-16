@@ -651,3 +651,17 @@ func printFlags(m proto.Message) string {
 	}
 	return out
 }
+
+func mustJson(message proto.Message) string {
+	if message == nil {
+		return "[nil]"
+	}
+	if !message.ProtoReflect().IsValid() {
+		return "[invalid]"
+	}
+	b, err := protojson.MarshalOptions{Indent: "\t"}.Marshal(message)
+	if err != nil {
+		panic(err)
+	}
+	return string(b)
+}
