@@ -48,6 +48,14 @@ func (t *Op) Transform(op *Op, priority bool) *Op {
 		// t and op have a common oneof ancestor, and are acting on separate values. Any operation on the descendant of
 		// a oneof value will delete the entire tree under all the other oneof values.
 
+		if t.Type == Op_Delete && len(t.Location) == len(oneofLocation) {
+			return nil
+		}
+
+		if op.Type == Op_Delete && len(op.Location) == len(oneofLocation) {
+			return proto.Clone(op).(*Op)
+		}
+
 		var priorityOp, notOp *Op
 		if priority {
 			priorityOp = t
@@ -57,23 +65,19 @@ func (t *Op) Transform(op *Op, priority bool) *Op {
 			notOp = t
 		}
 
-		valid := map[Op_Type]bool{
-			Op_Set:    true,
-			Op_Edit:   false,
-			Op_Insert: true,
-			Op_Move:   false,
-			Op_Rename: false,
-			Op_Delete: false,
+		valid := func(o *Op) bool {
+			return o.Type == Op_Set && len(o.Location) == len(oneofLocation)+1
 		}
 
-		if !valid[priorityOp.Type] && valid[notOp.Type] {
+		if valid(notOp) && !valid(priorityOp) {
 			// if notOp is valid and priorityOp is not, we can swap them round so a set/insert always takes priority
 			// over an edit/move/rename/delete.
 			priorityOp, notOp = notOp, priorityOp
 		}
 
-		if valid[priorityOp.Type] {
-			// nuke everything, and re-run the priority operation (if it's a set / insert).
+		// TODO ???
+		if valid(priorityOp) {
+			// nuke everything, and re-run the priority operation (if it's a set).
 			return Compound(
 				// TODO: this is probably broken - add tests
 				&Op{
@@ -97,7 +101,13 @@ func (t *Op) Transform(op *Op, priority bool) *Op {
 	if t.IsNullMove() {
 		return proto.Clone(op).(*Op)
 	}
-	return t.transform(op, priority)
+	opx := t.transform(op, priority)
+	//fmt.Println("---")
+	//fmt.Println("* t  :", t.Debug())
+	//fmt.Println("* op :", op.Debug())
+	//fmt.Println("* opx:", opx.Debug())
+	//fmt.Println("---")
+	return opx
 }
 
 func tIndependent(t, op *Op) *Op {
@@ -687,3 +697,4 @@ func tDelete(t, op *Op) *Op {
 func tDeleteFieldDeleteField(t, op *Op, priority bool) *Op { return tDelete(t, op) }
 func tDeleteIndexDeleteIndex(t, op *Op, priority bool) *Op { return tDelete(t, op) }
 func tDeleteKeyDeleteKey(t, op *Op, priority bool) *Op     { return tDelete(t, op) }
+func tDeleteOneofDeleteOneof(t, op *Op, priority bool) *Op { return tDelete(t, op) }

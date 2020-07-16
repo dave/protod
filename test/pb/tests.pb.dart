@@ -48,8 +48,26 @@ class Person_Embed extends $pb.GeneratedMessage {
   void clearName() => clearField(1);
 }
 
+enum Person_Choice {
+  str, 
+  dbl, 
+  itm, 
+  cas, 
+  cho, 
+  notSet
+}
+
 class Person extends $pb.GeneratedMessage {
+  static const $core.Map<$core.int, Person_Choice> _Person_ChoiceByTag = {
+    11 : Person_Choice.str,
+    12 : Person_Choice.dbl,
+    13 : Person_Choice.itm,
+    14 : Person_Choice.cas,
+    15 : Person_Choice.cho,
+    0 : Person_Choice.notSet
+  };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('Person', package: const $pb.PackageName('tests'), createEmptyInstance: create)
+    ..oo(0, [11, 12, 13, 14, 15])
     ..aOS(1, 'name')
     ..a<$core.int>(2, 'age', $pb.PbFieldType.OU3)
     ..m<$core.String, Case>(4, 'cases', entryClassName: 'Person.CasesEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OM, valueCreator: Case.create, packageName: const $pb.PackageName('tests'))
@@ -59,6 +77,11 @@ class Person extends $pb.GeneratedMessage {
     ..pc<Person_Type>(8, 'typeList', $pb.PbFieldType.PE, protoName: 'typeList', valueOf: Person_Type.valueOf, enumValues: Person_Type.values)
     ..m<$core.String, Person_Type>(9, 'typeMap', protoName: 'typeMap', entryClassName: 'Person.TypeMapEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OE, valueOf: Person_Type.valueOf, enumValues: Person_Type.values, packageName: const $pb.PackageName('tests'))
     ..aOM<Person_Embed>(10, 'embedded', subBuilder: Person_Embed.create)
+    ..aOS(11, 'str')
+    ..a<$core.double>(12, 'dbl', $pb.PbFieldType.OD)
+    ..aOM<Item>(13, 'itm', subBuilder: Item.create)
+    ..aOM<Case>(14, 'cas', subBuilder: Case.create)
+    ..aOM<Chooser>(15, 'cho', subBuilder: Chooser.create)
     ..hasRequiredFields = false
   ;
 
@@ -76,6 +99,9 @@ class Person extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static Person getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Person>(create);
   static Person _defaultInstance;
+
+  Person_Choice whichChoice() => _Person_ChoiceByTag[$_whichOneof(0)];
+  void clearChoice() => clearField($_whichOneof(0));
 
   @$pb.TagNumber(1)
   $core.String get name => $_getSZ(0);
@@ -137,6 +163,57 @@ class Person extends $pb.GeneratedMessage {
   void clearEmbedded() => clearField(10);
   @$pb.TagNumber(10)
   Person_Embed ensureEmbedded() => $_ensure(8);
+
+  @$pb.TagNumber(11)
+  $core.String get str => $_getSZ(9);
+  @$pb.TagNumber(11)
+  set str($core.String v) { $_setString(9, v); }
+  @$pb.TagNumber(11)
+  $core.bool hasStr() => $_has(9);
+  @$pb.TagNumber(11)
+  void clearStr() => clearField(11);
+
+  @$pb.TagNumber(12)
+  $core.double get dbl => $_getN(10);
+  @$pb.TagNumber(12)
+  set dbl($core.double v) { $_setDouble(10, v); }
+  @$pb.TagNumber(12)
+  $core.bool hasDbl() => $_has(10);
+  @$pb.TagNumber(12)
+  void clearDbl() => clearField(12);
+
+  @$pb.TagNumber(13)
+  Item get itm => $_getN(11);
+  @$pb.TagNumber(13)
+  set itm(Item v) { setField(13, v); }
+  @$pb.TagNumber(13)
+  $core.bool hasItm() => $_has(11);
+  @$pb.TagNumber(13)
+  void clearItm() => clearField(13);
+  @$pb.TagNumber(13)
+  Item ensureItm() => $_ensure(11);
+
+  @$pb.TagNumber(14)
+  Case get cas => $_getN(12);
+  @$pb.TagNumber(14)
+  set cas(Case v) { setField(14, v); }
+  @$pb.TagNumber(14)
+  $core.bool hasCas() => $_has(12);
+  @$pb.TagNumber(14)
+  void clearCas() => clearField(14);
+  @$pb.TagNumber(14)
+  Case ensureCas() => $_ensure(12);
+
+  @$pb.TagNumber(15)
+  Chooser get cho => $_getN(13);
+  @$pb.TagNumber(15)
+  set cho(Chooser v) { setField(15, v); }
+  @$pb.TagNumber(15)
+  $core.bool hasCho() => $_has(13);
+  @$pb.TagNumber(15)
+  void clearCho() => clearField(15);
+  @$pb.TagNumber(15)
+  Chooser ensureCho() => $_ensure(13);
 }
 
 class Company extends $pb.GeneratedMessage {

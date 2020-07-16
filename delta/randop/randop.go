@@ -250,9 +250,27 @@ func gatherValidOperationsMessage(location []*delta.Locator, set int, descriptor
 		Location: location,
 		Value:    &delta.Op_Message{Message: delta.MustMarshalAny(randomMessage(location, set, factory).Interface())},
 	}})
+	oneOfFields := map[protoreflect.FieldDescriptor]*delta.Oneof{}
+	for oneOfIndex := 0; oneOfIndex < descriptor.Oneofs().Len(); oneOfIndex++ {
+		oneOfDescriptor := descriptor.Oneofs().Get(oneOfIndex)
+		oneOf := &delta.Oneof{Name: string(oneOfDescriptor.Name())}
+		for fieldIndex := 0; fieldIndex < oneOfDescriptor.Fields().Len(); fieldIndex++ {
+			fieldDescriptor := oneOfDescriptor.Fields().Get(fieldIndex)
+			oneOfFields[fieldDescriptor] = oneOf
+			oneOf.Fields = append(oneOf.Fields, &delta.Field{Name: string(fieldDescriptor.Name()), Number: int32(fieldDescriptor.Number())})
+		}
+		ops = append(ops, opData{exists: exists, op: &delta.Op{
+			Type:     delta.Op_Delete,
+			Location: delta.CopyAndAppendOneof(location, oneOf.Name, oneOf.Fields...),
+		}})
+	}
 	for i := 0; i < descriptor.Fields().Len(); i++ {
 		childField := descriptor.Fields().Get(i)
-		childLocation := delta.CopyAndAppendField(location, string(childField.Name()), int32(childField.Number()))
+		parent := location
+		if oneOf, found := oneOfFields[childField]; found {
+			parent = delta.CopyAndAppendOneof(location, oneOf.Name, oneOf.Fields...)
+		}
+		childLocation := delta.CopyAndAppendField(parent, string(childField.Name()), int32(childField.Number()))
 		childFactory := func() protoreflect.Value { return factory().Message().NewField(childField) }
 		var childExists bool
 		var childValue protoreflect.Value

@@ -254,7 +254,13 @@ func unpackState(s *firestore.DocumentSnapshot) (*pserver.State, proto.Message, 
 }
 
 func mustJson(message proto.Message) string {
-	b, err := protojson.Marshal(message)
+	if message == nil {
+		return "[nil]"
+	}
+	if !message.ProtoReflect().IsValid() {
+		return "[invalid]"
+	}
+	b, err := protojson.MarshalOptions{Indent: "\t"}.Marshal(message)
 	if err != nil {
 		panic(err)
 	}

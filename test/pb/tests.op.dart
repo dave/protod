@@ -30,6 +30,9 @@ class Op_root_type {
   Chooser_type Chooser() {
     return Chooser_type([]);
   }
+  Person_Choice_oneof Person_Choice() {
+    return Person_Choice_oneof([]);
+  }
   Chooser_Choice_oneof Chooser_Choice() {
     return Chooser_Choice_oneof([]);
   }
@@ -63,6 +66,9 @@ class Person_type extends delta.Location {
   }
   Person_Embed_type Embedded() {
     return Person_Embed_type(delta.copyAndAppendField(location, "embedded", 10));
+  }
+  Person_Choice_oneof Choice() {
+    return Person_Choice_oneof(delta.copyAndAppendOneof(location, "choice", [delta.Field()..name="str"..number=11, delta.Field()..name="dbl"..number=12, delta.Field()..name="itm"..number=13, delta.Field()..name="cas"..number=14, delta.Field()..name="cho"..number=15]));
   }
   delta.Op Delete() {
     return delta.delete(location);
@@ -1137,6 +1143,29 @@ class Chooser_type_string_map extends delta.Location {
 
   delta.Op Set(Map<String, pb.Chooser> value) {
     return delta.set(location, value);
+  }
+
+}
+
+class Person_Choice_oneof extends delta.Location {
+  Person_Choice_oneof(List<delta.Locator> location) : super(location);
+  delta.String_scalar Str() {
+    return delta.String_scalar(delta.copyAndAppendField(location, "str", 11));
+  }
+  delta.Double_scalar Dbl() {
+    return delta.Double_scalar(delta.copyAndAppendField(location, "dbl", 12));
+  }
+  Item_type Itm() {
+    return Item_type(delta.copyAndAppendField(location, "itm", 13));
+  }
+  Case_type Cas() {
+    return Case_type(delta.copyAndAppendField(location, "cas", 14));
+  }
+  Chooser_type Cho() {
+    return Chooser_type(delta.copyAndAppendField(location, "cho", 15));
+  }
+  delta.Op Delete() {
+    return delta.delete(location);
   }
 
 }

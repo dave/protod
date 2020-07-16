@@ -26,6 +26,38 @@ func TestTransform(t *testing.T) {
 	}
 	items := []itemType{
 		{
+			name:      "oneof_more",
+			op1:       Op().Person().Choice().Delete(),
+			op2:       Op().Person().Choice().Str().Delete(),
+			data:      &Person{Choice: &Person_Str{Str: "a"}},
+			expected1: &Person{},
+			expected2: &Person{},
+		},
+		{
+			name:      "oneof_converge",
+			op1:       Op().Person().Choice().Cas().Items().Index(0).Done().Set(true),
+			op2:       Op().Person().Choice().Dbl().Set(1),
+			data:      &Person{Choice: &Person_Cas{Cas: &Case{Items: []*Item{{}}}}},
+			expected1: &Person{Choice: &Person_Dbl{Dbl: 1}},
+			expected2: &Person{Choice: &Person_Dbl{Dbl: 1}},
+		},
+		{
+			name:      "oneof_strings_set",
+			op1:       Op().Person().Choice().Itm().Title().Set("a"),
+			op2:       Op().Person().Choice().Cas().Name().Set("b"),
+			data:      &Person{},
+			expected1: &Person{},
+			expected2: &Person{},
+		},
+		{
+			name:      "oneof_strings_edit",
+			op1:       Op().Person().Choice().Itm().Title().Edit("", "a"),
+			op2:       Op().Person().Choice().Cas().Name().Edit("", "b"),
+			data:      &Person{},
+			expected1: &Person{},
+			expected2: &Person{},
+		},
+		{
 			name:     "set_rename_bug",
 			op1:      Op().Person().Cases().Key("a").Flags().Set(map[int64]string{1: "a"}),
 			op2:      Op().Person().Cases().Rename("a", "a"),
@@ -115,7 +147,7 @@ func TestTransform(t *testing.T) {
 			op1:       Op().Chooser().Choice().Itm().Flags().Insert(1, "b"),
 			op2:       Op().Chooser().Choice().Dbl().Set(1),
 			data:      &Chooser{Choice: &Chooser_Itm{Itm: &Item{Flags: []string{"a"}}}},
-			expected1: &Chooser{Choice: &Chooser_Itm{Itm: &Item{Flags: []string{"b"}}}},
+			expected1: &Chooser{Choice: &Chooser_Dbl{Dbl: 1}},
 			expected2: &Chooser{Choice: &Chooser_Dbl{Dbl: 1}},
 		},
 		{
@@ -138,7 +170,7 @@ func TestTransform(t *testing.T) {
 			op1:       Op().Chooser().Choice().Itm().Title().Set("b"),
 			op2:       Op().Chooser().Choice().Dbl().Set(1),
 			data:      &Chooser{Choice: &Chooser_Itm{Itm: &Item{Title: "a", Done: true}}},
-			expected1: &Chooser{Choice: &Chooser_Itm{Itm: &Item{Title: "b"}}}, // TODO is it OK to have Done disappear
+			expected1: &Chooser{Choice: &Chooser_Dbl{Dbl: 1}},
 			expected2: &Chooser{Choice: &Chooser_Dbl{Dbl: 1}},
 		},
 		{
@@ -938,6 +970,10 @@ func runTransformTest(t *testing.T, tc *TransformTestCase) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	//fmt.Println("op1", tc.Op1.Debug())
+	//fmt.Println("op2", tc.Op2.Debug())
+	//fmt.Println("op1xp1", op1xp1.Debug())
+	//fmt.Println("op2xp1", op2xp1.Debug())
 
 	// op2 has priority
 	op1xp2, op2xp2, err := delta.Transform(tc.Op1, tc.Op2, false)

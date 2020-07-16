@@ -48,24 +48,31 @@ pb.Op transform(pb.Op t, pb.Op op, bool priority) {
   if (oneofLocation != null) {
     // t and op have a common oneof ancestor, and are acting on separate values. Any operation on the descendant of
     // a oneof value will delete the entire tree under all the other oneof values.
+
+    if (t.type == pb.Op_Type.Delete &&
+        t.location.length == oneofLocation.length) {
+      return null;
+    }
+    if (op.type == pb.Op_Type.Delete &&
+        op.location.length == oneofLocation.length) {
+      return op.clone();
+    }
+
     var priorityOp = priority ? t : op;
     var notOp = priority ? op : t;
-    final Map<pb.Op_Type, bool> valid = {
-      pb.Op_Type.Set: true,
-      pb.Op_Type.Edit: false,
-      pb.Op_Type.Insert: true,
-      pb.Op_Type.Move: false,
-      pb.Op_Type.Rename: false,
-      pb.Op_Type.Delete: false,
-    };
-    if (!valid[priorityOp.type] && valid[notOp.type]) {
+    bool valid(pb.Op o) {
+      return o.type == pb.Op_Type.Set &&
+          o.location.length == oneofLocation.length + 1;
+    }
+
+    if (!valid(priorityOp) && valid(notOp)) {
       // if notOp is valid and priorityOp is not, we can swap them round so a set/insert always takes priority
       // over an edit/move/rename/delete.
       var tmp = priorityOp;
       priorityOp = notOp;
       notOp = tmp;
     }
-    if (valid[priorityOp.type]) {
+    if (valid(priorityOp)) {
       // nuke everything, and re-run the priority operation (if it's a set / insert).
       return pb.Op()
         ..type = pb.Op_Type.Compound
@@ -778,5 +785,9 @@ pb.Op tDeleteIndexDeleteIndex(pb.Op t, pb.Op op, bool priority) {
 }
 
 pb.Op tDeleteKeyDeleteKey(pb.Op t, pb.Op op, bool priority) {
+  return tDelete(t, op);
+}
+
+pb.Op tDeleteOneofDeleteOneof(pb.Op t, pb.Op op, bool priority) {
   return tDelete(t, op);
 }

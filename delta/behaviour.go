@@ -19,9 +19,10 @@ const (
 	FIELD LocatorType = 1
 	INDEX LocatorType = 2
 	KEY   LocatorType = 3
+	ONEOF LocatorType = 4
 )
 
-var LocatorTypes = []LocatorType{FIELD, INDEX, KEY}
+var LocatorTypes = []LocatorType{FIELD, INDEX, KEY, ONEOF}
 
 type OpBehaviour struct {
 	ItemIsDeleted        bool
@@ -154,6 +155,14 @@ var Behaviours = map[OpType]map[LocatorType]OpBehaviour{
 			IndexLocationShifter: nil,
 			KeyShifter:           nil,
 		},
+		ONEOF: {
+			ValueIsLocation:      false,
+			ItemIsDeleted:        true,
+			ValueIsDeleted:       false,
+			IndexValueShifter:    nil,
+			IndexLocationShifter: nil,
+			KeyShifter:           nil,
+		},
 	},
 }
 
@@ -183,6 +192,8 @@ func GetBehaviour(op *Op) OpBehaviour {
 		locatorType = INDEX
 	case *Locator_Key:
 		locatorType = KEY
+	case *Locator_Oneof:
+		locatorType = ONEOF
 	default:
 		panic("invalid op")
 	}

@@ -56,6 +56,8 @@ func (t *Op) transform(op *Op, priority bool) *Op {
 					return tIndependent(t, op)
 				case *Locator_Key:
 					return tIndependent(t, op)
+				case *Locator_Oneof:
+					return tIndependent(t, op)
 				default:
 					panic("invalid op")
 				}
@@ -120,6 +122,8 @@ func (t *Op) transform(op *Op, priority bool) *Op {
 				case *Locator_Index:
 					return tEditIndexDeleteIndex(t, op, priority)
 				case *Locator_Key:
+					return tIndependent(t, op)
+				case *Locator_Oneof:
 					return tIndependent(t, op)
 				default:
 					panic("invalid op")
@@ -186,6 +190,8 @@ func (t *Op) transform(op *Op, priority bool) *Op {
 					return tIndependent(t, op)
 				case *Locator_Key:
 					return tEditKeyDeleteKey(t, op, priority)
+				case *Locator_Oneof:
+					return tIndependent(t, op)
 				default:
 					panic("invalid op")
 				}
@@ -257,6 +263,8 @@ func (t *Op) transform(op *Op, priority bool) *Op {
 					return tIndependent(t, op)
 				case *Locator_Key:
 					return tIndependent(t, op)
+				case *Locator_Oneof:
+					return tIndependent(t, op)
 				default:
 					panic("invalid op")
 				}
@@ -321,6 +329,8 @@ func (t *Op) transform(op *Op, priority bool) *Op {
 				case *Locator_Index:
 					return tSetIndexDeleteIndex(t, op, priority)
 				case *Locator_Key:
+					return tIndependent(t, op)
+				case *Locator_Oneof:
 					return tIndependent(t, op)
 				default:
 					panic("invalid op")
@@ -387,6 +397,8 @@ func (t *Op) transform(op *Op, priority bool) *Op {
 					return tIndependent(t, op)
 				case *Locator_Key:
 					return tSetKeyDeleteKey(t, op, priority)
+				case *Locator_Oneof:
+					return tIndependent(t, op)
 				default:
 					panic("invalid op")
 				}
@@ -457,6 +469,8 @@ func (t *Op) transform(op *Op, priority bool) *Op {
 				case *Locator_Index:
 					return tInsertIndexDeleteIndex(t, op, priority)
 				case *Locator_Key:
+					return tIndependent(t, op)
+				case *Locator_Oneof:
 					return tIndependent(t, op)
 				default:
 					panic("invalid op")
@@ -529,6 +543,8 @@ func (t *Op) transform(op *Op, priority bool) *Op {
 					return tMoveIndexDeleteIndex(t, op, priority)
 				case *Locator_Key:
 					return tIndependent(t, op)
+				case *Locator_Oneof:
+					return tIndependent(t, op)
 				default:
 					panic("invalid op")
 				}
@@ -600,6 +616,8 @@ func (t *Op) transform(op *Op, priority bool) *Op {
 					return tIndependent(t, op)
 				case *Locator_Key:
 					return tIndependent(t, op)
+				case *Locator_Oneof:
+					return tIndependent(t, op)
 				default:
 					panic("invalid op")
 				}
@@ -664,6 +682,8 @@ func (t *Op) transform(op *Op, priority bool) *Op {
 				case *Locator_Index:
 					return tDeleteIndexDeleteIndex(t, op, priority)
 				case *Locator_Key:
+					return tIndependent(t, op)
+				case *Locator_Oneof:
 					return tIndependent(t, op)
 				default:
 					panic("invalid op")
@@ -730,6 +750,8 @@ func (t *Op) transform(op *Op, priority bool) *Op {
 					return tIndependent(t, op)
 				case *Locator_Key:
 					return tDeleteKeyDeleteKey(t, op, priority)
+				case *Locator_Oneof:
+					return tIndependent(t, op)
 				default:
 					panic("invalid op")
 				}
@@ -738,6 +760,73 @@ func (t *Op) transform(op *Op, priority bool) *Op {
 				switch opItem.V.(type) {
 				case *Locator_Key:
 					return tDeleteKeyRenameKey(t, op, priority)
+				default:
+					panic("invalid op")
+				}
+			default:
+				panic("invalid op")
+			}
+		case *Locator_Oneof:
+			switch op.Type {
+			case Op_Edit:
+				_, opItem := op.Pop()
+				switch opItem.V.(type) {
+				case *Locator_Field:
+					return tIndependent(t, op)
+				case *Locator_Index:
+					return tIndependent(t, op)
+				case *Locator_Key:
+					return tIndependent(t, op)
+				default:
+					panic("invalid op")
+				}
+			case Op_Set:
+				_, opItem := op.Pop()
+				switch opItem.V.(type) {
+				case *Locator_Field:
+					return tIndependent(t, op)
+				case *Locator_Index:
+					return tIndependent(t, op)
+				case *Locator_Key:
+					return tIndependent(t, op)
+				default:
+					panic("invalid op")
+				}
+			case Op_Insert:
+				_, opItem := op.Pop()
+				switch opItem.V.(type) {
+				case *Locator_Index:
+					return tIndependent(t, op)
+				default:
+					panic("invalid op")
+				}
+			case Op_Move:
+				_, opItem := op.Pop()
+				switch opItem.V.(type) {
+				case *Locator_Index:
+					return tIndependent(t, op)
+				default:
+					panic("invalid op")
+				}
+			case Op_Delete:
+				_, opItem := op.Pop()
+				switch opItem.V.(type) {
+				case *Locator_Field:
+					return tIndependent(t, op)
+				case *Locator_Index:
+					return tIndependent(t, op)
+				case *Locator_Key:
+					return tIndependent(t, op)
+				case *Locator_Oneof:
+					return tDeleteOneofDeleteOneof(t, op, priority)
+				default:
+					panic("invalid op")
+				}
+			case Op_Rename:
+				_, opItem := op.Pop()
+				switch opItem.V.(type) {
+				case *Locator_Key:
+					return tIndependent(t, op)
 				default:
 					panic("invalid op")
 				}
@@ -801,6 +890,8 @@ func (t *Op) transform(op *Op, priority bool) *Op {
 					return tIndependent(t, op)
 				case *Locator_Key:
 					return tRenameKeyDeleteKey(t, op, priority)
+				case *Locator_Oneof:
+					return tIndependent(t, op)
 				default:
 					panic("invalid op")
 				}

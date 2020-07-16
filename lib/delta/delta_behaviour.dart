@@ -24,12 +24,14 @@ enum LocatorType {
   FIELD,
   INDEX,
   KEY,
+  ONEOF,
 }
 
 const LocatorTypes = [
   LocatorType.FIELD,
   LocatorType.INDEX,
   LocatorType.KEY,
+  LocatorType.ONEOF,
 ];
 
 class OpBehaviour {
@@ -172,6 +174,14 @@ final Map<OpType, Map<LocatorType, OpBehaviour>> Behaviours = {
       indexLocationShifter: null,
       keyShifter: null,
     ),
+    LocatorType.ONEOF: OpBehaviour(
+      valueIsLocation: false,
+      itemIsDeleted: true,
+      valueIsDeleted: false,
+      indexValueShifter: null,
+      indexLocationShifter: null,
+      keyShifter: null,
+    ),
   },
 };
 
@@ -207,6 +217,8 @@ OpBehaviour getBehaviour(pb.Op op) {
     locatorType = LocatorType.INDEX;
   } else if (itm.hasKey()) {
     locatorType = LocatorType.KEY;
+  } else if (itm.hasOneof()) {
+    locatorType = LocatorType.ONEOF;
   } else {
     throw Exception("invalid op");
   }

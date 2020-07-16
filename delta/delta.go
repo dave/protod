@@ -24,15 +24,15 @@ func Transform(op1, op2 *Op, op1priority bool) (op1x *Op, op2x *Op, err error) {
 		// in debug mode, recover from panic, print inputs, and re-panic to get stack trace
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Println(r)
+				fmt.Println("RECOVER", r)
 				var op1p, op2p string
 				if op1priority {
 					op1p = "*"
 				} else {
 					op2p = "*"
 				}
-				fmt.Println("op1", op1p, op1.Debug())
-				fmt.Println("op2", op2p, op2.Debug())
+				fmt.Println("RECOVER op1", op1p, op1.Debug())
+				fmt.Println("RECOVER op2", op2p, op2.Debug())
 				panic(r)
 			}
 		}()
@@ -70,9 +70,9 @@ func Apply(op *Op, input proto.Message) (err error) {
 		// in debug mode, recover from panic, print inputs, and re-panic to get stack trace
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Println(r)
-				fmt.Println("op", op.Debug())
-				fmt.Println("input", mustJson(input))
+				fmt.Println("RECOVER", r)
+				fmt.Println("RECOVER op", op.Debug())
+				fmt.Println("RECOVER input", mustJson(input))
 				panic(r)
 			}
 		}()
@@ -1238,28 +1238,28 @@ func (o *Op) debug(indent int) string {
 		}
 		return strings.Join(parts, "/")
 	}
-	var out string
+	var tabs string
 	for i := 0; i < indent; i++ {
-		out += "\t"
+		tabs += "\t"
 	}
 	if o == nil {
-		return out + "NIL"
+		return tabs + "NIL"
 	}
 	switch o.Type {
 	case Op_Null:
-		return out + "NULL"
+		return tabs + "NULL"
 	case Op_Set:
-		return out + fmt.Sprintf("SET(%s, %v)", locationToString(o.Location), debugValue(o.Value))
+		return tabs + fmt.Sprintf("SET(%s, %v)", locationToString(o.Location), debugValue(o.Value))
 	case Op_Edit:
-		return out + fmt.Sprintf("EDIT(%s, %v)", locationToString(o.Location), debugValue(o.Value))
+		return tabs + fmt.Sprintf("EDIT(%s, %v)", locationToString(o.Location), debugValue(o.Value))
 	case Op_Insert:
-		return out + fmt.Sprintf("INSERT(%s, %v)", locationToString(o.Location), debugValue(o.Value))
+		return tabs + fmt.Sprintf("INSERT(%s, %v)", locationToString(o.Location), debugValue(o.Value))
 	case Op_Move:
-		return out + fmt.Sprintf("MOVE(%s, %v)", locationToString(o.Location), debugValue(o.Value))
+		return tabs + fmt.Sprintf("MOVE(%s, %v)", locationToString(o.Location), debugValue(o.Value))
 	case Op_Rename:
-		return out + fmt.Sprintf("RENAME(%s, %v)", locationToString(o.Location), keyToString(o.Value.(*Op_Key).Key))
+		return tabs + fmt.Sprintf("RENAME(%s, %v)", locationToString(o.Location), keyToString(o.Value.(*Op_Key).Key))
 	case Op_Delete:
-		return out + fmt.Sprintf("DELETE(%s)", locationToString(o.Location))
+		return tabs + fmt.Sprintf("DELETE(%s)", locationToString(o.Location))
 	case Op_Compound:
 		if indent == -1 {
 			// all on one line
@@ -1273,11 +1273,11 @@ func (o *Op) debug(indent int) string {
 			out += ")"
 			return out
 		}
-		out := "COMPOUND("
+		out := tabs + "COMPOUND("
 		for _, op := range o.Ops {
 			out += "\n" + op.debug(indent+1)
 		}
-		out += "\n)"
+		out += "\n" + tabs + ")"
 		return out
 	}
 	return ""

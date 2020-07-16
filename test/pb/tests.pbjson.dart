@@ -17,9 +17,17 @@ const Person$json = const {
     const {'1': 'typeList', '3': 8, '4': 3, '5': 14, '6': '.tests.Person.Type', '10': 'typeList'},
     const {'1': 'typeMap', '3': 9, '4': 3, '5': 11, '6': '.tests.Person.TypeMapEntry', '10': 'typeMap'},
     const {'1': 'embedded', '3': 10, '4': 1, '5': 11, '6': '.tests.Person.Embed', '10': 'embedded'},
+    const {'1': 'str', '3': 11, '4': 1, '5': 9, '9': 0, '10': 'str'},
+    const {'1': 'dbl', '3': 12, '4': 1, '5': 1, '9': 0, '10': 'dbl'},
+    const {'1': 'itm', '3': 13, '4': 1, '5': 11, '6': '.tests.Item', '9': 0, '10': 'itm'},
+    const {'1': 'cas', '3': 14, '4': 1, '5': 11, '6': '.tests.Case', '9': 0, '10': 'cas'},
+    const {'1': 'cho', '3': 15, '4': 1, '5': 11, '6': '.tests.Chooser', '9': 0, '10': 'cho'},
   ],
   '3': const [Person_Embed$json, Person_CasesEntry$json, Person_TypeMapEntry$json],
   '4': const [Person_Type$json],
+  '8': const [
+    const {'1': 'choice'},
+  ],
 };
 
 const Person_Embed$json = const {

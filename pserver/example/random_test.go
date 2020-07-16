@@ -6,7 +6,6 @@ import (
 	"math/rand"
 	"sync"
 	"testing"
-	"time"
 
 	"github.com/dave/protod/delta"
 	"github.com/dave/protod/delta/randop"
@@ -20,17 +19,21 @@ func TestRandom(t *testing.T) {
 	resetDatabase(t)
 	server := New(ctx, t)
 	defer server.Close()
+	states := map[int64]proto.Message{}
+	statesMutex := &sync.Mutex{}
 
 	id, err := Add(ctx, server, PERSON, uniqueID(), &tests.Person{Name: "a"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	u1 := &User{user: 1, t: t, server: server}
-	u2 := &User{user: 2, t: t, server: server}
 	wg := &sync.WaitGroup{}
-	wg.Add(1)
-	go u1.Run(id, wg)
-	go u2.Run(id, wg)
+	u1 := &User{user: 1, t: t, wg: wg, server: server, states: states, mutex: statesMutex}
+	u2 := &User{user: 2, t: t, wg: wg, server: server, states: states, mutex: statesMutex}
+	u3 := &User{user: 3, t: t, wg: wg, server: server, states: states, mutex: statesMutex}
+	wg.Add(3)
+	go u1.Run(id)
+	go u2.Run(id)
+	go u3.Run(id)
 	wg.Wait()
 }
 
@@ -41,18 +44,21 @@ type User struct {
 	server   *pserver.Server
 	document proto.Message
 	state    int64
+	states   map[int64]proto.Message
+	mutex    *sync.Mutex
+	wg       *sync.WaitGroup
 }
 
-const REPEATS = 100000
+const REPEATS = 1000
 
-func (u *User) Run(id string, wg *sync.WaitGroup) {
-	time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond)
+func (u *User) Run(id string) {
+	//time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond)
+	defer u.wg.Done()
 	u.Get(id)
 	for i := 0; i < REPEATS; i++ {
-		time.Sleep(time.Duration(rand.Intn(2000)) * time.Microsecond)
+		//time.Sleep(time.Duration(rand.Intn(2000)) * time.Microsecond)
 		u.Edit()
 	}
-	wg.Done()
 }
 
 func (u *User) Get(id string) {
@@ -68,6 +74,12 @@ func (u *User) Get(id string) {
 const MAX_OPS = 10
 
 func (u *User) Edit() {
+
+	u.mutex.Lock()
+	defer func() { u.mutex.Unlock() }()
+
+	//fmt.Println("-----------")
+	//fmt.Println(u.user, "before op", mustJson(u.document))
 	var ops []*delta.Op
 	for i := 0; i < rand.Intn(MAX_OPS)+1; i++ {
 		op := randop.Get(u.document)
@@ -78,6 +90,7 @@ func (u *User) Edit() {
 	}
 	op := delta.Compound(ops...)
 	//fmt.Println(u.user, "op", op.Debug())
+	//fmt.Println(u.user, "after op", mustJson(u.document))
 	state, opx, err := Edit(context.Background(), u.server, PERSON, uniqueID(), u.id, u.state, op)
 	//fmt.Println(u.user, "opx", opx.Debug())
 	if err != nil {
@@ -86,9 +99,20 @@ func (u *User) Edit() {
 	if err := delta.Apply(opx, u.document); err != nil {
 		u.t.Fatal(err)
 	}
+	//fmt.Println(u.user, "after opx", mustJson(u.document))
 	u.state = state
-	if u.state%137 == 0 {
-		fmt.Printf("%d) EDIT %d %s\n", u.user, u.state, mustJson(u.document))
+
+	previous, found := u.states[u.state]
+	if !found {
+		u.states[u.state] = proto.Clone(u.document)
+	} else {
+		if !proto.Equal(u.document, previous) {
+			u.t.Fatalf("state diverged at %d\nprevious: %s\nnew: %s", u.state, mustJson(previous), mustJson(u.document))
+		}
+	}
+	if int(u.state)%(rand.Intn(50)+50) == 0 {
+		//fmt.Printf("%d) EDIT %d %s\n", u.user, u.state, mustJson(u.document))
+		fmt.Printf("%d) EDIT %d\n", u.user, u.state)
 	}
 }
 

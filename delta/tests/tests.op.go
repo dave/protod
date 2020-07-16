@@ -49,6 +49,24 @@ func (b Person_type) TypeMap() Person_Type_type_string_map {
 func (b Person_type) Embedded() Person_Embed_type {
 	return NewPerson_Embed_type(delta.CopyAndAppendField(b.location, "embedded", 10))
 }
+func (b Person_type) Choice() Person_Choice_oneof {
+	return NewPerson_Choice_oneof(delta.CopyAndAppendOneof(b.location, "choice", &delta.Field{
+		Name:   "str",
+		Number: 11,
+	}, &delta.Field{
+		Name:   "dbl",
+		Number: 12,
+	}, &delta.Field{
+		Name:   "itm",
+		Number: 13,
+	}, &delta.Field{
+		Name:   "cas",
+		Number: 14,
+	}, &delta.Field{
+		Name:   "cho",
+		Number: 15,
+	}))
+}
 func (b Person_type) Delete() *delta.Op {
 	return delta.Delete(b.location)
 }
@@ -1367,6 +1385,38 @@ func (b Chooser_type_string_map) Delete() *delta.Op {
 }
 func (b Chooser_type_string_map) Set(value map[string]*Chooser) *delta.Op {
 	return delta.Set(b.location, value)
+}
+func (Op_root_type) Person_Choice() Person_Choice_oneof {
+	return Person_Choice_oneof{}
+}
+
+type Person_Choice_oneof struct {
+	location []*delta.Locator
+}
+
+func (b Person_Choice_oneof) Location_get() []*delta.Locator {
+	return b.location
+}
+func NewPerson_Choice_oneof(l []*delta.Locator) Person_Choice_oneof {
+	return Person_Choice_oneof{location: l}
+}
+func (b Person_Choice_oneof) Str() delta.String_scalar {
+	return delta.NewString_scalar(delta.CopyAndAppendField(b.location, "str", 11))
+}
+func (b Person_Choice_oneof) Dbl() delta.Double_scalar {
+	return delta.NewDouble_scalar(delta.CopyAndAppendField(b.location, "dbl", 12))
+}
+func (b Person_Choice_oneof) Itm() Item_type {
+	return NewItem_type(delta.CopyAndAppendField(b.location, "itm", 13))
+}
+func (b Person_Choice_oneof) Cas() Case_type {
+	return NewCase_type(delta.CopyAndAppendField(b.location, "cas", 14))
+}
+func (b Person_Choice_oneof) Cho() Chooser_type {
+	return NewChooser_type(delta.CopyAndAppendField(b.location, "cho", 15))
+}
+func (b Person_Choice_oneof) Delete() *delta.Op {
+	return delta.Delete(b.location)
 }
 func (Op_root_type) Chooser_Choice() Chooser_Choice_oneof {
 	return Chooser_Choice_oneof{}

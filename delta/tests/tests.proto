@@ -26,6 +26,13 @@ message Person {
   repeated Type typeList = 8;
   map<string, Type> typeMap = 9;
   Embed embedded = 10;
+  oneof choice {
+    string str = 11;
+    double dbl = 12;
+    Item itm = 13;
+    Case cas = 14;
+    Chooser cho = 15;
+  }
 }
 
 // [proto:data]

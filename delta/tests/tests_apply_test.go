@@ -24,6 +24,18 @@ func TestApply(t *testing.T) {
 	}
 	items := []itemType{
 		{
+			name:     "oneof_string_edit_null",
+			op:       Op().Person().Choice().Str().Edit("", "a"),
+			data:     &Person{},
+			expected: &Person{Choice: &Person_Str{Str: "a"}},
+		},
+		{
+			name:     "string_edit_empty",
+			op:       Op().Person().Name().Edit("", "a"),
+			data:     &Person{},
+			expected: &Person{Name: "a"},
+		},
+		{
 			name:     "edit_null_string_in_map",
 			op:       Op().Company().Flags().Key(1).Edit("", "a"),
 			data:     &Company{},

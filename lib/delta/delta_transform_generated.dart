@@ -56,6 +56,8 @@ pb.Op transformGenerated(pb.Op t, pb.Op op, bool priority) {
           return tIndependent(t, op);
         } else if (opItem.hasKey()) {
           return tIndependent(t, op);
+        } else if (opItem.hasOneof()) {
+          return tIndependent(t, op);
         } else {
           throw Exception('invalid op');
         }
@@ -120,6 +122,8 @@ pb.Op transformGenerated(pb.Op t, pb.Op op, bool priority) {
         } else if (opItem.hasIndex()) {
           return tEditIndexDeleteIndex(t, op, priority);
         } else if (opItem.hasKey()) {
+          return tIndependent(t, op);
+        } else if (opItem.hasOneof()) {
           return tIndependent(t, op);
         } else {
           throw Exception('invalid op');
@@ -186,6 +190,8 @@ pb.Op transformGenerated(pb.Op t, pb.Op op, bool priority) {
           return tIndependent(t, op);
         } else if (opItem.hasKey()) {
           return tEditKeyDeleteKey(t, op, priority);
+        } else if (opItem.hasOneof()) {
+          return tIndependent(t, op);
         } else {
           throw Exception('invalid op');
         }
@@ -257,6 +263,8 @@ pb.Op transformGenerated(pb.Op t, pb.Op op, bool priority) {
           return tIndependent(t, op);
         } else if (opItem.hasKey()) {
           return tIndependent(t, op);
+        } else if (opItem.hasOneof()) {
+          return tIndependent(t, op);
         } else {
           throw Exception('invalid op');
         }
@@ -321,6 +329,8 @@ pb.Op transformGenerated(pb.Op t, pb.Op op, bool priority) {
         } else if (opItem.hasIndex()) {
           return tSetIndexDeleteIndex(t, op, priority);
         } else if (opItem.hasKey()) {
+          return tIndependent(t, op);
+        } else if (opItem.hasOneof()) {
           return tIndependent(t, op);
         } else {
           throw Exception('invalid op');
@@ -387,6 +397,8 @@ pb.Op transformGenerated(pb.Op t, pb.Op op, bool priority) {
           return tIndependent(t, op);
         } else if (opItem.hasKey()) {
           return tSetKeyDeleteKey(t, op, priority);
+        } else if (opItem.hasOneof()) {
+          return tIndependent(t, op);
         } else {
           throw Exception('invalid op');
         }
@@ -457,6 +469,8 @@ pb.Op transformGenerated(pb.Op t, pb.Op op, bool priority) {
         } else if (opItem.hasIndex()) {
           return tInsertIndexDeleteIndex(t, op, priority);
         } else if (opItem.hasKey()) {
+          return tIndependent(t, op);
+        } else if (opItem.hasOneof()) {
           return tIndependent(t, op);
         } else {
           throw Exception('invalid op');
@@ -529,6 +543,8 @@ pb.Op transformGenerated(pb.Op t, pb.Op op, bool priority) {
           return tMoveIndexDeleteIndex(t, op, priority);
         } else if (opItem.hasKey()) {
           return tIndependent(t, op);
+        } else if (opItem.hasOneof()) {
+          return tIndependent(t, op);
         } else {
           throw Exception('invalid op');
         }
@@ -600,6 +616,8 @@ pb.Op transformGenerated(pb.Op t, pb.Op op, bool priority) {
           return tIndependent(t, op);
         } else if (opItem.hasKey()) {
           return tIndependent(t, op);
+        } else if (opItem.hasOneof()) {
+          return tIndependent(t, op);
         } else {
           throw Exception('invalid op');
         }
@@ -664,6 +682,8 @@ pb.Op transformGenerated(pb.Op t, pb.Op op, bool priority) {
         } else if (opItem.hasIndex()) {
           return tDeleteIndexDeleteIndex(t, op, priority);
         } else if (opItem.hasKey()) {
+          return tIndependent(t, op);
+        } else if (opItem.hasOneof()) {
           return tIndependent(t, op);
         } else {
           throw Exception('invalid op');
@@ -730,6 +750,8 @@ pb.Op transformGenerated(pb.Op t, pb.Op op, bool priority) {
           return tIndependent(t, op);
         } else if (opItem.hasKey()) {
           return tDeleteKeyDeleteKey(t, op, priority);
+        } else if (opItem.hasOneof()) {
+          return tIndependent(t, op);
         } else {
           throw Exception('invalid op');
         }
@@ -738,6 +760,73 @@ pb.Op transformGenerated(pb.Op t, pb.Op op, bool priority) {
         final opItem = item(op);
         if (opItem.hasKey()) {
           return tDeleteKeyRenameKey(t, op, priority);
+        } else {
+          throw Exception('invalid op');
+        }
+        break;
+      default:
+        throw Exception('invalid op');
+      }
+    } else if (tItem.hasOneof()) {
+      switch (op.type) {
+      case pb.Op_Type.Edit:
+        final opItem = item(op);
+        if (opItem.hasField_1()) {
+          return tIndependent(t, op);
+        } else if (opItem.hasIndex()) {
+          return tIndependent(t, op);
+        } else if (opItem.hasKey()) {
+          return tIndependent(t, op);
+        } else {
+          throw Exception('invalid op');
+        }
+        break;
+      case pb.Op_Type.Set:
+        final opItem = item(op);
+        if (opItem.hasField_1()) {
+          return tIndependent(t, op);
+        } else if (opItem.hasIndex()) {
+          return tIndependent(t, op);
+        } else if (opItem.hasKey()) {
+          return tIndependent(t, op);
+        } else {
+          throw Exception('invalid op');
+        }
+        break;
+      case pb.Op_Type.Insert:
+        final opItem = item(op);
+        if (opItem.hasIndex()) {
+          return tIndependent(t, op);
+        } else {
+          throw Exception('invalid op');
+        }
+        break;
+      case pb.Op_Type.Move:
+        final opItem = item(op);
+        if (opItem.hasIndex()) {
+          return tIndependent(t, op);
+        } else {
+          throw Exception('invalid op');
+        }
+        break;
+      case pb.Op_Type.Delete:
+        final opItem = item(op);
+        if (opItem.hasField_1()) {
+          return tIndependent(t, op);
+        } else if (opItem.hasIndex()) {
+          return tIndependent(t, op);
+        } else if (opItem.hasKey()) {
+          return tIndependent(t, op);
+        } else if (opItem.hasOneof()) {
+          return tDeleteOneofDeleteOneof(t, op, priority);
+        } else {
+          throw Exception('invalid op');
+        }
+        break;
+      case pb.Op_Type.Rename:
+        final opItem = item(op);
+        if (opItem.hasKey()) {
+          return tIndependent(t, op);
         } else {
           throw Exception('invalid op');
         }
@@ -801,6 +890,8 @@ pb.Op transformGenerated(pb.Op t, pb.Op op, bool priority) {
           return tIndependent(t, op);
         } else if (opItem.hasKey()) {
           return tRenameKeyDeleteKey(t, op, priority);
+        } else if (opItem.hasOneof()) {
+          return tIndependent(t, op);
         } else {
           throw Exception('invalid op');
         }

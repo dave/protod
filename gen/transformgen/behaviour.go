@@ -19,9 +19,10 @@ const (
 	FIELD LocatorType = 1
 	INDEX LocatorType = 2
 	KEY   LocatorType = 3
+	ONEOF LocatorType = 4
 )
 
-var LocatorTypes = []LocatorType{FIELD, INDEX, KEY}
+var LocatorTypes = []LocatorType{FIELD, INDEX, KEY, ONEOF}
 
 type OpData struct {
 	Name     string
@@ -58,7 +59,7 @@ var Behaviours = map[OpType]OpData{
 	DELETE: {
 		Name:     "Delete",
 		Type:     "Op_Delete",
-		Locators: []LocatorType{FIELD, INDEX, KEY},
+		Locators: []LocatorType{FIELD, INDEX, KEY, ONEOF},
 	},
 }
 
@@ -83,5 +84,10 @@ var Locators = map[LocatorType]LocatorData{
 		Name: "Key",
 		Type: "Locator_Key",
 		Dart: "hasKey",
+	},
+	ONEOF: {
+		Name: "Oneof",
+		Type: "Locator_Oneof",
+		Dart: "hasOneof",
 	},
 }
