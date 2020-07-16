@@ -64,7 +64,6 @@ func TestRenameChain(t *testing.T) {
 	handle(t, delta.Apply(op, user1Value))
 	user1State, op, err = Edit(ctx, server, COMPANY, uniqueID(), id, user1State, op)
 	handle(t, err)
-	fmt.Println(op.Debug())
 	handle(t, delta.Apply(op, user1Value))
 	check(t, "user1 rename key", user1Value, user1State, &tests.Company{Name: "a", Flags: map[int64]string{4: "a"}}, 4)
 
