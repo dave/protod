@@ -26,6 +26,13 @@ func TestTransform(t *testing.T) {
 	}
 	items := []itemType{
 		{
+			name:     "set_rename_bug",
+			op1:      Op().Person().Cases().Key("a").Flags().Set(map[int64]string{1: "a"}),
+			op2:      Op().Person().Cases().Rename("a", "a"),
+			data:     &Person{Cases: map[string]*Case{"a": {Name: "a"}}},
+			expected: &Person{Cases: map[string]*Case{"a": {Name: "a", Flags: map[int64]string{1: "a"}}}},
+		},
+		{
 			name: "compound_rename_bug",
 			op1:  Op().Company().Flags().Rename(1, 4),
 			op2: delta.Compound(

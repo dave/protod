@@ -91,6 +91,12 @@ func (t *Op) Transform(op *Op, priority bool) *Op {
 			}
 		}
 	}
+	if op.IsNullMove() {
+		return nil
+	}
+	if t.IsNullMove() {
+		return proto.Clone(op).(*Op)
+	}
 	return t.transform(op, priority)
 }
 

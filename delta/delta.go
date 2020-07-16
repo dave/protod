@@ -17,25 +17,38 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
+const DEBUG = false
+
 func Transform(op1, op2 *Op, op1priority bool) (op1x *Op, op2x *Op, err error) {
-	//defer func() {
-	//	if r := recover(); r != nil {
-	//		fmt.Println(r)
-	//		fmt.Println(op1.Debug())
-	//		fmt.Println(op2.Debug())
-	//		panic(r)
-	//	}
-	//}()
-	defer func() {
-		if r := recover(); r != nil {
-			switch r := r.(type) {
-			case error:
-				err = r
-			default:
-				err = fmt.Errorf("recovered from panic: %v", r)
+	if DEBUG {
+		// in debug mode, recover from panic, print inputs, and re-panic to get stack trace
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Println(r)
+				var op1p, op2p string
+				if op1priority {
+					op1p = "*"
+				} else {
+					op2p = "*"
+				}
+				fmt.Println("op1", op1p, op1.Debug())
+				fmt.Println("op2", op2p, op2.Debug())
+				panic(r)
 			}
-		}
-	}()
+		}()
+	} else {
+		// when not in debug mode, catch panics and convert to errors
+		defer func() {
+			if r := recover(); r != nil {
+				switch r := r.(type) {
+				case error:
+					err = r
+				default:
+					err = fmt.Errorf("recovered: %v", r)
+				}
+			}
+		}()
+	}
 	if op1 == nil && op2 == nil {
 		return nil, nil, nil
 	}
@@ -52,15 +65,30 @@ func Transform(op1, op2 *Op, op1priority bool) (op1x *Op, op2x *Op, err error) {
 	return op1x, op2x, nil
 }
 
-func Apply(op *Op, input proto.Message) error {
-	//defer func() {
-	//	if r := recover(); r != nil {
-	//		fmt.Println(r)
-	//		fmt.Println(op.Debug())
-	//		fmt.Println(mustJson(input))
-	//		panic(r)
-	//	}
-	//}()
+func Apply(op *Op, input proto.Message) (err error) {
+	if DEBUG {
+		// in debug mode, recover from panic, print inputs, and re-panic to get stack trace
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Println(r)
+				fmt.Println("op", op.Debug())
+				fmt.Println("input", mustJson(input))
+				panic(r)
+			}
+		}()
+	} else {
+		// when not in debug mode, catch panics and convert to errors
+		defer func() {
+			if r := recover(); r != nil {
+				switch r := r.(type) {
+				case error:
+					err = r
+				default:
+					err = fmt.Errorf("recovered: %v", r)
+				}
+			}
+		}()
+	}
 	if op == nil || op.Type == Op_Null {
 		return nil
 	}

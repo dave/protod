@@ -43,13 +43,13 @@ type User struct {
 	state    int64
 }
 
-const REPEATS = 1000
+const REPEATS = 100000
 
 func (u *User) Run(id string, wg *sync.WaitGroup) {
-	time.Sleep(time.Duration(rand.Intn(200)) * time.Millisecond)
+	time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond)
 	u.Get(id)
 	for i := 0; i < REPEATS; i++ {
-		time.Sleep(time.Duration(rand.Intn(200)) * time.Millisecond)
+		time.Sleep(time.Duration(rand.Intn(2000)) * time.Microsecond)
 		u.Edit()
 	}
 	wg.Done()
@@ -62,7 +62,7 @@ func (u *User) Get(id string) {
 	if err != nil {
 		u.t.Fatal(err)
 	}
-	fmt.Printf("%d) GET %d %s\n", u.user, u.state, mustJson(u.document))
+	//fmt.Printf("%d) GET %d %s\n", u.user, u.state, mustJson(u.document))
 }
 
 const MAX_OPS = 10
@@ -87,7 +87,9 @@ func (u *User) Edit() {
 		u.t.Fatal(err)
 	}
 	u.state = state
-	fmt.Printf("%d) EDIT %d %s\n", u.user, u.state, mustJson(u.document))
+	if u.state%137 == 0 {
+		fmt.Printf("%d) EDIT %d %s\n", u.user, u.state, mustJson(u.document))
+	}
 }
 
 func (u *User) Refresh() {
@@ -99,5 +101,5 @@ func (u *User) Refresh() {
 		u.t.Fatal(err)
 	}
 	u.state = state
-	fmt.Printf("%d) REFRESH %d %s\n", u.user, u.state, mustJson(u.document))
+	//fmt.Printf("%d) REFRESH %d %s\n", u.user, u.state, mustJson(u.document))
 }
