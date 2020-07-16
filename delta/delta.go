@@ -1083,6 +1083,27 @@ func SplitCommonOneofAncestor(p1, p2 []*Locator) (found bool, oneof []*Locator) 
 	// but
 	// Op().Chooser().Choice().Dbl().Set(2), Op().Chooser().Choice().Dbl().Set(3) => false, nil
 	// ... the second example is false because both ops are acting on the same value inside the oneof.
+
+	// first search both locations for a oneof - if none is found, return false. Also we can easily
+	// check if the index of the first oneof is identical. If not, they can't have a common oneof
+	// ancestor.
+	foundP1, foundP2 := -1, -1
+	for i, locator := range p1 {
+		if _, isOneof := locator.V.(*Locator_Oneof); isOneof {
+			foundP1 = i
+			break
+		}
+	}
+	for i, locator := range p2 {
+		if _, isOneof := locator.V.(*Locator_Oneof); isOneof {
+			foundP2 = i
+			break
+		}
+	}
+	if foundP1 == -1 || foundP2 == -1 || foundP1 != foundP2 {
+		return false, nil
+	}
+
 	for i := 0; i < len(p1) && i < len(p2); i++ {
 		l1 := p1[i]
 		l2 := p2[i]

@@ -74,12 +74,6 @@ func (u *User) Get(id string) {
 const MAX_OPS = 10
 
 func (u *User) Edit() {
-
-	u.mutex.Lock()
-	defer func() { u.mutex.Unlock() }()
-
-	//fmt.Println("-----------")
-	//fmt.Println(u.user, "before op", mustJson(u.document))
 	var ops []*delta.Op
 	for i := 0; i < rand.Intn(MAX_OPS)+1; i++ {
 		op := randop.Get(u.document)
@@ -89,18 +83,17 @@ func (u *User) Edit() {
 		}
 	}
 	op := delta.Compound(ops...)
-	//fmt.Println(u.user, "op", op.Debug())
-	//fmt.Println(u.user, "after op", mustJson(u.document))
 	state, opx, err := Edit(context.Background(), u.server, PERSON, uniqueID(), u.id, u.state, op)
-	//fmt.Println(u.user, "opx", opx.Debug())
 	if err != nil {
 		u.t.Fatal(err)
 	}
 	if err := delta.Apply(opx, u.document); err != nil {
 		u.t.Fatal(err)
 	}
-	//fmt.Println(u.user, "after opx", mustJson(u.document))
 	u.state = state
+
+	u.mutex.Lock()
+	defer func() { u.mutex.Unlock() }()
 
 	previous, found := u.states[u.state]
 	if !found {
@@ -110,7 +103,7 @@ func (u *User) Edit() {
 			u.t.Fatalf("state diverged at %d\nprevious: %s\nnew: %s", u.state, mustJson(previous), mustJson(u.document))
 		}
 	}
-	if int(u.state)%(rand.Intn(50)+50) == 0 {
+	if int(u.state)%(rand.Intn(10)+10) == 0 {
 		//fmt.Printf("%d) EDIT %d %s\n", u.user, u.state, mustJson(u.document))
 		fmt.Printf("%d) EDIT %d\n", u.user, u.state)
 	}

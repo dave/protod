@@ -47,48 +47,28 @@ func (t *Op) Transform(op *Op, priority bool) *Op {
 	if found {
 		// t and op have a common oneof ancestor, and are acting on separate values. Any operation on the descendant of
 		// a oneof value will delete the entire tree under all the other oneof values.
-
-		if t.Type == Op_Delete && len(t.Location) == len(oneofLocation) {
-			return nil
-		}
-
-		if op.Type == Op_Delete && len(op.Location) == len(oneofLocation) {
-			return proto.Clone(op).(*Op)
-		}
-
-		var priorityOp, notOp *Op
-		if priority {
-			priorityOp = t
-			notOp = op
-		} else {
-			priorityOp = op
-			notOp = t
-		}
-
 		valid := func(o *Op) bool {
-			return o.Type == Op_Set && len(o.Location) == len(oneofLocation)+1
+			return (o.Type == Op_Delete && len(o.Location) == len(oneofLocation)) ||
+				(o.Type == Op_Set && len(o.Location) == len(oneofLocation)+1)
 		}
-
-		if valid(notOp) && !valid(priorityOp) {
-			// if notOp is valid and priorityOp is not, we can swap them round so a set/insert always takes priority
-			// over an edit/move/rename/delete.
-			priorityOp, notOp = notOp, priorityOp
-		}
-
-		// TODO ???
-		if valid(priorityOp) {
-			// nuke everything, and re-run the priority operation (if it's a set).
-			return Compound(
-				// TODO: this is probably broken - add tests
-				&Op{
-					Type:     Op_Delete,
-					Location: oneofLocation,
-				},
-				proto.Clone(priorityOp).(*Op),
-			)
-		} else {
-			// nuke everything.
-			// TODO: this is probably broken - add tests
+		switch {
+		case valid(t) && valid(op):
+			// if both operations are valid, then use priority to determine if op should be removed
+			if priority {
+				// t has priority, so remove op
+				return nil
+			} else {
+				// op has priority, so continue
+				return proto.Clone(op).(*Op)
+			}
+		case valid(t):
+			// if only t is valid, remove op
+			return nil
+		case valid(op):
+			// if only op is valid, continue
+			return proto.Clone(op).(*Op)
+		default:
+			// if neither operation is valid, in order to converge, we must delete the whole oneof group
 			return &Op{
 				Type:     Op_Delete,
 				Location: oneofLocation,
@@ -101,13 +81,7 @@ func (t *Op) Transform(op *Op, priority bool) *Op {
 	if t.IsNullMove() {
 		return proto.Clone(op).(*Op)
 	}
-	opx := t.transform(op, priority)
-	//fmt.Println("---")
-	//fmt.Println("* t  :", t.Debug())
-	//fmt.Println("* op :", op.Debug())
-	//fmt.Println("* opx:", opx.Debug())
-	//fmt.Println("---")
-	return opx
+	return t.transform(op, priority)
 }
 
 func tIndependent(t, op *Op) *Op {

@@ -981,6 +981,28 @@ List<pb.Locator> splitCommonOneofAncestor(
   // but
   // Op().Chooser().Choice().Dbl().Set(2), Op().Chooser().Choice().Dbl().Set(3) => false, nil
   // ... the second example is false because both ops are acting on the same value inside the oneof.
+
+  // first search both locations for a oneof - if none is found, return false. Also we can easily
+  // check if the index of the first oneof is identical. If not, they can't have a common oneof
+  // ancestor.
+  var foundP1 = -1;
+  var foundP2 = -1;
+  for (var i = 0; i < p1.length; i++) {
+    if (p1[i].hasOneof()) {
+      foundP1 = i;
+      break;
+    }
+  }
+  for (var i = 0; i < p2.length; i++) {
+    if (p2[i].hasOneof()) {
+      foundP2 = i;
+      break;
+    }
+  }
+  if (foundP1 == -1 || foundP2 == -1 || foundP1 != foundP2) {
+    return null;
+  }
+
   for (var i = 0; i < p1.length && i < p2.length; i++) {
     final l1 = p1[i];
     final l2 = p2[i];

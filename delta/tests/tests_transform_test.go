@@ -26,6 +26,14 @@ func TestTransform(t *testing.T) {
 	}
 	items := []itemType{
 		{
+			name:      "oneof_delete_set",
+			op1:       Op().Person().Choice().Delete(),
+			op2:       Op().Person().Choice().Str().Set("b"),
+			data:      &Person{Choice: &Person_Str{Str: "a"}},
+			expected1: &Person{},
+			expected2: &Person{Choice: &Person_Str{Str: "b"}},
+		},
+		{
 			name:      "oneof_more",
 			op1:       Op().Person().Choice().Delete(),
 			op2:       Op().Person().Choice().Str().Delete(),

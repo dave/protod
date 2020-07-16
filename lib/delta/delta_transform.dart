@@ -48,40 +48,30 @@ pb.Op transform(pb.Op t, pb.Op op, bool priority) {
   if (oneofLocation != null) {
     // t and op have a common oneof ancestor, and are acting on separate values. Any operation on the descendant of
     // a oneof value will delete the entire tree under all the other oneof values.
-
-    if (t.type == pb.Op_Type.Delete &&
-        t.location.length == oneofLocation.length) {
-      return null;
-    }
-    if (op.type == pb.Op_Type.Delete &&
-        op.location.length == oneofLocation.length) {
-      return op.clone();
-    }
-
-    var priorityOp = priority ? t : op;
-    var notOp = priority ? op : t;
     bool valid(pb.Op o) {
-      return o.type == pb.Op_Type.Set &&
-          o.location.length == oneofLocation.length + 1;
+      return (o.type == pb.Op_Type.Delete &&
+              o.location.length == oneofLocation.length) ||
+          (o.type == pb.Op_Type.Set &&
+              o.location.length == oneofLocation.length + 1);
     }
 
-    if (!valid(priorityOp) && valid(notOp)) {
-      // if notOp is valid and priorityOp is not, we can swap them round so a set/insert always takes priority
-      // over an edit/move/rename/delete.
-      var tmp = priorityOp;
-      priorityOp = notOp;
-      notOp = tmp;
-    }
-    if (valid(priorityOp)) {
-      // nuke everything, and re-run the priority operation (if it's a set / insert).
-      return pb.Op()
-        ..type = pb.Op_Type.Compound
-        ..ops.add(pb.Op()
-          ..type = pb.Op_Type.Delete
-          ..location.addAll(oneofLocation))
-        ..ops.add(priorityOp.clone());
+    if (valid(t) && valid(op)) {
+      // if both operations are valid, then use priority to determine if op should be removed
+      if (priority) {
+        // t has priority, so remove op
+        return null;
+      } else {
+        // op has priority, so continue
+        return op.clone();
+      }
+    } else if (valid(t)) {
+      // if only t is valid, remove op
+      return null;
+    } else if (valid(op)) {
+      // if only op is valid, continue
+      return op.clone();
     } else {
-      // nuke everything.
+      // if neither operation is valid, in order to converge, we must delete the whole oneof group
       return pb.Op()
         ..type = pb.Op_Type.Delete
         ..location.addAll(oneofLocation);
