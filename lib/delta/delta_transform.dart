@@ -13,37 +13,36 @@ pb.Op transform(pb.Op t, pb.Op op, bool priority) {
   }
   if (op.type == pb.Op_Type.Compound) {
     var transformed = List<pb.Op>();
-    var t1 = t;
-    op.ops.forEach((o) {
-      final ox = transform(t1, o, priority);
+    pb.Op tx;
 
-      // we must transform t against ox to get the correct t for the next item in the compound operation
-      t1 = transform(ox, t1, !priority);
+    for (var i = 0; i < op.ops.length; i++) {
+      var o = op.ops[i];
+
+      if (i == 0) {
+        tx = t;
+      } else {
+        // we must transform tx against the previous operation
+        final previous = op.ops[i - 1];
+        tx = transform(previous, tx, !priority);
+      }
+
+      final ox = transform(tx, o, priority);
 
       if (ox != null) {
         transformed.add(ox);
       }
-    });
-    switch (transformed.length) {
-      case 0:
-        return null;
-      case 1:
-        return transformed[0];
-      default:
-        return pb.Op()
-          ..type = pb.Op_Type.Compound
-          ..ops.addAll(transformed);
     }
+    return compound(transformed);
   }
   if (t.type == pb.Op_Type.Compound) {
-    var out = op.clone();
-    for (final t1 in t.ops) {
-      out = transform(t1, out, priority);
-      if (out == null) {
+    var opx = op.clone();
+    for (final tx in t.ops) {
+      opx = transform(tx, opx, priority);
+      if (opx == null) {
         return null;
       }
     }
-    return out;
+    return opx;
   }
   final oneofLocation = splitCommonOneofAncestor(t.location, op.location);
   if (oneofLocation != null) {
@@ -80,6 +79,12 @@ pb.Op transform(pb.Op t, pb.Op op, bool priority) {
         ..type = pb.Op_Type.Delete
         ..location.addAll(oneofLocation);
     }
+  }
+  if (isNullMove(op)) {
+    return null;
+  }
+  if (isNullMove(t)) {
+    return op.clone();
   }
   return transformGenerated(t, op, priority);
 }
@@ -336,10 +341,10 @@ pb.Op tDeleteIndexMoveIndex(pb.Op t, pb.Op op, bool priority) {
   if (from != TreeRelationshipType.EQUAL && to != TreeRelationshipType.EQUAL) {
     return tIndependent(t, op);
   } else if (from == TreeRelationshipType.EQUAL) {
-    // op is trying to move the value that op has already deleted. In order to converge, t must take priority.
+    // op is trying to move the value that t has already deleted. In order to converge, t must take priority.
     return null;
   } else if (to == TreeRelationshipType.EQUAL) {
-    // op is trying to move to the index of the value that op already deleted. Operations are independent.
+    // op is trying to move to the index of the value that t already deleted. Operations are independent.
     return tIndependent(t, op);
   } else {
     throw Exception("");

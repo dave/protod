@@ -33,9 +33,15 @@ protobuf.GeneratedMessage unpack(any.Any packed, [protobuf.TypeRegistry r]) {
 }
 
 pb.Op compound(List<pb.Op> ops) {
-  return pb.Op()
-    ..type = pb.Op_Type.Compound
-    ..ops.addAll(ops);
+  if (ops.length == 0) {
+    return null;
+  } else if (ops.length == 1) {
+    return ops[0];
+  } else {
+    return pb.Op()
+      ..type = pb.Op_Type.Compound
+      ..ops.addAll(ops);
+  }
 }
 
 apply(pb.Op op, protobuf.GeneratedMessage m, [protobuf.TypeRegistry r]) {
