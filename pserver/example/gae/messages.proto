@@ -1,0 +1,60 @@
+syntax = "proto3";
+package messages;
+
+import "tests/tests.proto";
+import "delta/delta.proto";
+
+option go_package = "github.com/dave/protod/pserver/example/gae;main";
+
+message Person {
+
+  message Get {
+    message Request {
+      string id = 1;
+    }
+    message Response {
+      string id = 1;
+      int64 state = 2;
+      tests.Person person = 3;
+      string err = 4;
+    }
+  }
+
+  message Add {
+    message Request {
+      string request = 1; // random unique id for de-duplication
+      tests.Person person = 2;
+    }
+    message Response {
+      string id = 1;
+      string err = 2;
+    }
+  }
+
+  message Edit {
+    message Request {
+      string id = 1; // document id
+
+      // required by pserver: request, state, op
+      string request = 2; // random unique id for this request
+      int64 state = 3;    // state of the document that this op is acting on
+      delta.Op op = 4;    // operation
+    }
+    message Response {
+      // required by pserver: state, op
+      int64 state = 1;   // state of the document after the op from the client and the response op have been applied
+      delta.Op op = 2;   // response op that must be applied to the document in order to get to the server state
+
+      string err = 3;
+    }
+  }
+
+  message Refresh {
+    message Request {
+      string id = 1; // document id
+    }
+    message Response {
+      string err = 1;
+    }
+  }
+}

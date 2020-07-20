@@ -3,6 +3,7 @@ package randop
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"reflect"
 	"strings"
 	"testing"
@@ -21,10 +22,49 @@ func TestSingle(t *testing.T) {
 	}
 }
 
-func TestRandomApply(t *testing.T) {
+func TestRandomApplyCases(t *testing.T) {
+	cases := strings.Split(RANDOM_CASES, "\n")
 	p := &tests.Person{Name: "a"}
-	var sb strings.Builder
-	sb.WriteString("const RANDOM_CASES = '''")
+	for _, caseJson := range cases {
+		item := &tests.RandomTestItem{}
+		before := proto.Clone(p).(*tests.Person)
+		err := protojson.Unmarshal([]byte(caseJson), item)
+		if err != nil {
+			t.Fatalf("unmarshaling %q: %+v", caseJson, err)
+		}
+		if err := delta.Apply(item.Op, p); err != nil {
+			t.Fatal(err)
+		}
+		expcted, err := protojson.Marshal(item.Expected)
+		if err != nil {
+			t.Fatal(err)
+		}
+		result, err := protojson.Marshal(p)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !compareJson(string(result), string(expcted)) {
+			input, err := protojson.Marshal(before)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Fatalf("input: %s\nop: %s\nexpected: %s\nresult:%s", string(input), item.Op.Debug(), string(expcted), string(result))
+		}
+		//fmt.Printf("input: %s\nop: %s\nexpected: %s\nresult:%s\n\n", string(input), item.Op.Debug(), string(expcted), string(result))
+	}
+}
+
+func TestRandomApply(t *testing.T) {
+
+	const disabled = true
+	if disabled {
+		return
+	}
+
+	p := &tests.Person{Name: "a"}
+	var sbd, sbg strings.Builder
+	sbd.WriteString("const RANDOM_CASES = '''")
+	sbg.WriteString("package randop\n\nconst RANDOM_CASES = `")
 	for i := 0; i < 10000; i++ {
 		op := Get(p)
 		if err := delta.Apply(op, p); err != nil {
@@ -43,14 +83,20 @@ func TestRandomApply(t *testing.T) {
 			t.Fatal(err)
 		}
 		if i > 0 {
-			sb.WriteString("\n")
+			sbd.WriteString("\n")
+			sbg.WriteString("\n")
 		}
-		sb.Write(b)
+		sbd.Write(b)
+		sbg.Write(b)
 	}
-	sb.WriteString("''';")
-	//if err := ioutil.WriteFile("../../test/random_cases.dart", []byte(sb.String()), 0666); err != nil {
-	//	t.Fatal(err)
-	//}
+	sbd.WriteString("''';")
+	sbg.WriteString("`")
+	if err := ioutil.WriteFile("../../test/random_cases.dart", []byte(sbd.String()), 0666); err != nil {
+		t.Fatal(err)
+	}
+	if err := ioutil.WriteFile("./cases_test.go", []byte(sbg.String()), 0666); err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestRandomTransform(t *testing.T) {

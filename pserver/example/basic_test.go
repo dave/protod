@@ -282,6 +282,7 @@ func handle(t *testing.T, err error) {
 }
 
 func resetDatabase(t *testing.T) {
+	fmt.Println("resetting database...")
 	addr := os.Getenv("FIRESTORE_EMULATOR_HOST")
 	if addr == "" {
 		t.Fatal("can't find FIRESTORE_EMULATOR_HOST env")
@@ -299,6 +300,7 @@ func resetDatabase(t *testing.T) {
 	if resp.StatusCode != 200 {
 		t.Fatalf("reset database call returned %d: %s", resp.StatusCode, resp.Status)
 	}
+	fmt.Println("done resetting database.")
 }
 
 const alphanum = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"

@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/dave/protod/delta"
 	"github.com/dave/protod/delta/randop"
@@ -47,17 +48,23 @@ type User struct {
 	states   map[int64]proto.Message
 	mutex    *sync.Mutex
 	wg       *sync.WaitGroup
+	elapsed  int64
+	edits    int
 }
 
-const REPEATS = 1000
+const REPEATS = 100000
 
 func (u *User) Run(id string) {
 	//time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond)
 	defer u.wg.Done()
 	u.Get(id)
 	for i := 0; i < REPEATS; i++ {
-		//time.Sleep(time.Duration(rand.Intn(2000)) * time.Microsecond)
+		time.Sleep(time.Duration(rand.Intn(5000)) * time.Microsecond)
+		t := time.Now().UnixNano()
 		u.Edit()
+		d := time.Now().UnixNano() - t
+		u.elapsed += d
+		u.edits++
 	}
 }
 
@@ -105,7 +112,10 @@ func (u *User) Edit() {
 	}
 	if int(u.state)%(rand.Intn(10)+10) == 0 {
 		//fmt.Printf("%d) EDIT %d %s\n", u.user, u.state, mustJson(u.document))
-		fmt.Printf("%d) EDIT %d\n", u.user, u.state)
+		milisecondsPerEdit := (float64(u.elapsed) / float64(u.edits)) / 1000.0 / 1000.0
+		u.elapsed = 0
+		u.edits = 0
+		fmt.Printf("%d) EDIT %d duration: %dms\n", u.user, u.state, int(milisecondsPerEdit))
 	}
 }
 

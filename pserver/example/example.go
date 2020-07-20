@@ -3,21 +3,21 @@ package example
 import (
 	"context"
 	"fmt"
-	"sync"
 	"testing"
 
+	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
 	"cloud.google.com/go/firestore"
 	"github.com/dave/protod/delta"
 	"github.com/dave/protod/delta/tests"
 	"github.com/dave/protod/pserver"
+	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
-const UPDATE_SNAPSHOT_FREQUENCY = 5 // would be higher for real server
+const UPDATE_SNAPSHOT_FREQUENCY = 50
 const PROJECT_ID = "pserver-testing"
-
-var locks = map[string]*sync.Mutex{}
+const LOCATION_ID = "europe-west2"
 
 func New(ctx context.Context, t *testing.T) *pserver.Server {
 	fc, err := firestore.NewClient(ctx, PROJECT_ID)
@@ -62,8 +62,7 @@ func Add(ctx context.Context, server *pserver.Server, t pserver.DocumentType, re
 	}
 
 	var id string
-
-	if err := server.Firestore.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
+	f := func(ctx context.Context, tx *firestore.Transaction) error {
 
 		// check for documents with the same unique request id
 		duplicate, err := server.QuerySnapshot(ctx, tx, t, request)
@@ -77,33 +76,31 @@ func Add(ctx context.Context, server *pserver.Server, t pserver.DocumentType, re
 
 		ref := server.Firestore.Collection(t.Collection).NewDoc()
 
-		snapshot := &pserver.Snapshot{Request: request, State: 1, Value: docBlob}
-		if err := tx.Set(ref, snapshot); err != nil {
+		const initialState = 1
+
+		snapshot := &pserver.Snapshot{Request: request, State: initialState, Value: docBlob}
+		if err := tx.Create(ref, snapshot); err != nil {
 			return err
 		}
 
-		stateRef := ref.Collection(pserver.STATES_COLLECTION).NewDoc()
-		state := &pserver.State{Request: request, State: 1, Op: opBlob}
-		if err := tx.Set(stateRef, state); err != nil {
+		stateRef := ref.Collection(pserver.STATES_COLLECTION).Doc(fmt.Sprint(initialState))
+		state := &pserver.State{Request: request, State: initialState, Op: opBlob}
+		if err := tx.Create(stateRef, state); err != nil {
 			return err
 		}
 
 		id = ref.ID
 		return nil
 
-	}); err != nil {
+	}
+	if err := server.RunTransaction(ctx, f); err != nil {
 		return "", err
 	}
-
-	locks[id] = &sync.Mutex{}
 
 	return id, nil
 }
 
 func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, request, id string, state int64, op *delta.Op) (int64, *delta.Op, error) {
-
-	locks[id].Lock()
-	defer func() { locks[id].Unlock() }()
 
 	// 3) Let's refer to op as OP2
 	op2 := op
@@ -123,11 +120,11 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, r
 		return state, delta.Compound(ops...), nil
 	}
 
-	var after int64
+	var lastState, newState int64
 	var op1x, op2x *delta.Op
 	var duplicate *firestore.DocumentSnapshot
 
-	if err := server.Firestore.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
+	f := func(ctx context.Context, tx *firestore.Transaction) error {
 
 		var err error
 		duplicate, err = server.QueryState(ctx, tx, t, ref, request)
@@ -139,7 +136,7 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, r
 			return nil
 		}
 
-		after, op1x, op2x, err = server.Transform(ctx, tx, t, ref, op2, state, 0)
+		lastState, op1x, op2x, err = server.Transform(ctx, tx, t, ref, op2, state, 0)
 		if err != nil {
 			return err
 		}
@@ -149,16 +146,17 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, r
 		if err != nil {
 			return err
 		}
-		after = after + 1
-		newStateRef := ref.Collection(pserver.STATES_COLLECTION).NewDoc()
-		newStateItem := &pserver.State{Request: request, State: after, Op: op2xBlob}
-		if err := tx.Set(newStateRef, newStateItem); err != nil {
+		newState = lastState + 1
+		newStateRef := ref.Collection(pserver.STATES_COLLECTION).Doc(fmt.Sprint(newState))
+		newStateItem := &pserver.State{Request: request, State: newState, Op: op2xBlob}
+		if err := tx.Create(newStateRef, newStateItem); err != nil {
 			return err
 		}
 
 		return nil
 
-	}); err != nil {
+	}
+	if err := server.RunTransaction(ctx, f); err != nil {
 		return 0, nil, err
 	}
 
@@ -180,19 +178,54 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, r
 		return duplicateState.State, op1x, nil
 	}
 
-	// Update the snapshot less frequently, and outside the transaction!
-	// TODO: Can we just start this in a goroutine and run asynchronously? Hmm... in App Engine?
-	if after%UPDATE_SNAPSHOT_FREQUENCY == 0 {
-		if err := UpdateSnapshot(ctx, server, t, ref); err != nil {
-			return 0, nil, err
-		}
-	}
-
 	// 7) Response: {unique: UNIQUE, state: COUNT, op: OP1x}
-	return after, op1x, nil
+	return newState, op1x, nil
 }
 
-func UpdateSnapshot(ctx context.Context, server *pserver.Server, t pserver.DocumentType, ref *firestore.DocumentRef) error {
+func TriggerRefreshTask(ctx context.Context, prefix string, message proto.Message) (*taskspb.Task, error) {
+
+	// Create a new Cloud Tasks client instance.
+	// See https://godoc.org/cloud.google.com/go/cloudtasks/apiv2
+	client, err := cloudtasks.NewClient(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("getting new cloudtasks client: %w", err)
+	}
+
+	body, err := proto.Marshal(message)
+	if err != nil {
+		return nil, fmt.Errorf("marshaling refresh message: %w", err)
+	}
+
+	// Build the Task payload.
+	// https://godoc.org/google.golang.org/genproto/googleapis/cloud/tasks/v2#CreateTaskRequest
+	req := &taskspb.CreateTaskRequest{
+		Parent: fmt.Sprintf("projects/%s/locations/%s/queues/%s", PROJECT_ID, LOCATION_ID, "refresh"),
+		Task: &taskspb.Task{
+			// https://godoc.org/google.golang.org/genproto/googleapis/cloud/tasks/v2#HttpRequest
+			MessageType: &taskspb.Task_HttpRequest{
+				HttpRequest: &taskspb.HttpRequest{
+					HttpMethod: taskspb.HttpMethod_POST,
+					Url:        prefix + pserver.Path(message),
+					Body:       body,
+					Headers:    map[string]string{"Content-Type": "application/protobuf"},
+				},
+			},
+		},
+	}
+
+	task, err := client.CreateTask(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("creating task: %v", err)
+	}
+
+	return task, nil
+
+}
+
+func Refresh(ctx context.Context, server *pserver.Server, t pserver.DocumentType, id string) error {
+
+	ref := server.Firestore.Collection(t.Collection).Doc(id)
+
 	// Update the value snapshot. this doesn't need to be inside a transaction, because if the
 	// snapshot is slightly out of date it doesn't matter.
 	snapshotState, document, _, err := server.UnpackSnapshot(ctx, nil, t, ref)
@@ -217,7 +250,7 @@ func UpdateSnapshot(ctx context.Context, server *pserver.Server, t pserver.Docum
 		return err
 	}
 	newSnapshot := &pserver.Snapshot{State: state, Value: documentBlob}
-	if _, err := ref.Set(ctx, newSnapshot); err != nil {
+	if err := server.RefSet(ctx, ref, newSnapshot); err != nil {
 		return err
 	}
 	return nil
