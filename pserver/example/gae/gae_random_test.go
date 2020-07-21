@@ -9,7 +9,6 @@ import (
 
 	"github.com/dave/protod/delta"
 	"github.com/dave/protod/delta/randop"
-	"github.com/dave/protod/delta/tests"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -27,28 +26,23 @@ func TestGaeRandom(t *testing.T) {
 	startTime = time.Now().UnixNano()
 	mutex := &sync.Mutex{}
 
-	resp := req(prefix, &Person_Add_Response{}, &Person_Add_Request{
-		Request: uniqueID(),
-		Person:  &tests.Person{Name: "dave"},
-	}).(*Person_Add_Response)
-	if resp.Err != "" {
-		t.Fatal(resp.Err)
-	}
-	id := resp.Id
-	//id := "CXYs5VV1XXEHuS4EmCtT"
+	//resp := req(prefix, &Person_Add_Response{}, &Person_Add_Request{
+	//	Request: uniqueID(),
+	//	Person:  &tests.Person{Name: "dave"},
+	//}).(*Person_Add_Response)
+	//if resp.Err != "" {
+	//	t.Fatal(resp.Err)
+	//}
+	//id := resp.Id
+	id := "jGCmF29WkHFE785IgPCL"
 	fmt.Println(id)
 	wg := &sync.WaitGroup{}
-	u1 := &User{user: 1, t: t, wg: wg, states: states, mutex: mutex, prefix: prefix}
-	u2 := &User{user: 2, t: t, wg: wg, states: states, mutex: mutex, prefix: prefix}
-	u3 := &User{user: 3, t: t, wg: wg, states: states, mutex: mutex, prefix: prefix}
-	//u4 := &User{user: 4, t: t, wg: wg, states: states, mutex: mutex, prefix: prefix}
-	//u5 := &User{user: 5, t: t, wg: wg, states: states, mutex: mutex, prefix: prefix}
-	wg.Add(3)
-	go u1.Run(id)
-	go u2.Run(id)
-	go u3.Run(id)
-	//go u4.Run(resp.Id)
-	//go u5.Run(resp.Id)
+	const users = 30
+	for i := 1; i < users; i++ {
+		u := &User{user: i, t: t, wg: wg, states: states, mutex: mutex, prefix: prefix}
+		wg.Add(1)
+		go u.Run(id)
+	}
 	wg.Wait()
 }
 
@@ -67,11 +61,13 @@ type User struct {
 const REPEATS = 100000
 
 func (u *User) Run(id string) {
-	time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond)
+	time.Sleep(time.Duration(rand.Intn(100)) * time.Millisecond)
 	defer u.wg.Done()
 	u.Get(id)
 	for i := 0; i < REPEATS; i++ {
-		time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond)
+		delay := rand.Intn(10000)
+		//fmt.Printf("waiting %.1fsec\n", float64(delay)/1000.0)
+		time.Sleep(time.Duration(delay) * time.Millisecond)
 		u.Edit()
 	}
 }
@@ -131,11 +127,12 @@ func (u *User) Edit() {
 	count++
 	elapsed += endTime - editStartTime
 
-	if count%100 == 0 {
-		total := endTime - startTime
-		milisecondsPerEdit := (float64(elapsed) / float64(count)) / 1000.0 / 1000.0
-		editsPerSecond := float64(count) / (float64(total) / 1000.0 / 1000.0 / 1000.0)
-		fmt.Printf("State: %d, %d edits, %.1f/sec, %dms\n", u.state, count, editsPerSecond, int(milisecondsPerEdit))
+	total := endTime - startTime
+	milisecondsPerEdit := (float64(elapsed) / float64(count)) / 1000.0 / 1000.0
+	editsPerSecond := float64(count) / (float64(total) / 1000.0 / 1000.0 / 1000.0)
+	fmt.Printf("State: %d, %d edits, %.1f/sec, %dms\n", u.state, count, editsPerSecond, int(milisecondsPerEdit))
+
+	if count%1000 == 0 {
 		elapsed = 0
 		count = 0
 		startTime = time.Now().UnixNano()
