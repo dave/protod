@@ -2,7 +2,6 @@ package example
 
 import (
 	"context"
-	"encoding/binary"
 	"errors"
 	"fmt"
 	"testing"
@@ -160,16 +159,10 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, r
 		return nil
 
 	}
-	if err := RequestLock(ctx, ref); err != nil {
-		return 0, nil, err
+	tf := func() error {
+		return server.Firestore.RunTransaction(ctx, f)
 	}
-	if err := server.Firestore.RunTransaction(ctx, f); err != nil {
-		if err := ReleaseLock(ctx, ref); err != nil {
-			return 0, nil, err
-		}
-		return 0, nil, err
-	}
-	if err := ReleaseLock(ctx, ref); err != nil {
+	if err := Lock(ctx, ref.Path, tf); err != nil {
 		return 0, nil, err
 	}
 
@@ -195,54 +188,47 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, r
 	return newState, op1x, nil
 }
 
-const EXPIRE_LOCK = 2000 * time.Millisecond
-
-func RequestLock(ctx context.Context, ref *firestore.DocumentRef) error {
-	nowTime := time.Now().UnixNano()
-	nowBytes := make([]byte, 8)
-	binary.LittleEndian.PutUint64(nowBytes, uint64(nowTime))
-	cacheItem, err := memcache.Get(ctx, ref.Path)
-	if err != nil && err != memcache.ErrCacheMiss {
-		return err
-	}
-	if err == memcache.ErrCacheMiss || cacheItem == nil {
-		// item is not found - add new item
-		if err := memcache.Add(ctx, &memcache.Item{Key: ref.Path, Value: nowBytes}); err == memcache.ErrNotStored {
-			return ServerBusy
-		} else if err != nil {
-			return err
+func Lock(ctx context.Context, key string, f func() error) (returnedError error) {
+	requestLock := func() error {
+		item := &memcache.Item{
+			Key:        key,
+			Value:      []byte{},
+			Expiration: time.Second * 2, // lock is released automatically after 2 seconds in case of server failure etc.
 		}
-	} else {
-		// item is found - see if it is a valid lock
-		if len(cacheItem.Value) != 8 {
-			if err := memcache.Delete(ctx, ref.Path); err != nil && err != memcache.ErrCacheMiss {
-				return err
-			}
-			return errors.New("invalid data in cache")
-		}
-		last := int64(binary.LittleEndian.Uint64(cacheItem.Value))
-		if time.Duration(nowTime-last) < EXPIRE_LOCK {
-			// last request was less than 2s ago. Exit with server busy right away.
+		switch err := memcache.Add(ctx, item); err {
+		case nil:
+			// item was added
+			return nil
+		case memcache.ErrNotStored:
+			// item already exists
 			return ServerBusy
-		}
-		// item is not a valid lock, so set to now time to lock the item for ourselves
-		cacheItem.Value = nowBytes
-		if err := memcache.CompareAndSwap(ctx, cacheItem); err == memcache.ErrCASConflict {
-			return ServerBusy
-		} else if err == memcache.ErrNotStored {
-			return ServerBusy
-		} else if err != nil {
+		default:
+			// all other errors
 			return err
 		}
 	}
-	return nil
-}
-
-func ReleaseLock(ctx context.Context, ref *firestore.DocumentRef) error {
-	if err := memcache.Delete(ctx, ref.Path); err != nil && err != memcache.ErrCacheMiss {
+	releaseLock := func() error {
+		switch err := memcache.Delete(ctx, key); err {
+		case nil:
+			// item was deleted
+			return nil
+		case memcache.ErrCacheMiss:
+			// item did not exist
+			return nil
+		default:
+			// all other errors
+			return err
+		}
+	}
+	if err := requestLock(); err != nil {
 		return err
 	}
-	return nil
+	defer func() {
+		if err := releaseLock(); err != nil {
+			returnedError = err
+		}
+	}()
+	return f()
 }
 
 func TriggerRefreshTask(ctx context.Context, prefix string, message proto.Message) (*taskspb.Task, error) {
