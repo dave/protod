@@ -2,17 +2,15 @@ package example
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"testing"
-	"time"
+	"sync"
 
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
 	"cloud.google.com/go/firestore"
 	"github.com/dave/protod/delta"
 	"github.com/dave/protod/delta/tests"
 	"github.com/dave/protod/pserver"
-	"google.golang.org/appengine/memcache"
+	"google.golang.org/appengine"
 	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
@@ -21,13 +19,23 @@ import (
 const UPDATE_SNAPSHOT_FREQUENCY = 50
 const PROJECT_ID = "pserver-testing"
 const LOCATION_ID = "europe-west2"
+const TASKS_QUEUE = "refresh"
+const PREFIX = "https://pserver-testing.nw.r.appspot.com"
 
-func New(ctx context.Context, t *testing.T) *pserver.Server {
+var mutex = &sync.Mutex{}
+
+func New(ctx context.Context) *pserver.Server {
 	fc, err := firestore.NewClient(ctx, PROJECT_ID)
 	if err != nil {
-		t.Fatal(err)
+		panic(err)
 	}
-	return pserver.New(fc)
+	return &pserver.Server{
+		Firestore: fc,
+		Prefix:    PREFIX,
+		Project:   PROJECT_ID,
+		Location:  LOCATION_ID,
+		Queue:     TASKS_QUEUE,
+	}
 }
 
 func Get(ctx context.Context, server *pserver.Server, t pserver.DocumentType, id string) (int64, proto.Message, error) {
@@ -105,6 +113,12 @@ func Add(ctx context.Context, server *pserver.Server, t pserver.DocumentType, re
 
 func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, request, id string, state int64, op *delta.Op) (int64, *delta.Op, error) {
 
+	// firestore development server doesn't like concurrent transactions, so mutex:
+	if !appengine.IsAppEngine() {
+		mutex.Lock()
+		defer mutex.Unlock()
+	}
+
 	// 3) Let's refer to op as OP2
 	op2 := op
 
@@ -162,8 +176,14 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, r
 	tf := func() error {
 		return server.Firestore.RunTransaction(ctx, f)
 	}
-	if err := Lock(ctx, ref.Path, tf); err != nil {
-		return 0, nil, err
+	if appengine.IsAppEngine() {
+		if err := pserver.Lock(ctx, ref.Path, tf); err != nil {
+			return 0, nil, err
+		}
+	} else {
+		if err := tf(); err != nil {
+			return 0, nil, err
+		}
 	}
 
 	if duplicate != nil {
@@ -188,50 +208,7 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, r
 	return newState, op1x, nil
 }
 
-func Lock(ctx context.Context, key string, f func() error) (returnedError error) {
-	requestLock := func() error {
-		item := &memcache.Item{
-			Key:        key,
-			Value:      []byte{},
-			Expiration: time.Second * 2, // lock is released automatically after 2 seconds in case of server failure etc.
-		}
-		switch err := memcache.Add(ctx, item); err {
-		case nil:
-			// item was added
-			return nil
-		case memcache.ErrNotStored:
-			// item already exists
-			return ServerBusy
-		default:
-			// all other errors
-			return err
-		}
-	}
-	releaseLock := func() error {
-		switch err := memcache.Delete(ctx, key); err {
-		case nil:
-			// item was deleted
-			return nil
-		case memcache.ErrCacheMiss:
-			// item did not exist
-			return nil
-		default:
-			// all other errors
-			return err
-		}
-	}
-	if err := requestLock(); err != nil {
-		return err
-	}
-	defer func() {
-		if err := releaseLock(); err != nil {
-			returnedError = err
-		}
-	}()
-	return f()
-}
-
-func TriggerRefreshTask(ctx context.Context, prefix string, message proto.Message) (*taskspb.Task, error) {
+func TriggerRefreshTask(ctx context.Context, server *pserver.Server, message proto.Message) (*taskspb.Task, error) {
 
 	// Create a new Cloud Tasks client instance.
 	// See https://godoc.org/cloud.google.com/go/cloudtasks/apiv2
@@ -248,13 +225,13 @@ func TriggerRefreshTask(ctx context.Context, prefix string, message proto.Messag
 	// Build the Task payload.
 	// https://godoc.org/google.golang.org/genproto/googleapis/cloud/tasks/v2#CreateTaskRequest
 	req := &taskspb.CreateTaskRequest{
-		Parent: fmt.Sprintf("projects/%s/locations/%s/queues/%s", PROJECT_ID, LOCATION_ID, "refresh"),
+		Parent: fmt.Sprintf("projects/%s/locations/%s/queues/%s", server.Project, server.Location, server.Queue),
 		Task: &taskspb.Task{
 			// https://godoc.org/google.golang.org/genproto/googleapis/cloud/tasks/v2#HttpRequest
 			MessageType: &taskspb.Task_HttpRequest{
 				HttpRequest: &taskspb.HttpRequest{
 					HttpMethod: taskspb.HttpMethod_POST,
-					Url:        prefix + pserver.Path(message),
+					Url:        server.Prefix + pserver.Path(message),
 					Body:       body,
 					Headers:    map[string]string{"Content-Type": "application/protobuf"},
 				},
@@ -348,6 +325,3 @@ func mustJson(message proto.Message) string {
 	}
 	return string(b)
 }
-
-var PathNotFoundError = errors.New("path not found")
-var ServerBusy = errors.New("server busy")

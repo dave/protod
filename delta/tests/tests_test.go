@@ -11,7 +11,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-const OUTPUT_CASES = true
+const OUTPUT_CASES = false
 
 func TestDiffs(t *testing.T) {
 	cases := []struct {

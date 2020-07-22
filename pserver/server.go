@@ -2,23 +2,23 @@ package pserver
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/firestore"
 	"github.com/dave/protod/delta"
 	"google.golang.org/api/iterator"
+	"google.golang.org/appengine/memcache"
 	"google.golang.org/protobuf/proto"
 )
 
 const STATES_COLLECTION = "states"
 
-func New(client *firestore.Client) *Server {
-	return &Server{Firestore: client}
-}
-
 type Server struct {
-	Firestore *firestore.Client
+	Firestore                        *firestore.Client
+	Prefix, Project, Location, Queue string
 }
 
 func (s *Server) Close() error {
@@ -300,3 +300,49 @@ func Path(m proto.Message) string {
 	index := strings.LastIndex(name, ".")
 	return "/" + name[index+1:]
 }
+
+func Lock(ctx context.Context, key string, f func() error) (returnedError error) {
+	requestLock := func() error {
+		item := &memcache.Item{
+			Key:        key,
+			Value:      []byte{},
+			Expiration: time.Second * 2, // lock is released automatically after 2 seconds in case of server failure etc.
+		}
+		switch err := memcache.Add(ctx, item); err {
+		case nil:
+			// item was added
+			return nil
+		case memcache.ErrNotStored:
+			// item already exists
+			return ServerBusy
+		default:
+			// all other errors
+			return err
+		}
+	}
+	releaseLock := func() error {
+		switch err := memcache.Delete(ctx, key); err {
+		case nil:
+			// item was deleted
+			return nil
+		case memcache.ErrCacheMiss:
+			// item did not exist
+			return nil
+		default:
+			// all other errors
+			return err
+		}
+	}
+	if err := requestLock(); err != nil {
+		return err
+	}
+	defer func() {
+		if err := releaseLock(); err != nil {
+			returnedError = err
+		}
+	}()
+	return f()
+}
+
+var PathNotFound = errors.New("path not found")
+var ServerBusy = errors.New("server busy")

@@ -4,10 +4,8 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 
-	"cloud.google.com/go/firestore"
 	"github.com/dave/protod/delta/tests"
 	"github.com/dave/protod/pserver"
 	"github.com/dave/protod/pserver/example"
@@ -17,30 +15,10 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-const PREFIX = "https://pserver-testing.nw.r.appspot.com"
-
 func main() {
-
-	fc, err := firestore.NewClient(context.Background(), example.PROJECT_ID)
-	if err != nil {
-		log.Fatal(err)
-	}
-	app := &App{Server: pserver.New(fc)}
+	app := &App{Server: example.New(context.Background())}
 	defer app.Server.Close()
-
 	http.HandleFunc("/", app.indexHandler)
-
-	//port := os.Getenv("PORT")
-	//if port == "" {
-	//	port = "8080"
-	//	log.Printf("Defaulting to port %s", port)
-	//}
-	//
-	//log.Printf("Listening on port %s", port)
-	//if err := http.ListenAndServe(":"+port, nil); err != nil && err != http.ErrServerClosed {
-	//	log.Fatal(err)
-	//}
-
 	appengine.Main()
 }
 
@@ -59,11 +37,11 @@ func (a *App) indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response, err := a.ProcessRequest(ctx, r.URL.Path, requestBytes)
-	if err == example.ServerBusy {
+	if err == pserver.ServerBusy {
 		http.Error(w, "503 server busy", http.StatusServiceUnavailable)
 		return
 	}
-	if err == example.PathNotFoundError {
+	if err == pserver.PathNotFound {
 		http.NotFound(w, r)
 		return
 	}
@@ -108,7 +86,7 @@ func (a *App) ProcessRequest(ctx context.Context, path string, request []byte) (
 	case pserver.Path(&Person_Refresh_Request{}):
 		return nil, a.PersonRefreshRequest(ctx, request)
 	default:
-		return nil, example.PathNotFoundError
+		return nil, pserver.PathNotFound
 	}
 }
 
@@ -160,14 +138,25 @@ func (a *App) PersonEditRequest(ctx context.Context, requestBytes []byte) (*Pers
 	}
 	state, op, err := example.Edit(ctx, a.Server, example.PERSON, request.Request, request.Id, request.State, request.Op)
 	if err != nil {
-		if status.Code(err) == codes.Aborted || err == example.ServerBusy {
-			return wrap(example.ServerBusy)
+		if status.Code(err) == codes.Aborted || err == pserver.ServerBusy {
+			return wrap(pserver.ServerBusy)
 		}
 		return wrap(fmt.Errorf("editing: %w", err))
 	}
 	if state%example.UPDATE_SNAPSHOT_FREQUENCY == 0 {
-		if _, err := example.TriggerRefreshTask(ctx, PREFIX, &Person_Refresh_Request{Id: request.Id}); err != nil {
-			return wrap(fmt.Errorf("triggering refresh task: %w", err))
+		if appengine.IsAppEngine() {
+			if _, err := example.TriggerRefreshTask(ctx, a.Server, &Person_Refresh_Request{Id: request.Id}); err != nil {
+				return wrap(fmt.Errorf("triggering refresh task: %w", err))
+			}
+		} else {
+			// for local tests
+			reqBytes, err := proto.Marshal(&Person_Refresh_Request{Id: request.Id})
+			if err != nil {
+				return wrap(fmt.Errorf("marshaling refresh task: %w", err))
+			}
+			if err := a.PersonRefreshRequest(ctx, reqBytes); err != nil {
+				return wrap(err)
+			}
 		}
 	}
 	return &Person_Edit_Response{

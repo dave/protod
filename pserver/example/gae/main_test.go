@@ -4,24 +4,17 @@ import (
 	"context"
 	"crypto/rand"
 	"fmt"
-	"log"
 	"testing"
 
-	"cloud.google.com/go/firestore"
 	"github.com/dave/protod/delta/tests"
-	"github.com/dave/protod/pserver"
 	"github.com/dave/protod/pserver/example"
 )
 
 func TestServer(t *testing.T) {
-	fc, err := firestore.NewClient(context.Background(), example.PROJECT_ID)
-	if err != nil {
-		log.Fatal(err)
-	}
 	document := &tests.Person{
 		Name: "dave",
 	}
-	app := &App{Server: pserver.New(fc)}
+	app := &App{Server: example.New(context.Background())}
 	defer app.Server.Close()
 
 	addResponse := app.ProcessMessage(context.Background(), &Person_Add_Request{

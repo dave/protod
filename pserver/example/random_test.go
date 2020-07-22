@@ -2,7 +2,6 @@ package example
 
 import (
 	"context"
-	"fmt"
 	"math/rand"
 	"sync"
 	"testing"
@@ -18,7 +17,7 @@ import (
 func TestRandom(t *testing.T) {
 	ctx := context.Background()
 	resetDatabase(t)
-	server := New(ctx, t)
+	server := New(ctx)
 	defer server.Close()
 	states := map[int64]proto.Message{}
 	statesMutex := &sync.Mutex{}
@@ -52,7 +51,7 @@ type User struct {
 	edits    int
 }
 
-const REPEATS = 100000
+const REPEATS = 100
 
 func (u *User) Run(id string) {
 	//time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond)
@@ -110,13 +109,13 @@ func (u *User) Edit() {
 			u.t.Fatalf("state diverged at %d\nprevious: %s\nnew: %s", u.state, mustJson(previous), mustJson(u.document))
 		}
 	}
-	if int(u.state)%(rand.Intn(10)+10) == 0 {
-		//fmt.Printf("%d) EDIT %d %s\n", u.user, u.state, mustJson(u.document))
-		milisecondsPerEdit := (float64(u.elapsed) / float64(u.edits)) / 1000.0 / 1000.0
-		u.elapsed = 0
-		u.edits = 0
-		fmt.Printf("%d) EDIT %d duration: %dms\n", u.user, u.state, int(milisecondsPerEdit))
-	}
+	//if int(u.state)%(rand.Intn(10)+10) == 0 {
+	//fmt.Printf("%d) EDIT %d %s\n", u.user, u.state, mustJson(u.document))
+	//milisecondsPerEdit := (float64(u.elapsed) / float64(u.edits)) / 1000.0 / 1000.0
+	//u.elapsed = 0
+	//u.edits = 0
+	//fmt.Printf("%d) EDIT %d duration: %dms\n", u.user, u.state, int(milisecondsPerEdit))
+	//}
 }
 
 func (u *User) Refresh() {

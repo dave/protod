@@ -1371,7 +1371,7 @@ func debugValue(v isOp_Value) string {
 	case *Op_Index:
 		return fmt.Sprintf("index[%d]", v.Index)
 	case *Op_Key:
-		return fmt.Sprintf("key[%d]", keyToString(v.Key))
+		return fmt.Sprintf("key[%s]", keyToString(v.Key))
 	}
 	return ""
 }

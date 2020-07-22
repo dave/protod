@@ -17,7 +17,15 @@ var count int
 var elapsed int64
 var startTime int64
 
+const SKIP_GAE = true
+const REPEATS = 20
+
 func TestGaeRandom(t *testing.T) {
+
+	if SKIP_GAE {
+		return
+	}
+
 	prefix := "https://pserver-testing.nw.r.appspot.com"
 	docStates := map[string]map[int64]proto.Message{}
 
@@ -42,8 +50,8 @@ func TestGaeRandom(t *testing.T) {
 	//}
 	docs := []string{
 		"jGCmF29WkHFE785IgPCL", // 300k edits
-		//"VVFJQFCXBe04KvF5eivD",
-		//"QvLR2ylyB4gEwnb7gINP",
+		"VVFJQFCXBe04KvF5eivD",
+		"QvLR2ylyB4gEwnb7gINP",
 		//"3Y8Tsmo91DkpvWQAgYdb",
 		//"f0DFGUIfTvoermX92WtS",
 		//"HNEHMuhbBr8mVcyFSLx7",
@@ -55,7 +63,7 @@ func TestGaeRandom(t *testing.T) {
 	//id := "jGCmF29WkHFE785IgPCL"
 	//fmt.Println(id)
 	wg := &sync.WaitGroup{}
-	users := 30
+	users := 10
 	for i := 1; i < users; i++ {
 		id := docs[rand.Intn(len(docs))]
 		u := &User{user: i, t: t, wg: wg, states: docStates[id], mutex: mutex, prefix: prefix}
@@ -77,11 +85,9 @@ type User struct {
 	prefix   string
 }
 
-const REPEATS = 100000
-
 func (u *User) Run(id string) {
 	defer u.wg.Done()
-	time.Sleep(time.Duration(rand.Intn(50000)) * time.Millisecond)
+	time.Sleep(time.Duration(rand.Intn(5000)) * time.Millisecond)
 	u.Get(id)
 	for i := 0; i < REPEATS; i++ {
 		delay := rand.Intn(50)

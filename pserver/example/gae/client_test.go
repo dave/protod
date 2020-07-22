@@ -13,7 +13,6 @@ import (
 	"testing"
 	"time"
 
-	"cloud.google.com/go/firestore"
 	"github.com/dave/protod/delta/tests"
 	"github.com/dave/protod/pserver"
 	"github.com/dave/protod/pserver/example"
@@ -34,11 +33,7 @@ func start(ctx context.Context) *server {
 	}
 	srv := &http.Server{Addr: ":" + port}
 
-	fc, err := firestore.NewClient(ctx, example.PROJECT_ID)
-	if err != nil {
-		log.Fatal(err)
-	}
-	app := &App{Server: pserver.New(fc)}
+	app := &App{Server: example.New(ctx)}
 	http.HandleFunc("/", app.indexHandler)
 
 	wg := &sync.WaitGroup{}
@@ -155,6 +150,9 @@ func req(prefix string, response, message proto.Message) proto.Message {
 		}
 		// TODO: special handling for 503 busy?
 		if resp.StatusCode != 200 {
+			if resp.StatusCode != 503 {
+				fmt.Printf("status %q: %q\n", resp.Status, string(body))
+			}
 			err = fmt.Errorf("status %q: %q", resp.Status, string(body))
 			continue // <- restart the loop or exit when retry count exceeded
 		}

@@ -7,6 +7,11 @@ import (
 )
 
 func TestGae(t *testing.T) {
+
+	if SKIP_GAE {
+		return
+	}
+
 	document := &tests.Person{Name: "dave"}
 	prefix := "https://pserver-testing.nw.r.appspot.com"
 
