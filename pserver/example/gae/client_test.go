@@ -123,14 +123,14 @@ func TestClient(t *testing.T) {
 
 }
 
-const REQUEST_RETRIES = 5
+const REQUEST_RETRIES = 20
 
 func req(prefix string, response, message proto.Message) proto.Message {
 	var err error
 	for i := 0; i < REQUEST_RETRIES; i++ {
 		if i > 0 {
-			delay := 50 + rand.Intn(100*(1<<i))
-			log.Printf("request repeating (%d/%d) after %dms (error: %v)\n", i, REQUEST_RETRIES, delay, err)
+			delay := 500 + rand.Intn(500*(1<<i))
+			//log.Printf("request repeating (%d/%d) after %dms (error: %v)\n", i, REQUEST_RETRIES, delay, err)
 			time.Sleep(time.Duration(delay) * time.Millisecond)
 		}
 		path := prefix + pserver.Path(message)
@@ -153,6 +153,7 @@ func req(prefix string, response, message proto.Message) proto.Message {
 			err = fmt.Errorf("reading body: %w", err)
 			continue // <- restart the loop or exit when retry count exceeded
 		}
+		// TODO: special handling for 503 busy?
 		if resp.StatusCode != 200 {
 			err = fmt.Errorf("status %q: %q", resp.Status, string(body))
 			continue // <- restart the loop or exit when retry count exceeded
@@ -162,6 +163,9 @@ func req(prefix string, response, message proto.Message) proto.Message {
 			err = fmt.Errorf("unmarshaling response: %w", err)
 			continue // <- restart the loop or exit when retry count exceeded
 		}
+		//if i > 0 {
+		//log.Printf("request completed after %d retries\n", i)
+		//}
 		break // <- finish the loop and continue executing
 	}
 	if err != nil {

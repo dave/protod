@@ -2,18 +2,18 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 
 	"cloud.google.com/go/firestore"
 	"github.com/dave/protod/delta/tests"
 	"github.com/dave/protod/pserver"
 	"github.com/dave/protod/pserver/example"
 	"google.golang.org/appengine"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -30,16 +30,18 @@ func main() {
 
 	http.HandleFunc("/", app.indexHandler)
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-		log.Printf("Defaulting to port %s", port)
-	}
+	//port := os.Getenv("PORT")
+	//if port == "" {
+	//	port = "8080"
+	//	log.Printf("Defaulting to port %s", port)
+	//}
+	//
+	//log.Printf("Listening on port %s", port)
+	//if err := http.ListenAndServe(":"+port, nil); err != nil && err != http.ErrServerClosed {
+	//	log.Fatal(err)
+	//}
 
-	log.Printf("Listening on port %s", port)
-	if err := http.ListenAndServe(":"+port, nil); err != nil && err != http.ErrServerClosed {
-		log.Fatal(err)
-	}
+	appengine.Main()
 }
 
 type App struct {
@@ -57,8 +59,11 @@ func (a *App) indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response, err := a.ProcessRequest(ctx, r.URL.Path, requestBytes)
-
-	if err == PathNotFoundError {
+	if err == example.ServerBusy {
+		http.Error(w, "503 server busy", http.StatusServiceUnavailable)
+		return
+	}
+	if err == example.PathNotFoundError {
 		http.NotFound(w, r)
 		return
 	}
@@ -95,23 +100,21 @@ func (a *App) ProcessMessage(ctx context.Context, message proto.Message) proto.M
 func (a *App) ProcessRequest(ctx context.Context, path string, request []byte) (proto.Message, error) {
 	switch path {
 	case pserver.Path(&Person_Get_Request{}):
-		return a.PersonGetRequest(ctx, request), nil
+		return a.PersonGetRequest(ctx, request)
 	case pserver.Path(&Person_Add_Request{}):
-		return a.PersonAddRequest(ctx, request), nil
+		return a.PersonAddRequest(ctx, request)
 	case pserver.Path(&Person_Edit_Request{}):
-		return a.PersonEditRequest(ctx, request), nil
+		return a.PersonEditRequest(ctx, request)
 	case pserver.Path(&Person_Refresh_Request{}):
 		return nil, a.PersonRefreshRequest(ctx, request)
 	default:
-		return nil, PathNotFoundError
+		return nil, example.PathNotFoundError
 	}
 }
 
-var PathNotFoundError = errors.New("path not found")
-
-func (a *App) PersonGetRequest(ctx context.Context, requestBytes []byte) *Person_Get_Response {
-	wrap := func(err error) *Person_Get_Response {
-		return &Person_Get_Response{Err: err.Error()}
+func (a *App) PersonGetRequest(ctx context.Context, requestBytes []byte) (*Person_Get_Response, error) {
+	wrap := func(err error) (*Person_Get_Response, error) {
+		return &Person_Get_Response{Err: err.Error()}, err
 	}
 	request := &Person_Get_Request{}
 	if err := proto.Unmarshal(requestBytes, request); err != nil {
@@ -126,12 +129,12 @@ func (a *App) PersonGetRequest(ctx context.Context, requestBytes []byte) *Person
 		State:  state,
 		Person: document.(*tests.Person),
 		Err:    "",
-	}
+	}, nil
 }
 
-func (a *App) PersonAddRequest(ctx context.Context, requestBytes []byte) *Person_Add_Response {
-	wrap := func(err error) *Person_Add_Response {
-		return &Person_Add_Response{Err: err.Error()}
+func (a *App) PersonAddRequest(ctx context.Context, requestBytes []byte) (*Person_Add_Response, error) {
+	wrap := func(err error) (*Person_Add_Response, error) {
+		return &Person_Add_Response{Err: err.Error()}, err
 	}
 	request := &Person_Add_Request{}
 	if err := proto.Unmarshal(requestBytes, request); err != nil {
@@ -144,12 +147,12 @@ func (a *App) PersonAddRequest(ctx context.Context, requestBytes []byte) *Person
 	return &Person_Add_Response{
 		Id:  id,
 		Err: "",
-	}
+	}, nil
 }
 
-func (a *App) PersonEditRequest(ctx context.Context, requestBytes []byte) *Person_Edit_Response {
-	wrap := func(err error) *Person_Edit_Response {
-		return &Person_Edit_Response{Err: err.Error()}
+func (a *App) PersonEditRequest(ctx context.Context, requestBytes []byte) (*Person_Edit_Response, error) {
+	wrap := func(err error) (*Person_Edit_Response, error) {
+		return &Person_Edit_Response{Err: err.Error()}, err
 	}
 	request := &Person_Edit_Request{}
 	if err := proto.Unmarshal(requestBytes, request); err != nil {
@@ -157,6 +160,9 @@ func (a *App) PersonEditRequest(ctx context.Context, requestBytes []byte) *Perso
 	}
 	state, op, err := example.Edit(ctx, a.Server, example.PERSON, request.Request, request.Id, request.State, request.Op)
 	if err != nil {
+		if status.Code(err) == codes.Aborted || err == example.ServerBusy {
+			return wrap(example.ServerBusy)
+		}
 		return wrap(fmt.Errorf("editing: %w", err))
 	}
 	if state%example.UPDATE_SNAPSHOT_FREQUENCY == 0 {
@@ -168,7 +174,7 @@ func (a *App) PersonEditRequest(ctx context.Context, requestBytes []byte) *Perso
 		State: state,
 		Op:    op,
 		Err:   "",
-	}
+	}, nil
 }
 
 func (a *App) PersonRefreshRequest(ctx context.Context, requestBytes []byte) error {

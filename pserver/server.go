@@ -3,10 +3,7 @@ package pserver
 import (
 	"context"
 	"fmt"
-	"log"
-	"math/rand"
 	"strings"
-	"time"
 
 	"cloud.google.com/go/firestore"
 	"github.com/dave/protod/delta"
@@ -60,12 +57,7 @@ func (s *Server) Changes(ctx context.Context, tx *firestore.Transaction, t Docum
 	}
 	current := before
 	for {
-		var stateDoc *firestore.DocumentSnapshot
-		if tx == nil {
-			stateDoc, err = s.IterNext(iter)
-		} else {
-			stateDoc, err = iter.Next() // <- no retry inside transaction
-		}
+		stateDoc, err := iter.Next()
 		if err == iterator.Done {
 			break
 		}
@@ -91,15 +83,12 @@ func (s *Server) QueryState(ctx context.Context, tx *firestore.Transaction, t Do
 	// get by request id
 	query := ref.Collection(STATES_COLLECTION).Where(t.StateFieldSelector("Request"), "==", request)
 	var iter *firestore.DocumentIterator
-	var docs []*firestore.DocumentSnapshot
-	var err error
 	if tx == nil {
 		iter = query.Documents(ctx)
-		docs, err = s.IterGetAll(iter)
 	} else {
 		iter = tx.Documents(query)
-		docs, err = iter.GetAll() // <- no retry inside transaction
 	}
+	docs, err := iter.GetAll()
 	if err != nil {
 		return nil, fmt.Errorf("getting state documents: %w", err)
 	}
@@ -117,15 +106,12 @@ func (s *Server) QuerySnapshot(ctx context.Context, tx *firestore.Transaction, t
 	// get by request id
 	query := s.Firestore.Collection(t.Collection).Where(t.SnapshotFieldSelector("Request"), "==", request)
 	var iter *firestore.DocumentIterator
-	var docs []*firestore.DocumentSnapshot
-	var err error
 	if tx == nil {
 		iter = query.Documents(ctx)
-		docs, err = s.IterGetAll(iter)
 	} else {
 		iter = tx.Documents(query)
-		docs, err = iter.GetAll() // <- no retry inside transaction
 	}
+	docs, err := iter.GetAll()
 	if err != nil {
 		return nil, fmt.Errorf("getting snapshot documents: %w", err)
 	}
@@ -161,9 +147,9 @@ func (s *Server) UnpackState(doc *firestore.DocumentSnapshot, t DocumentType) (*
 func (s *Server) UnpackSnapshot(ctx context.Context, tx *firestore.Transaction, t DocumentType, ref *firestore.DocumentRef) (state int64, document proto.Message, snapshot proto.Message, err error) {
 	var doc *firestore.DocumentSnapshot
 	if tx == nil {
-		doc, err = s.RefGet(ctx, ref)
+		doc, err = ref.Get(ctx)
 	} else {
-		doc, err = ref.Get(ctx) // <- no retry inside transaction
+		doc, err = tx.Get(ref)
 	}
 	if err != nil {
 		return 0, nil, nil, fmt.Errorf("getting snapshot document: %w", err)
@@ -244,70 +230,70 @@ func (d DocumentType) SnapshotFieldSelector(name string) string {
 	return fmt.Sprintf("%s.%s", d.SnapshotField, name)
 }
 
-const clientRepeats = 5
+//const clientRepeats = 5
+//
+//func (s *Server) ClientOperation(desc string, f func() (cancel bool, err error)) (err error) {
+//	for i := 0; i < clientRepeats; i++ {
+//		if i > 0 {
+//			delay := 25 + rand.Intn(50*(1<<i))
+//			log.Printf("%s repeating (%d/5) after %dms (error: %v)\n", desc, i, delay, err)
+//			time.Sleep(time.Duration(delay) * time.Millisecond)
+//		}
+//		var cancel bool
+//		cancel, err = f()
+//		if err == nil || cancel {
+//			if i > 0 {
+//				log.Printf("%s complete after %d retries", desc, i)
+//			}
+//			return err
+//		}
+//	}
+//	log.Printf("%s failed after %d retries, so returning error: %+v\n", desc, clientRepeats, err)
+//	return err
+//}
 
-func (s *Server) ClientOperation(desc string, f func() (cancel bool, err error)) (err error) {
-	for i := 0; i < clientRepeats; i++ {
-		if i > 0 {
-			delay := 25 + rand.Intn(50*(1<<i))
-			log.Printf("%s repeating (%d/5) after %dms (error: %v)\n", desc, i, delay, err)
-			time.Sleep(time.Duration(delay) * time.Millisecond)
-		}
-		var cancel bool
-		cancel, err = f()
-		if err == nil || cancel {
-			if i > 0 {
-				log.Printf("%s complete after %d retries", desc, i)
-			}
-			return err
-		}
-	}
-	log.Printf("%s failed after %d retries, so returning error: %+v\n", desc, clientRepeats, err)
-	return err
-}
+//func (s *Server) IterNext(iter *firestore.DocumentIterator) (doc *firestore.DocumentSnapshot, err error) {
+//	err = s.ClientOperation("IterNext", func() (cancel bool, err error) {
+//		doc, err = iter.Next()
+//		if err == iterator.Done {
+//			return true, err
+//		}
+//		return false, err
+//	})
+//	return doc, err
+//}
 
-func (s *Server) IterNext(iter *firestore.DocumentIterator) (doc *firestore.DocumentSnapshot, err error) {
-	err = s.ClientOperation("IterNext", func() (cancel bool, err error) {
-		doc, err = iter.Next()
-		if err == iterator.Done {
-			return true, err
-		}
-		return false, err
-	})
-	return doc, err
-}
+//func (s *Server) IterGetAll(iter *firestore.DocumentIterator) (docs []*firestore.DocumentSnapshot, err error) {
+//	err = s.ClientOperation("IterGetAll", func() (cancel bool, err error) {
+//		docs, err = iter.GetAll()
+//		return false, err
+//	})
+//	return docs, err
+//}
 
-func (s *Server) IterGetAll(iter *firestore.DocumentIterator) (docs []*firestore.DocumentSnapshot, err error) {
-	err = s.ClientOperation("IterGetAll", func() (cancel bool, err error) {
-		docs, err = iter.GetAll()
-		return false, err
-	})
-	return docs, err
-}
+//func (s *Server) RefGet(ctx context.Context, ref *firestore.DocumentRef) (doc *firestore.DocumentSnapshot, err error) {
+//	err = s.ClientOperation("RefGet", func() (cancel bool, err error) {
+//		doc, err = ref.Get(ctx)
+//		return false, err
+//	})
+//	return doc, err
+//}
 
-func (s *Server) RefGet(ctx context.Context, ref *firestore.DocumentRef) (doc *firestore.DocumentSnapshot, err error) {
-	err = s.ClientOperation("RefGet", func() (cancel bool, err error) {
-		doc, err = ref.Get(ctx)
-		return false, err
-	})
-	return doc, err
-}
+//func (s *Server) RefSet(ctx context.Context, ref *firestore.DocumentRef, data interface{}) (err error) {
+//	return s.ClientOperation("RefSet", func() (cancel bool, err error) {
+//		_, err = ref.Set(ctx, data)
+//		return false, err
+//	})
+//}
 
-func (s *Server) RefSet(ctx context.Context, ref *firestore.DocumentRef, data interface{}) (err error) {
-	return s.ClientOperation("RefSet", func() (cancel bool, err error) {
-		_, err = ref.Set(ctx, data)
-		return false, err
-	})
-}
-
-func (s *Server) RunTransaction(ctx context.Context, f func(context.Context, *firestore.Transaction) error) error {
-	// Should we retry running a transaction? Maybe not. Transactions do automatically retry, but only
-	// in a transaction conflict situation. If there is a network failure, it may error immediately, so
-	// I believe we should retry? This needs more thought.
-	return s.ClientOperation("RunTransaction", func() (cancel bool, err error) {
-		return false, s.Firestore.RunTransaction(ctx, f)
-	})
-}
+//func (s *Server) RunTransaction(ctx context.Context, f func(context.Context, *firestore.Transaction) error) error {
+//	// Should we retry running a transaction? Maybe not. Transactions do automatically retry, but only
+//	// in a transaction conflict situation. If there is a network failure, it may error immediately, so
+//	// I believe we should retry? This needs more thought.
+//	return s.ClientOperation("RunTransaction", func() (cancel bool, err error) {
+//		return false, s.Firestore.RunTransaction(ctx, f)
+//	})
+//}
 
 func Path(m proto.Message) string {
 	name := fmt.Sprintf("%T", m)

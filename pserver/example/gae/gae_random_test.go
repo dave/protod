@@ -19,27 +19,46 @@ var startTime int64
 
 func TestGaeRandom(t *testing.T) {
 	prefix := "https://pserver-testing.nw.r.appspot.com"
-	states := map[int64]proto.Message{}
+	docStates := map[string]map[int64]proto.Message{}
 
 	count = 0
 	elapsed = 0
 	startTime = time.Now().UnixNano()
 	mutex := &sync.Mutex{}
 
-	//resp := req(prefix, &Person_Add_Response{}, &Person_Add_Request{
-	//	Request: uniqueID(),
-	//	Person:  &tests.Person{Name: "dave"},
-	//}).(*Person_Add_Response)
-	//if resp.Err != "" {
-	//	t.Fatal(resp.Err)
+	//var docs []string
+	//for i := 0; i < 5; i++ {
+	//	resp := req(prefix, &Person_Add_Response{}, &Person_Add_Request{
+	//		Request: uniqueID(),
+	//		Person:  &tests.Person{Name: "dave"},
+	//	}).(*Person_Add_Response)
+	//	if resp.Err != "" {
+	//		t.Fatal(resp.Err)
+	//	}
+	//	docs = append(docs, resp.Id)
+	//
+	//	//id := resp.Id
+	//	fmt.Println(resp.Id)
 	//}
-	//id := resp.Id
-	id := "jGCmF29WkHFE785IgPCL"
-	fmt.Println(id)
+	docs := []string{
+		"jGCmF29WkHFE785IgPCL", // 300k edits
+		//"VVFJQFCXBe04KvF5eivD",
+		//"QvLR2ylyB4gEwnb7gINP",
+		//"3Y8Tsmo91DkpvWQAgYdb",
+		//"f0DFGUIfTvoermX92WtS",
+		//"HNEHMuhbBr8mVcyFSLx7",
+	}
+
+	for _, id := range docs {
+		docStates[id] = map[int64]proto.Message{}
+	}
+	//id := "jGCmF29WkHFE785IgPCL"
+	//fmt.Println(id)
 	wg := &sync.WaitGroup{}
-	const users = 30
+	users := 30
 	for i := 1; i < users; i++ {
-		u := &User{user: i, t: t, wg: wg, states: states, mutex: mutex, prefix: prefix}
+		id := docs[rand.Intn(len(docs))]
+		u := &User{user: i, t: t, wg: wg, states: docStates[id], mutex: mutex, prefix: prefix}
 		wg.Add(1)
 		go u.Run(id)
 	}
@@ -61,11 +80,11 @@ type User struct {
 const REPEATS = 100000
 
 func (u *User) Run(id string) {
-	time.Sleep(time.Duration(rand.Intn(100)) * time.Millisecond)
 	defer u.wg.Done()
+	time.Sleep(time.Duration(rand.Intn(50000)) * time.Millisecond)
 	u.Get(id)
 	for i := 0; i < REPEATS; i++ {
-		delay := rand.Intn(10000)
+		delay := rand.Intn(50)
 		//fmt.Printf("waiting %.1fsec\n", float64(delay)/1000.0)
 		time.Sleep(time.Duration(delay) * time.Millisecond)
 		u.Edit()
@@ -127,11 +146,12 @@ func (u *User) Edit() {
 	count++
 	elapsed += endTime - editStartTime
 
-	total := endTime - startTime
-	milisecondsPerEdit := (float64(elapsed) / float64(count)) / 1000.0 / 1000.0
-	editsPerSecond := float64(count) / (float64(total) / 1000.0 / 1000.0 / 1000.0)
-	fmt.Printf("State: %d, %d edits, %.1f/sec, %dms\n", u.state, count, editsPerSecond, int(milisecondsPerEdit))
-
+	if count%10 == 0 {
+		total := endTime - startTime
+		milisecondsPerEdit := (float64(elapsed) / float64(count)) / 1000.0 / 1000.0
+		editsPerSecond := float64(count) / (float64(total) / 1000.0 / 1000.0 / 1000.0)
+		fmt.Printf("State: %d, %d edits, %.1f/sec, %dms\n", u.state, count, editsPerSecond, int(milisecondsPerEdit))
+	}
 	if count%1000 == 0 {
 		elapsed = 0
 		count = 0
