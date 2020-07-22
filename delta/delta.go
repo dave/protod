@@ -19,6 +19,28 @@ import (
 
 const DEBUG = false
 
+func Reduce(op *Op) *Op {
+	panic("not implemented")
+	//var ops []*Op
+	//var flatten func(*Op)
+	//flatten = func(o *Op) {
+	//	if o.Type == Op_Compound {
+	//		for _, child := range o.Ops {
+	//			flatten(child)
+	//		}
+	//	} else {
+	//		ops = append(ops, o)
+	//	}
+	//}
+	//flatten(proto.Clone(op).(*Op))
+	//for i := 0; i < len(ops)-1; i++ {
+	//	for j := i + 1; j < len(ops); j++ {
+	//		// TODO???
+	//	}
+	//}
+	//return Compound(ops...)
+}
+
 func Transform(op1, op2 *Op, op1priority bool) (op1x *Op, op2x *Op, err error) {
 	if DEBUG {
 		// in debug mode, recover from panic, print inputs, and re-panic to get stack trace
