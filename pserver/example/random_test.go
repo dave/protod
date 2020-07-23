@@ -89,7 +89,17 @@ func (u *User) Edit() {
 		}
 	}
 	op := delta.Compound(ops...)
-	state, opx, err := Edit(context.Background(), u.server, PERSON, uniqueID(), u.id, u.state, op)
+
+	var state int64
+	var opx *delta.Op
+	f := func() error {
+		var err error
+		state, opx, err = Edit(context.Background(), u.server, PERSON, uniqueID(), u.id, u.state, op)
+		return err
+	}
+	err := repeatOnBusy(f)
+
+	//state, opx, err := Edit(context.Background(), u.server, PERSON, uniqueID(), u.id, u.state, op)
 	if err != nil {
 		u.t.Fatal(err)
 	}
@@ -128,4 +138,19 @@ func (u *User) Refresh() {
 	}
 	u.state = state
 	//fmt.Printf("%d) REFRESH %d %s\n", u.user, u.state, mustJson(u.document))
+}
+
+const RETRIES_ON_BUSY = 100
+
+func repeatOnBusy(f func() error) error {
+	for i := 0; i < RETRIES_ON_BUSY; i++ {
+		if i > 0 {
+			delay := 500 + rand.Intn(500*(1<<i))
+			time.Sleep(time.Duration(delay) * time.Millisecond)
+		}
+		if err := f(); err != pserver.ServerBusy {
+			return err
+		}
+	}
+	return pserver.ServerBusy
 }

@@ -5,11 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"cloud.google.com/go/firestore"
 	"github.com/dave/protod/delta"
 	"google.golang.org/api/iterator"
+	"google.golang.org/appengine"
 	"google.golang.org/appengine/memcache"
 	"google.golang.org/protobuf/proto"
 )
@@ -301,8 +303,19 @@ func Path(m proto.Message) string {
 	return "/" + name[index+1:]
 }
 
+// for locking with test server
+var locker uint32 = 0
+
 func Lock(ctx context.Context, key string, f func() error) (returnedError error) {
 	requestLock := func() error {
+
+		if !appengine.IsAppEngine() {
+			if !atomic.CompareAndSwapUint32(&locker, 0, 1) {
+				return ServerBusy
+			}
+			return nil
+		}
+
 		item := &memcache.Item{
 			Key:        key,
 			Value:      []byte{},
@@ -321,6 +334,12 @@ func Lock(ctx context.Context, key string, f func() error) (returnedError error)
 		}
 	}
 	releaseLock := func() error {
+
+		if !appengine.IsAppEngine() {
+			atomic.StoreUint32(&locker, 0)
+			return nil
+		}
+
 		switch err := memcache.Delete(ctx, key); err {
 		case nil:
 			// item was deleted

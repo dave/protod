@@ -3,14 +3,12 @@ package example
 import (
 	"context"
 	"fmt"
-	"sync"
 
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
 	"cloud.google.com/go/firestore"
 	"github.com/dave/protod/delta"
 	"github.com/dave/protod/delta/tests"
 	"github.com/dave/protod/pserver"
-	"google.golang.org/appengine"
 	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
@@ -21,8 +19,6 @@ const PROJECT_ID = "pserver-testing"
 const LOCATION_ID = "europe-west2"
 const TASKS_QUEUE = "refresh"
 const PREFIX = "https://pserver-testing.nw.r.appspot.com"
-
-var mutex = &sync.Mutex{}
 
 func New(ctx context.Context) *pserver.Server {
 	fc, err := firestore.NewClient(ctx, PROJECT_ID)
@@ -113,12 +109,6 @@ func Add(ctx context.Context, server *pserver.Server, t pserver.DocumentType, re
 
 func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, request, id string, state int64, op *delta.Op) (int64, *delta.Op, error) {
 
-	// firestore development server doesn't like concurrent transactions, so mutex:
-	if !appengine.IsAppEngine() {
-		mutex.Lock()
-		defer mutex.Unlock()
-	}
-
 	// 3) Let's refer to op as OP2
 	op2 := op
 
@@ -176,14 +166,8 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, r
 	tf := func() error {
 		return server.Firestore.RunTransaction(ctx, f)
 	}
-	if appengine.IsAppEngine() {
-		if err := pserver.Lock(ctx, ref.Path, tf); err != nil {
-			return 0, nil, err
-		}
-	} else {
-		if err := tf(); err != nil {
-			return 0, nil, err
-		}
+	if err := pserver.Lock(ctx, ref.Path, tf); err != nil {
+		return 0, nil, err
 	}
 
 	if duplicate != nil {
