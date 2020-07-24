@@ -101,6 +101,9 @@ Tuple2<dynamic, protobuf.ValueOfFunc> getLocation(
         if (!msg.hasField(fieldNumber)) {
           if (!fi.isRepeated && fi.subBuilder != null) {
             msg.setField(fieldNumber, fi.subBuilder());
+          } else if (fi is protobuf.MapFieldInfo) {
+            // TODO: work-around for: https://github.com/dart-lang/protobuf/issues/373
+            msg.$_getMap((fi as protobuf.MapFieldInfo).index);
           }
         }
         current = msg.getField(fieldNumber);
@@ -325,6 +328,10 @@ applySetEdit(pb.Op o, protobuf.GeneratedMessage input,
         });
       } else if (fi.isMapField) {
         var valueMap = value as Map;
+        if (!parent.hasField(field)) {
+          // TODO: work-around for: https://github.com/dart-lang/protobuf/issues/373
+          parent.$_getMap((fi as protobuf.MapFieldInfo).index);
+        }
         var fieldMap = parent.getField(field) as protobuf.PbMap;
         final mfi = fi as protobuf.MapFieldInfo;
         fieldMap.clear();

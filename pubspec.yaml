@@ -9,9 +9,9 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
-  #protobuf: ^1.0.1
-  protobuf:
-    path: "../protobuf/protobuf"
+  protobuf: ^1.0.1
+  #protobuf:
+  #  path: "../protobuf/protobuf"
   fixnum: ^0.10.11
   quill_delta: ^1.0.2
   diff_match_patch: ^0.3.0

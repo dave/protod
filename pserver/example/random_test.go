@@ -18,7 +18,7 @@ func TestRandom(t *testing.T) {
 	ctx := context.Background()
 	resetDatabase(t)
 	server := New(ctx)
-	defer server.Close()
+	defer func() { _ = server.Close() }()
 	states := map[int64]proto.Message{}
 	statesMutex := &sync.Mutex{}
 
