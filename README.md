@@ -4,6 +4,6 @@ Still very early in development. This code is not expected to run now.
 
 ### Protocol Buffer Deltas
 
-Go / Dart package to describe a change to a GeneratedMessage.
+Operational Transformations for protocol buffers data in Dart and Go. 
 
 See [groupshare](https://github.com/dave/groupshare) for reference implementation.
