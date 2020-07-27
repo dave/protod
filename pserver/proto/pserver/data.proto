@@ -1,7 +1,40 @@
 syntax = "proto3";
 package pserver;
 
+import "delta/delta.proto";
+
 option go_package = "github.com/dave/protod/pserver;pserver";
+
+message Payload {
+  message Edit {
+    message Request {
+        string id = 1;      // document id
+        string request = 2; // random unique id for this request
+        int64 state = 3;    // state of the document that this op is acting on
+        delta.Op op = 4;    // operation
+    }
+    message Response {
+        int64 state = 1;   // state of the document after the op from the client and the response op have been applied
+        delta.Op op = 2;   // response op that must be applied to the document in order to get to the server state
+    }
+  }
+  message Add{
+    message Request {
+      string request = 1;  // random unique id for de-duplication
+    }
+    message Response {
+      string id = 1;
+    }
+  }
+  message Get{
+    message Request {
+      string id = 1;
+    }
+    message Response {
+      int64 state = 1;
+    }
+  }
+}
 
 // Snapshot is a lazy snapshot of the state of the document at some point in the recent past. It
 // is NOT updated on every state change. To get the document in it's latest state, all future

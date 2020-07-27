@@ -73,7 +73,7 @@ func genDart() {
 	sb.WriteString("    throw Exception('invalid op');\n")
 	sb.WriteString("  }\n")
 	sb.WriteString("}\n")
-	if err := ioutil.WriteFile("./lib/delta/delta_transform_generated.dart", []byte(sb.String()), 0666); err != nil {
+	if err := ioutil.WriteFile("../lib/delta/delta_transform_generated.dart", []byte(sb.String()), 0666); err != nil {
 		panic(err)
 	}
 
@@ -143,7 +143,7 @@ func genGo() {
 		}),
 	)
 
-	if err := f.Save("./delta/transform-generated.go"); err != nil {
+	if err := f.Save("../delta/transform-generated.go"); err != nil {
 		panic(err)
 	}
 }
