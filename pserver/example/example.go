@@ -3,6 +3,8 @@ package example
 import (
 	"context"
 	"fmt"
+	"math/rand"
+	"time"
 
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
 	"cloud.google.com/go/firestore"
@@ -56,75 +58,75 @@ func Get(ctx context.Context, server *pserver.Server, t pserver.DocumentType, id
 	return state, document, nil
 }
 
-func Add(ctx context.Context, server *pserver.Server, t pserver.DocumentType, request string, document proto.Message) (string, error) {
+func Add(ctx context.Context, server *pserver.Server, t pserver.DocumentType, id string, document proto.Message) error {
+
+	ref := server.Firestore.Collection(t.Collection).Doc(id)
 
 	// do as much marshaling and unmarshaling as we can before opening the transaction
 	opBlob, err := server.MarshalToBlob(delta.Set(nil, document))
 	if err != nil {
-		return "", err
+		return err
 	}
 	docBlob, err := server.MarshalToBlob(document)
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	var id string
 	f := func(ctx context.Context, tx *firestore.Transaction) error {
 
 		// check for documents with the same unique request id
-		duplicate, err := server.QuerySnapshot(ctx, tx, t, request)
+		found, err := server.DocumentExists(ctx, tx, ref)
 		if err != nil {
 			return err
 		}
-		if duplicate != nil {
-			id = duplicate.ID
+		if found {
 			return nil
 		}
 
-		ref := server.Firestore.Collection(t.Collection).NewDoc()
-
 		const initialState = 1
 
-		snapshot := &pserver.Snapshot{Request: request, State: initialState, Value: docBlob}
+		snapshot := &pserver.Snapshot{State: initialState, Value: docBlob}
 		if err := tx.Create(ref, snapshot); err != nil {
 			return err
 		}
 
 		stateRef := ref.Collection(pserver.STATES_COLLECTION).Doc(fmt.Sprint(initialState))
-		state := &pserver.State{Request: request, State: initialState, Op: opBlob}
+		state := &pserver.State{Request: uniqueID(), State: initialState, Op: opBlob}
 		if err := tx.Create(stateRef, state); err != nil {
 			return err
 		}
 
-		id = ref.ID
 		return nil
 
 	}
 	if err := server.Firestore.RunTransaction(ctx, f); err != nil {
-		return "", err
+		return err
 	}
 
-	return id, nil
+	return nil
 }
 
-func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, request, id string, state int64, op *delta.Op) (int64, *delta.Op, error) {
+func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, payload *pserver.Payload_Request) (*pserver.Payload_Response, error) {
 
 	// 3) Let's refer to op as OP2
-	op2 := op
+	op2 := payload.Op
 
-	ref := server.Firestore.Collection(t.Collection).Doc(id)
+	ref := server.Firestore.Collection(t.Collection).Doc(payload.Id)
 
-	if op == nil {
+	if payload.Op == nil {
 		// just request an update (no need to store state)
 		var ops []*delta.Op
-		state, err := server.Changes(ctx, nil, t, ref, state, 0, func(op *delta.Op) error {
+		state, err := server.Changes(ctx, nil, t, ref, payload.State, 0, func(op *delta.Op) error {
 			ops = append(ops, op)
 			return nil
 		})
 		if err != nil {
-			return 0, nil, err
+			return nil, err
 		}
-		return state, delta.Compound(ops...), nil
+		return &pserver.Payload_Response{
+			State: state,
+			Op:    delta.Compound(ops...),
+		}, nil
 	}
 
 	var lastState, newState int64
@@ -134,7 +136,7 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, r
 	f := func(ctx context.Context, tx *firestore.Transaction) error {
 
 		var err error
-		duplicate, err = server.QueryState(ctx, tx, t, ref, request)
+		duplicate, err = server.QueryState(ctx, tx, t, ref, payload.Request)
 		if err != nil {
 			return err
 		}
@@ -143,7 +145,7 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, r
 			return nil
 		}
 
-		lastState, op1x, op2x, err = server.Transform(ctx, tx, t, ref, op2, state, 0)
+		lastState, op1x, op2x, err = server.Transform(ctx, tx, t, ref, op2, payload.State, 0)
 		if err != nil {
 			return err
 		}
@@ -155,7 +157,7 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, r
 		}
 		newState = lastState + 1
 		newStateRef := ref.Collection(pserver.STATES_COLLECTION).Doc(fmt.Sprint(newState))
-		newStateItem := &pserver.State{Request: request, State: newState, Op: op2xBlob}
+		newStateItem := &pserver.State{Request: payload.Request, State: newState, Op: op2xBlob}
 		if err := tx.Create(newStateRef, newStateItem); err != nil {
 			return err
 		}
@@ -167,7 +169,7 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, r
 		return server.Firestore.RunTransaction(ctx, f)
 	}
 	if err := pserver.Lock(ctx, ref.Path, tf); err != nil {
-		return 0, nil, err
+		return nil, err
 	}
 
 	if duplicate != nil {
@@ -175,21 +177,21 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, r
 		// needs to be stored in the database.
 		duplicateState, _, err := server.UnpackState(duplicate, t)
 		if err != nil {
-			return 0, nil, err
+			return nil, err
 		}
 
 		// note that the state provided by the client is the "before" state for the transform, and the
 		// state from the duplicate record is the "after" state in the transform:
-		_, op1x, _, err = server.Transform(ctx, nil, t, ref, op2, state, duplicateState.State)
+		_, op1x, _, err = server.Transform(ctx, nil, t, ref, op2, payload.State, duplicateState.State)
 		if err != nil {
-			return 0, nil, err
+			return nil, err
 		}
 
-		return duplicateState.State, op1x, nil
+		return &pserver.Payload_Response{State: duplicateState.State, Op: op1x}, nil
 	}
 
 	// 7) Response: {unique: UNIQUE, state: COUNT, op: OP1x}
-	return newState, op1x, nil
+	return &pserver.Payload_Response{State: newState, Op: op1x}, nil
 }
 
 func TriggerRefreshTask(ctx context.Context, server *pserver.Server, message proto.Message) (*taskspb.Task, error) {
@@ -308,4 +310,21 @@ func mustJson(message proto.Message) string {
 		panic(err)
 	}
 	return string(b)
+}
+
+const alphanum = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+
+func uniqueID() string {
+	b := make([]byte, 20)
+	if _, err := rand.Read(b); err != nil {
+		panic(fmt.Sprintf("firestore: crypto/rand.Read error: %v", err))
+	}
+	for i, byt := range b {
+		b[i] = alphanum[int(byt)%len(alphanum)]
+	}
+	return string(b)
+}
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
 }

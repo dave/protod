@@ -9,6 +9,7 @@ import (
 
 	"github.com/dave/protod/delta"
 	"github.com/dave/protod/delta/randop"
+	"github.com/dave/protod/pserver"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -123,18 +124,20 @@ func (u *User) Edit() {
 	}
 	op := delta.Compound(ops...)
 	resp := req(u.prefix, &Person_Edit_Response{}, &Person_Edit_Request{
-		Id:      u.id,
-		Request: uniqueID(),
-		State:   u.state,
-		Op:      op,
+		Payload: &pserver.Payload_Request{
+			Id:      u.id,
+			Request: uniqueID(),
+			State:   u.state,
+			Op:      op,
+		},
 	}).(*Person_Edit_Response)
 	if resp.Err != "" {
 		u.t.Fatal(resp.Err)
 	}
-	if err := delta.Apply(resp.Op, u.document); err != nil {
+	if err := delta.Apply(resp.Payload.Op, u.document); err != nil {
 		u.t.Fatal(err)
 	}
-	u.state = resp.State
+	u.state = resp.Payload.State
 
 	u.mutex.Lock()
 	defer func() { u.mutex.Unlock() }()

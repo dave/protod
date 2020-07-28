@@ -6,33 +6,15 @@ import "delta/delta.proto";
 option go_package = "github.com/dave/protod/pserver;pserver";
 
 message Payload {
-  message Edit {
-    message Request {
-        string id = 1;      // document id
-        string request = 2; // random unique id for this request
-        int64 state = 3;    // state of the document that this op is acting on
-        delta.Op op = 4;    // operation
-    }
-    message Response {
-        int64 state = 1;   // state of the document after the op from the client and the response op have been applied
-        delta.Op op = 2;   // response op that must be applied to the document in order to get to the server state
-    }
+  message Request {
+      string id = 1;      // document id
+      string request = 2; // random unique id for this request
+      int64 state = 3;    // state of the document that this op is acting on
+      delta.Op op = 4;    // operation
   }
-  message Add{
-    message Request {
-      string request = 1;  // random unique id for de-duplication
-    }
-    message Response {
-      string id = 1;
-    }
-  }
-  message Get{
-    message Request {
-      string id = 1;
-    }
-    message Response {
-      int64 state = 1;
-    }
+  message Response {
+      int64 state = 1;   // state of the document after the op from the client and the response op have been applied
+      delta.Op op = 2;   // response op that must be applied to the document in order to get to the server state
   }
 }
 
@@ -40,9 +22,8 @@ message Payload {
 // is NOT updated on every state change. To get the document in it's latest state, all future
 // operations must be applied to this value.
 message Snapshot {
-  string request = 1; // the random unique request id supplied by the client when creating the document
   int64 state = 2;    // state of this document
-  Blob value = 3;     // marshaled protobuf TODO: store externally?
+  Blob value = 3;     // marshaled protobuf
 }
 
 // State is a single state change that increments the state counter by one.

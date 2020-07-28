@@ -103,7 +103,6 @@ func (a *App) PersonGetRequest(ctx context.Context, requestBytes []byte) (*Perso
 		return wrap(fmt.Errorf("getting: %w", err))
 	}
 	return &Person_Get_Response{
-		Id:     request.Id,
 		State:  state,
 		Person: document.(*tests.Person),
 		Err:    "",
@@ -118,14 +117,10 @@ func (a *App) PersonAddRequest(ctx context.Context, requestBytes []byte) (*Perso
 	if err := proto.Unmarshal(requestBytes, request); err != nil {
 		return wrap(fmt.Errorf("unmarshaling add request: %w", err))
 	}
-	id, err := example.Add(ctx, a.Server, example.PERSON, request.Request, request.Person)
-	if err != nil {
+	if err := example.Add(ctx, a.Server, example.PERSON, request.Id, request.Person); err != nil {
 		return wrap(fmt.Errorf("adding: %w", err))
 	}
-	return &Person_Add_Response{
-		Id:  id,
-		Err: "",
-	}, nil
+	return &Person_Add_Response{}, nil
 }
 
 func (a *App) PersonEditRequest(ctx context.Context, requestBytes []byte) (*Person_Edit_Response, error) {
@@ -136,21 +131,21 @@ func (a *App) PersonEditRequest(ctx context.Context, requestBytes []byte) (*Pers
 	if err := proto.Unmarshal(requestBytes, request); err != nil {
 		return wrap(fmt.Errorf("unmarshaling edit request: %w", err))
 	}
-	state, op, err := example.Edit(ctx, a.Server, example.PERSON, request.Request, request.Id, request.State, request.Op)
+	payload, err := example.Edit(ctx, a.Server, example.PERSON, request.Payload)
 	if err != nil {
 		if status.Code(err) == codes.Aborted || err == pserver.ServerBusy {
 			return wrap(pserver.ServerBusy)
 		}
 		return wrap(fmt.Errorf("editing: %w", err))
 	}
-	if state%example.UPDATE_SNAPSHOT_FREQUENCY == 0 {
+	if payload.State%example.UPDATE_SNAPSHOT_FREQUENCY == 0 {
 		if appengine.IsAppEngine() {
-			if _, err := example.TriggerRefreshTask(ctx, a.Server, &Person_Refresh_Request{Id: request.Id}); err != nil {
+			if _, err := example.TriggerRefreshTask(ctx, a.Server, &Person_Refresh_Request{Id: request.Payload.Id}); err != nil {
 				return wrap(fmt.Errorf("triggering refresh task: %w", err))
 			}
 		} else {
 			// for local tests
-			reqBytes, err := proto.Marshal(&Person_Refresh_Request{Id: request.Id})
+			reqBytes, err := proto.Marshal(&Person_Refresh_Request{Id: request.Payload.Id})
 			if err != nil {
 				return wrap(fmt.Errorf("marshaling refresh task: %w", err))
 			}
@@ -160,9 +155,8 @@ func (a *App) PersonEditRequest(ctx context.Context, requestBytes []byte) (*Pers
 		}
 	}
 	return &Person_Edit_Response{
-		State: state,
-		Op:    op,
-		Err:   "",
+		Payload: payload,
+		Err:     "",
 	}, nil
 }
 

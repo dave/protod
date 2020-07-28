@@ -22,8 +22,8 @@ func TestRandom(t *testing.T) {
 	states := map[int64]proto.Message{}
 	statesMutex := &sync.Mutex{}
 
-	id, err := Add(ctx, server, PERSON, uniqueID(), &tests.Person{Name: "a"})
-	if err != nil {
+	id := uniqueID()
+	if err := Add(ctx, server, PERSON, id, &tests.Person{Name: "a"}); err != nil {
 		t.Fatal(err)
 	}
 	wg := &sync.WaitGroup{}
@@ -90,11 +90,10 @@ func (u *User) Edit() {
 	}
 	op := delta.Compound(ops...)
 
-	var state int64
-	var opx *delta.Op
+	var payload *pserver.Payload_Response
 	f := func() error {
 		var err error
-		state, opx, err = Edit(context.Background(), u.server, PERSON, uniqueID(), u.id, u.state, op)
+		payload, err = Edit(context.Background(), u.server, PERSON, &pserver.Payload_Request{Request: uniqueID(), Id: u.id, State: u.state, Op: op})
 		return err
 	}
 	err := repeatOnBusy(f)
@@ -103,10 +102,10 @@ func (u *User) Edit() {
 	if err != nil {
 		u.t.Fatal(err)
 	}
-	if err := delta.Apply(opx, u.document); err != nil {
+	if err := delta.Apply(payload.Op, u.document); err != nil {
 		u.t.Fatal(err)
 	}
-	u.state = state
+	u.state = payload.State
 
 	u.mutex.Lock()
 	defer func() { u.mutex.Unlock() }()
@@ -129,14 +128,14 @@ func (u *User) Edit() {
 }
 
 func (u *User) Refresh() {
-	state, opx, err := Edit(context.Background(), u.server, PERSON, uniqueID(), u.id, u.state, nil)
+	payload, err := Edit(context.Background(), u.server, PERSON, &pserver.Payload_Request{Request: uniqueID(), Id: u.id, State: u.state, Op: nil})
 	if err != nil {
 		u.t.Fatal(err)
 	}
-	if err := delta.Apply(opx, u.document); err != nil {
+	if err := delta.Apply(payload.Op, u.document); err != nil {
 		u.t.Fatal(err)
 	}
-	u.state = state
+	u.state = payload.State
 	//fmt.Printf("%d) REFRESH %d %s\n", u.user, u.state, mustJson(u.document))
 }
 

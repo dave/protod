@@ -151,7 +151,7 @@ class Item<T extends GeneratedMessage> {
       _store._put(_id, this);
 
       final response = await _store._adapter.edit(
-        Payload_Edit_Request()
+        Payload_Request()
           ..id = _id
           ..request = request
           ..state = state
@@ -205,15 +205,15 @@ class Item<T extends GeneratedMessage> {
 }
 
 abstract class StoreAdapter<T extends GeneratedMessage> {
-  Future<GetResponse<T>> get(Payload_Get_Request payload);
-  Future<Payload_Add_Response> add(Payload_Add_Request payload, T value);
-  Future<Payload_Edit_Response> edit(Payload_Edit_Request payload);
+  Future<GetResponse<T>> get(String id);
+  Future<void> add(String id, T value);
+  Future<Payload_Response> edit(Payload_Request payload);
 }
 
 class GetResponse<T extends GeneratedMessage> {
-  final Payload_Get_Response payload;
+  final Int64 state;
   final T value;
-  GetResponse(this.payload, this.value);
+  GetResponse(this.state, this.value);
 }
 
 class ItemAdapter<T extends GeneratedMessage>

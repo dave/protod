@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/dave/protod/delta/tests"
+	"github.com/dave/protod/pserver"
 	"github.com/dave/protod/pserver/example"
 )
 
@@ -17,9 +18,11 @@ func TestServer(t *testing.T) {
 	app := &App{Server: example.New(context.Background())}
 	defer app.Server.Close()
 
+	id := uniqueID()
+
 	addResponse := app.ProcessMessage(context.Background(), &Person_Add_Request{
-		Request: uniqueID(),
-		Person:  document,
+		Id:     id,
+		Person: document,
 	}).(*Person_Add_Response)
 
 	if addResponse.Err != "" {
@@ -27,7 +30,7 @@ func TestServer(t *testing.T) {
 	}
 
 	getResponse := app.ProcessMessage(context.Background(), &Person_Get_Request{
-		Id: addResponse.Id,
+		Id: id,
 	}).(*Person_Get_Response)
 
 	if getResponse.Err != "" {
@@ -39,22 +42,24 @@ func TestServer(t *testing.T) {
 	}
 
 	editResponse := app.ProcessMessage(context.Background(), &Person_Edit_Request{
-		Id:      addResponse.Id,
-		Request: uniqueID(),
-		State:   1,
-		Op:      tests.Op().Person().Name().Edit("dave", "dave foo"),
+		Payload: &pserver.Payload_Request{
+			Id:      id,
+			Request: uniqueID(),
+			State:   1,
+			Op:      tests.Op().Person().Name().Edit("dave", "dave foo"),
+		},
 	}).(*Person_Edit_Response)
 
 	if editResponse.Err != "" {
 		t.Fatal(editResponse.Err)
 	}
 
-	if editResponse.Op != nil {
+	if editResponse.Payload.Op != nil {
 		t.Fatal("expected nil op")
 	}
 
-	if editResponse.State != 2 {
-		t.Fatalf("expected state 2, got %d", editResponse.State)
+	if editResponse.Payload.State != 2 {
+		t.Fatalf("expected state 2, got %d", editResponse.Payload.State)
 	}
 }
 

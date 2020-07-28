@@ -13,6 +13,8 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/memcache"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -104,28 +106,45 @@ func (s *Server) QueryState(ctx context.Context, tx *firestore.Transaction, t Do
 	}
 }
 
-func (s *Server) QuerySnapshot(ctx context.Context, tx *firestore.Transaction, t DocumentType, request string) (*firestore.DocumentRef, error) {
-	// get by request id
-	query := s.Firestore.Collection(t.Collection).Where(t.SnapshotFieldSelector("Request"), "==", request)
-	var iter *firestore.DocumentIterator
+func (s *Server) DocumentExists(ctx context.Context, tx *firestore.Transaction, ref *firestore.DocumentRef) (bool, error) {
+	var err error
 	if tx == nil {
-		iter = query.Documents(ctx)
+		_, err = ref.Get(ctx)
 	} else {
-		iter = tx.Documents(query)
-	}
-	docs, err := iter.GetAll()
-	if err != nil {
-		return nil, fmt.Errorf("getting snapshot documents: %w", err)
+		_, err = tx.Get(ref)
 	}
 	switch {
-	case len(docs) == 1:
-		return docs[0].Ref, nil
-	case len(docs) == 0:
-		return nil, nil
+	case status.Code(err) == codes.NotFound:
+		return false, nil
+	case err == nil:
+		return true, nil
 	default:
-		return nil, fmt.Errorf("found %d documents with same request %q", len(docs), request)
+		return false, err
 	}
 }
+
+//func (s *Server) QuerySnapshot(ctx context.Context, tx *firestore.Transaction, t DocumentType, request string) (*firestore.DocumentRef, error) {
+//	// get by request id
+//	query := s.Firestore.Collection(t.Collection).Where(t.SnapshotFieldSelector("Request"), "==", request)
+//	var iter *firestore.DocumentIterator
+//	if tx == nil {
+//		iter = query.Documents(ctx)
+//	} else {
+//		iter = tx.Documents(query)
+//	}
+//	docs, err := iter.GetAll()
+//	if err != nil {
+//		return nil, fmt.Errorf("getting snapshot documents: %w", err)
+//	}
+//	switch {
+//	case len(docs) == 1:
+//		return docs[0].Ref, nil
+//	case len(docs) == 0:
+//		return nil, nil
+//	default:
+//		return nil, fmt.Errorf("found %d documents with same request %q", len(docs), request)
+//	}
+//}
 
 func (s *Server) UnpackState(doc *firestore.DocumentSnapshot, t DocumentType) (*State, *delta.Op, error) {
 	state, _, err := t.State(doc)
