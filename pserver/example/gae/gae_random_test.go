@@ -125,10 +125,10 @@ func (u *User) Edit() {
 	op := delta.Compound(ops...)
 	resp := req(u.prefix, &Person_Edit_Response{}, &Person_Edit_Request{
 		Payload: &pserver.Payload_Request{
-			Id:      u.id,
-			Request: uniqueID(),
-			State:   u.state,
-			Op:      op,
+			DocumentId: u.id,
+			StateId:    uniqueID(),
+			State:      u.state,
+			Op:         op,
 		},
 	}).(*Person_Edit_Response)
 	if resp.Err != "" {

@@ -83,26 +83,23 @@ func (s *Server) Changes(ctx context.Context, tx *firestore.Transaction, t Docum
 	return current, nil
 }
 
-func (s *Server) QueryState(ctx context.Context, tx *firestore.Transaction, t DocumentType, ref *firestore.DocumentRef, request string) (*firestore.DocumentSnapshot, error) {
+func (s *Server) QueryState(ctx context.Context, tx *firestore.Transaction, documentRef *firestore.DocumentRef, stateId string) (*firestore.DocumentSnapshot, error) {
 	// get by request id
-	query := ref.Collection(STATES_COLLECTION).Where(t.StateFieldSelector("Request"), "==", request)
-	var iter *firestore.DocumentIterator
+	ref := documentRef.Collection(STATES_COLLECTION).Doc(stateId)
+	var doc *firestore.DocumentSnapshot
+	var err error
 	if tx == nil {
-		iter = query.Documents(ctx)
+		doc, err = ref.Get(ctx)
 	} else {
-		iter = tx.Documents(query)
-	}
-	docs, err := iter.GetAll()
-	if err != nil {
-		return nil, fmt.Errorf("getting state documents: %w", err)
+		doc, err = tx.Get(ref)
 	}
 	switch {
-	case len(docs) == 1:
-		return docs[0], nil
-	case len(docs) == 0:
+	case status.Code(err) == codes.NotFound:
 		return nil, nil
+	case err == nil:
+		return doc, nil
 	default:
-		return nil, fmt.Errorf("found %d states with same request %q", len(docs), request)
+		return nil, err
 	}
 }
 

@@ -14,8 +14,8 @@ import '../delta/delta.pb.dart' as $0;
 
 class Payload_Request extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('Payload.Request', package: const $pb.PackageName('pserver'), createEmptyInstance: create)
-    ..aOS(1, 'id')
-    ..aOS(2, 'request')
+    ..aOS(1, 'documentId', protoName: 'documentId')
+    ..aOS(2, 'stateId', protoName: 'stateId')
     ..aInt64(3, 'state')
     ..aOM<$0.Op>(4, 'op', subBuilder: $0.Op.create)
     ..hasRequiredFields = false
@@ -37,22 +37,22 @@ class Payload_Request extends $pb.GeneratedMessage {
   static Payload_Request _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.String get id => $_getSZ(0);
+  $core.String get documentId => $_getSZ(0);
   @$pb.TagNumber(1)
-  set id($core.String v) { $_setString(0, v); }
+  set documentId($core.String v) { $_setString(0, v); }
   @$pb.TagNumber(1)
-  $core.bool hasId() => $_has(0);
+  $core.bool hasDocumentId() => $_has(0);
   @$pb.TagNumber(1)
-  void clearId() => clearField(1);
+  void clearDocumentId() => clearField(1);
 
   @$pb.TagNumber(2)
-  $core.String get request => $_getSZ(1);
+  $core.String get stateId => $_getSZ(1);
   @$pb.TagNumber(2)
-  set request($core.String v) { $_setString(1, v); }
+  set stateId($core.String v) { $_setString(1, v); }
   @$pb.TagNumber(2)
-  $core.bool hasRequest() => $_has(1);
+  $core.bool hasStateId() => $_has(1);
   @$pb.TagNumber(2)
-  void clearRequest() => clearField(2);
+  void clearStateId() => clearField(2);
 
   @$pb.TagNumber(3)
   $fixnum.Int64 get state => $_getI64(2);
@@ -184,7 +184,6 @@ class Snapshot extends $pb.GeneratedMessage {
 
 class State extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('State', package: const $pb.PackageName('pserver'), createEmptyInstance: create)
-    ..aOS(1, 'request')
     ..aInt64(2, 'state')
     ..aOM<Blob>(3, 'op', subBuilder: Blob.create)
     ..hasRequiredFields = false
@@ -205,34 +204,25 @@ class State extends $pb.GeneratedMessage {
   static State getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<State>(create);
   static State _defaultInstance;
 
-  @$pb.TagNumber(1)
-  $core.String get request => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set request($core.String v) { $_setString(0, v); }
-  @$pb.TagNumber(1)
-  $core.bool hasRequest() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearRequest() => clearField(1);
-
   @$pb.TagNumber(2)
-  $fixnum.Int64 get state => $_getI64(1);
+  $fixnum.Int64 get state => $_getI64(0);
   @$pb.TagNumber(2)
-  set state($fixnum.Int64 v) { $_setInt64(1, v); }
+  set state($fixnum.Int64 v) { $_setInt64(0, v); }
   @$pb.TagNumber(2)
-  $core.bool hasState() => $_has(1);
+  $core.bool hasState() => $_has(0);
   @$pb.TagNumber(2)
   void clearState() => clearField(2);
 
   @$pb.TagNumber(3)
-  Blob get op => $_getN(2);
+  Blob get op => $_getN(1);
   @$pb.TagNumber(3)
   set op(Blob v) { setField(3, v); }
   @$pb.TagNumber(3)
-  $core.bool hasOp() => $_has(2);
+  $core.bool hasOp() => $_has(1);
   @$pb.TagNumber(3)
   void clearOp() => clearField(3);
   @$pb.TagNumber(3)
-  Blob ensureOp() => $_ensure(2);
+  Blob ensureOp() => $_ensure(1);
 }
 
 class Blob extends $pb.GeneratedMessage {

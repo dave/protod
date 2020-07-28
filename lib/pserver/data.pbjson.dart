@@ -13,8 +13,8 @@ const Payload$json = const {
 const Payload_Request$json = const {
   '1': 'Request',
   '2': const [
-    const {'1': 'id', '3': 1, '4': 1, '5': 9, '10': 'id'},
-    const {'1': 'request', '3': 2, '4': 1, '5': 9, '10': 'request'},
+    const {'1': 'documentId', '3': 1, '4': 1, '5': 9, '10': 'documentId'},
+    const {'1': 'stateId', '3': 2, '4': 1, '5': 9, '10': 'stateId'},
     const {'1': 'state', '3': 3, '4': 1, '5': 3, '10': 'state'},
     const {'1': 'op', '3': 4, '4': 1, '5': 11, '6': '.delta.Op', '10': 'op'},
   ],
@@ -39,7 +39,6 @@ const Snapshot$json = const {
 const State$json = const {
   '1': 'State',
   '2': const [
-    const {'1': 'request', '3': 1, '4': 1, '5': 9, '10': 'request'},
     const {'1': 'state', '3': 2, '4': 1, '5': 3, '10': 'state'},
     const {'1': 'op', '3': 3, '4': 1, '5': 11, '6': '.pserver.Blob', '10': 'op'},
   ],

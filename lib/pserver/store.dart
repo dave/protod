@@ -152,8 +152,8 @@ class Item<T extends GeneratedMessage> {
 
       final response = await _store._adapter.edit(
         Payload_Request()
-          ..id = _id
-          ..request = request
+          ..documentId = _id
+          ..stateId = request
           ..state = state
           ..op = compound(buffer),
       );

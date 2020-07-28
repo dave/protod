@@ -140,12 +140,12 @@ func (a *App) PersonEditRequest(ctx context.Context, requestBytes []byte) (*Pers
 	}
 	if payload.State%example.UPDATE_SNAPSHOT_FREQUENCY == 0 {
 		if appengine.IsAppEngine() {
-			if _, err := example.TriggerRefreshTask(ctx, a.Server, &Person_Refresh_Request{Id: request.Payload.Id}); err != nil {
+			if _, err := example.TriggerRefreshTask(ctx, a.Server, &Person_Refresh_Request{Id: request.Payload.DocumentId}); err != nil {
 				return wrap(fmt.Errorf("triggering refresh task: %w", err))
 			}
 		} else {
 			// for local tests
-			reqBytes, err := proto.Marshal(&Person_Refresh_Request{Id: request.Payload.Id})
+			reqBytes, err := proto.Marshal(&Person_Refresh_Request{Id: request.Payload.DocumentId})
 			if err != nil {
 				return wrap(fmt.Errorf("marshaling refresh task: %w", err))
 			}

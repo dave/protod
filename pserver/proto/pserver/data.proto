@@ -7,10 +7,10 @@ option go_package = "github.com/dave/protod/pserver;pserver";
 
 message Payload {
   message Request {
-      string id = 1;      // document id
-      string request = 2; // random unique id for this request
-      int64 state = 3;    // state of the document that this op is acting on
-      delta.Op op = 4;    // operation
+      string documentId = 1; // document id
+      string stateId = 2;    // state id
+      int64 state = 3;       // state of the document that this op is acting on
+      delta.Op op = 4;       // operation
   }
   message Response {
       int64 state = 1;   // state of the document after the op from the client and the response op have been applied
@@ -28,7 +28,6 @@ message Snapshot {
 
 // State is a single state change that increments the state counter by one.
 message State {
-  string request = 1; // the random unique request id supplied by the client
   int64 state = 2;    // state of this document after the this op
   Blob op = 3;        // the operation that was applied to change the state from (state-1)->state
 }
