@@ -18,34 +18,73 @@ class Store<T extends GeneratedMessage> {
       : this._box = box,
         this._adapter = adapter;
 
-  Iterable<String> keys() {
-    // this is usually the id, but can also be the request id for
-    // items being added.
+  Iterable<String> ids() {
     return _box.keys;
   }
 
   Item<T> add(String id, T value) {
-    // TODO
-    throw Exception('not implemented');
+    if (_items.containsKey(id) || _box.containsKey(id)) {
+      throw Exception('document already exists');
+    }
+
+    var item = Item()
+      .._store = this
+      .._sending = false
+      .._documentId = id
+      ..value = value
+      ..state = Int64(0)
+      ..requestId = ''
+      ..buffer = []
+      ..overflow = [];
+
+    _items[id] = item;
+    _put(id, item);
+
+    item.sendAdd();
+
+    return item;
   }
 
-  Item<T> get(String id) {
+  Future<Item<T>> get(String id) async {
     if (_items.containsKey(id)) {
       return _items[id];
     }
+
     if (_box.containsKey(id)) {
-      var value = _box.get(id);
-      value._sending = false;
-      value._store = this;
-      value._id = id;
-      _items[id] = value;
-      if (value.request != '') {
-        // If a previous request was interrupted, start sending again immediately.
-        value.send();
+      var item = _box.get(id);
+      item._sending = false;
+      item._store = this;
+      item._documentId = id;
+
+      _items[id] = item;
+
+      if (item.state == 0) {
+        // If the server hasn't confirmed the document was added, send again.
+        item.sendAdd();
+      } else if (item.requestId != '') {
+        // If a previous edit request was interrupted, send again.
+        item.sendEdit();
       }
-      return _items[id];
+
+      return item;
     }
-    // TODO: do a get request
+
+    final response = await _adapter.get(id);
+
+    var item = Item()
+      .._store = this
+      .._sending = false
+      .._documentId = id
+      ..value = response.value
+      ..state = response.state
+      ..requestId = ''
+      ..buffer = []
+      ..overflow = [];
+
+    _items[id] = item;
+    _put(id, item);
+
+    return item;
   }
 
   void _put(String id, Item<T> item) {
@@ -94,7 +133,7 @@ class Item<T extends GeneratedMessage> {
 
   Store<T> _store;
   bool _sending = false;
-  String _id = '';
+  String _documentId = '';
 
   // The value of the document after the operations in buffer have been applied.
   T value;
@@ -102,19 +141,19 @@ class Item<T extends GeneratedMessage> {
   // The state of the document when it last received an update from the server.
   Int64 state = Int64(0);
 
+  // The state id while an edit request is in process (or retrying). If this is
+  // set, we should append operations to overflow, instead of buffer.
+  String requestId = '';
+
   // The list of pending operations that have not yet been acknowledged by the server.
   List<Op> buffer = [];
 
   // List of pending operations that were created after request sent
   List<Op> overflow = [];
 
-  // The state id while an edit request is in process (or retrying). If this is
-  // set, we should append operations to overflow, instead of buffer.
-  String request = '';
-
   op(Op op) {
     // Add to buffer / overflow
-    if (request == '') {
+    if (requestId == '') {
       buffer.add(op);
     } else {
       overflow.add(op);
@@ -124,15 +163,19 @@ class Item<T extends GeneratedMessage> {
     apply(op, value);
 
     // Persist the item
-    _store._put(_id, this);
+    _store._put(_documentId, this);
 
     // Trigger the server request, if not already sending
     if (!_sending) {
-      send();
+      if (state == 0) {
+        sendAdd();
+      } else {
+        sendEdit();
+      }
     }
   }
 
-  send() async {
+  sendAdd() async {
     try {
       if (_sending) {
         // We shouldn't ever be trying to run this function concurrently, and to
@@ -141,20 +184,50 @@ class Item<T extends GeneratedMessage> {
       }
       _sending = true;
 
+      await _store._adapter.add(_documentId, value);
+    } finally {
+      // reset the sending flag even on an exception
+      _sending = false;
+    }
+
+    state = Int64(1);
+
+    // Persist the item
+    _store._put(_documentId, this);
+
+    // If operations have been added to the buffer, send them.
+    if (buffer.length > 0) {
+      sendEdit();
+    }
+  }
+
+  sendEdit() async {
+    try {
+      if (_sending) {
+        // We shouldn't ever be trying to run this function concurrently, and to
+        // do so would potentially corrupt data. TODO: make sure this never happens.
+        throw Exception('already sending');
+      }
+      _sending = true;
+
+      if (state == 0) {
+        throw Exception('value not added yet');
+      }
+
       // Only create a new request id if we don't have one already.
-      if (request == '') {
-        request = _store.randomUnique();
+      if (requestId == '') {
+        requestId = _store.randomUnique();
       }
 
       // Persist the item before sending the request. If the request never returns,
       // we should use the same request ID on subsequent attempts, even after app
       // shutdown / restart.
-      _store._put(_id, this);
+      _store._put(_documentId, this);
 
       final response = await _store._adapter.edit(
         Payload_Request()
-          ..id = request
-          ..document = _id
+          ..id = requestId
+          ..document = _documentId
           ..state = state
           ..op = compound(buffer),
       );
@@ -168,7 +241,7 @@ class Item<T extends GeneratedMessage> {
 
         // Reset buffer and request
         buffer = [];
-        request = '';
+        requestId = '';
       } else {
         // Reset state
         state = response.state;
@@ -188,7 +261,7 @@ class Item<T extends GeneratedMessage> {
 
         // reset the request and overflow
         overflow = [];
-        request = '';
+        requestId = '';
       }
     } finally {
       // reset the sending flag even on an exception
@@ -196,11 +269,11 @@ class Item<T extends GeneratedMessage> {
     }
 
     // Persist the item
-    _store._put(_id, this);
+    _store._put(_documentId, this);
 
     // If buffer has an operation, send again.
-    if (buffer != null && buffer.length > 0) {
-      send();
+    if (buffer.length > 0) {
+      sendEdit();
     }
   }
 }
@@ -260,7 +333,7 @@ class ItemAdapter<T extends GeneratedMessage>
       ..value = value
       ..state = state
       ..buffer = buffer
-      ..request = request
+      ..requestId = request
       ..overflow = overflow;
   }
 
@@ -269,7 +342,7 @@ class ItemAdapter<T extends GeneratedMessage>
     final valueType = item.value?.info_?.qualifiedMessageName ?? '';
     final valueBytes = item.value?.writeToBuffer() ?? List<int>();
     final state = item.state?.toInt() ?? 0;
-    final request = item.request ?? '';
+    final request = item.requestId ?? '';
     final buffer = item.buffer?.map((e) => e?.writeToBuffer())?.toList() ??
         List<List<int>>();
     final overflow = item.overflow?.map((e) => e?.writeToBuffer())?.toList() ??
