@@ -20,7 +20,9 @@ class Store<T extends GeneratedMessage> {
       : this._box = box,
         this._adapter = adapter;
 
-  Iterable<String> ids() {
+  Iterable<String> keys() {
+    // this is usually the id, but can also be the request id for
+    // items being added.
     return _box.keys;
   }
 
@@ -90,24 +92,24 @@ class Item<T extends GeneratedMessage> {
   // [overflowx], and trigger another server request.
 
   Store<T> _store;
-  bool _sending;
-  String _id;
+  bool _sending = false;
+  String _id = '';
 
   // The value of the document after the operations in buffer have been applied.
   T value;
 
   // The state of the document when it last received an update from the server.
-  Int64 state;
+  Int64 state = Int64(0);
 
   // The list of pending operations that have not yet been acknowledged by the server.
-  List<Op> buffer;
+  List<Op> buffer = [];
 
   // List of pending operations that were created after request sent
-  List<Op> overflow;
+  List<Op> overflow = [];
 
   // The unique id while a request is in process (or retrying). If this is set,
   // we should append operations to overflow, instead of buffer.
-  String request;
+  String request = '';
 
   op(Op op) {
     // Add to buffer / overflow
@@ -225,22 +227,33 @@ class ItemAdapter<T extends GeneratedMessage>
 
   @override
   Item<T> read(hive.BinaryReader reader) {
-    final type = reader.readString(); // 0
+    final valueType = reader.readString(); // 0
     final valueBytes = reader.readByteList(); // 1
     final state = Int64(reader.readInt()); // 2
-    final bufferBytesList = reader.readList(); // 3
-    final request = reader.readString(); // 4
+    final request = reader.readString(); // 3
+    final bufferBytesList = reader.readList(); // 4
     final overflowBytesList = reader.readList(); // 5
 
     // unmarshal value
-    T value = _types.lookup(type).createEmptyInstance();
-    unpackIntoHelper(valueBytes, value, 'type.googleapis.com/$type');
+    T value;
+    if (valueType != '') {
+      final builderInfo = _types.lookup(valueType);
+      if (builderInfo == null) {
+        throw Exception("can't find type $valueType");
+      }
+      value = builderInfo.createEmptyInstance();
+      unpackIntoHelper(valueBytes, value, 'type.googleapis.com/$valueType');
+    }
 
     // unmarshal buffer
-    final buffer = bufferBytesList.map((e) => Op()..mergeFromBuffer(e));
+    final buffer = bufferBytesList
+        .map((e) => e == null ? null : (Op()..mergeFromBuffer(e)))
+        .toList();
 
     // unmarshal overflow
-    final overflow = overflowBytesList.map((e) => Op()..mergeFromBuffer(e));
+    final overflow = overflowBytesList
+        .map((e) => e == null ? null : (Op()..mergeFromBuffer(e)))
+        .toList();
 
     return Item<T>()
       ..value = value
@@ -251,12 +264,21 @@ class ItemAdapter<T extends GeneratedMessage>
   }
 
   @override
-  void write(hive.BinaryWriter writer, Item item) {
-    writer.writeString('${item.value.info_.qualifiedMessageName}'); // 0
-    writer.writeByteList(item.value.writeToBuffer()); // 1
-    writer.writeInt(item.state.toInt()); // 2
-    writer.writeList(item.buffer.map((e) => e.writeToBuffer()).toList()); // 3
-    writer.writeString(item.request); // 4
-    writer.writeList(item.overflow.map((e) => e.writeToBuffer()).toList()); // 5
+  void write(hive.BinaryWriter writer, Item<T> item) {
+    final valueType = item.value?.info_?.qualifiedMessageName ?? '';
+    final valueBytes = item.value?.writeToBuffer() ?? List<int>();
+    final state = item.state?.toInt() ?? 0;
+    final request = item.request ?? '';
+    final buffer = item.buffer?.map((e) => e?.writeToBuffer())?.toList() ??
+        List<List<int>>();
+    final overflow = item.overflow?.map((e) => e?.writeToBuffer())?.toList() ??
+        List<List<int>>();
+
+    writer.writeString(valueType); // 0
+    writer.writeByteList(valueBytes); // 1
+    writer.writeInt(state); // 2
+    writer.writeString(request); // 3
+    writer.writeList(buffer); // 4
+    writer.writeList(overflow); // 5
   }
 }
