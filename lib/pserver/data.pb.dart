@@ -14,8 +14,8 @@ import '../delta/delta.pb.dart' as $0;
 
 class Payload_Request extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('Payload.Request', package: const $pb.PackageName('pserver'), createEmptyInstance: create)
-    ..aOS(1, 'documentId', protoName: 'documentId')
-    ..aOS(2, 'stateId', protoName: 'stateId')
+    ..aOS(1, 'id')
+    ..aOS(2, 'document')
     ..aInt64(3, 'state')
     ..aOM<$0.Op>(4, 'op', subBuilder: $0.Op.create)
     ..hasRequiredFields = false
@@ -37,22 +37,22 @@ class Payload_Request extends $pb.GeneratedMessage {
   static Payload_Request _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.String get documentId => $_getSZ(0);
+  $core.String get id => $_getSZ(0);
   @$pb.TagNumber(1)
-  set documentId($core.String v) { $_setString(0, v); }
+  set id($core.String v) { $_setString(0, v); }
   @$pb.TagNumber(1)
-  $core.bool hasDocumentId() => $_has(0);
+  $core.bool hasId() => $_has(0);
   @$pb.TagNumber(1)
-  void clearDocumentId() => clearField(1);
+  void clearId() => clearField(1);
 
   @$pb.TagNumber(2)
-  $core.String get stateId => $_getSZ(1);
+  $core.String get document => $_getSZ(1);
   @$pb.TagNumber(2)
-  set stateId($core.String v) { $_setString(1, v); }
+  set document($core.String v) { $_setString(1, v); }
   @$pb.TagNumber(2)
-  $core.bool hasStateId() => $_has(1);
+  $core.bool hasDocument() => $_has(1);
   @$pb.TagNumber(2)
-  void clearStateId() => clearField(2);
+  void clearDocument() => clearField(2);
 
   @$pb.TagNumber(3)
   $fixnum.Int64 get state => $_getI64(2);

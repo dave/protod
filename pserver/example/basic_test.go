@@ -45,7 +45,7 @@ func TestRenameChain(t *testing.T) {
 	// user1 renames key
 	op = tests.Op().Company().Flags().Rename(1, 4)
 	handle(t, delta.Apply(op, user1Value))
-	payload, err = Edit(ctx, server, COMPANY, &pserver.Payload_Request{StateId: uniqueID(), DocumentId: id, State: user1State, Op: op})
+	payload, err = Edit(ctx, server, COMPANY, &pserver.Payload_Request{Id: uniqueID(), Document: id, State: user1State, Op: op})
 	handle(t, err)
 	user1State, op = payload.State, payload.Op
 	handle(t, delta.Apply(op, user1Value))
@@ -57,7 +57,7 @@ func TestRenameChain(t *testing.T) {
 		tests.Op().Company().Flags().Rename(2, 3),
 	)
 	handle(t, delta.Apply(op, user2Value))
-	payload, err = Edit(ctx, server, COMPANY, &pserver.Payload_Request{StateId: uniqueID(), DocumentId: id, State: user2State, Op: op})
+	payload, err = Edit(ctx, server, COMPANY, &pserver.Payload_Request{Id: uniqueID(), Document: id, State: user2State, Op: op})
 	handle(t, err)
 	user2State, op = payload.State, payload.Op
 	handle(t, delta.Apply(op, user2Value))
@@ -66,7 +66,7 @@ func TestRenameChain(t *testing.T) {
 	// user1 renames key
 	op = tests.Op().Company().Name().Set("a")
 	handle(t, delta.Apply(op, user1Value))
-	payload, err = Edit(ctx, server, COMPANY, &pserver.Payload_Request{StateId: uniqueID(), DocumentId: id, State: user1State, Op: op})
+	payload, err = Edit(ctx, server, COMPANY, &pserver.Payload_Request{Id: uniqueID(), Document: id, State: user1State, Op: op})
 	handle(t, err)
 	user1State, op = payload.State, payload.Op
 	handle(t, delta.Apply(op, user1Value))
@@ -106,7 +106,7 @@ func TestRenameConflict(t *testing.T) {
 	// user1 renames key
 	op = tests.Op().Person().Cases().Rename("a", "b")
 	handle(t, delta.Apply(op, user1Value))
-	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{StateId: uniqueID(), DocumentId: id, State: user1State, Op: op})
+	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{Id: uniqueID(), Document: id, State: user1State, Op: op})
 	handle(t, err)
 	user1State, op = payload.State, payload.Op
 	handle(t, delta.Apply(op, user1Value))
@@ -115,7 +115,7 @@ func TestRenameConflict(t *testing.T) {
 	// user2 set inside renamed key
 	op = tests.Op().Person().Cases().Key("a").Flags().Rename(1, 3)
 	handle(t, delta.Apply(op, user2Value))
-	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{StateId: uniqueID(), DocumentId: id, State: user2State, Op: op})
+	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{Id: uniqueID(), Document: id, State: user2State, Op: op})
 	handle(t, err)
 	user2State, op = payload.State, payload.Op
 	handle(t, delta.Apply(op, user2Value))
@@ -124,7 +124,7 @@ func TestRenameConflict(t *testing.T) {
 	// user1 renames key
 	op = tests.Op().Person().Cases().Key("b").Name().Set("y")
 	handle(t, delta.Apply(op, user1Value))
-	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{StateId: uniqueID(), DocumentId: id, State: user1State, Op: op})
+	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{Id: uniqueID(), Document: id, State: user1State, Op: op})
 	handle(t, err)
 	user1State, op = payload.State, payload.Op
 	handle(t, delta.Apply(op, user1Value))
@@ -163,7 +163,7 @@ func TestConflict(t *testing.T) {
 	// user1 sets name
 	op = tests.Op().Person().Cases().Key("b").Name().Edit("c", "d")
 	handle(t, delta.Apply(op, user1Value))
-	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{StateId: uniqueID(), DocumentId: id, State: user1State, Op: op})
+	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{Id: uniqueID(), Document: id, State: user1State, Op: op})
 	handle(t, err)
 	user1State, op = payload.State, payload.Op
 	handle(t, delta.Apply(op, user1Value))
@@ -172,7 +172,7 @@ func TestConflict(t *testing.T) {
 	// user2 deletes name
 	op = tests.Op().Person().Cases().Key("b").Delete()
 	handle(t, delta.Apply(op, user2Value))
-	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{StateId: uniqueID(), DocumentId: id, State: user2State, Op: op})
+	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{Id: uniqueID(), Document: id, State: user2State, Op: op})
 	handle(t, err)
 	user2State, op = payload.State, payload.Op
 	handle(t, delta.Apply(op, user2Value))
@@ -214,7 +214,7 @@ func TestBasic(t *testing.T) {
 	// user1 inserts value
 	op = tests.Op().Person().Alias().Insert(0, "b")
 	handle(t, delta.Apply(op, user1Value))
-	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{StateId: uniqueID(), DocumentId: id, State: user1State, Op: op})
+	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{Id: uniqueID(), Document: id, State: user1State, Op: op})
 	handle(t, err)
 	user1State, op = payload.State, payload.Op
 	handle(t, delta.Apply(op, user1Value))
@@ -223,7 +223,7 @@ func TestBasic(t *testing.T) {
 	// user1 modifies value
 	op = tests.Op().Person().Alias().Index(0).Edit("b", "c")
 	handle(t, delta.Apply(op, user1Value))
-	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{StateId: uniqueID(), DocumentId: id, State: user1State, Op: op})
+	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{Id: uniqueID(), Document: id, State: user1State, Op: op})
 	handle(t, err)
 	user1State, op = payload.State, payload.Op
 	handle(t, delta.Apply(op, user1Value))
@@ -232,14 +232,14 @@ func TestBasic(t *testing.T) {
 	// user2 modifies value
 	op = tests.Op().Person().Alias().Insert(0, "d")
 	handle(t, delta.Apply(op, user2Value))
-	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{StateId: uniqueID(), DocumentId: id, State: user2State, Op: op})
+	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{Id: uniqueID(), Document: id, State: user2State, Op: op})
 	handle(t, err)
 	user2State, op = payload.State, payload.Op
 	handle(t, delta.Apply(op, user2Value))
 	check(t, "user2 edit 1", user2Value, user2State, &tests.Person{Name: "a", Alias: []string{"c", "d"}}, 4)
 
 	// user1 refresh
-	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{StateId: uniqueID(), DocumentId: id, State: user1State, Op: nil})
+	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{Id: uniqueID(), Document: id, State: user1State, Op: nil})
 	handle(t, err)
 	user1State, op = payload.State, payload.Op
 	handle(t, delta.Apply(op, user1Value))
@@ -248,7 +248,7 @@ func TestBasic(t *testing.T) {
 	// user2 modifies value
 	op = tests.Op().Person().Company().Set(&tests.Company{Name: "e"})
 	handle(t, delta.Apply(op, user2Value))
-	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{StateId: uniqueID(), DocumentId: id, State: user2State, Op: op})
+	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{Id: uniqueID(), Document: id, State: user2State, Op: op})
 	handle(t, err)
 	user2State, op = payload.State, payload.Op
 	handle(t, delta.Apply(op, user2Value))
@@ -270,7 +270,7 @@ func TestBasic(t *testing.T) {
 		tests.Op().Person().Cases().Key("a").Flags().Rename(1, 2),
 	)
 	handle(t, delta.Apply(op, user1Value))
-	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{StateId: uniqueID(), DocumentId: id, State: user1State, Op: op})
+	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{Id: uniqueID(), Document: id, State: user1State, Op: op})
 	handle(t, err)
 	user1State, op = payload.State, payload.Op
 	handle(t, delta.Apply(op, user1Value))
@@ -279,7 +279,7 @@ func TestBasic(t *testing.T) {
 	// user2 modifies value
 	op = tests.Op().Person().Company().Name().Set("f")
 	handle(t, delta.Apply(op, user2Value))
-	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{StateId: uniqueID(), DocumentId: id, State: user2State, Op: op})
+	payload, err = Edit(ctx, server, PERSON, &pserver.Payload_Request{Id: uniqueID(), Document: id, State: user2State, Op: op})
 	handle(t, err)
 	user2State, op = payload.State, payload.Op
 	handle(t, delta.Apply(op, user2Value))

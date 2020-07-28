@@ -83,9 +83,9 @@ func (s *Server) Changes(ctx context.Context, tx *firestore.Transaction, t Docum
 	return current, nil
 }
 
-func (s *Server) QueryState(ctx context.Context, tx *firestore.Transaction, documentRef *firestore.DocumentRef, stateId string) (*firestore.DocumentSnapshot, error) {
+func (s *Server) QueryState(ctx context.Context, tx *firestore.Transaction, documentRef *firestore.DocumentRef, id string) (*firestore.DocumentSnapshot, error) {
 	// get by request id
-	ref := documentRef.Collection(STATES_COLLECTION).Doc(stateId)
+	ref := documentRef.Collection(STATES_COLLECTION).Doc(id)
 	var doc *firestore.DocumentSnapshot
 	var err error
 	if tx == nil {

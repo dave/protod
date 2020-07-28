@@ -100,10 +100,10 @@ func TestClient(t *testing.T) {
 
 	editResponse := req(prefix, &Person_Edit_Response{}, &Person_Edit_Request{
 		Payload: &pserver.Payload_Request{
-			DocumentId: id,
-			StateId:    uniqueID(),
-			State:      1,
-			Op:         tests.Op().Person().Name().Edit("dave", "dave foo"),
+			Id:       uniqueID(),
+			Document: id,
+			State:    1,
+			Op:       tests.Op().Person().Name().Edit("dave", "dave foo"),
 		},
 	}).(*Person_Edit_Response)
 

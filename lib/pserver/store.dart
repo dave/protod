@@ -8,8 +8,6 @@ import 'package:protod/delta/delta.dart';
 import 'package:protod/delta/delta.pb.dart';
 import 'package:protod/pserver/data.pb.dart';
 
-// TODO: Remove hive dependency - replace with PersistenceAdapter?
-
 class Store<T extends GeneratedMessage> {
   final hive.Box<Item<T>> _box;
   final StoreAdapter<T> _adapter;
@@ -26,32 +24,35 @@ class Store<T extends GeneratedMessage> {
     return _box.keys;
   }
 
-  Item<T> add(T value) {
+  Item<T> add(String id, T value) {
     // TODO
     throw Exception('not implemented');
   }
 
   Item<T> get(String id) {
-    if (!_items.containsKey(id) && _box.containsKey(id)) {
+    if (_items.containsKey(id)) {
+      return _items[id];
+    }
+    if (_box.containsKey(id)) {
       var value = _box.get(id);
       value._sending = false;
       value._store = this;
       value._id = id;
       _items[id] = value;
-
-      if (value.request != null && value.request != '') {
+      if (value.request != '') {
         // If a previous request was interrupted, start sending again immediately.
         value.send();
       }
+      return _items[id];
     }
-    return _items[id];
+    // TODO: do a get request
   }
 
   void _put(String id, Item<T> item) {
     _box.put(id, item);
   }
 
-  String _randomUnique() {
+  String randomUnique() {
     var values = List<int>.generate(16, (i) => _rand.nextInt(255));
     return base64UrlEncode(values);
   }
@@ -107,13 +108,13 @@ class Item<T extends GeneratedMessage> {
   // List of pending operations that were created after request sent
   List<Op> overflow = [];
 
-  // The unique id while a request is in process (or retrying). If this is set,
-  // we should append operations to overflow, instead of buffer.
+  // The state id while an edit request is in process (or retrying). If this is
+  // set, we should append operations to overflow, instead of buffer.
   String request = '';
 
   op(Op op) {
     // Add to buffer / overflow
-    if (request == null || request == "") {
+    if (request == '') {
       buffer.add(op);
     } else {
       overflow.add(op);
@@ -141,8 +142,8 @@ class Item<T extends GeneratedMessage> {
       _sending = true;
 
       // Only create a new request id if we don't have one already.
-      if (request == null || request == "") {
-        request = _store._randomUnique();
+      if (request == '') {
+        request = _store.randomUnique();
       }
 
       // Persist the item before sending the request. If the request never returns,
@@ -152,8 +153,8 @@ class Item<T extends GeneratedMessage> {
 
       final response = await _store._adapter.edit(
         Payload_Request()
-          ..documentId = _id
-          ..stateId = request
+          ..id = request
+          ..document = _id
           ..state = state
           ..op = compound(buffer),
       );

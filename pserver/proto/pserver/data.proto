@@ -7,14 +7,14 @@ option go_package = "github.com/dave/protod/pserver;pserver";
 
 message Payload {
   message Request {
-      string documentId = 1; // document id
-      string stateId = 2;    // state id
-      int64 state = 3;       // state of the document that this op is acting on
-      delta.Op op = 4;       // operation
+      string id = 1;       // state id
+      string document = 2; // document id
+      int64 state = 3;     // state of the document that this op is acting on
+      delta.Op op = 4;     // operation
   }
   message Response {
-      int64 state = 1;   // state of the document after the op from the client and the response op have been applied
-      delta.Op op = 2;   // response op that must be applied to the document in order to get to the server state
+      int64 state = 1; // state of the document after the op from the client and the response op have been applied
+      delta.Op op = 2; // response op that must be applied to the document in order to get to the server state
   }
 }
 
@@ -22,8 +22,8 @@ message Payload {
 // is NOT updated on every state change. To get the document in it's latest state, all future
 // operations must be applied to this value.
 message Snapshot {
-  int64 state = 2;    // state of this document
-  Blob value = 3;     // marshaled protobuf
+  int64 state = 2; // state of this document
+  Blob value = 3;  // marshaled protobuf
 }
 
 // State is a single state change that increments the state counter by one.

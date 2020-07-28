@@ -111,7 +111,7 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, p
 	// 3) Let's refer to op as OP2
 	op2 := payload.Op
 
-	ref := server.Firestore.Collection(t.Collection).Doc(payload.DocumentId)
+	ref := server.Firestore.Collection(t.Collection).Doc(payload.Document)
 
 	if payload.Op == nil {
 		// just request an update (no need to store state)
@@ -136,7 +136,7 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, p
 	f := func(ctx context.Context, tx *firestore.Transaction) error {
 
 		var err error
-		duplicate, err = server.QueryState(ctx, tx, ref, payload.StateId)
+		duplicate, err = server.QueryState(ctx, tx, ref, payload.Id)
 		if err != nil {
 			return err
 		}
@@ -156,7 +156,7 @@ func Edit(ctx context.Context, server *pserver.Server, t pserver.DocumentType, p
 			return err
 		}
 		newState = lastState + 1
-		newStateRef := ref.Collection(pserver.STATES_COLLECTION).Doc(payload.StateId)
+		newStateRef := ref.Collection(pserver.STATES_COLLECTION).Doc(payload.Id)
 		newStateItem := &pserver.State{State: newState, Op: op2xBlob}
 		if err := tx.Create(newStateRef, newStateItem); err != nil {
 			return err

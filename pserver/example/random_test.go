@@ -93,7 +93,7 @@ func (u *User) Edit() {
 	var payload *pserver.Payload_Response
 	f := func() error {
 		var err error
-		payload, err = Edit(context.Background(), u.server, PERSON, &pserver.Payload_Request{StateId: uniqueID(), DocumentId: u.id, State: u.state, Op: op})
+		payload, err = Edit(context.Background(), u.server, PERSON, &pserver.Payload_Request{Id: uniqueID(), Document: u.id, State: u.state, Op: op})
 		return err
 	}
 	err := repeatOnBusy(f)
@@ -128,7 +128,7 @@ func (u *User) Edit() {
 }
 
 func (u *User) Refresh() {
-	payload, err := Edit(context.Background(), u.server, PERSON, &pserver.Payload_Request{StateId: uniqueID(), DocumentId: u.id, State: u.state, Op: nil})
+	payload, err := Edit(context.Background(), u.server, PERSON, &pserver.Payload_Request{Id: uniqueID(), Document: u.id, State: u.state, Op: nil})
 	if err != nil {
 		u.t.Fatal(err)
 	}
