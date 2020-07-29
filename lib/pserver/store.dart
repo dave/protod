@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
@@ -11,7 +12,7 @@ import 'package:protod/pserver/data.pb.dart';
 class Store<T extends GeneratedMessage> {
   final hive.Box<Item<T>> _box;
   final StoreAdapter<T> _adapter;
-  Map<String, Item<T>> _items;
+  Map<String, Item<T>> _items = {};
   final _rand = Random();
 
   Store(hive.Box<Item<T>> box, StoreAdapter<T> adapter)
@@ -22,12 +23,10 @@ class Store<T extends GeneratedMessage> {
     return _box.keys;
   }
 
-  Item<T> add(String id, T value) {
-    if (_items.containsKey(id) || _box.containsKey(id)) {
-      throw Exception('document already exists');
-    }
+  AddResponse<T> add(T value) {
+    final id = randomUnique();
 
-    var item = Item()
+    var item = Item<T>()
       .._store = this
       .._sending = false
       .._documentId = id
@@ -40,14 +39,16 @@ class Store<T extends GeneratedMessage> {
     _items[id] = item;
     _put(id, item);
 
-    item.sendAdd();
+    final response = item.send();
 
-    return item;
+    return AddResponse(id, item, response);
   }
 
-  Future<Item<T>> get(String id) async {
+  bool has(String id) => _items.containsKey(id) || _box.containsKey(id);
+
+  GetResponse get(String id, {bool send = true}) {
     if (_items.containsKey(id)) {
-      return _items[id];
+      return GetResponse(_items[id], null);
     }
 
     if (_box.containsKey(id)) {
@@ -58,17 +59,25 @@ class Store<T extends GeneratedMessage> {
 
       _items[id] = item;
 
-      if (item.state == 0) {
-        // If the server hasn't confirmed the document was added, send again.
-        item.sendAdd();
-      } else if (item.requestId != '') {
-        // If a previous edit request was interrupted, send again.
-        item.sendEdit();
+      if (item.state == 0 || item.requestId != '') {
+        // If a previous request was interrupted, send again and return the
+        // future.
+        final future = item.send();
+
+        return GetResponse(item, future);
       }
 
-      return item;
+      // The item is ready, and no future is needed.
+      return GetResponse(item, null);
     }
 
+    // Item doesn't exist yet, so just return the future.
+    final future = _sendGet(id);
+
+    return GetResponse(null, future);
+  }
+
+  Future<Item<T>> _sendGet(String id) async {
     final response = await _adapter.get(id);
 
     var item = Item()
@@ -134,6 +143,7 @@ class Item<T extends GeneratedMessage> {
   Store<T> _store;
   bool _sending = false;
   String _documentId = '';
+  Completer<void> _current;
 
   // The value of the document after the operations in buffer have been applied.
   T value;
@@ -151,7 +161,7 @@ class Item<T extends GeneratedMessage> {
   // List of pending operations that were created after request sent
   List<Op> overflow = [];
 
-  op(Op op) {
+  Future<void> op(Op op) async {
     // Add to buffer / overflow
     if (requestId == '') {
       buffer.add(op);
@@ -165,30 +175,37 @@ class Item<T extends GeneratedMessage> {
     // Persist the item
     _store._put(_documentId, this);
 
-    // Trigger the server request, if not already sending
-    if (!_sending) {
-      if (state == 0) {
-        sendAdd();
-      } else {
-        sendEdit();
-      }
-    }
+    // Trigger the server request
+    await send();
   }
 
-  sendAdd() async {
+  Future<void> send() async {
+    if (_sending) {
+      return _current.future;
+    }
+    _sending = true;
+    _current = Completer<void>();
     try {
-      if (_sending) {
-        // We shouldn't ever be trying to run this function concurrently, and to
-        // do so would potentially corrupt data. TODO: make sure this never happens.
-        throw Exception('already sending');
+      if (state == 0) {
+        await _sendAdd();
+      } else {
+        await _sendEdit();
       }
-      _sending = true;
-
-      await _store._adapter.add(_documentId, value);
+    } catch (e) {
+      _current.completeError(e);
+      return;
     } finally {
-      // reset the sending flag even on an exception
       _sending = false;
     }
+    _current.complete();
+  }
+
+  Future<void> _sendAdd() async {
+    if (state != 0) {
+      throw Exception('value already added');
+    }
+
+    await _store._adapter.add(_documentId, value);
 
     state = Int64(1);
 
@@ -197,75 +214,63 @@ class Item<T extends GeneratedMessage> {
 
     // If operations have been added to the buffer, send them.
     if (buffer.length > 0) {
-      sendEdit();
+      await _sendEdit();
     }
   }
 
-  sendEdit() async {
-    try {
-      if (_sending) {
-        // We shouldn't ever be trying to run this function concurrently, and to
-        // do so would potentially corrupt data. TODO: make sure this never happens.
-        throw Exception('already sending');
+  Future<void> _sendEdit() async {
+    if (state == 0) {
+      throw Exception('value not added yet');
+    }
+
+    // Only create a new request id if we don't have one already.
+    if (requestId == '') {
+      requestId = _store.randomUnique();
+    }
+
+    // Persist the item before sending the request. If the request never returns,
+    // we should use the same request ID on subsequent attempts, even after app
+    // shutdown / restart.
+    _store._put(_documentId, this);
+
+    final response = await _store._adapter.edit(
+      Payload_Request()
+        ..id = requestId
+        ..document = _documentId
+        ..state = state
+        ..op = compound(buffer),
+    );
+
+    if (overflow.length == 0) {
+      // Reset state
+      state = response.state;
+
+      // Apply response
+      apply(response.op, value);
+
+      // Reset buffer and request
+      buffer = [];
+      requestId = '';
+    } else {
+      // Reset state
+      state = response.state;
+
+      // Transform operations
+      final responsex = transform(compound(overflow), response.op, false);
+      final overflowx = transform(response.op, compound(overflow), true);
+
+      // Apply responsex
+      apply(responsex, value);
+
+      // Replace buffer with overflowx
+      buffer = [];
+      if (overflowx != null) {
+        buffer = [overflowx];
       }
-      _sending = true;
 
-      if (state == 0) {
-        throw Exception('value not added yet');
-      }
-
-      // Only create a new request id if we don't have one already.
-      if (requestId == '') {
-        requestId = _store.randomUnique();
-      }
-
-      // Persist the item before sending the request. If the request never returns,
-      // we should use the same request ID on subsequent attempts, even after app
-      // shutdown / restart.
-      _store._put(_documentId, this);
-
-      final response = await _store._adapter.edit(
-        Payload_Request()
-          ..id = requestId
-          ..document = _documentId
-          ..state = state
-          ..op = compound(buffer),
-      );
-
-      if (overflow == null || overflow.length == 0) {
-        // Reset state
-        state = response.state;
-
-        // Apply response
-        apply(response.op, value);
-
-        // Reset buffer and request
-        buffer = [];
-        requestId = '';
-      } else {
-        // Reset state
-        state = response.state;
-
-        // Transform operations
-        final responsex = transform(compound(overflow), response.op, false);
-        final overflowx = transform(response.op, compound(overflow), true);
-
-        // Apply responsex
-        apply(responsex, value);
-
-        // Replace buffer with overflowx
-        buffer = [];
-        if (overflowx != null) {
-          buffer = [overflowx];
-        }
-
-        // reset the request and overflow
-        overflow = [];
-        requestId = '';
-      }
-    } finally {
-      // reset the sending flag even on an exception
-      _sending = false;
+      // reset the request and overflow
+      overflow = [];
+      requestId = '';
     }
 
     // Persist the item
@@ -273,21 +278,22 @@ class Item<T extends GeneratedMessage> {
 
     // If buffer has an operation, send again.
     if (buffer.length > 0) {
-      sendEdit();
+      await _sendEdit();
     }
   }
 }
 
-abstract class StoreAdapter<T extends GeneratedMessage> {
-  Future<GetResponse<T>> get(String id);
-  Future<void> add(String id, T value);
-  Future<Payload_Response> edit(Payload_Request payload);
+class GetResponse<T extends GeneratedMessage> {
+  final Item<T> item;
+  final Future<Item<T>> future;
+  GetResponse(this.item, this.future);
 }
 
-class GetResponse<T extends GeneratedMessage> {
-  final Int64 state;
-  final T value;
-  GetResponse(this.state, this.value);
+class AddResponse<T extends GeneratedMessage> {
+  final String id;
+  final Item<T> item;
+  final Future<void> future;
+  AddResponse(this.id, this.item, this.future);
 }
 
 class ItemAdapter<T extends GeneratedMessage>
@@ -355,4 +361,16 @@ class ItemAdapter<T extends GeneratedMessage>
     writer.writeList(buffer); // 4
     writer.writeList(overflow); // 5
   }
+}
+
+abstract class StoreAdapter<T extends GeneratedMessage> {
+  Future<StoreAdapterGetResponse<T>> get(String id);
+  Future<void> add(String id, T value);
+  Future<Payload_Response> edit(Payload_Request payload);
+}
+
+class StoreAdapterGetResponse<T extends GeneratedMessage> {
+  final Int64 state;
+  final T value;
+  StoreAdapterGetResponse(this.state, this.value);
 }
