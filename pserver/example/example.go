@@ -270,32 +270,12 @@ func Refresh(ctx context.Context, server *pserver.Server, t pserver.DocumentType
 
 var COMPANY = pserver.DocumentType{
 	Collection: "company",
-	Snapshot:   unpackSnapshot,
-	State:      unpackState,
 	Document:   &tests.Company{},
 }
 
 var PERSON = pserver.DocumentType{
 	Collection: "person",
-	Snapshot:   unpackSnapshot,
-	State:      unpackState,
 	Document:   &tests.Person{},
-}
-
-func unpackSnapshot(s *firestore.DocumentSnapshot) (*pserver.Snapshot, proto.Message, error) {
-	snap := &pserver.Snapshot{}
-	if err := s.DataTo(snap); err != nil {
-		return nil, nil, err
-	}
-	return snap, snap, nil
-}
-
-func unpackState(s *firestore.DocumentSnapshot) (*pserver.State, proto.Message, error) {
-	state := &pserver.State{}
-	if err := s.DataTo(state); err != nil {
-		return nil, nil, err
-	}
-	return state, state, nil
 }
 
 func mustJson(message proto.Message) string {

@@ -120,31 +120,12 @@ func (s *Server) DocumentExists(ctx context.Context, tx *firestore.Transaction, 
 	}
 }
 
-//func (s *Server) QuerySnapshot(ctx context.Context, tx *firestore.Transaction, t DocumentType, request string) (*firestore.DocumentRef, error) {
-//	// get by request id
-//	query := s.Firestore.Collection(t.Collection).Where(t.SnapshotFieldSelector("Request"), "==", request)
-//	var iter *firestore.DocumentIterator
-//	if tx == nil {
-//		iter = query.Documents(ctx)
-//	} else {
-//		iter = tx.Documents(query)
-//	}
-//	docs, err := iter.GetAll()
-//	if err != nil {
-//		return nil, fmt.Errorf("getting snapshot documents: %w", err)
-//	}
-//	switch {
-//	case len(docs) == 1:
-//		return docs[0].Ref, nil
-//	case len(docs) == 0:
-//		return nil, nil
-//	default:
-//		return nil, fmt.Errorf("found %d documents with same request %q", len(docs), request)
-//	}
-//}
-
 func (s *Server) UnpackState(doc *firestore.DocumentSnapshot, t DocumentType) (*State, *delta.Op, error) {
-	state, _, err := t.State(doc)
+	stateUnpacker := t.State
+	if stateUnpacker == nil {
+		stateUnpacker = unpackState
+	}
+	state, _, err := stateUnpacker(doc)
 	if err != nil {
 		return nil, nil, fmt.Errorf("unpacking state: %w", err)
 	}
@@ -172,8 +153,12 @@ func (s *Server) UnpackSnapshot(ctx context.Context, tx *firestore.Transaction, 
 	if err != nil {
 		return 0, nil, nil, fmt.Errorf("getting snapshot document: %w", err)
 	}
+	snapshotUnpacker := t.Snapshot
+	if snapshotUnpacker == nil {
+		snapshotUnpacker = unpackSnapshot
+	}
 	var serverSnapshot *Snapshot
-	serverSnapshot, snapshot, err = t.Snapshot(doc)
+	serverSnapshot, snapshot, err = snapshotUnpacker(doc)
 	if err != nil {
 		return 0, nil, nil, fmt.Errorf("unpacking snapshot: %w", err)
 	}
@@ -188,6 +173,22 @@ func (s *Server) UnpackSnapshot(ctx context.Context, tx *firestore.Transaction, 
 		}
 	}
 	return serverSnapshot.State, document, snapshot, nil
+}
+
+func unpackSnapshot(s *firestore.DocumentSnapshot) (*Snapshot, proto.Message, error) {
+	snap := &Snapshot{}
+	if err := s.DataTo(snap); err != nil {
+		return nil, nil, err
+	}
+	return snap, snap, nil
+}
+
+func unpackState(s *firestore.DocumentSnapshot) (*State, proto.Message, error) {
+	state := &State{}
+	if err := s.DataTo(state); err != nil {
+		return nil, nil, err
+	}
+	return state, state, nil
 }
 
 func (s *Server) Transform(ctx context.Context, tx *firestore.Transaction, t DocumentType, ref *firestore.DocumentRef, op2 *delta.Op, before, after int64) (state int64, op1x, op2x *delta.Op, err error) {
@@ -314,6 +315,7 @@ func (d DocumentType) SnapshotFieldSelector(name string) string {
 //}
 
 func Path(m proto.Message) string {
+	// TODO: use m.ProtoReflect().Descriptor().FullName() instead?
 	name := fmt.Sprintf("%T", m)
 	index := strings.LastIndex(name, ".")
 	return "/" + name[index+1:]
