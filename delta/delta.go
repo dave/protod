@@ -510,9 +510,7 @@ func getValueField(factory func() protoreflect.Value, current protoreflect.Value
 		}
 		return protoreflect.ValueOfString(sb.String())
 	case *Op_Message:
-		dynamicAny := MustUnmarshalAny(value.Message)
-		reflectMessage := proto1.MessageReflect(dynamicAny.Message)
-		return protoreflect.ValueOfMessage(reflectMessage)
+		return protoreflect.ValueOfMessage(MustUnmarshalAny(value.Message).ProtoReflect())
 	case *Op_Object:
 		return fromObject(factory, value.Object)
 	default:
@@ -528,9 +526,7 @@ func fromObject(factory func() protoreflect.Value, object *Object) protoreflect.
 	case *Object_Scalar:
 		return reflectValueOfScalar(value.Scalar)
 	case *Object_Message:
-		dynamicAny := MustUnmarshalAny(value.Message)
-		reflectMessage := proto1.MessageReflect(dynamicAny.Message)
-		return protoreflect.ValueOfMessage(reflectMessage)
+		return protoreflect.ValueOfMessage(MustUnmarshalAny(value.Message).ProtoReflect())
 	case *Object_List:
 		list := factory().List()
 		for _, o := range value.List.List {
@@ -988,17 +984,36 @@ func getLocation(m protoreflect.Message, loc []*Locator) (interface{}, func(prot
 	return current, setter
 }
 
+func MarshalAny(m proto.Message) (*anypb.Any, error) {
+	return ptypes.MarshalAny(proto1.MessageV1(m))
+}
+
+func UnmarshalAny(any *anypb.Any) (proto.Message, error) {
+	da := &ptypes.DynamicAny{}
+	err := ptypes.UnmarshalAny(any.ProtoReflect().Interface().(*anypb.Any), da)
+	if err != nil {
+		return nil, err
+	}
+	return proto1.MessageV2(da.Message), nil
+}
+
+func UnmarshalAnyInto(any *anypb.Any, m proto.Message) error {
+	if err := ptypes.UnmarshalAny(any.ProtoReflect().Interface().(*anypb.Any), proto1.MessageV1(m)); err != nil {
+		return err
+	}
+	return nil
+}
+
 func MustMarshalAny(m proto.Message) *anypb.Any {
-	a, err := ptypes.MarshalAny(proto1.MessageV1(m))
+	a, err := MarshalAny(m)
 	if err != nil {
 		panic(err)
 	}
 	return a
 }
 
-func MustUnmarshalAny(any *anypb.Any) *ptypes.DynamicAny {
-	da := &ptypes.DynamicAny{}
-	err := ptypes.UnmarshalAny(any.ProtoReflect().Interface().(*anypb.Any), da)
+func MustUnmarshalAny(any *anypb.Any) proto.Message {
+	da, err := UnmarshalAny(any)
 	if err != nil {
 		panic(err)
 	}
