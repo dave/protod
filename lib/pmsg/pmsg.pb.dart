@@ -12,8 +12,8 @@ import 'package:protobuf/protobuf.dart' as $pb;
 import '../google/protobuf/any.pb.dart' as $0;
 
 class Bundle extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Bundle', package: const $pb.PackageName('pserver'), createEmptyInstance: create)
-    ..m<$core.String, $0.Any>(1, 'messages', entryClassName: 'Bundle.MessagesEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OM, valueCreator: $0.Any.create, packageName: const $pb.PackageName('pserver'))
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Bundle', package: const $pb.PackageName('pmsg'), createEmptyInstance: create)
+    ..m<$core.String, $0.Any>(1, 'messages', entryClassName: 'Bundle.MessagesEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OM, valueCreator: $0.Any.create, packageName: const $pb.PackageName('pmsg'))
     ..hasRequiredFields = false
   ;
 

@@ -8,7 +8,7 @@
 const Bundle$json = const {
   '1': 'Bundle',
   '2': const [
-    const {'1': 'messages', '3': 1, '4': 3, '5': 11, '6': '.pserver.Bundle.MessagesEntry', '10': 'messages'},
+    const {'1': 'messages', '3': 1, '4': 3, '5': 11, '6': '.pmsg.Bundle.MessagesEntry', '10': 'messages'},
   ],
   '3': const [Bundle_MessagesEntry$json],
 };
