@@ -7,17 +7,22 @@ import "google/protobuf/any.proto";
 option go_package = "github.com/dave/protod/pstore;pstore";
 
 message Payload {
-  message Add {
-    message Request {
-      string documentType = 1;
-      string documentId = 2;
-      google.protobuf.Any value = 3;
-    }
-  }
+//  message Add {
+//    message Request {
+//      string documentType = 1;
+//      string documentId = 2;
+//      string stateId = 3; // unique id for the first state, should be a random string
+//      google.protobuf.Any value = 4;
+//    }
+//    message Response {
+//      int64 state = 1; // if document being added already exists, value will be set to the supplied value, however the state returned will be > 1
+//    }
+//  }
   message Get {
     message Request {
       string documentType = 1;
       string documentId = 2;
+      bool create = 3;
     }
     message Response {
       int64 state = 1;
@@ -28,9 +33,9 @@ message Payload {
     message Request {
       string documentType = 1;
       string documentId = 2;
-      string stateId = 3;
-      int64 state = 4; // state of the document that this op is acting on
-      delta.Op op = 5; // operation
+      string stateId = 3; // unique id for the new state, should be a random string
+      int64 state = 4;    // state of the document that this op is acting on
+      delta.Op op = 5;    // operation
     }
     message Response {
       int64 state = 1; // state of the document after the op from the client and the response op have been applied

@@ -7,21 +7,7 @@
 
 const Payload$json = const {
   '1': 'Payload',
-  '3': const [Payload_Add$json, Payload_Get$json, Payload_Edit$json, Payload_Refresh$json],
-};
-
-const Payload_Add$json = const {
-  '1': 'Add',
-  '3': const [Payload_Add_Request$json],
-};
-
-const Payload_Add_Request$json = const {
-  '1': 'Request',
-  '2': const [
-    const {'1': 'documentType', '3': 1, '4': 1, '5': 9, '10': 'documentType'},
-    const {'1': 'documentId', '3': 2, '4': 1, '5': 9, '10': 'documentId'},
-    const {'1': 'value', '3': 3, '4': 1, '5': 11, '6': '.google.protobuf.Any', '10': 'value'},
-  ],
+  '3': const [Payload_Get$json, Payload_Edit$json, Payload_Refresh$json],
 };
 
 const Payload_Get$json = const {
@@ -34,6 +20,7 @@ const Payload_Get_Request$json = const {
   '2': const [
     const {'1': 'documentType', '3': 1, '4': 1, '5': 9, '10': 'documentType'},
     const {'1': 'documentId', '3': 2, '4': 1, '5': 9, '10': 'documentId'},
+    const {'1': 'create', '3': 3, '4': 1, '5': 8, '10': 'create'},
   ],
 };
 

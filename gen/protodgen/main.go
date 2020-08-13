@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/dave/jennifer/jen"
+	"github.com/dave/protod/perr"
 	"github.com/yoheimuta/go-protoparser/v4"
 	"github.com/yoheimuta/go-protoparser/v4/parser"
 )
@@ -48,15 +49,15 @@ func run() error {
 		}
 
 		if err := filepath.Walk(s.protoRoot, s.scanFiles); err != nil {
-			return fmt.Errorf("scanFiles: %w", err)
+			return perr.Wrap(err, "scanFiles")
 		}
 
 		if err := s.scanMessages(); err != nil {
-			return fmt.Errorf("scanMessages: %w", err)
+			return perr.Wrap(err, "scanMessages")
 		}
 
 		if err := s.gen(); err != nil {
-			return fmt.Errorf("gen: %w", err)
+			return perr.Wrap(err, "gen")
 		}
 	}
 
@@ -70,11 +71,11 @@ func run() error {
 		}
 
 		if err := s.initScalars(); err != nil {
-			return fmt.Errorf("initScalars: %w", err)
+			return perr.Wrap(err, "initScalars")
 		}
 
 		if err := s.gen(); err != nil {
-			return fmt.Errorf("gen: %w", err)
+			return perr.Wrap(err, "gen")
 		}
 	}
 
@@ -141,13 +142,13 @@ func (s *state) initScalars() error {
 func (s *state) gen() error {
 	if s.goRoot != "" {
 		if err := s.genGo(); err != nil {
-			return fmt.Errorf("genGo: %w", err)
+			return perr.Wrap(err, "genGo")
 		}
 	}
 
 	if s.dartRoot != "" {
 		if err := s.genDart(); err != nil {
-			return fmt.Errorf("genDart: %w", err)
+			return perr.Wrap(err, "genDart")
 		}
 	}
 	return nil
@@ -178,13 +179,13 @@ func (s *state) scanFiles(fpath string, info os.FileInfo, err error) error {
 
 	reader, err := os.Open(fpath)
 	if err != nil {
-		return fmt.Errorf("failed to open %s, err %v\n", fpath, err)
+		return perr.Wrapf(err, "failed to open %q", fpath)
 	}
 	defer reader.Close()
 
 	parsedFile, err := protoparser.Parse(reader)
 	if err != nil {
-		return fmt.Errorf("failed to parse, err %v\n", err)
+		return perr.Wrap(err, "failed to parse")
 	}
 	var goPkgPath, goPkgName string
 	var pkg *parser.Package
@@ -203,7 +204,7 @@ func (s *state) scanFiles(fpath string, info os.FileInfo, err error) error {
 			if v.OptionName == "go_package" {
 				c, err := strconv.Unquote(v.Constant)
 				if err != nil {
-					return fmt.Errorf("unquoting go_package option: %w", err)
+					return perr.Wrap(err, "unquoting go_package option")
 				}
 				parts := strings.Split(c, ";")
 				if len(parts) == 1 {
@@ -409,7 +410,7 @@ func (s *state) dartImportPath(pathCurrent, pathTarget string) (string, error) {
 	}
 	rel, err := filepath.Rel(pathCurrent, pathTarget)
 	if err != nil {
-		return "", fmt.Errorf("rel in dartPath: %w", err)
+		return "", perr.Wrap(err, "rel in dartPath")
 	}
 	return rel, nil
 }
@@ -454,7 +455,7 @@ func (s *state) parseField(v parser.Visitee, typ *Type, file *File, pkg *Package
 			}
 			fieldNumber, err := strconv.Atoi(b.FieldNumber)
 			if err != nil {
-				return nil, fmt.Errorf("parsing field number: %w", err)
+				return nil, perr.Wrap(err, "parsing field number")
 			}
 			field.Number = fieldNumber
 		case *parser.MapField:
@@ -464,7 +465,7 @@ func (s *state) parseField(v parser.Visitee, typ *Type, file *File, pkg *Package
 			field.CollectionType = MAP
 			fieldNumber, err := strconv.Atoi(b.FieldNumber)
 			if err != nil {
-				return nil, fmt.Errorf("parsing field number: %w", err)
+				return nil, perr.Wrap(err, "parsing field number")
 			}
 			field.Number = fieldNumber
 			field.Key = b.KeyType
@@ -512,7 +513,7 @@ func (s *state) parseField(v parser.Visitee, typ *Type, file *File, pkg *Package
 			field.CollectionType = BASE
 			fieldNumber, err := strconv.Atoi(b.FieldNumber)
 			if err != nil {
-				return nil, fmt.Errorf("parsing field number: %w", err)
+				return nil, perr.Wrap(err, "parsing field number")
 			}
 			field.Number = fieldNumber
 		}

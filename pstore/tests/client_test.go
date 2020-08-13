@@ -13,7 +13,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dave/protod/delta"
 	"github.com/dave/protod/delta/tests"
+	"github.com/dave/protod/perr"
+	"github.com/dave/protod/pstore"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -31,7 +34,7 @@ func start(ctx context.Context) *server {
 	}
 	srv := &http.Server{Addr: ":" + port}
 
-	app := &App{Server: New(ctx)}
+	app := &App{Server: New(ctx, PERSON, COMPANY)}
 	http.HandleFunc("/", app.indexHandler)
 
 	wg := &sync.WaitGroup{}
@@ -73,34 +76,44 @@ func TestClient(t *testing.T) {
 	prefix := "http://localhost:8080"
 
 	document := &tests.Person{Name: "dave"}
-	id := uniqueID()
+	id := pstore.NewDocumentID()
 
-	addResponse := req(prefix, &Person_Add_Response{}, &Person_Add_Request{
-		Id:     id,
-		Person: document,
-	}).(*Person_Add_Response)
+	addResponse := req(prefix, &Person_Edit_Response{}, &Person_Edit_Request{
+		DocumentId: string(id),
+		StateId:    string(pstore.NewStateID()),
+		State:      0,
+		Op:         delta.Root(document),
+	}).(*Person_Edit_Response)
 
 	if addResponse.Err != "" {
 		t.Fatal(addResponse.Err)
 	}
+	if addResponse.State != 1 {
+		t.Fatal("unexpected state")
+	}
+	if addResponse.Op != nil {
+		t.Fatal("unexpected op")
+	}
 
 	getResponse := req(prefix, &Person_Get_Response{}, &Person_Get_Request{
-		Id: id,
+		DocumentId: string(id),
 	}).(*Person_Get_Response)
 
 	if getResponse.Err != "" {
 		t.Fatal(getResponse.Err)
 	}
-
+	if getResponse.State != 1 {
+		t.Fatal("unexpected state")
+	}
 	if getResponse.Person.Name != "dave" {
 		t.Fatal("document not received correctly in get")
 	}
 
 	editResponse := req(prefix, &Person_Edit_Response{}, &Person_Edit_Request{
-		Id:       uniqueID(),
-		Document: id,
-		State:    1,
-		Op:       tests.Op().Person().Name().Edit("dave", "dave foo"),
+		StateId:    string(pstore.NewStateID()),
+		DocumentId: string(id),
+		State:      1,
+		Op:         tests.Op().Person().Name().Edit("dave", "dave foo"),
 	}).(*Person_Edit_Response)
 
 	if editResponse.Err != "" {
@@ -131,20 +144,20 @@ func req(prefix string, response, message proto.Message) proto.Message {
 		var messageBytes []byte
 		messageBytes, err = proto.Marshal(message)
 		if err != nil {
-			err = fmt.Errorf("marshaling message: %w", err)
+			err = perr.Wrap(err, "marshaling message")
 			continue // <- restart the loop or exit when retry count exceeded
 		}
 		buf := bytes.NewBuffer(messageBytes)
 		var resp *http.Response
 		resp, err = http.Post(path, "application/protobuf", buf)
 		if err != nil {
-			err = fmt.Errorf("http post: %w", err)
+			err = perr.Wrap(err, "http post")
 			continue // <- restart the loop or exit when retry count exceeded
 		}
 		var body []byte
 		body, err = ioutil.ReadAll(resp.Body)
 		if err != nil {
-			err = fmt.Errorf("reading body: %w", err)
+			err = perr.Wrap(err, "reading body")
 			continue // <- restart the loop or exit when retry count exceeded
 		}
 		// TODO: special handling for 503 busy?
@@ -157,7 +170,7 @@ func req(prefix string, response, message proto.Message) proto.Message {
 		}
 		err = proto.Unmarshal(body, response)
 		if err != nil {
-			err = fmt.Errorf("unmarshaling response: %w", err)
+			err = perr.Wrap(err, "unmarshaling response")
 			continue // <- restart the loop or exit when retry count exceeded
 		}
 		//if i > 0 {

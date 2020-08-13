@@ -22,13 +22,13 @@ const RANDOM_MAX_OPS = 10
 func TestRandom(t *testing.T) {
 	ctx := context.Background()
 	resetDatabase(t)
-	server := New(ctx)
+	server := New(ctx, PERSON, COMPANY)
 	defer func() { _ = server.Close() }()
 	states := map[int64]proto.Message{}
 	statesMutex := &sync.Mutex{}
 
-	id := uniqueID()
-	if err := pstore.Add(ctx, server, PERSON, id, &tests.Person{Name: "a"}); err != nil {
+	id := pstore.NewDocumentID()
+	if _, err := pstore.Add(ctx, server, PersonTypeName, id, pstore.NewStateID(), &tests.Person{Name: "a"}); err != nil {
 		t.Fatal(err)
 	}
 	wg := &sync.WaitGroup{}
@@ -45,7 +45,7 @@ func TestRandom(t *testing.T) {
 type RandomUser struct {
 	user     int
 	t        *testing.T
-	id       string
+	id       pstore.DocumentId
 	document proto.Message
 	state    int64
 	states   map[int64]proto.Message
@@ -56,7 +56,7 @@ type RandomUser struct {
 	server   *pserver.Server
 }
 
-func (u *RandomUser) Run(id string) {
+func (u *RandomUser) Run(id pstore.DocumentId) {
 	//time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond)
 	defer u.wg.Done()
 	u.Get(id)
@@ -70,10 +70,10 @@ func (u *RandomUser) Run(id string) {
 	}
 }
 
-func (u *RandomUser) Get(id string) {
+func (u *RandomUser) Get(id pstore.DocumentId) {
 	u.id = id
 	var err error
-	u.state, u.document, err = pstore.Get(context.Background(), u.server, PERSON, id)
+	u.state, u.document, err = pstore.Get(context.Background(), u.server, PersonTypeName, id)
 	if err != nil {
 		u.t.Fatal(err)
 	}
@@ -94,7 +94,7 @@ func (u *RandomUser) Edit() {
 	var opx *delta.Op
 	f := func() error {
 		var err error
-		state, opx, err = pstore.Edit(context.Background(), u.server, PERSON, uniqueID(), u.id, u.state, delta.Compound(ops...))
+		state, opx, err = pstore.Edit(context.Background(), u.server, PersonTypeName, u.id, pstore.NewStateID(), u.state, delta.Compound(ops...))
 		return err
 	}
 	err := repeatOnBusy(f)
@@ -128,7 +128,7 @@ func (u *RandomUser) Edit() {
 }
 
 func (u *RandomUser) Refresh() {
-	state, op, err := pstore.Edit(context.Background(), u.server, PERSON, uniqueID(), u.id, u.state, nil)
+	state, op, err := pstore.Edit(context.Background(), u.server, PersonTypeName, u.id, pstore.NewStateID(), u.state, nil)
 	if err != nil {
 		u.t.Fatal(err)
 	}
@@ -145,7 +145,7 @@ func repeatOnBusy(f func() error) error {
 			delay := 500 + rand.Intn(500*(1<<i))
 			time.Sleep(time.Duration(delay) * time.Millisecond)
 		}
-		if err := f(); err != pserver.ServerBusy {
+		if err := f(); !pserver.IsBusyError(err) {
 			return err
 		}
 	}

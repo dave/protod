@@ -8,18 +8,16 @@
 const Snapshot$json = const {
   '1': 'Snapshot',
   '2': const [
-    const {'1': 'id', '3': 1, '4': 1, '5': 9, '10': 'id'},
-    const {'1': 'state', '3': 2, '4': 1, '5': 3, '10': 'state'},
-    const {'1': 'value', '3': 3, '4': 1, '5': 11, '6': '.pserver.Blob', '10': 'value'},
+    const {'1': 'state', '3': 1, '4': 1, '5': 3, '10': 'state'},
+    const {'1': 'value', '3': 2, '4': 1, '5': 11, '6': '.pserver.Blob', '10': 'value'},
   ],
 };
 
 const State$json = const {
   '1': 'State',
   '2': const [
-    const {'1': 'id', '3': 1, '4': 1, '5': 9, '10': 'id'},
-    const {'1': 'state', '3': 2, '4': 1, '5': 3, '10': 'state'},
-    const {'1': 'op', '3': 3, '4': 1, '5': 11, '6': '.pserver.Blob', '10': 'op'},
+    const {'1': 'state', '3': 1, '4': 1, '5': 3, '10': 'state'},
+    const {'1': 'op', '3': 2, '4': 1, '5': 11, '6': '.pserver.Blob', '10': 'op'},
   ],
 };
 

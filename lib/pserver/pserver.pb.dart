@@ -12,9 +12,8 @@ import 'package:protobuf/protobuf.dart' as $pb;
 
 class Snapshot extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('Snapshot', package: const $pb.PackageName('pserver'), createEmptyInstance: create)
-    ..aOS(1, 'id')
-    ..aInt64(2, 'state')
-    ..aOM<Blob>(3, 'value', subBuilder: Blob.create)
+    ..aInt64(1, 'state')
+    ..aOM<Blob>(2, 'value', subBuilder: Blob.create)
     ..hasRequiredFields = false
   ;
 
@@ -34,40 +33,30 @@ class Snapshot extends $pb.GeneratedMessage {
   static Snapshot _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.String get id => $_getSZ(0);
+  $fixnum.Int64 get state => $_getI64(0);
   @$pb.TagNumber(1)
-  set id($core.String v) { $_setString(0, v); }
+  set state($fixnum.Int64 v) { $_setInt64(0, v); }
   @$pb.TagNumber(1)
-  $core.bool hasId() => $_has(0);
+  $core.bool hasState() => $_has(0);
   @$pb.TagNumber(1)
-  void clearId() => clearField(1);
+  void clearState() => clearField(1);
 
   @$pb.TagNumber(2)
-  $fixnum.Int64 get state => $_getI64(1);
+  Blob get value => $_getN(1);
   @$pb.TagNumber(2)
-  set state($fixnum.Int64 v) { $_setInt64(1, v); }
+  set value(Blob v) { setField(2, v); }
   @$pb.TagNumber(2)
-  $core.bool hasState() => $_has(1);
+  $core.bool hasValue() => $_has(1);
   @$pb.TagNumber(2)
-  void clearState() => clearField(2);
-
-  @$pb.TagNumber(3)
-  Blob get value => $_getN(2);
-  @$pb.TagNumber(3)
-  set value(Blob v) { setField(3, v); }
-  @$pb.TagNumber(3)
-  $core.bool hasValue() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearValue() => clearField(3);
-  @$pb.TagNumber(3)
-  Blob ensureValue() => $_ensure(2);
+  void clearValue() => clearField(2);
+  @$pb.TagNumber(2)
+  Blob ensureValue() => $_ensure(1);
 }
 
 class State extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('State', package: const $pb.PackageName('pserver'), createEmptyInstance: create)
-    ..aOS(1, 'id')
-    ..aInt64(2, 'state')
-    ..aOM<Blob>(3, 'op', subBuilder: Blob.create)
+    ..aInt64(1, 'state')
+    ..aOM<Blob>(2, 'op', subBuilder: Blob.create)
     ..hasRequiredFields = false
   ;
 
@@ -87,33 +76,24 @@ class State extends $pb.GeneratedMessage {
   static State _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.String get id => $_getSZ(0);
+  $fixnum.Int64 get state => $_getI64(0);
   @$pb.TagNumber(1)
-  set id($core.String v) { $_setString(0, v); }
+  set state($fixnum.Int64 v) { $_setInt64(0, v); }
   @$pb.TagNumber(1)
-  $core.bool hasId() => $_has(0);
+  $core.bool hasState() => $_has(0);
   @$pb.TagNumber(1)
-  void clearId() => clearField(1);
+  void clearState() => clearField(1);
 
   @$pb.TagNumber(2)
-  $fixnum.Int64 get state => $_getI64(1);
+  Blob get op => $_getN(1);
   @$pb.TagNumber(2)
-  set state($fixnum.Int64 v) { $_setInt64(1, v); }
+  set op(Blob v) { setField(2, v); }
   @$pb.TagNumber(2)
-  $core.bool hasState() => $_has(1);
+  $core.bool hasOp() => $_has(1);
   @$pb.TagNumber(2)
-  void clearState() => clearField(2);
-
-  @$pb.TagNumber(3)
-  Blob get op => $_getN(2);
-  @$pb.TagNumber(3)
-  set op(Blob v) { setField(3, v); }
-  @$pb.TagNumber(3)
-  $core.bool hasOp() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearOp() => clearField(3);
-  @$pb.TagNumber(3)
-  Blob ensureOp() => $_ensure(2);
+  void clearOp() => clearField(2);
+  @$pb.TagNumber(2)
+  Blob ensureOp() => $_ensure(1);
 }
 
 class Blob extends $pb.GeneratedMessage {

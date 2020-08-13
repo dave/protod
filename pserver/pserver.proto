@@ -7,16 +7,14 @@ option go_package = "github.com/dave/protod/pserver;pserver";
 // is NOT updated on every state change. To get the document in it's latest state, all future
 // operations must be applied to this value.
 message Snapshot {
-  string id = 1;   // document id
-  int64 state = 2; // state of this document
-  Blob value = 3;  // marshaled protobuf
+  int64 state = 1; // state of this document
+  Blob value = 2;  // marshaled protobuf
 }
 
 // State is a single state change that increments the state counter by one.
 message State {
-  string id = 1;   // document id
-  int64 state = 2; // state of this document after the this op
-  Blob op = 3;     // the operation that was applied to change the state from (state-1)->state
+  int64 state = 1; // state of this document after the this op
+  Blob op = 2;     // the operation that was applied to change the state from (state-1)->state
 }
 
 message Blob {

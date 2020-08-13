@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"sync/atomic"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/firestore"
 	"github.com/dave/protod/delta"
+	"github.com/dave/protod/perr"
 	"google.golang.org/api/iterator"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/memcache"
@@ -88,17 +89,42 @@ func (s *Server) ToBlob(b []byte) (*Blob, error) {
 func (s *Server) MarshalToBlob(m proto.Message) (*Blob, error) {
 	b, err := proto.Marshal(m)
 	if err != nil {
-		return nil, fmt.Errorf("marshaling: %w", err)
+		return nil, perr.Wrap(err, "marshaling")
 	}
 	return &Blob{Value: b}, nil
 }
 
-func (s *Server) Changes(ctx context.Context, tx *firestore.Transaction, t *DocumentType, ref *firestore.DocumentRef, before, after int64, f func(*delta.Op) error) (state int64, err error) {
-	query := ref.Collection(STATES_COLLECTION).Where(t.StateFieldSelector("State"), ">", before)
-	if after != 0 {
-		query = query.Where(t.StateFieldSelector("State"), "<", after)
+func (s *Server) Latest(ctx context.Context, tx *firestore.Transaction, t *DocumentType, ref *firestore.DocumentRef) (state int64, err error) {
+	query := ref.Collection(STATES_COLLECTION).OrderBy(t.StateQueryFieldPath(), firestore.Desc).Limit(1)
+	var docs []*firestore.DocumentSnapshot
+	if tx == nil {
+		docs, err = query.Documents(s.FirestoreContext(ctx)).GetAll()
+	} else {
+		docs, err = tx.Documents(query).GetAll()
 	}
-	query = query.OrderBy(t.StateFieldSelector("State"), firestore.Asc)
+	if err != nil {
+		return 0, err
+	}
+	if len(docs) == 0 {
+		return 0, nil
+	}
+	stateMessage := t.NewState()
+	if err := docs[0].DataTo(stateMessage); err != nil {
+		return 0, err
+	}
+	stateUnpacked, err := t.UnpackStateFunc(stateMessage)
+	if err != nil {
+		return 0, err
+	}
+	return stateUnpacked.State, nil
+}
+
+func (s *Server) Changes(ctx context.Context, tx *firestore.Transaction, t *DocumentType, ref *firestore.DocumentRef, before, after int64, f func(*delta.Op) error) (state int64, err error) {
+	query := ref.Collection(STATES_COLLECTION).Where(t.StateQueryFieldPath(), ">", before)
+	if after != 0 {
+		query = query.Where(t.StateQueryFieldPath(), "<", after)
+	}
+	query = query.OrderBy(t.StateQueryFieldPath(), firestore.Asc)
 	var iter *firestore.DocumentIterator
 	if tx == nil {
 		iter = query.Documents(s.FirestoreContext(ctx))
@@ -112,11 +138,11 @@ func (s *Server) Changes(ctx context.Context, tx *firestore.Transaction, t *Docu
 			break
 		}
 		if err != nil {
-			return 0, fmt.Errorf("iterating state data: %w", err)
+			return 0, perr.Wrap(err, "iterating state data")
 		}
 		state, op, err := s.UnpackState(stateDoc, t)
 		if err != nil {
-			return 0, fmt.Errorf("unpacking state data: %w", err)
+			return 0, perr.Wrap(err, "unpacking state data")
 		}
 		if state.State != current+1 {
 			return 0, fmt.Errorf("can't apply op (state %d) to state %d", state.State, current)
@@ -129,15 +155,14 @@ func (s *Server) Changes(ctx context.Context, tx *firestore.Transaction, t *Docu
 	return current, nil
 }
 
-func (s *Server) QueryState(ctx context.Context, tx *firestore.Transaction, documentRef *firestore.DocumentRef, id string) (*firestore.DocumentSnapshot, error) {
+func (s *Server) QueryState(ctx context.Context, tx *firestore.Transaction, stateRef *firestore.DocumentRef) (*firestore.DocumentSnapshot, error) {
 	// get by request id
-	ref := documentRef.Collection(STATES_COLLECTION).Doc(id)
 	var doc *firestore.DocumentSnapshot
 	var err error
 	if tx == nil {
-		doc, err = ref.Get(s.FirestoreContext(ctx))
+		doc, err = stateRef.Get(s.FirestoreContext(ctx))
 	} else {
-		doc, err = tx.Get(ref)
+		doc, err = tx.Get(stateRef)
 	}
 	switch {
 	case status.Code(err) == codes.NotFound:
@@ -166,27 +191,27 @@ func (s *Server) DocumentExists(ctx context.Context, tx *firestore.Transaction, 
 	}
 }
 
-func (s *Server) UnpackState(doc *firestore.DocumentSnapshot, t *DocumentType) (*State, *delta.Op, error) {
-	stateUnpacker := t.UnpackState
-	if stateUnpacker == nil {
-		stateUnpacker = unpackState
+func (s *Server) UnpackState(doc *firestore.DocumentSnapshot, t *DocumentType) (data *State, op *delta.Op, err error) {
+	stateMessage := t.NewState()
+	if err := doc.DataTo(stateMessage); err != nil {
+		return nil, nil, perr.Wrap(err, "unpacking state document")
 	}
-	state, _, err := stateUnpacker(doc)
+	data, err = t.UnpackStateFunc(stateMessage)
 	if err != nil {
-		return nil, nil, fmt.Errorf("unpacking state: %w", err)
+		return nil, nil, perr.Wrap(err, "unpacking state message")
 	}
-	opBytes, err := s.FromBlob(state.Op)
+	opBytes, err := s.FromBlob(data.Op)
 	if err != nil {
-		return nil, nil, fmt.Errorf("getting op blob: %w", err)
+		return nil, nil, perr.Wrap(err, "getting op blob")
 	}
 	if len(opBytes) == 0 {
-		return state, nil, nil
+		return data, nil, nil
 	}
-	op := &delta.Op{}
+	op = &delta.Op{}
 	if err := proto.Unmarshal(opBytes, op); err != nil {
-		return nil, nil, fmt.Errorf("unmarshaling op: %w", err)
+		return nil, nil, perr.Wrap(err, "unmarshaling op")
 	}
-	return state, op, nil
+	return data, op, nil
 }
 
 func (s *Server) UnpackSnapshot(ctx context.Context, tx *firestore.Transaction, t *DocumentType, ref *firestore.DocumentRef) (document proto.Message, data *Snapshot, snapshot proto.Message, err error) {
@@ -196,52 +221,31 @@ func (s *Server) UnpackSnapshot(ctx context.Context, tx *firestore.Transaction, 
 	} else {
 		doc, err = tx.Get(ref)
 	}
-	if err != nil {
-		return nil, nil, nil, fmt.Errorf("getting snapshot document: %w", err)
+	switch {
+	case status.Code(err) == codes.NotFound:
+		return nil, nil, nil, err
+	case err != nil:
+		return nil, nil, nil, perr.Wrap(err, "getting snapshot document")
 	}
-	snapshotUnpacker := t.UnpackSnapshot
-	if snapshotUnpacker == nil {
-		snapshotUnpacker = unpackSnapshot
+	snapshot = t.NewSnapshot()
+	if err := doc.DataTo(snapshot); err != nil {
+		return nil, nil, nil, perr.Wrap(err, "unpacking snapshot")
 	}
-	data, snapshot, err = snapshotUnpacker(doc)
+	data, err = t.UnpackSnapshotFunc(snapshot)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("unpacking snapshot: %w", err)
+		return nil, nil, nil, perr.Wrap(err, "unpacking snapshot")
 	}
 	b, err := s.FromBlob(data.Value)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("getting snapshot value from blob: %w", err)
+		return nil, nil, nil, perr.Wrap(err, "getting snapshot value from blob")
 	}
-	document = t.Document.ProtoReflect().New().Interface()
+	document = t.NewDocument()
 	if len(b) > 0 {
 		if err := proto.Unmarshal(b, document); err != nil {
-			return nil, nil, nil, fmt.Errorf("unmarshaling value: %w", err)
+			return nil, nil, nil, perr.Wrap(err, "unmarshaling value")
 		}
 	}
 	return document, data, snapshot, nil
-}
-
-func packSnapshot(s *Snapshot) (proto.Message, error) {
-	return s, nil
-}
-
-func unpackSnapshot(s *firestore.DocumentSnapshot) (*Snapshot, proto.Message, error) {
-	snap := &Snapshot{}
-	if err := s.DataTo(snap); err != nil {
-		return nil, nil, err
-	}
-	return snap, snap, nil
-}
-
-func packState(s *State) (proto.Message, error) {
-	return s, nil
-}
-
-func unpackState(s *firestore.DocumentSnapshot) (*State, proto.Message, error) {
-	state := &State{}
-	if err := s.DataTo(state); err != nil {
-		return nil, nil, err
-	}
-	return state, state, nil
 }
 
 func (s *Server) Transform(ctx context.Context, tx *firestore.Transaction, t *DocumentType, ref *firestore.DocumentRef, op2 *delta.Op, before, after int64) (state int64, op1x, op2x *delta.Op, err error) {
@@ -274,24 +278,57 @@ func (s *Server) Transform(ctx context.Context, tx *firestore.Transaction, t *Do
 	op1 := delta.Compound(ops...)
 	op1x, op2x, err = delta.Transform(op1, op2, true)
 	if err != nil {
-		return 0, nil, nil, fmt.Errorf("transforming: %w", err)
+		return 0, nil, nil, perr.Wrap(err, "transforming")
 	}
 	return state, op1x, op2x, nil
 }
 
+// DocumentType defines a type of document stored in pserver. All fields are optional except Document.
 type DocumentType struct {
-	Document       proto.Message
-	PackSnapshot   func(ctx context.Context, data *Snapshot, old proto.Message, document proto.Message) (proto.Message, error)
-	PackState      func(ctx context.Context, data *State) (proto.Message, error)
-	UnpackSnapshot func(*firestore.DocumentSnapshot) (*Snapshot, proto.Message, error)
-	UnpackState    func(*firestore.DocumentSnapshot) (*State, proto.Message, error)
-	Collection     string // default if empty: the full type name of the document is used.
-	StateField     string // default if empty: no field
-	SnapshotField  string // default if empty: no field
-	PreAdd         func(ctx context.Context, server *Server, id string) error
-	OnAdd          func(ctx context.Context, server *Server, tx *firestore.Transaction, id string) error
-	PreEdit        func(ctx context.Context, server *Server, id string) error
-	OnEdit         func(ctx context.Context, server *Server, tx *firestore.Transaction, id string) error
+	Document        proto.Message
+	Snapshot        proto.Message
+	State           proto.Message
+	PackSnapshot    func(ctx context.Context, data *Snapshot, old proto.Message, document proto.Message) (proto.Message, error)
+	PackState       func(ctx context.Context, data *State) (proto.Message, error)
+	StateQueryField string // If a custom state is returned by PackState, the query path of the "State" field must be specified here - e.g. "Value.State".
+	UnpackSnapshot  func(proto.Message) (*Snapshot, error)
+	UnpackState     func(proto.Message) (*State, error)
+	Collection      string // default if empty: the full type name of the document is used.
+	OnAdd           func(ctx context.Context, server *Server, tx *firestore.Transaction, id string) error
+	OnEdit          func(ctx context.Context, server *Server, tx *firestore.Transaction, id string) error
+	OnGet           func(ctx context.Context, server *Server, id string) error
+}
+
+func (d DocumentType) Type() string {
+	return string(d.Document.ProtoReflect().Descriptor().FullName())
+}
+
+func (d DocumentType) PackSnapshotFunc(ctx context.Context, data *Snapshot, old proto.Message, document proto.Message) (proto.Message, error) {
+	if d.PackSnapshot == nil {
+		return data, nil
+	}
+	return d.PackSnapshot(ctx, data, old, document)
+}
+
+func (d DocumentType) PackStateFunc(ctx context.Context, data *State) (proto.Message, error) {
+	if d.PackState == nil {
+		return data, nil
+	}
+	return d.PackState(ctx, data)
+}
+
+func (d DocumentType) UnpackSnapshotFunc(snap proto.Message) (*Snapshot, error) {
+	if d.UnpackSnapshot == nil {
+		return snap.(*Snapshot), nil
+	}
+	return d.UnpackSnapshot(snap)
+}
+
+func (d DocumentType) UnpackStateFunc(state proto.Message) (*State, error) {
+	if d.UnpackState == nil {
+		return state.(*State), nil
+	}
+	return d.UnpackState(state)
 }
 
 func (d DocumentType) CollectionName() string {
@@ -301,28 +338,42 @@ func (d DocumentType) CollectionName() string {
 	return d.Collection
 }
 
-func (d DocumentType) StateFieldSelector(name string) string {
-	if d.StateField == "" {
-		return name
-	}
-	return fmt.Sprintf("%s.%s", d.StateField, name)
+func (d DocumentType) NewDocument() proto.Message {
+	return d.Document.ProtoReflect().New().Interface()
 }
 
-func (d DocumentType) SnapshotFieldSelector(name string) string {
-	if d.SnapshotField == "" {
-		return name
+func (d DocumentType) NewSnapshot() proto.Message {
+	if d.Snapshot == nil {
+		return &Snapshot{}
 	}
-	return fmt.Sprintf("%s.%s", d.SnapshotField, name)
+	return d.Snapshot.ProtoReflect().New().Interface()
+}
+
+func (d DocumentType) NewState() proto.Message {
+	if d.State == nil {
+		return &State{}
+	}
+	return d.State.ProtoReflect().New().Interface()
+}
+
+func (d DocumentType) StateQueryFieldPath() string {
+	if d.StateQueryField == "" {
+		return "State"
+	}
+	return d.StateQueryField
 }
 
 // for locking with test server
-var locker uint32 = 0
+var lock = &sync.Map{}
+
+//const GLOBAL_LOCK_KEY = "key"
 
 func Lock(ctx context.Context, key string, f func() error) (returnedError error) {
 	requestLock := func() error {
 
 		if !appengine.IsAppEngine() {
-			if !atomic.CompareAndSwapUint32(&locker, 0, 1) {
+			//if _, loaded := lock.LoadOrStore(GLOBAL_LOCK_KEY, 1); loaded {
+			if _, loaded := lock.LoadOrStore(key, 1); loaded {
 				return ServerBusy
 			}
 			return nil
@@ -348,7 +399,8 @@ func Lock(ctx context.Context, key string, f func() error) (returnedError error)
 	releaseLock := func() error {
 
 		if !appengine.IsAppEngine() {
-			atomic.StoreUint32(&locker, 0)
+			lock.Delete(key)
+			//lock.Delete(GLOBAL_LOCK_KEY)
 			return nil
 		}
 
@@ -377,3 +429,10 @@ func Lock(ctx context.Context, key string, f func() error) (returnedError error)
 
 var PathNotFound = errors.New("path not found")
 var ServerBusy = errors.New("server busy")
+
+func IsBusyError(err error) bool {
+	return err == ServerBusy ||
+		err == context.DeadlineExceeded ||
+		status.Code(err) == codes.Aborted ||
+		status.Code(err) == codes.DeadlineExceeded
+}

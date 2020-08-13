@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
+	"github.com/dave/protod/perr"
 	"github.com/dave/protod/pserver"
 	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2"
 	"google.golang.org/protobuf/proto"
@@ -14,12 +15,12 @@ func Queue(ctx context.Context, s *pserver.Server, message proto.Message) (*task
 
 	client, err := cloudtasks.NewClient(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("getting new cloudtasks client: %w", err)
+		return nil, perr.Wrap(err, "getting new cloudtasks client")
 	}
 
 	body, err := proto.Marshal(message)
 	if err != nil {
-		return nil, fmt.Errorf("marshaling refresh message: %w", err)
+		return nil, perr.Wrap(err, "marshaling refresh message")
 	}
 
 	req := &taskspb.CreateTaskRequest{
@@ -38,7 +39,7 @@ func Queue(ctx context.Context, s *pserver.Server, message proto.Message) (*task
 
 	task, err := client.CreateTask(ctx, req)
 	if err != nil {
-		return nil, fmt.Errorf("creating task: %v", err)
+		return nil, perr.Wrap(err, "creating task")
 	}
 
 	return task, nil

@@ -10,6 +10,7 @@ import (
 	"github.com/dave/protod/delta"
 	"github.com/dave/protod/delta/randop"
 	"github.com/dave/protod/delta/tests"
+	"github.com/dave/protod/pstore"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -28,42 +29,32 @@ func TestGaeRandom(t *testing.T) {
 	}
 
 	prefix := "https://pserver-testing.nw.r.appspot.com"
-	docStates := map[string]map[int64]proto.Message{}
+	docStates := map[pstore.DocumentId]map[int64]proto.Message{}
 
 	count = 0
 	elapsed = 0
 	startTime = time.Now().UnixNano()
 	mutex := &sync.Mutex{}
 
-	var docs []string
+	var docs []pstore.DocumentId
 	for i := 0; i < 5; i++ {
-		id := uniqueID()
-		resp := req(prefix, &Person_Add_Response{}, &Person_Add_Request{
-			Id:     id,
-			Person: &tests.Person{Name: "dave"},
-		}).(*Person_Add_Response)
+		documentId := pstore.NewDocumentID()
+		stateId := pstore.NewStateID()
+		resp := req(prefix, &Person_Edit_Response{}, &Person_Edit_Request{
+			DocumentId: string(documentId),
+			StateId:    string(stateId),
+			State:      0,
+			Op:         delta.Root(&tests.Person{Name: "dave"}),
+		}).(*Person_Edit_Response)
 		if resp.Err != "" {
 			t.Fatal(resp.Err)
 		}
-		docs = append(docs, id)
-
-		//id := resp.Id
-		fmt.Println(id)
+		docs = append(docs, documentId)
+		fmt.Println(documentId)
 	}
-	//docs := []string{
-	//	"jGCmF29WkHFE785IgPCL", // 300k edits
-	//	"VVFJQFCXBe04KvF5eivD",
-	//	"QvLR2ylyB4gEwnb7gINP",
-	//	//"3Y8Tsmo91DkpvWQAgYdb",
-	//	//"f0DFGUIfTvoermX92WtS",
-	//	//"HNEHMuhbBr8mVcyFSLx7",
-	//}
-
 	for _, id := range docs {
 		docStates[id] = map[int64]proto.Message{}
 	}
-	//id := "jGCmF29WkHFE785IgPCL"
-	//fmt.Println(id)
 	wg := &sync.WaitGroup{}
 	users := 10
 	for i := 1; i < users; i++ {
@@ -78,7 +69,7 @@ func TestGaeRandom(t *testing.T) {
 type User struct {
 	user     int
 	t        *testing.T
-	id       string
+	id       pstore.DocumentId
 	document proto.Message
 	state    int64
 	states   map[int64]proto.Message
@@ -87,7 +78,7 @@ type User struct {
 	prefix   string
 }
 
-func (u *User) Run(id string) {
+func (u *User) Run(id pstore.DocumentId) {
 	defer u.wg.Done()
 	time.Sleep(time.Duration(rand.Intn(5000)) * time.Millisecond)
 	u.Get(id)
@@ -99,10 +90,10 @@ func (u *User) Run(id string) {
 	}
 }
 
-func (u *User) Get(id string) {
+func (u *User) Get(id pstore.DocumentId) {
 	u.id = id
 	resp := req(u.prefix, &Person_Get_Response{}, &Person_Get_Request{
-		Id: id,
+		DocumentId: string(id),
 	}).(*Person_Get_Response)
 	if resp.Err != "" {
 		u.t.Fatal(resp.Err)
@@ -125,10 +116,10 @@ func (u *User) Edit() {
 	}
 	op := delta.Compound(ops...)
 	resp := req(u.prefix, &Person_Edit_Response{}, &Person_Edit_Request{
-		Id:       uniqueID(),
-		Document: u.id,
-		State:    u.state,
-		Op:       op,
+		DocumentId: string(u.id),
+		StateId:    string(pstore.NewStateID()),
+		State:      u.state,
+		Op:         op,
 	}).(*Person_Edit_Response)
 	if resp.Err != "" {
 		u.t.Fatal(resp.Err)

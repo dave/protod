@@ -13,84 +13,11 @@ import 'package:protobuf/protobuf.dart' as $pb;
 import '../google/protobuf/any.pb.dart' as $0;
 import '../delta/delta.pb.dart' as $1;
 
-class Payload_Add_Request extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Payload.Add.Request', package: const $pb.PackageName('pstore'), createEmptyInstance: create)
-    ..aOS(1, 'documentType', protoName: 'documentType')
-    ..aOS(2, 'documentId', protoName: 'documentId')
-    ..aOM<$0.Any>(3, 'value', subBuilder: $0.Any.create)
-    ..hasRequiredFields = false
-  ;
-
-  Payload_Add_Request._() : super();
-  factory Payload_Add_Request() => create();
-  factory Payload_Add_Request.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory Payload_Add_Request.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
-  Payload_Add_Request clone() => Payload_Add_Request()..mergeFromMessage(this);
-  Payload_Add_Request copyWith(void Function(Payload_Add_Request) updates) => super.copyWith((message) => updates(message as Payload_Add_Request));
-  $pb.BuilderInfo get info_ => _i;
-  @$core.pragma('dart2js:noInline')
-  static Payload_Add_Request create() => Payload_Add_Request._();
-  Payload_Add_Request createEmptyInstance() => create();
-  static $pb.PbList<Payload_Add_Request> createRepeated() => $pb.PbList<Payload_Add_Request>();
-  @$core.pragma('dart2js:noInline')
-  static Payload_Add_Request getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Payload_Add_Request>(create);
-  static Payload_Add_Request _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.String get documentType => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set documentType($core.String v) { $_setString(0, v); }
-  @$pb.TagNumber(1)
-  $core.bool hasDocumentType() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearDocumentType() => clearField(1);
-
-  @$pb.TagNumber(2)
-  $core.String get documentId => $_getSZ(1);
-  @$pb.TagNumber(2)
-  set documentId($core.String v) { $_setString(1, v); }
-  @$pb.TagNumber(2)
-  $core.bool hasDocumentId() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearDocumentId() => clearField(2);
-
-  @$pb.TagNumber(3)
-  $0.Any get value => $_getN(2);
-  @$pb.TagNumber(3)
-  set value($0.Any v) { setField(3, v); }
-  @$pb.TagNumber(3)
-  $core.bool hasValue() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearValue() => clearField(3);
-  @$pb.TagNumber(3)
-  $0.Any ensureValue() => $_ensure(2);
-}
-
-class Payload_Add extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Payload.Add', package: const $pb.PackageName('pstore'), createEmptyInstance: create)
-    ..hasRequiredFields = false
-  ;
-
-  Payload_Add._() : super();
-  factory Payload_Add() => create();
-  factory Payload_Add.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory Payload_Add.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
-  Payload_Add clone() => Payload_Add()..mergeFromMessage(this);
-  Payload_Add copyWith(void Function(Payload_Add) updates) => super.copyWith((message) => updates(message as Payload_Add));
-  $pb.BuilderInfo get info_ => _i;
-  @$core.pragma('dart2js:noInline')
-  static Payload_Add create() => Payload_Add._();
-  Payload_Add createEmptyInstance() => create();
-  static $pb.PbList<Payload_Add> createRepeated() => $pb.PbList<Payload_Add>();
-  @$core.pragma('dart2js:noInline')
-  static Payload_Add getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Payload_Add>(create);
-  static Payload_Add _defaultInstance;
-}
-
 class Payload_Get_Request extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('Payload.Get.Request', package: const $pb.PackageName('pstore'), createEmptyInstance: create)
     ..aOS(1, 'documentType', protoName: 'documentType')
     ..aOS(2, 'documentId', protoName: 'documentId')
+    ..aOB(3, 'create')
     ..hasRequiredFields = false
   ;
 
@@ -126,6 +53,15 @@ class Payload_Get_Request extends $pb.GeneratedMessage {
   $core.bool hasDocumentId() => $_has(1);
   @$pb.TagNumber(2)
   void clearDocumentId() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.bool get create_3 => $_getBF(2);
+  @$pb.TagNumber(3)
+  set create_3($core.bool v) { $_setBool(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasCreate_3() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearCreate_3() => clearField(3);
 }
 
 class Payload_Get_Response extends $pb.GeneratedMessage {

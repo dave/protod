@@ -2,6 +2,7 @@ package delta
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -39,6 +40,20 @@ func Reduce(op *Op) *Op {
 	//	}
 	//}
 	//return Compound(ops...)
+}
+
+func (o *Op) Flatten() []*Op {
+	if o == nil {
+		return []*Op{}
+	}
+	if o.Type != Op_Compound {
+		return []*Op{o}
+	}
+	var ops []*Op
+	for _, child := range o.Ops {
+		ops = append(ops, child.Flatten()...)
+	}
+	return ops
 }
 
 func Transform(op1, op2 *Op, op1priority bool) (op1x *Op, op2x *Op, err error) {
@@ -157,7 +172,7 @@ func applySet(op *Op, input proto.Message) error {
 		// root
 		v := getValue(nil, protoreflect.ValueOfMessage(input.ProtoReflect()), op.Value)
 		if !v.IsValid() {
-			return fmt.Errorf("invalid value in applySet (root)")
+			return errors.New("invalid value in applySet (root)")
 		}
 		proto.Reset(input)
 		proto.Merge(input, v.Message().Interface())
@@ -167,7 +182,7 @@ func applySet(op *Op, input proto.Message) error {
 	parent, _ := getLocation(input.ProtoReflect(), parentLocator)
 	switch locator := itemLocator.V.(type) {
 	case *Locator_Oneof:
-		return fmt.Errorf("can't set with a oneof locator")
+		return errors.New("can't set with a oneof locator")
 	case *Locator_Field:
 		parent, ok := parent.(protoreflect.Message)
 		if !ok {
@@ -177,7 +192,7 @@ func applySet(op *Op, input proto.Message) error {
 		factory := func() protoreflect.Value { return parent.NewField(field) }
 		value := getValueField(factory, parent.Get(field), op.Value)
 		if !value.IsValid() {
-			return fmt.Errorf("invalid value in applySet (field)")
+			return errors.New("invalid value in applySet (field)")
 		}
 		parent.Set(field, value)
 	case *Locator_Index:
@@ -194,7 +209,7 @@ func applySet(op *Op, input proto.Message) error {
 		index := int(locator.Index)
 		value := getValue(factory, parent.Get(index), op.Value)
 		if !value.IsValid() {
-			return fmt.Errorf("invalid value in applySet (index)")
+			return errors.New("invalid value in applySet (index)")
 		}
 		parent.Set(index, value)
 	case *Locator_Key:
@@ -212,7 +227,7 @@ func applySet(op *Op, input proto.Message) error {
 		key := getMapKey(locator.Key)
 		value := getValue(factory, parent.Get(key), op.Value)
 		if !value.IsValid() {
-			return fmt.Errorf("invalid value in applySet (key)")
+			return errors.New("invalid value in applySet (key)")
 		}
 		parent.Set(key, value)
 	}
@@ -256,9 +271,9 @@ func applyInsert(op *Op, input proto.Message) error {
 	parent, setter := getLocation(input.ProtoReflect(), parentLocator)
 	switch locator := itemLocator.V.(type) {
 	case *Locator_Oneof:
-		return fmt.Errorf("can't insert with a oneof locator")
+		return errors.New("can't insert with a oneof locator")
 	case *Locator_Field:
-		return fmt.Errorf("can't insert with a field locator")
+		return errors.New("can't insert with a field locator")
 	case *Locator_Index:
 		parent, ok := parent.(protoreflect.List)
 		if !ok {
@@ -267,7 +282,7 @@ func applyInsert(op *Op, input proto.Message) error {
 
 		value := getValue(parent.NewElement, protoreflect.ValueOfList(parent), op.Value)
 		if !value.IsValid() {
-			return fmt.Errorf("invalid value in applyInsert")
+			return errors.New("invalid value in applyInsert")
 		}
 		index := int(locator.Index)
 		length := parent.Len()
@@ -287,7 +302,7 @@ func applyInsert(op *Op, input proto.Message) error {
 		parent.Set(index, value)
 		setter(protoreflect.ValueOfList(parent)) // must use parent setter in case of mutating operation
 	case *Locator_Key:
-		return fmt.Errorf("can't insert with a key locator")
+		return errors.New("can't insert with a key locator")
 	}
 	return nil
 }
@@ -297,9 +312,9 @@ func applyMove(op *Op, input proto.Message) error {
 	parent, _ := getLocation(input.ProtoReflect(), parentLocator)
 	switch locator := itemLocator.V.(type) {
 	case *Locator_Oneof:
-		return fmt.Errorf("can't move with a oneof locator")
+		return errors.New("can't move with a oneof locator")
 	case *Locator_Field:
-		return fmt.Errorf("can't move with a field locator")
+		return errors.New("can't move with a field locator")
 	case *Locator_Index:
 		parent, ok := parent.(protoreflect.List)
 		if !ok {
@@ -332,7 +347,7 @@ func applyMove(op *Op, input proto.Message) error {
 		}
 		parent.Set(to, item)
 	case *Locator_Key:
-		return fmt.Errorf("can't move with a key locator")
+		return errors.New("can't move with a key locator")
 	}
 	return nil
 }
@@ -342,11 +357,11 @@ func applyRename(op *Op, input proto.Message) error {
 	parent, _ := getLocation(input.ProtoReflect(), parentLocator)
 	switch locator := itemLocator.V.(type) {
 	case *Locator_Oneof:
-		return fmt.Errorf("can't rename with a oneof locator")
+		return errors.New("can't rename with a oneof locator")
 	case *Locator_Field:
-		return fmt.Errorf("can't rename with a field locator")
+		return errors.New("can't rename with a field locator")
 	case *Locator_Index:
-		return fmt.Errorf("can't rename with an index locator")
+		return errors.New("can't rename with an index locator")
 	case *Locator_Key:
 		parent, ok := parent.(protoreflect.Map)
 		if !ok {
@@ -713,6 +728,18 @@ func Insert(location []*Locator, value interface{}) *Op {
 	return &Op{
 		Type:     Op_Insert,
 		Location: location,
+		Value:    opValue(value),
+	}
+}
+
+// Root creates a set operation at the root.
+func Root(value interface{}) *Op {
+	if value == nil {
+		panic("nil value used in add operation")
+	}
+	return &Op{
+		Type:     Op_Set,
+		Location: nil,
 		Value:    opValue(value),
 	}
 }
@@ -1087,6 +1114,19 @@ func NewLocatorKeyUint64(key uint64) *Locator {
 }
 func NewLocatorKey(key *Key) *Locator {
 	return &Locator{V: &Locator_Key{Key: key}}
+}
+
+func (o *Op) Affects(location Locatable) bool {
+	switch TreeRelationship(o.Location, location.Location_get()) {
+	case TREE_ANCESTOR, TREE_EQUAL:
+		return true
+	default:
+		return false
+	}
+}
+
+type Locatable interface {
+	Location_get() []*Locator
 }
 
 type TreeRelationshipType int

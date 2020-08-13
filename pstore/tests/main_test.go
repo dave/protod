@@ -4,29 +4,35 @@ import (
 	"context"
 	"testing"
 
+	"github.com/dave/protod/delta"
 	"github.com/dave/protod/delta/tests"
+	"github.com/dave/protod/pstore"
 )
 
 func TestServer(t *testing.T) {
 	document := &tests.Person{
 		Name: "dave",
 	}
-	app := &App{Server: New(context.Background())}
+	app := &App{Server: New(context.Background(), PERSON, COMPANY)}
 	defer app.Server.Close()
 
-	id := uniqueID()
+	state := int64(0)
+	id := pstore.NewDocumentID()
 
-	addResponse := app.ProcessMessage(context.Background(), &Person_Add_Request{
-		Id:     id,
-		Person: document,
-	}).(*Person_Add_Response)
+	addResponse := app.ProcessMessage(context.Background(), &Person_Edit_Request{
+		DocumentId: string(id),
+		StateId:    string(pstore.NewStateID()),
+		State:      state,
+		Op:         delta.Root(document),
+	}).(*Person_Edit_Response)
 
 	if addResponse.Err != "" {
 		t.Fatal(addResponse.Err)
 	}
+	state = addResponse.State
 
 	getResponse := app.ProcessMessage(context.Background(), &Person_Get_Request{
-		Id: id,
+		DocumentId: string(id),
 	}).(*Person_Get_Response)
 
 	if getResponse.Err != "" {
@@ -37,11 +43,13 @@ func TestServer(t *testing.T) {
 		t.Fatal("document not received correctly in get")
 	}
 
+	state = getResponse.State
+
 	editResponse := app.ProcessMessage(context.Background(), &Person_Edit_Request{
-		Id:       uniqueID(),
-		Document: id,
-		State:    1,
-		Op:       tests.Op().Person().Name().Edit("dave", "dave foo"),
+		StateId:    string(pstore.NewStateID()),
+		DocumentId: string(id),
+		State:      state,
+		Op:         tests.Op().Person().Name().Edit("dave", "dave foo"),
 	}).(*Person_Edit_Response)
 
 	if editResponse.Err != "" {

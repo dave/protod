@@ -103,44 +103,6 @@ func (*Person_Get) Descriptor() ([]byte, []int) {
 	return file_messages_proto_rawDescGZIP(), []int{0, 0}
 }
 
-type Person_Add struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *Person_Add) Reset() {
-	*x = Person_Add{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_messages_proto_msgTypes[2]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *Person_Add) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Person_Add) ProtoMessage() {}
-
-func (x *Person_Add) ProtoReflect() protoreflect.Message {
-	mi := &file_messages_proto_msgTypes[2]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Person_Add.ProtoReflect.Descriptor instead.
-func (*Person_Add) Descriptor() ([]byte, []int) {
-	return file_messages_proto_rawDescGZIP(), []int{0, 1}
-}
-
 type Person_Edit struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -150,7 +112,7 @@ type Person_Edit struct {
 func (x *Person_Edit) Reset() {
 	*x = Person_Edit{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_messages_proto_msgTypes[3]
+		mi := &file_messages_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -163,7 +125,7 @@ func (x *Person_Edit) String() string {
 func (*Person_Edit) ProtoMessage() {}
 
 func (x *Person_Edit) ProtoReflect() protoreflect.Message {
-	mi := &file_messages_proto_msgTypes[3]
+	mi := &file_messages_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -176,7 +138,7 @@ func (x *Person_Edit) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Person_Edit.ProtoReflect.Descriptor instead.
 func (*Person_Edit) Descriptor() ([]byte, []int) {
-	return file_messages_proto_rawDescGZIP(), []int{0, 2}
+	return file_messages_proto_rawDescGZIP(), []int{0, 1}
 }
 
 type Person_Refresh struct {
@@ -188,7 +150,7 @@ type Person_Refresh struct {
 func (x *Person_Refresh) Reset() {
 	*x = Person_Refresh{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_messages_proto_msgTypes[4]
+		mi := &file_messages_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -201,7 +163,7 @@ func (x *Person_Refresh) String() string {
 func (*Person_Refresh) ProtoMessage() {}
 
 func (x *Person_Refresh) ProtoReflect() protoreflect.Message {
-	mi := &file_messages_proto_msgTypes[4]
+	mi := &file_messages_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -214,7 +176,7 @@ func (x *Person_Refresh) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Person_Refresh.ProtoReflect.Descriptor instead.
 func (*Person_Refresh) Descriptor() ([]byte, []int) {
-	return file_messages_proto_rawDescGZIP(), []int{0, 3}
+	return file_messages_proto_rawDescGZIP(), []int{0, 2}
 }
 
 type Person_Get_Request struct {
@@ -222,13 +184,13 @@ type Person_Get_Request struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	DocumentId string `protobuf:"bytes,1,opt,name=documentId,proto3" json:"documentId,omitempty"`
 }
 
 func (x *Person_Get_Request) Reset() {
 	*x = Person_Get_Request{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_messages_proto_msgTypes[5]
+		mi := &file_messages_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -241,7 +203,7 @@ func (x *Person_Get_Request) String() string {
 func (*Person_Get_Request) ProtoMessage() {}
 
 func (x *Person_Get_Request) ProtoReflect() protoreflect.Message {
-	mi := &file_messages_proto_msgTypes[5]
+	mi := &file_messages_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -257,9 +219,9 @@ func (*Person_Get_Request) Descriptor() ([]byte, []int) {
 	return file_messages_proto_rawDescGZIP(), []int{0, 0, 0}
 }
 
-func (x *Person_Get_Request) GetId() string {
+func (x *Person_Get_Request) GetDocumentId() string {
 	if x != nil {
-		return x.Id
+		return x.DocumentId
 	}
 	return ""
 }
@@ -277,7 +239,7 @@ type Person_Get_Response struct {
 func (x *Person_Get_Response) Reset() {
 	*x = Person_Get_Response{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_messages_proto_msgTypes[6]
+		mi := &file_messages_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -290,7 +252,7 @@ func (x *Person_Get_Response) String() string {
 func (*Person_Get_Response) ProtoMessage() {}
 
 func (x *Person_Get_Response) ProtoReflect() protoreflect.Message {
-	mi := &file_messages_proto_msgTypes[6]
+	mi := &file_messages_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -327,123 +289,21 @@ func (x *Person_Get_Response) GetErr() string {
 	return ""
 }
 
-type Person_Add_Request struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Id     string        `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Person *tests.Person `protobuf:"bytes,2,opt,name=person,proto3" json:"person,omitempty"`
-}
-
-func (x *Person_Add_Request) Reset() {
-	*x = Person_Add_Request{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_messages_proto_msgTypes[7]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *Person_Add_Request) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Person_Add_Request) ProtoMessage() {}
-
-func (x *Person_Add_Request) ProtoReflect() protoreflect.Message {
-	mi := &file_messages_proto_msgTypes[7]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Person_Add_Request.ProtoReflect.Descriptor instead.
-func (*Person_Add_Request) Descriptor() ([]byte, []int) {
-	return file_messages_proto_rawDescGZIP(), []int{0, 1, 0}
-}
-
-func (x *Person_Add_Request) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
-func (x *Person_Add_Request) GetPerson() *tests.Person {
-	if x != nil {
-		return x.Person
-	}
-	return nil
-}
-
-type Person_Add_Response struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Err string `protobuf:"bytes,2,opt,name=err,proto3" json:"err,omitempty"`
-}
-
-func (x *Person_Add_Response) Reset() {
-	*x = Person_Add_Response{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_messages_proto_msgTypes[8]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *Person_Add_Response) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Person_Add_Response) ProtoMessage() {}
-
-func (x *Person_Add_Response) ProtoReflect() protoreflect.Message {
-	mi := &file_messages_proto_msgTypes[8]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Person_Add_Response.ProtoReflect.Descriptor instead.
-func (*Person_Add_Response) Descriptor() ([]byte, []int) {
-	return file_messages_proto_rawDescGZIP(), []int{0, 1, 1}
-}
-
-func (x *Person_Add_Response) GetErr() string {
-	if x != nil {
-		return x.Err
-	}
-	return ""
-}
-
 type Person_Edit_Request struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id       string    `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`             // state id
-	Document string    `protobuf:"bytes,2,opt,name=document,proto3" json:"document,omitempty"` // document id
-	State    int64     `protobuf:"varint,3,opt,name=state,proto3" json:"state,omitempty"`      // state of the document that this op is acting on
-	Op       *delta.Op `protobuf:"bytes,4,opt,name=op,proto3" json:"op,omitempty"`             // operation
+	StateId    string    `protobuf:"bytes,1,opt,name=stateId,proto3" json:"stateId,omitempty"`       // state id
+	DocumentId string    `protobuf:"bytes,2,opt,name=documentId,proto3" json:"documentId,omitempty"` // document id
+	State      int64     `protobuf:"varint,3,opt,name=state,proto3" json:"state,omitempty"`          // state of the document that this op is acting on
+	Op         *delta.Op `protobuf:"bytes,4,opt,name=op,proto3" json:"op,omitempty"`                 // operation
 }
 
 func (x *Person_Edit_Request) Reset() {
 	*x = Person_Edit_Request{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_messages_proto_msgTypes[9]
+		mi := &file_messages_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -456,7 +316,7 @@ func (x *Person_Edit_Request) String() string {
 func (*Person_Edit_Request) ProtoMessage() {}
 
 func (x *Person_Edit_Request) ProtoReflect() protoreflect.Message {
-	mi := &file_messages_proto_msgTypes[9]
+	mi := &file_messages_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -469,19 +329,19 @@ func (x *Person_Edit_Request) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Person_Edit_Request.ProtoReflect.Descriptor instead.
 func (*Person_Edit_Request) Descriptor() ([]byte, []int) {
-	return file_messages_proto_rawDescGZIP(), []int{0, 2, 0}
+	return file_messages_proto_rawDescGZIP(), []int{0, 1, 0}
 }
 
-func (x *Person_Edit_Request) GetId() string {
+func (x *Person_Edit_Request) GetStateId() string {
 	if x != nil {
-		return x.Id
+		return x.StateId
 	}
 	return ""
 }
 
-func (x *Person_Edit_Request) GetDocument() string {
+func (x *Person_Edit_Request) GetDocumentId() string {
 	if x != nil {
-		return x.Document
+		return x.DocumentId
 	}
 	return ""
 }
@@ -513,7 +373,7 @@ type Person_Edit_Response struct {
 func (x *Person_Edit_Response) Reset() {
 	*x = Person_Edit_Response{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_messages_proto_msgTypes[10]
+		mi := &file_messages_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -526,7 +386,7 @@ func (x *Person_Edit_Response) String() string {
 func (*Person_Edit_Response) ProtoMessage() {}
 
 func (x *Person_Edit_Response) ProtoReflect() protoreflect.Message {
-	mi := &file_messages_proto_msgTypes[10]
+	mi := &file_messages_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -539,7 +399,7 @@ func (x *Person_Edit_Response) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Person_Edit_Response.ProtoReflect.Descriptor instead.
 func (*Person_Edit_Response) Descriptor() ([]byte, []int) {
-	return file_messages_proto_rawDescGZIP(), []int{0, 2, 1}
+	return file_messages_proto_rawDescGZIP(), []int{0, 1, 1}
 }
 
 func (x *Person_Edit_Response) GetState() int64 {
@@ -568,13 +428,13 @@ type Person_Refresh_Request struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"` // document id
+	DocumentId string `protobuf:"bytes,1,opt,name=documentId,proto3" json:"documentId,omitempty"` // document id
 }
 
 func (x *Person_Refresh_Request) Reset() {
 	*x = Person_Refresh_Request{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_messages_proto_msgTypes[11]
+		mi := &file_messages_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -587,7 +447,7 @@ func (x *Person_Refresh_Request) String() string {
 func (*Person_Refresh_Request) ProtoMessage() {}
 
 func (x *Person_Refresh_Request) ProtoReflect() protoreflect.Message {
-	mi := &file_messages_proto_msgTypes[11]
+	mi := &file_messages_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -600,12 +460,12 @@ func (x *Person_Refresh_Request) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Person_Refresh_Request.ProtoReflect.Descriptor instead.
 func (*Person_Refresh_Request) Descriptor() ([]byte, []int) {
-	return file_messages_proto_rawDescGZIP(), []int{0, 3, 0}
+	return file_messages_proto_rawDescGZIP(), []int{0, 2, 0}
 }
 
-func (x *Person_Refresh_Request) GetId() string {
+func (x *Person_Refresh_Request) GetDocumentId() string {
 	if x != nil {
-		return x.Id
+		return x.DocumentId
 	}
 	return ""
 }
@@ -621,7 +481,7 @@ type Person_Refresh_Response struct {
 func (x *Person_Refresh_Response) Reset() {
 	*x = Person_Refresh_Response{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_messages_proto_msgTypes[12]
+		mi := &file_messages_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -634,7 +494,7 @@ func (x *Person_Refresh_Response) String() string {
 func (*Person_Refresh_Response) ProtoMessage() {}
 
 func (x *Person_Refresh_Response) ProtoReflect() protoreflect.Message {
-	mi := &file_messages_proto_msgTypes[12]
+	mi := &file_messages_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -647,7 +507,7 @@ func (x *Person_Refresh_Response) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Person_Refresh_Response.ProtoReflect.Descriptor instead.
 func (*Person_Refresh_Response) Descriptor() ([]byte, []int) {
-	return file_messages_proto_rawDescGZIP(), []int{0, 3, 1}
+	return file_messages_proto_rawDescGZIP(), []int{0, 2, 1}
 }
 
 func (x *Person_Refresh_Response) GetErr() string {
@@ -664,41 +524,38 @@ var file_messages_proto_rawDesc = []byte{
 	0x12, 0x08, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x73, 0x1a, 0x11, 0x74, 0x65, 0x73, 0x74,
 	0x73, 0x2f, 0x74, 0x65, 0x73, 0x74, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x11, 0x64,
 	0x65, 0x6c, 0x74, 0x61, 0x2f, 0x64, 0x65, 0x6c, 0x74, 0x61, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x22, 0xf0, 0x03, 0x0a, 0x06, 0x50, 0x65, 0x72, 0x73, 0x6f, 0x6e, 0x1a, 0x7b, 0x0a, 0x03, 0x47,
-	0x65, 0x74, 0x1a, 0x19, 0x0a, 0x07, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a,
-	0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x1a, 0x59, 0x0a,
-	0x08, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x73, 0x74, 0x61,
-	0x74, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x73, 0x74, 0x61, 0x74, 0x65, 0x12,
-	0x25, 0x0a, 0x06, 0x70, 0x65, 0x72, 0x73, 0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x0d, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x73, 0x2e, 0x50, 0x65, 0x72, 0x73, 0x6f, 0x6e, 0x52, 0x06,
-	0x70, 0x65, 0x72, 0x73, 0x6f, 0x6e, 0x12, 0x10, 0x0a, 0x03, 0x65, 0x72, 0x72, 0x18, 0x04, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x03, 0x65, 0x72, 0x72, 0x1a, 0x65, 0x0a, 0x03, 0x41, 0x64, 0x64, 0x1a,
-	0x40, 0x0a, 0x07, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x25, 0x0a, 0x06, 0x70, 0x65,
-	0x72, 0x73, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x74, 0x65, 0x73,
-	0x74, 0x73, 0x2e, 0x50, 0x65, 0x72, 0x73, 0x6f, 0x6e, 0x52, 0x06, 0x70, 0x65, 0x72, 0x73, 0x6f,
-	0x6e, 0x1a, 0x1c, 0x0a, 0x08, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x10, 0x0a,
-	0x03, 0x65, 0x72, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x65, 0x72, 0x72, 0x1a,
-	0xbd, 0x01, 0x0a, 0x04, 0x45, 0x64, 0x69, 0x74, 0x1a, 0x66, 0x0a, 0x07, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x02, 0x69, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x64, 0x6f, 0x63, 0x75, 0x6d, 0x65, 0x6e, 0x74, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x64, 0x6f, 0x63, 0x75, 0x6d, 0x65, 0x6e, 0x74, 0x12,
-	0x14, 0x0a, 0x05, 0x73, 0x74, 0x61, 0x74, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x05,
-	0x73, 0x74, 0x61, 0x74, 0x65, 0x12, 0x19, 0x0a, 0x02, 0x6f, 0x70, 0x18, 0x04, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x09, 0x2e, 0x64, 0x65, 0x6c, 0x74, 0x61, 0x2e, 0x4f, 0x70, 0x52, 0x02, 0x6f, 0x70,
-	0x1a, 0x4d, 0x0a, 0x08, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x14, 0x0a, 0x05,
-	0x73, 0x74, 0x61, 0x74, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x73, 0x74, 0x61,
-	0x74, 0x65, 0x12, 0x19, 0x0a, 0x02, 0x6f, 0x70, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09,
-	0x2e, 0x64, 0x65, 0x6c, 0x74, 0x61, 0x2e, 0x4f, 0x70, 0x52, 0x02, 0x6f, 0x70, 0x12, 0x10, 0x0a,
-	0x03, 0x65, 0x72, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x65, 0x72, 0x72, 0x1a,
-	0x42, 0x0a, 0x07, 0x52, 0x65, 0x66, 0x72, 0x65, 0x73, 0x68, 0x1a, 0x19, 0x0a, 0x07, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x02, 0x69, 0x64, 0x1a, 0x1c, 0x0a, 0x08, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x10, 0x0a, 0x03, 0x65, 0x72, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03,
-	0x65, 0x72, 0x72, 0x42, 0x31, 0x5a, 0x2f, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f,
-	0x6d, 0x2f, 0x64, 0x61, 0x76, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x64, 0x2f, 0x70, 0x73,
-	0x65, 0x72, 0x76, 0x65, 0x72, 0x2f, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2f, 0x67, 0x61,
-	0x65, 0x3b, 0x6d, 0x61, 0x69, 0x6e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x22, 0xb8, 0x03, 0x0a, 0x06, 0x50, 0x65, 0x72, 0x73, 0x6f, 0x6e, 0x1a, 0x8b, 0x01, 0x0a, 0x03,
+	0x47, 0x65, 0x74, 0x1a, 0x29, 0x0a, 0x07, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1e,
+	0x0a, 0x0a, 0x64, 0x6f, 0x63, 0x75, 0x6d, 0x65, 0x6e, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x0a, 0x64, 0x6f, 0x63, 0x75, 0x6d, 0x65, 0x6e, 0x74, 0x49, 0x64, 0x1a, 0x59,
+	0x0a, 0x08, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x73, 0x74,
+	0x61, 0x74, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x73, 0x74, 0x61, 0x74, 0x65,
+	0x12, 0x25, 0x0a, 0x06, 0x70, 0x65, 0x72, 0x73, 0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x0d, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x73, 0x2e, 0x50, 0x65, 0x72, 0x73, 0x6f, 0x6e, 0x52,
+	0x06, 0x70, 0x65, 0x72, 0x73, 0x6f, 0x6e, 0x12, 0x10, 0x0a, 0x03, 0x65, 0x72, 0x72, 0x18, 0x04,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x65, 0x72, 0x72, 0x1a, 0xcb, 0x01, 0x0a, 0x04, 0x45, 0x64,
+	0x69, 0x74, 0x1a, 0x74, 0x0a, 0x07, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x18, 0x0a,
+	0x07, 0x73, 0x74, 0x61, 0x74, 0x65, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
+	0x73, 0x74, 0x61, 0x74, 0x65, 0x49, 0x64, 0x12, 0x1e, 0x0a, 0x0a, 0x64, 0x6f, 0x63, 0x75, 0x6d,
+	0x65, 0x6e, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x64, 0x6f, 0x63,
+	0x75, 0x6d, 0x65, 0x6e, 0x74, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x73, 0x74, 0x61, 0x74, 0x65,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x73, 0x74, 0x61, 0x74, 0x65, 0x12, 0x19, 0x0a,
+	0x02, 0x6f, 0x70, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x64, 0x65, 0x6c, 0x74,
+	0x61, 0x2e, 0x4f, 0x70, 0x52, 0x02, 0x6f, 0x70, 0x1a, 0x4d, 0x0a, 0x08, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x73, 0x74, 0x61, 0x74, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x03, 0x52, 0x05, 0x73, 0x74, 0x61, 0x74, 0x65, 0x12, 0x19, 0x0a, 0x02, 0x6f, 0x70,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x64, 0x65, 0x6c, 0x74, 0x61, 0x2e, 0x4f,
+	0x70, 0x52, 0x02, 0x6f, 0x70, 0x12, 0x10, 0x0a, 0x03, 0x65, 0x72, 0x72, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x03, 0x65, 0x72, 0x72, 0x1a, 0x52, 0x0a, 0x07, 0x52, 0x65, 0x66, 0x72, 0x65,
+	0x73, 0x68, 0x1a, 0x29, 0x0a, 0x07, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1e, 0x0a,
+	0x0a, 0x64, 0x6f, 0x63, 0x75, 0x6d, 0x65, 0x6e, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0a, 0x64, 0x6f, 0x63, 0x75, 0x6d, 0x65, 0x6e, 0x74, 0x49, 0x64, 0x1a, 0x1c, 0x0a,
+	0x08, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x65, 0x72, 0x72,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x65, 0x72, 0x72, 0x42, 0x31, 0x5a, 0x2f, 0x67,
+	0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x61, 0x76, 0x65, 0x2f, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x64, 0x2f, 0x70, 0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0x2f, 0x65, 0x78,
+	0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2f, 0x67, 0x61, 0x65, 0x3b, 0x6d, 0x61, 0x69, 0x6e, 0x62, 0x06,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -713,34 +570,30 @@ func file_messages_proto_rawDescGZIP() []byte {
 	return file_messages_proto_rawDescData
 }
 
-var file_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_messages_proto_goTypes = []interface{}{
 	(*Person)(nil),                  // 0: messages.Person
 	(*Person_Get)(nil),              // 1: messages.Person.Get
-	(*Person_Add)(nil),              // 2: messages.Person.Add
-	(*Person_Edit)(nil),             // 3: messages.Person.Edit
-	(*Person_Refresh)(nil),          // 4: messages.Person.Refresh
-	(*Person_Get_Request)(nil),      // 5: messages.Person.Get.Request
-	(*Person_Get_Response)(nil),     // 6: messages.Person.Get.Response
-	(*Person_Add_Request)(nil),      // 7: messages.Person.Add.Request
-	(*Person_Add_Response)(nil),     // 8: messages.Person.Add.Response
-	(*Person_Edit_Request)(nil),     // 9: messages.Person.Edit.Request
-	(*Person_Edit_Response)(nil),    // 10: messages.Person.Edit.Response
-	(*Person_Refresh_Request)(nil),  // 11: messages.Person.Refresh.Request
-	(*Person_Refresh_Response)(nil), // 12: messages.Person.Refresh.Response
-	(*tests.Person)(nil),            // 13: tests.Person
-	(*delta.Op)(nil),                // 14: delta.Op
+	(*Person_Edit)(nil),             // 2: messages.Person.Edit
+	(*Person_Refresh)(nil),          // 3: messages.Person.Refresh
+	(*Person_Get_Request)(nil),      // 4: messages.Person.Get.Request
+	(*Person_Get_Response)(nil),     // 5: messages.Person.Get.Response
+	(*Person_Edit_Request)(nil),     // 6: messages.Person.Edit.Request
+	(*Person_Edit_Response)(nil),    // 7: messages.Person.Edit.Response
+	(*Person_Refresh_Request)(nil),  // 8: messages.Person.Refresh.Request
+	(*Person_Refresh_Response)(nil), // 9: messages.Person.Refresh.Response
+	(*tests.Person)(nil),            // 10: tests.Person
+	(*delta.Op)(nil),                // 11: delta.Op
 }
 var file_messages_proto_depIdxs = []int32{
-	13, // 0: messages.Person.Get.Response.person:type_name -> tests.Person
-	13, // 1: messages.Person.Add.Request.person:type_name -> tests.Person
-	14, // 2: messages.Person.Edit.Request.op:type_name -> delta.Op
-	14, // 3: messages.Person.Edit.Response.op:type_name -> delta.Op
-	4,  // [4:4] is the sub-list for method output_type
-	4,  // [4:4] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	10, // 0: messages.Person.Get.Response.person:type_name -> tests.Person
+	11, // 1: messages.Person.Edit.Request.op:type_name -> delta.Op
+	11, // 2: messages.Person.Edit.Response.op:type_name -> delta.Op
+	3,  // [3:3] is the sub-list for method output_type
+	3,  // [3:3] is the sub-list for method input_type
+	3,  // [3:3] is the sub-list for extension type_name
+	3,  // [3:3] is the sub-list for extension extendee
+	0,  // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_messages_proto_init() }
@@ -774,18 +627,6 @@ func file_messages_proto_init() {
 			}
 		}
 		file_messages_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Person_Add); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_messages_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Person_Edit); i {
 			case 0:
 				return &v.state
@@ -797,7 +638,7 @@ func file_messages_proto_init() {
 				return nil
 			}
 		}
-		file_messages_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+		file_messages_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Person_Refresh); i {
 			case 0:
 				return &v.state
@@ -809,7 +650,7 @@ func file_messages_proto_init() {
 				return nil
 			}
 		}
-		file_messages_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+		file_messages_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Person_Get_Request); i {
 			case 0:
 				return &v.state
@@ -821,7 +662,7 @@ func file_messages_proto_init() {
 				return nil
 			}
 		}
-		file_messages_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+		file_messages_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Person_Get_Response); i {
 			case 0:
 				return &v.state
@@ -833,31 +674,7 @@ func file_messages_proto_init() {
 				return nil
 			}
 		}
-		file_messages_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Person_Add_Request); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_messages_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Person_Add_Response); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_messages_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+		file_messages_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Person_Edit_Request); i {
 			case 0:
 				return &v.state
@@ -869,7 +686,7 @@ func file_messages_proto_init() {
 				return nil
 			}
 		}
-		file_messages_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+		file_messages_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Person_Edit_Response); i {
 			case 0:
 				return &v.state
@@ -881,7 +698,7 @@ func file_messages_proto_init() {
 				return nil
 			}
 		}
-		file_messages_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+		file_messages_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Person_Refresh_Request); i {
 			case 0:
 				return &v.state
@@ -893,7 +710,7 @@ func file_messages_proto_init() {
 				return nil
 			}
 		}
-		file_messages_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+		file_messages_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Person_Refresh_Response); i {
 			case 0:
 				return &v.state
@@ -912,7 +729,7 @@ func file_messages_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_messages_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   13,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

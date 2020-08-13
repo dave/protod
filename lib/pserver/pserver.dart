@@ -30,67 +30,101 @@ class Store<T extends GeneratedMessage> {
     return _box.keys;
   }
 
-  AddResponse<T> add(T value) {
-    final documentId = randomUnique();
+  Future<void> init() async {
+    if (!_adapter.connected()) {
+      return;
+    }
+    var futures = <Future>[];
+    _box.keys.forEach((id) {
+      if (!_items.containsKey(id)) {
+        final response = _getFromBox(id);
+        if (response.future != null) {
+          futures.add(response.future);
+        }
+      }
+      if (!_items.containsKey(id)) {}
+    });
+    await Future.wait(futures);
+  }
 
+  Response<T> _getFromBox(String id) {
+    var item = _box.get(id);
+    item._sending = false;
+    item._store = this;
+    item.id = id;
+
+    _items[id] = item;
+
+    if (item.state == 0 || item.requestId != '') {
+      // If a previous request was interrupted, send again and return the
+      // future along with the item. It is safe to use this item and continue
+      // adding operations while the future is pending.
+
+      if (!_adapter.connected()) {
+        // if the device is offline, just return the item
+        return Response<T>(item, null);
+      }
+
+      print("sending $id");
+      final future = item.send();
+      return Response<T>(item, future);
+    }
+
+    // The item is ready, and no future is needed.
+    return Response<T>(item, null);
+  }
+
+  Response<T> add(String documentId, T value) {
     var item = Item<T>()
       .._store = this
       .._sending = false
-      .._documentId = documentId
+      ..id = documentId
       ..value = value
       ..state = Int64(0)
-      ..requestId = ''
-      ..buffer = []
+      ..requestId = ""
+      ..buffer = [set(null, value)]
       ..overflow = [];
 
     _items[documentId] = item;
+    // TODO: do we need to wait for this future to finish??
     _put(documentId, item);
 
-    final response = item.send();
+    if (!_adapter.connected()) {
+      return Response<T>(item, null);
+    }
 
-    return AddResponse(documentId, item, response);
+    final future = item.send();
+    return Response<T>(item, future);
   }
 
   bool has(String id) => _items.containsKey(id) || _box.containsKey(id);
 
-  GetResponse get(String id, {bool send = true}) {
+  Response<T> get(String id, {bool create = false}) {
     if (_items.containsKey(id)) {
-      return GetResponse(_items[id], null);
+      return Response<T>(_items[id], null);
     }
 
     if (_box.containsKey(id)) {
-      var item = _box.get(id);
-      item._sending = false;
-      item._store = this;
-      item._documentId = id;
+      return _getFromBox(id);
+    }
 
-      _items[id] = item;
-
-      if (item.state == 0 || item.requestId != '') {
-        // If a previous request was interrupted, send again and return the
-        // future.
-        final future = item.send();
-
-        return GetResponse(item, future);
-      }
-
-      // The item is ready, and no future is needed.
-      return GetResponse(item, null);
+    if (!_adapter.connected()) {
+      // Item doesn't exist yet AND the device is not connected, so return null.
+      return Response<T>(null, null);
     }
 
     // Item doesn't exist yet, so just return the future.
-    final future = _sendGet(id);
-
-    return GetResponse(null, future);
+    final future = _sendGet(id, create: create);
+    return Response<T>(null, future);
   }
 
-  Future<Item<T>> _sendGet(String id) async {
-    final response = await _adapter.get(_type, id, _registry);
+  Future<Item<T>> _sendGet(String id, {bool create = false}) async {
+    final response = await _adapter.get(_type, id, create, _registry);
 
-    var item = Item()
+    var item = Item<T>()
       .._store = this
       .._sending = false
-      .._documentId = id
+      ..id = id
       ..value = response.value
       ..state = response.state
       ..requestId = ''
@@ -98,13 +132,14 @@ class Store<T extends GeneratedMessage> {
       ..overflow = [];
 
     _items[id] = item;
+    // TODO: do we need to wait for this future to finish?
     _put(id, item);
 
     return item;
   }
 
-  void _put(String id, Item<T> item) {
-    _box.put(id, item);
+  Future<void> _put(String id, Item<T> item) async {
+    await _box.put(id, item);
   }
 
   String randomUnique() {
@@ -147,9 +182,9 @@ class Item<T extends GeneratedMessage> {
   // to get to the eventual state [E]. We replace the contents of [buffer] with
   // [overflowx], and trigger another server request.
 
+  String id = '';
   Store<T> _store;
   bool _sending = false;
-  String _documentId = '';
   Completer<void> _current;
 
   // The value of the document after the operations in buffer have been applied.
@@ -180,56 +215,41 @@ class Item<T extends GeneratedMessage> {
     apply(op, value);
 
     // Persist the item
-    _store._put(_documentId, this);
+    // TODO: do we need to wait for this future to finish?
+    _store._put(id, this);
 
     // Trigger the server request
     await send();
   }
 
-  Future<void> send() async {
+  Future<Item<T>> send() async {
     if (_sending) {
-      return _current.future;
+      Future<Item<T>> f() async {
+        await _current.future;
+        return this;
+      }
+
+      return f();
+    }
+    if (!_store._adapter.connected()) {
+      // if the device is not connected, return immediately without error.
+      return this;
     }
     _sending = true;
     _current = Completer<void>();
     try {
-      if (state == 0) {
-        await _sendAdd();
-      } else {
-        await _sendEdit();
-      }
+      await _sendEdit();
     } catch (e) {
       _current.completeError(e);
-      return;
+      return this;
     } finally {
       _sending = false;
     }
     _current.complete();
-  }
-
-  Future<void> _sendAdd() async {
-    if (state != 0) {
-      throw Exception('value already added');
-    }
-
-    await _store._adapter.add(_store._type, _documentId, value);
-
-    state = Int64(1);
-
-    // Persist the item
-    _store._put(_documentId, this);
-
-    // If operations have been added to the buffer, send them.
-    if (buffer.length > 0) {
-      await _sendEdit();
-    }
+    return this;
   }
 
   Future<void> _sendEdit() async {
-    if (state == 0) {
-      throw Exception('value not added yet');
-    }
-
     // Only create a new request id if we don't have one already.
     if (requestId == '') {
       requestId = _store.randomUnique();
@@ -238,11 +258,12 @@ class Item<T extends GeneratedMessage> {
     // Persist the item before sending the request. If the request never returns,
     // we should use the same request ID on subsequent attempts, even after app
     // shutdown / restart.
-    _store._put(_documentId, this);
+    // TODO: do we need to wait for this future to finish?
+    _store._put(id, this);
 
     final response = await _store._adapter.edit(
       _store._type,
-      _documentId,
+      id,
       requestId,
       state,
       compound(buffer),
@@ -281,26 +302,24 @@ class Item<T extends GeneratedMessage> {
     }
 
     // Persist the item
-    _store._put(_documentId, this);
+    // TODO: do we need to wait for this future to finish?
+    _store._put(id, this);
 
     // If buffer has an operation, send again.
     if (buffer.length > 0) {
+      if (!_store._adapter.connected()) {
+        // if the device isn't connected, don't start sending.
+        return;
+      }
       await _sendEdit();
     }
   }
 }
 
-class GetResponse<T extends GeneratedMessage> {
+class Response<T extends GeneratedMessage> {
   final Item<T> item;
   final Future<Item<T>> future;
-  GetResponse(this.item, this.future);
-}
-
-class AddResponse<T extends GeneratedMessage> {
-  final String id;
-  final Item<T> item;
-  final Future<void> future;
-  AddResponse(this.id, this.item, this.future);
+  Response(this.item, this.future);
 }
 
 class ItemAdapter<T extends GeneratedMessage>
@@ -314,7 +333,7 @@ class ItemAdapter<T extends GeneratedMessage>
 
   @override
   Item<T> read(hive.BinaryReader reader) {
-    final valueType = reader.readString(); // 0
+    final documentType = reader.readString(); // 0
     final valueBytes = reader.readByteList(); // 1
     final state = Int64(reader.readInt()); // 2
     final request = reader.readString(); // 3
@@ -323,13 +342,13 @@ class ItemAdapter<T extends GeneratedMessage>
 
     // unmarshal value
     T value;
-    if (valueType != '') {
-      final builderInfo = _types.lookup(valueType);
+    if (documentType != '') {
+      final builderInfo = _types.lookup(documentType);
       if (builderInfo == null) {
-        throw Exception("can't find type $valueType");
+        throw Exception("can't find type $documentType");
       }
       value = builderInfo.createEmptyInstance();
-      unpackIntoHelper(valueBytes, value, 'type.googleapis.com/$valueType');
+      unpackIntoHelper(valueBytes, value, 'type.googleapis.com/$documentType');
     }
 
     // unmarshal buffer
@@ -352,7 +371,7 @@ class ItemAdapter<T extends GeneratedMessage>
 
   @override
   void write(hive.BinaryWriter writer, Item<T> item) {
-    final valueType = item.value?.info_?.qualifiedMessageName ?? '';
+    final documentType = item.value?.info_?.qualifiedMessageName ?? '';
     final valueBytes = item.value?.writeToBuffer() ?? List<int>();
     final state = item.state?.toInt() ?? 0;
     final request = item.requestId ?? '';
@@ -361,7 +380,7 @@ class ItemAdapter<T extends GeneratedMessage>
     final overflow = item.overflow?.map((e) => e?.writeToBuffer())?.toList() ??
         List<List<int>>();
 
-    writer.writeString(valueType); // 0
+    writer.writeString(documentType); // 0
     writer.writeByteList(valueBytes); // 1
     writer.writeInt(state); // 2
     writer.writeString(request); // 3
@@ -371,16 +390,18 @@ class ItemAdapter<T extends GeneratedMessage>
 }
 
 abstract class StoreAdapter<T extends GeneratedMessage> {
+  bool connected();
   Future<StoreAdapterGetResponse<T>> get(
     String documentType,
     String documentId,
+    bool create,
     TypeRegistry r,
   );
-  Future<void> add(
-    String documentType,
-    String documentId,
-    T value,
-  );
+//  Future<StoreAdapterAddResponse> add(
+//    String documentType,
+//    String documentId,
+//    T value,
+//  );
   Future<StoreAdapterEditResponse> edit(
     String documentType,
     String documentId,
@@ -401,3 +422,8 @@ class StoreAdapterEditResponse {
   final Op op;
   StoreAdapterEditResponse(this.state, this.op);
 }
+
+//class StoreAdapterAddResponse {
+//  final Int64 state;
+//  StoreAdapterAddResponse(this.state);
+//}

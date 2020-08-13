@@ -580,14 +580,20 @@ pb.Op edit(List<pb.Locator> location, String from, String to) {
     ..delta = (pb.Delta()..quill = q);
 }
 
+pb.Op root(dynamic value) {
+  return set(null, value);
+}
+
 pb.Op set(List<pb.Locator> location, dynamic value) {
   if (value == null) {
     throw Exception("null value used in set operation");
   }
 
-  var op = pb.Op()
-    ..type = pb.Op_Type.Set
-    ..location.addAll(location);
+  var op = pb.Op()..type = pb.Op_Type.Set;
+
+  if (location != null) {
+    op.location.addAll(location);
+  }
 
   if (value is pb.Scalar) {
     op.scalar = value;

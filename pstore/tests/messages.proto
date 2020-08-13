@@ -10,7 +10,7 @@ message Person {
 
   message Get {
     message Request {
-      string id = 1;
+      string documentId = 1;
     }
     message Response {
       int64 state = 2;
@@ -19,20 +19,20 @@ message Person {
     }
   }
 
-  message Add {
-    message Request {
-      string id = 1;
-      tests.Person person = 2;
-    }
-    message Response {
-      string err = 2;
-    }
-  }
+//  message Add {
+//    message Request {
+//      string id = 1;
+//      tests.Person person = 2;
+//    }
+//    message Response {
+//      string err = 2;
+//    }
+//  }
 
   message Edit {
     message Request {
-      string id = 1;       // state id
-      string document = 2; // document id
+      string stateId = 1;       // state id
+      string documentId = 2; // document id
       int64 state = 3;     // state of the document that this op is acting on
       delta.Op op = 4;     // operation
     }
@@ -45,7 +45,7 @@ message Person {
 
   message Refresh {
     message Request {
-      string id = 1; // document id
+      string documentId = 1; // document id
     }
     message Response {
       string err = 1;
