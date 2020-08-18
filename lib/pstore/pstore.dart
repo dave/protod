@@ -5,8 +5,8 @@ import 'package:protod/pserver/pserver.dart';
 import 'package:protod/pstore/pstore.pb.dart';
 
 class Adapter<T extends GeneratedMessage> extends StoreAdapter<T> {
-  final Future<U>
-          Function<T extends GeneratedMessage, U extends GeneratedMessage>(T, U)
+  final Future<R>
+          Function<R extends GeneratedMessage, Q extends GeneratedMessage>(R, Q)
       _send;
   final bool Function() _connected;
 
@@ -26,7 +26,7 @@ class Adapter<T extends GeneratedMessage> extends StoreAdapter<T> {
       ..documentType = documentType
       ..documentId = documentId
       ..create_3 = create;
-    final response = await _send(request, Payload_Get_Response());
+    final response = await _send(Payload_Get_Response(), request);
     var value = r.lookup(documentType).createEmptyInstance();
     response.value.unpackInto(value);
     return StoreAdapterGetResponse<T>(response.state, value);
@@ -48,7 +48,7 @@ class Adapter<T extends GeneratedMessage> extends StoreAdapter<T> {
     if (op != null) {
       request.op = op;
     }
-    final response = await _send(request, Payload_Edit_Response());
+    final response = await _send(Payload_Edit_Response(), request);
     return StoreAdapterEditResponse(response.state, response.op);
   }
 
