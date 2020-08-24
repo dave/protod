@@ -122,13 +122,13 @@ func Edit(ctx context.Context, s *pserver.Server, documentType string, documentI
 
 			newState = lastState + 1
 
-			opBlob, err := s.MarshalToBlob(op2)
-			if err != nil {
+			opBlob := t.NewBlob()
+			if err := opBlob.MarshalBlob(ctx, op2); err != nil {
 				return err
 			}
 
-			stateItem, err := t.PackStateFunc(ctx, &pserver.State{State: newState, Op: opBlob})
-			if err != nil {
+			stateItem := t.NewState()
+			if err := stateItem.PackState(ctx, newState, opBlob); err != nil {
 				return err
 			}
 
@@ -155,13 +155,13 @@ func Edit(ctx context.Context, s *pserver.Server, documentType string, documentI
 		newState = lastState + 1
 
 		// Store op2x in the database
-		op2xBlob, err := s.MarshalToBlob(op2x)
-		if err != nil {
+		op2xBlob := t.NewBlob()
+		if err := op2xBlob.MarshalBlob(ctx, op2x); err != nil {
 			return err
 		}
-		serverState := &pserver.State{State: newState, Op: op2xBlob}
-		newStateItem, err := t.PackStateFunc(ctx, serverState)
-		if err != nil {
+
+		newStateItem := t.NewState()
+		if err := newStateItem.PackState(ctx, newState, op2xBlob); err != nil {
 			return err
 		}
 
@@ -185,19 +185,19 @@ func Edit(ctx context.Context, s *pserver.Server, documentType string, documentI
 
 	// This request has already been processed. We can recreate the correct response, and nothing needs to be
 	// stored in the database.
-	duplicateState, _, err := s.UnpackState(duplicate, t)
+	duplicateState, _, err := s.UnpackState(ctx, duplicate, t)
 	if err != nil {
 		return 0, nil, err
 	}
 
 	// Note that the state provided by the client is the "before" state for the transform, and the state from the
 	// duplicate record is the "after" state in the transform:
-	_, op1x, _, err = s.Transform(ctx, nil, t, ref, op2, state, duplicateState.State)
+	_, op1x, _, err = s.Transform(ctx, nil, t, ref, op2, state, duplicateState)
 	if err != nil {
 		return 0, nil, err
 	}
 
-	return duplicateState.State, op1x, nil
+	return duplicateState, op1x, nil
 
 }
 
@@ -213,27 +213,25 @@ func createDocument(ctx context.Context, s *pserver.Server, tx *firestore.Transa
 	}
 
 	document := t.NewDocument()
-	documentBlob, err := s.MarshalToBlob(document)
-	if err != nil {
+	documentBlob := t.NewBlob()
+	if err := documentBlob.MarshalBlob(ctx, document); err != nil {
 		return 0, err
 	}
-
-	// if document doesn't exist, we add it
-	snapshotItem, err := t.PackSnapshotFunc(ctx, &pserver.Snapshot{State: 0, Value: documentBlob}, nil, document)
-	if err != nil {
+	snapshotItem := t.NewSnapshot()
+	if err := snapshotItem.PackSnapshot(ctx, 0, documentBlob, nil, document); err != nil {
 		return 0, err
 	}
 	if err := tx.Create(ref, snapshotItem); err != nil {
 		return 0, err
 	}
 
-	opBlob, err := s.MarshalToBlob(op2)
-	if err != nil {
+	opBlob := t.NewBlob()
+	if err := opBlob.MarshalBlob(ctx, op2); err != nil {
 		return 0, err
 	}
 	newState := int64(1)
-	stateItem, err := t.PackStateFunc(ctx, &pserver.State{State: newState, Op: opBlob})
-	if err != nil {
+	stateItem := t.NewState()
+	if err := stateItem.PackState(ctx, newState, opBlob); err != nil {
 		return 0, err
 	}
 
@@ -261,14 +259,14 @@ func Get(ctx context.Context, s *pserver.Server, documentType string, documentId
 	ref := s.Firestore.Collection(t.CollectionName()).Doc(string(documentId))
 
 	var document proto.Message
-	var data *pserver.Snapshot
 	var added bool
 	var state int64
+	var snapshotState int64
 	if !create {
 
 		// if not create on missing, no need for transaction:
 		var err error
-		if document, data, _, err = s.UnpackSnapshot(ctx, nil, t, ref); err != nil {
+		if snapshotState, document, _, err = s.UnpackSnapshot(ctx, nil, t, ref); err != nil {
 			return 0, nil, err
 		}
 
@@ -277,7 +275,7 @@ func Get(ctx context.Context, s *pserver.Server, documentType string, documentId
 		f := func(ctx context.Context, tx *firestore.Transaction) error {
 
 			var err error
-			document, data, _, err = s.UnpackSnapshot(ctx, tx, t, ref)
+			snapshotState, document, _, err = s.UnpackSnapshot(ctx, tx, t, ref)
 			switch {
 			case status.Code(err) == codes.NotFound:
 				added = true
@@ -305,7 +303,7 @@ func Get(ctx context.Context, s *pserver.Server, documentType string, documentId
 		// this does not need to be inside the transaction, and is not needed if we
 		// added a new record.
 		var err error
-		state, err = s.Changes(ctx, nil, t, ref, data.State, 0, func(op *delta.Op) error {
+		state, err = s.Changes(ctx, nil, t, ref, snapshotState, 0, func(op *delta.Op) error {
 			if err := delta.Apply(op, document); err != nil {
 				return err
 			}
@@ -330,12 +328,12 @@ func Refresh(ctx context.Context, s *pserver.Server, documentType string, docume
 
 	// Update the value snapshot. this doesn't need to be inside a transaction, because if the
 	// snapshot is slightly out of date it doesn't matter.
-	document, data, oldSnapshot, err := s.UnpackSnapshot(ctx, nil, t, ref)
+	snapshotState, document, oldSnapshot, err := s.UnpackSnapshot(ctx, nil, t, ref)
 	if err != nil {
 		return perr.Wrap(err, "unpacking snapshot")
 	}
 
-	state, err := s.Changes(ctx, nil, t, ref, data.State, 0, func(op *delta.Op) error {
+	state, err := s.Changes(ctx, nil, t, ref, snapshotState, 0, func(op *delta.Op) error {
 		if err := delta.Apply(op, document); err != nil {
 			return err
 		}
@@ -344,17 +342,16 @@ func Refresh(ctx context.Context, s *pserver.Server, documentType string, docume
 	if err != nil {
 		return err
 	}
-	if state == data.State {
+	if state == snapshotState {
 		return nil
 	}
-	documentBlob, err := s.MarshalToBlob(document)
-	if err != nil {
+	documentBlob := t.NewBlob()
+	if err := documentBlob.MarshalBlob(ctx, document); err != nil {
 		return err
 	}
 
-	newData := &pserver.Snapshot{State: state, Value: documentBlob}
-	newSnapshot, err := t.PackSnapshotFunc(ctx, newData, oldSnapshot, document)
-	if err != nil {
+	newSnapshot := t.NewSnapshot()
+	if err := newSnapshot.PackSnapshot(ctx, state, documentBlob, oldSnapshot, document); err != nil {
 		return err
 	}
 	if _, err := ref.Set(s.FirestoreContext(ctx), newSnapshot); err != nil {

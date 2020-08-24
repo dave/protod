@@ -130,7 +130,7 @@ func (a *App) PersonGetRequest(ctx context.Context, requestBytes []byte) (*Perso
 	if err := proto.Unmarshal(requestBytes, request); err != nil {
 		return wrap(perr.Wrap(err, "unmarshaling get request"))
 	}
-	state, document, err := pstore.Get(ctx, a.Server, PersonTypeName, pstore.DocumentId(request.DocumentId))
+	state, document, err := pstore.Get(ctx, a.Server, PersonTypeName, pstore.DocumentId(request.DocumentId), false)
 	if err != nil {
 		return wrap(perr.Wrap(err, "getting"))
 	}

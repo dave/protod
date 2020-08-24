@@ -35,7 +35,7 @@ func TestRenameChain(t *testing.T) {
 	handle(t, err)
 
 	// user2 gets document
-	user2State, msg, err = pstore.Get(ctx, server, CompanyTypeName, id)
+	user2State, msg, err = pstore.Get(ctx, server, CompanyTypeName, id, false)
 	handle(t, err)
 	user2Value = msg.(*tests.Company)
 	check(t, "user2 get", user2Value, user2State, user1Value, user1State)
@@ -91,7 +91,7 @@ func TestRenameConflict(t *testing.T) {
 	handle(t, err)
 
 	// user2 gets value
-	user2State, msg, err = pstore.Get(ctx, server, PersonTypeName, id)
+	user2State, msg, err = pstore.Get(ctx, server, PersonTypeName, id, false)
 	handle(t, err)
 	user2Value = msg.(*tests.Person)
 	check(t, "user2 get", user2Value, user2State, user1Value, user1State)
@@ -143,7 +143,7 @@ func TestConflict(t *testing.T) {
 	handle(t, err)
 
 	// user2 gets value
-	user2State, msg, err = pstore.Get(ctx, server, PersonTypeName, id)
+	user2State, msg, err = pstore.Get(ctx, server, PersonTypeName, id, false)
 	handle(t, err)
 	user2Value = msg.(*tests.Person)
 	check(t, "user2 get", user2Value, user2State, user1Value, user1State)
@@ -190,7 +190,7 @@ func TestBasic(t *testing.T) {
 	handle(t, err)
 
 	// user2 gets value
-	user2State, msg, err = pstore.Get(ctx, server, PersonTypeName, id)
+	user2State, msg, err = pstore.Get(ctx, server, PersonTypeName, id, false)
 	handle(t, err)
 	user2Value = msg.(*tests.Person)
 	check(t, "user2 get", user2Value, user2State, user1Value, user1State)
@@ -234,7 +234,7 @@ func TestBasic(t *testing.T) {
 	check(t, "user2 edit 2", user2Value, user2State, &tests.Person{Name: "a", Alias: []string{"c", "d"}, Company: &tests.Company{Name: "e"}}, 5)
 
 	// user3 gets value
-	user3State, msg, err = pstore.Get(ctx, server, PersonTypeName, id)
+	user3State, msg, err = pstore.Get(ctx, server, PersonTypeName, id, false)
 	handle(t, err)
 	user3Value = msg.(*tests.Person)
 	check(t, "user3 get", user3Value, user3State, &tests.Person{Name: "a", Alias: []string{"c", "d"}, Company: &tests.Company{Name: "e"}}, 5)

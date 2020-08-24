@@ -76,23 +76,23 @@ func (s *Server) Close() error {
 	return s.Firestore.Close()
 }
 
-func (s *Server) FromBlob(b *Blob) ([]byte, error) {
-	// TODO
-	return b.Value, nil
-}
-
-func (s *Server) ToBlob(b []byte) (*Blob, error) {
-	// TODO
-	return &Blob{Value: b}, nil
-}
-
-func (s *Server) MarshalToBlob(m proto.Message) (*Blob, error) {
-	b, err := proto.Marshal(m)
-	if err != nil {
-		return nil, perr.Wrap(err, "marshaling")
-	}
-	return &Blob{Value: b}, nil
-}
+//func (s *Server) FromBlob(b *Blob) ([]byte, error) {
+//	// TODO
+//	return b.Value, nil
+//}
+//
+//func (s *Server) ToBlob(b []byte) (*Blob, error) {
+//	// TODO
+//	return &Blob{Value: b}, nil
+//}
+//
+//func (s *Server) MarshalToBlob(m proto.Message) (*Blob, error) {
+//	b, err := proto.Marshal(m)
+//	if err != nil {
+//		return nil, perr.Wrap(err, "marshaling")
+//	}
+//	return &Blob{Value: b}, nil
+//}
 
 func (s *Server) Latest(ctx context.Context, tx *firestore.Transaction, t *DocumentType, ref *firestore.DocumentRef) (state int64, err error) {
 	query := ref.Collection(STATES_COLLECTION).OrderBy(t.StateQueryFieldPath(), firestore.Desc).Limit(1)
@@ -112,11 +112,11 @@ func (s *Server) Latest(ctx context.Context, tx *firestore.Transaction, t *Docum
 	if err := docs[0].DataTo(stateMessage); err != nil {
 		return 0, err
 	}
-	stateUnpacked, err := t.UnpackStateFunc(stateMessage)
+	latest, _, err := stateMessage.UnpackState(ctx)
 	if err != nil {
 		return 0, err
 	}
-	return stateUnpacked.State, nil
+	return latest, nil
 }
 
 func (s *Server) Changes(ctx context.Context, tx *firestore.Transaction, t *DocumentType, ref *firestore.DocumentRef, before, after int64, f func(*delta.Op) error) (state int64, err error) {
@@ -140,17 +140,17 @@ func (s *Server) Changes(ctx context.Context, tx *firestore.Transaction, t *Docu
 		if err != nil {
 			return 0, perr.Wrap(err, "iterating state data")
 		}
-		state, op, err := s.UnpackState(stateDoc, t)
+		state, op, err := s.UnpackState(ctx, stateDoc, t)
 		if err != nil {
 			return 0, perr.Wrap(err, "unpacking state data")
 		}
-		if state.State != current+1 {
-			return 0, fmt.Errorf("can't apply op (state %d) to state %d", state.State, current)
+		if state != current+1 {
+			return 0, fmt.Errorf("can't apply op (state %d) to state %d", state, current)
 		}
 		if err := f(op); err != nil {
 			return 0, err
 		}
-		current = state.State
+		current = state
 	}
 	return current, nil
 }
@@ -191,30 +191,30 @@ func (s *Server) DocumentExists(ctx context.Context, tx *firestore.Transaction, 
 	}
 }
 
-func (s *Server) UnpackState(doc *firestore.DocumentSnapshot, t *DocumentType) (data *State, op *delta.Op, err error) {
+func (s *Server) UnpackState(ctx context.Context, doc *firestore.DocumentSnapshot, t *DocumentType) (state int64, op *delta.Op, err error) {
 	stateMessage := t.NewState()
 	if err := doc.DataTo(stateMessage); err != nil {
-		return nil, nil, perr.Wrap(err, "unpacking state document")
+		return 0, nil, perr.Wrap(err, "unpacking state document")
 	}
-	data, err = t.UnpackStateFunc(stateMessage)
+	state, opBlob, err := stateMessage.UnpackState(ctx)
 	if err != nil {
-		return nil, nil, perr.Wrap(err, "unpacking state message")
+		return 0, nil, perr.Wrap(err, "unpacking state message")
 	}
-	opBytes, err := s.FromBlob(data.Op)
+	opBytes, err := opBlob.UnpackBlob(ctx)
 	if err != nil {
-		return nil, nil, perr.Wrap(err, "getting op blob")
+		return 0, nil, perr.Wrap(err, "getting op blob")
 	}
 	if len(opBytes) == 0 {
-		return data, nil, nil
+		return state, nil, nil
 	}
 	op = &delta.Op{}
 	if err := proto.Unmarshal(opBytes, op); err != nil {
-		return nil, nil, perr.Wrap(err, "unmarshaling op")
+		return 0, nil, perr.Wrap(err, "unmarshaling op")
 	}
-	return data, op, nil
+	return state, op, nil
 }
 
-func (s *Server) UnpackSnapshot(ctx context.Context, tx *firestore.Transaction, t *DocumentType, ref *firestore.DocumentRef) (document proto.Message, data *Snapshot, snapshot proto.Message, err error) {
+func (s *Server) UnpackSnapshot(ctx context.Context, tx *firestore.Transaction, t *DocumentType, ref *firestore.DocumentRef) (state int64, document proto.Message, snapshot SnapshotInterface, err error) {
 	var doc *firestore.DocumentSnapshot
 	if tx == nil {
 		doc, err = ref.Get(s.FirestoreContext(ctx))
@@ -223,29 +223,29 @@ func (s *Server) UnpackSnapshot(ctx context.Context, tx *firestore.Transaction, 
 	}
 	switch {
 	case status.Code(err) == codes.NotFound:
-		return nil, nil, nil, err
+		return 0, nil, nil, err
 	case err != nil:
-		return nil, nil, nil, perr.Wrap(err, "getting snapshot document")
+		return 0, nil, nil, perr.Wrap(err, "getting snapshot document")
 	}
 	snapshot = t.NewSnapshot()
 	if err := doc.DataTo(snapshot); err != nil {
-		return nil, nil, nil, perr.Wrap(err, "unpacking snapshot")
+		return 0, nil, nil, perr.Wrap(err, "unpacking snapshot")
 	}
-	data, err = t.UnpackSnapshotFunc(snapshot)
+	state, valueBlob, err := snapshot.UnpackSnapshot(ctx)
 	if err != nil {
-		return nil, nil, nil, perr.Wrap(err, "unpacking snapshot")
+		return 0, nil, nil, perr.Wrap(err, "unpacking snapshot")
 	}
-	b, err := s.FromBlob(data.Value)
+	b, err := valueBlob.UnpackBlob(ctx)
 	if err != nil {
-		return nil, nil, nil, perr.Wrap(err, "getting snapshot value from blob")
+		return 0, nil, nil, perr.Wrap(err, "getting snapshot value from blob")
 	}
 	document = t.NewDocument()
 	if len(b) > 0 {
 		if err := proto.Unmarshal(b, document); err != nil {
-			return nil, nil, nil, perr.Wrap(err, "unmarshaling value")
+			return 0, nil, nil, perr.Wrap(err, "unmarshaling value")
 		}
 	}
-	return document, data, snapshot, nil
+	return state, document, snapshot, nil
 }
 
 func (s *Server) Transform(ctx context.Context, tx *firestore.Transaction, t *DocumentType, ref *firestore.DocumentRef, op2 *delta.Op, before, after int64) (state int64, op1x, op2x *delta.Op, err error) {
@@ -285,51 +285,54 @@ func (s *Server) Transform(ctx context.Context, tx *firestore.Transaction, t *Do
 
 // DocumentType defines a type of document stored in pserver. All fields are optional except Document.
 type DocumentType struct {
-	Document        proto.Message
-	Snapshot        proto.Message
-	State           proto.Message
-	PackSnapshot    func(ctx context.Context, data *Snapshot, old proto.Message, document proto.Message) (proto.Message, error)
-	PackState       func(ctx context.Context, data *State) (proto.Message, error)
-	StateQueryField string // If a custom state is returned by PackState, the query path of the "State" field must be specified here - e.g. "Value.State".
-	UnpackSnapshot  func(proto.Message) (*Snapshot, error)
-	UnpackState     func(proto.Message) (*State, error)
-	Collection      string // default if empty: the full type name of the document is used.
-	OnAdd           func(ctx context.Context, server *Server, tx *firestore.Transaction, id string) error
-	OnEdit          func(ctx context.Context, server *Server, tx *firestore.Transaction, id string) error
-	OnGet           func(ctx context.Context, server *Server, id string) error
+	Document proto.Message
+	Snapshot SnapshotInterface
+	State    StateInterface
+	Blob     BlobInterface
+
+	//PackSnapshot    func(ctx context.Context, data *Snapshot, old proto.Message, document proto.Message) (proto.Message, error)
+	//PackState       func(ctx context.Context, data *State) (proto.Message, error)
+	//StateQueryField string // If a custom state is returned by PackState, the query path of the "State" field must be specified here - e.g. "Value.State".
+	//UnpackSnapshot  func(proto.Message) (*Snapshot, error)
+	//UnpackState     func(proto.Message) (*State, error)
+
+	Collection string // if empty, this defaults to the full type name of the document
+	OnAdd      func(ctx context.Context, server *Server, tx *firestore.Transaction, id string) error
+	OnEdit     func(ctx context.Context, server *Server, tx *firestore.Transaction, id string) error
+	OnGet      func(ctx context.Context, server *Server, id string) error
 }
 
 func (d DocumentType) Type() string {
 	return string(d.Document.ProtoReflect().Descriptor().FullName())
 }
 
-func (d DocumentType) PackSnapshotFunc(ctx context.Context, data *Snapshot, old proto.Message, document proto.Message) (proto.Message, error) {
-	if d.PackSnapshot == nil {
-		return data, nil
-	}
-	return d.PackSnapshot(ctx, data, old, document)
-}
-
-func (d DocumentType) PackStateFunc(ctx context.Context, data *State) (proto.Message, error) {
-	if d.PackState == nil {
-		return data, nil
-	}
-	return d.PackState(ctx, data)
-}
-
-func (d DocumentType) UnpackSnapshotFunc(snap proto.Message) (*Snapshot, error) {
-	if d.UnpackSnapshot == nil {
-		return snap.(*Snapshot), nil
-	}
-	return d.UnpackSnapshot(snap)
-}
-
-func (d DocumentType) UnpackStateFunc(state proto.Message) (*State, error) {
-	if d.UnpackState == nil {
-		return state.(*State), nil
-	}
-	return d.UnpackState(state)
-}
+//func (d DocumentType) PackSnapshotFunc(ctx context.Context, data *Snapshot, old proto.Message, document proto.Message) (proto.Message, error) {
+//	if d.PackSnapshot == nil {
+//		return data, nil
+//	}
+//	return d.PackSnapshot(ctx, data, old, document)
+//}
+//
+//func (d DocumentType) PackStateFunc(ctx context.Context, data *State) (proto.Message, error) {
+//	if d.PackState == nil {
+//		return data, nil
+//	}
+//	return d.PackState(ctx, data)
+//}
+//
+//func (d DocumentType) UnpackSnapshotFunc(snap proto.Message) (*Snapshot, error) {
+//	if d.UnpackSnapshot == nil {
+//		return snap.(*Snapshot), nil
+//	}
+//	return d.UnpackSnapshot(snap)
+//}
+//
+//func (d DocumentType) UnpackStateFunc(state proto.Message) (*State, error) {
+//	if d.UnpackState == nil {
+//		return state.(*State), nil
+//	}
+//	return d.UnpackState(state)
+//}
 
 func (d DocumentType) CollectionName() string {
 	if d.Collection == "" {
@@ -342,25 +345,32 @@ func (d DocumentType) NewDocument() proto.Message {
 	return d.Document.ProtoReflect().New().Interface()
 }
 
-func (d DocumentType) NewSnapshot() proto.Message {
+func (d DocumentType) NewSnapshot() SnapshotInterface {
 	if d.Snapshot == nil {
 		return &Snapshot{}
 	}
-	return d.Snapshot.ProtoReflect().New().Interface()
+	return d.Snapshot.ProtoReflect().New().Interface().(SnapshotInterface)
 }
 
-func (d DocumentType) NewState() proto.Message {
+func (d DocumentType) NewState() StateInterface {
 	if d.State == nil {
 		return &State{}
 	}
-	return d.State.ProtoReflect().New().Interface()
+	return d.State.ProtoReflect().New().Interface().(StateInterface)
+}
+
+func (d DocumentType) NewBlob() BlobInterface {
+	if d.Blob == nil {
+		return &Blob{}
+	}
+	return d.State.ProtoReflect().New().Interface().(BlobInterface)
 }
 
 func (d DocumentType) StateQueryFieldPath() string {
-	if d.StateQueryField == "" {
-		return "State"
+	if sfi, ok := d.State.(StateFieldInterface); ok {
+		return sfi.StateField()
 	}
-	return d.StateQueryField
+	return "State"
 }
 
 // for locking with test server
@@ -435,4 +445,83 @@ func IsBusyError(err error) bool {
 		err == context.DeadlineExceeded ||
 		status.Code(err) == codes.Aborted ||
 		status.Code(err) == codes.DeadlineExceeded
+}
+
+type SnapshotInterface interface {
+	proto.Message
+	PackSnapshot(ctx context.Context, state int64, value BlobInterface, previous, document proto.Message) error
+	UnpackSnapshot(ctx context.Context) (state int64, value BlobInterface, err error)
+}
+
+func (s *Snapshot) PackSnapshot(ctx context.Context, state int64, value BlobInterface, previous, document proto.Message) error {
+	s.State = state
+	s.Value = value.(*Blob)
+	return nil
+}
+
+func (s *Snapshot) UnpackSnapshot(ctx context.Context) (state int64, value BlobInterface, err error) {
+	return s.State, s.Value, nil
+}
+
+type StateInterface interface {
+	proto.Message
+	PackState(ctx context.Context, state int64, op BlobInterface) error
+	UnpackState(ctx context.Context) (state int64, op BlobInterface, err error)
+}
+
+type StateFieldInterface interface {
+	StateField() string
+}
+
+func (s *State) PackState(ctx context.Context, state int64, op BlobInterface) error {
+	s.State = state
+	s.Op = op.(*Blob)
+	return nil
+}
+
+func (s *State) UnpackState(ctx context.Context) (state int64, op BlobInterface, err error) {
+	return s.State, s.Op, nil
+}
+
+func (s *State) StateField() string {
+	return "State"
+}
+
+type BlobInterface interface {
+	proto.Message
+	PackBlob(ctx context.Context, value []byte) error
+	UnpackBlob(ctx context.Context) ([]byte, error)
+	MarshalBlob(ctx context.Context, value proto.Message) error
+	UnmarshalBlob(ctx context.Context, value proto.Message) error
+}
+
+func (b *Blob) PackBlob(ctx context.Context, value []byte) error {
+	b.Value = value
+	return nil
+}
+
+func (b *Blob) UnpackBlob(ctx context.Context) (value []byte, err error) {
+	return b.Value, nil
+}
+
+func (b *Blob) MarshalBlob(ctx context.Context, value proto.Message) error {
+	valueBytes, err := proto.Marshal(value)
+	if err != nil {
+		return perr.Wrap(err, "marshaling")
+	}
+	if err := b.PackBlob(ctx, valueBytes); err != nil {
+		return perr.Wrap(err, "packing")
+	}
+	return nil
+}
+
+func (b *Blob) UnmarshalBlob(ctx context.Context, value proto.Message) error {
+	valueBytes, err := b.UnpackBlob(ctx)
+	if err != nil {
+		return perr.Wrap(err, "unpacking")
+	}
+	if err := proto.Unmarshal(valueBytes, value); err != nil {
+		return perr.Wrap(err, "unmarshalling")
+	}
+	return nil
 }

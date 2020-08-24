@@ -73,7 +73,7 @@ func (u *RandomUser) Run(id pstore.DocumentId) {
 func (u *RandomUser) Get(id pstore.DocumentId) {
 	u.id = id
 	var err error
-	u.state, u.document, err = pstore.Get(context.Background(), u.server, PersonTypeName, id)
+	u.state, u.document, err = pstore.Get(context.Background(), u.server, PersonTypeName, id, false)
 	if err != nil {
 		u.t.Fatal(err)
 	}
