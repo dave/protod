@@ -55,8 +55,11 @@ func Edit(ctx context.Context, s *pserver.Server, documentType string, documentI
 	ref := s.Firestore.Collection(t.CollectionName()).Doc(string(documentId))
 	stateRef := ref.Collection(pserver.STATES_COLLECTION).Doc(string(stateId))
 
-	if state == 0 && (op2 == nil || op2.Type != delta.Op_Set || op2.Location != nil) {
-		return 0, nil, errors.New("if state is 0, op must be a single set operation with nil location")
+	if state == 0 {
+		ops := op2.Flatten()
+		if len(ops) == 0 || ops[0].Type != delta.Op_Set || ops[0].Location != nil {
+			return 0, nil, errors.New("if state is 0, first op must be a single set operation with nil location")
+		}
 	}
 
 	if op2 == nil {
