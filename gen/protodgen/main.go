@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/dave/jennifer/jen"
 	"github.com/dave/protod/perr"
@@ -110,6 +112,7 @@ func (s *state) initScalars() error {
 			Key:              "",
 			Value:            scalarType,
 			ValueName:        strings.Title(scalarType),
+			ValueNameLower:   avoidDartKeywords(lowerInitial(scalarType)),
 			LocatorName:      fmt.Sprintf("%s_scalar", strings.Title(scalarType)),
 			ValueLocatorName: fmt.Sprintf("%s_scalar", strings.Title(scalarType)),
 		})
@@ -120,6 +123,7 @@ func (s *state) initScalars() error {
 			Key:              "",
 			Value:            scalarType,
 			ValueName:        strings.Title(scalarType),
+			ValueNameLower:   avoidDartKeywords(lowerInitial(scalarType)),
 			LocatorName:      fmt.Sprintf("%s_scalar_list", strings.Title(scalarType)),
 			ValueLocatorName: fmt.Sprintf("%s_scalar", strings.Title(scalarType)),
 		})
@@ -131,6 +135,7 @@ func (s *state) initScalars() error {
 				Key:              keyType,
 				Value:            scalarType,
 				ValueName:        strings.Title(scalarType),
+				ValueNameLower:   avoidDartKeywords(lowerInitial(scalarType)),
 				LocatorName:      fmt.Sprintf("%s_scalar_%s_map", strings.Title(scalarType), keyType),
 				ValueLocatorName: fmt.Sprintf("%s_scalar", strings.Title(scalarType)),
 			})
@@ -192,9 +197,10 @@ func (s *state) scanFiles(fpath string, info os.FileInfo, err error) error {
 	var options []*parser.Option
 	var imports []*parser.Import
 	scope := &Scope{
-		Prefix: "",
-		Types:  map[string]*Type{},
-		Scopes: map[string]*Scope{},
+		Prefix:      "",
+		PrefixLower: "",
+		Types:       map[string]*Type{},
+		Scopes:      map[string]*Scope{},
 	}
 	for _, v := range parsedFile.ProtoBody {
 		switch v := v.(type) {
@@ -310,6 +316,7 @@ func (s *state) scanEnum(scope *Scope, v *parser.Enum, f *File) {
 			Key:            key,
 			Value:          v.EnumName,
 			ValueName:      scope.Prefix + strings.Title(v.EnumName),
+			ValueNameLower: avoidDartKeywords(scope.PrefixLower + lowerInitial(v.EnumName)),
 			Enum:           v,
 		}
 		switch ct {
@@ -347,10 +354,11 @@ func (s *state) scanMessage(scope *Scope, v *parser.Message, f *File) {
 		}
 	}
 	innerScope := &Scope{
-		Parent: scope,
-		Prefix: fmt.Sprintf("%s_%s", strings.Title(v.MessageName), scope.Prefix),
-		Types:  map[string]*Type{},
-		Scopes: map[string]*Scope{},
+		Parent:      scope,
+		Prefix:      fmt.Sprintf("%s_%s", strings.Title(v.MessageName), scope.Prefix),
+		PrefixLower: fmt.Sprintf("%s_%s", lowerInitial(v.MessageName), scope.PrefixLower),
+		Types:       map[string]*Type{},
+		Scopes:      map[string]*Scope{},
 	}
 	scope.Scopes[v.MessageName] = innerScope
 	addType := func(ct CollectionType, key string) {
@@ -362,6 +370,7 @@ func (s *state) scanMessage(scope *Scope, v *parser.Message, f *File) {
 			Key:            key,
 			Value:          v.MessageName,
 			ValueName:      scope.Prefix + strings.Title(v.MessageName),
+			ValueNameLower: avoidDartKeywords(scope.PrefixLower + lowerInitial(v.MessageName)),
 			Message:        v,
 		}
 		switch ct {
@@ -447,6 +456,7 @@ func (s *state) parseField(v parser.Visitee, typ *Type, file *File, pkg *Package
 		case *parser.Field:
 			field.Name = b.FieldName
 			field.NameTitle = strings.Title(field.Name)
+			field.NameLower = lowerInitial(field.Name)
 			rawTypeString = b.Type
 			if b.IsRepeated {
 				field.CollectionType = LIST
@@ -461,6 +471,7 @@ func (s *state) parseField(v parser.Visitee, typ *Type, file *File, pkg *Package
 		case *parser.MapField:
 			field.Name = b.MapName
 			field.NameTitle = strings.Title(field.Name)
+			field.NameLower = lowerInitial(field.Name)
 			rawTypeString = b.Type
 			field.CollectionType = MAP
 			fieldNumber, err := strconv.Atoi(b.FieldNumber)
@@ -472,6 +483,7 @@ func (s *state) parseField(v parser.Visitee, typ *Type, file *File, pkg *Package
 		case *parser.Oneof:
 			field.Name = b.OneofName
 			field.NameTitle = strings.Title(b.OneofName)
+			field.NameLower = lowerInitial(b.OneofName)
 			field.CollectionType = BASE
 			field.Number = -1
 
@@ -485,6 +497,7 @@ func (s *state) parseField(v parser.Visitee, typ *Type, file *File, pkg *Package
 					Key:              "",
 					Value:            field.Name,
 					ValueName:        fmt.Sprintf("%s%s", typ.Scope.Prefix, strings.Title(b.OneofName)),
+					ValueNameLower:   avoidDartKeywords(fmt.Sprintf("%s%s", typ.Scope.PrefixLower, lowerInitial(b.OneofName))),
 					LocatorName:      fmt.Sprintf("%s%s_oneof", typ.Scope.Prefix, strings.Title(b.OneofName)),
 					ValueLocatorName: fmt.Sprintf("%s%s_oneof", typ.Scope.Prefix, strings.Title(b.OneofName)),
 					Fields:           nil,
@@ -509,6 +522,7 @@ func (s *state) parseField(v parser.Visitee, typ *Type, file *File, pkg *Package
 		case *parser.OneofField:
 			field.Name = b.FieldName
 			field.NameTitle = strings.Title(field.Name)
+			field.NameLower = lowerInitial(field.Name)
 			rawTypeString = b.Type
 			field.CollectionType = BASE
 			fieldNumber, err := strconv.Atoi(b.FieldNumber)
@@ -522,6 +536,15 @@ func (s *state) parseField(v parser.Visitee, typ *Type, file *File, pkg *Package
 		switch field.NameTitle {
 		case "Edit", "Insert", "Delete", "Move", "Set", "Rename":
 			field.NameTitle += "_"
+		}
+
+		switch field.NameLower {
+		case "edit", "insert", "delete", "move", "set", "rename":
+			field.NameLower += "_"
+		}
+
+		if dartKeywords[field.NameLower] {
+			field.NameLower += "_"
 		}
 
 		if rawTypeString == "" {
@@ -685,18 +708,18 @@ func (s *state) genDart() error {
 
 		if pkg.Root {
 			/*
-				Op_root_type Op() {
+				Op_root_type get op {
 				  return Op_root_type();
 				}
 			*/
-			sb.WriteString("Op_root_type Op() {\n")
+			sb.WriteString("Op_root_type get op {\n")
 			sb.WriteString("  return Op_root_type();\n")
 			sb.WriteString("}\n")
 			sb.WriteString("\n")
 			/*
 				class Op_root_type {
 				  Op_root_type();
-				  Person_type Person() {
+				  Person_type get person {
 				    return Person_type([]);
 				  }
 				  //...
@@ -710,7 +733,7 @@ func (s *state) genDart() error {
 					if typ.CollectionType != BASE {
 						continue
 					}
-					sb.WriteString(fmt.Sprintf("  %s %s() {\n", typ.LocatorName, typ.ValueName))
+					sb.WriteString(fmt.Sprintf("  %s get %s {\n", typ.LocatorName, typ.ValueNameLower))
 					sb.WriteString(fmt.Sprintf("    return %s([]);\n", typ.LocatorName))
 					sb.WriteString("  }\n")
 				}
@@ -731,32 +754,32 @@ func (s *state) genDart() error {
 
 				if typ.CollectionType == LIST {
 					/*
-					  Share_type Index(int i) {
+					  Share_type index(int i) {
 					    return Share_type(delta.copyAndAppendIndex(location, fixnum.Int64(i)));
 					  }
 					*/
-					sb.WriteString(fmt.Sprintf("  %s Index(int i) {\n", typ.ValueLocatorName))
+					sb.WriteString(fmt.Sprintf("  %s index(int i) {\n", typ.ValueLocatorName))
 					sb.WriteString(fmt.Sprintf("    return %s(delta.copyAndAppendIndex(location, fixnum.Int64(i)));\n", typ.ValueLocatorName))
 					sb.WriteString(fmt.Sprintf("  }\n"))
 
 					/*
-						delta.Op Insert(int index, pb.Item value) {
+						delta.Op insert(int index, pb.Item value) {
 						  return delta.insert(delta.copyAndAppendIndex(location, fixnum.Int64(index)), value);
 						}
-						delta.Op Insert(int index, String value) {
+						delta.Op insert(int index, String value) {
 						  return delta.insert(delta.copyAndAppendIndex(location, fixnum.Int64(index)), delta.scalarString(value));
 						}
 					*/
-					sb.WriteString(fmt.Sprintf("  delta.Op Insert(int index, %s value) {\n", typ.DartValueType()))
+					sb.WriteString(fmt.Sprintf("  delta.Op insert(int index, %s value) {\n", typ.DartValueType()))
 					sb.WriteString(fmt.Sprintf("    return delta.insert(delta.copyAndAppendIndex(location, fixnum.Int64(index)), %s);\n", typ.DartValueConversion("value")))
 					sb.WriteString("  }\n")
 					sb.WriteString("\n")
 					/*
-						delta.Op Move(int from, int to) {
+						delta.Op move(int from, int to) {
 						  return delta.move(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
 						}
 					*/
-					sb.WriteString("  delta.Op Move(int from, int to) {\n")
+					sb.WriteString("  delta.Op move(int from, int to) {\n")
 					sb.WriteString("    return delta.move(delta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));\n")
 					sb.WriteString("  }\n")
 					sb.WriteString("\n")
@@ -764,20 +787,20 @@ func (s *state) genDart() error {
 				}
 				if typ.CollectionType == MAP {
 					/*
-					  Share_type Key(int k) {
+					  Share_type key(int k) {
 					    return Share_type(delta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
 					  }
 					*/
-					sb.WriteString(fmt.Sprintf("  %s Key(%s key) {\n", typ.ValueLocatorName, DartTypesConvenience[typ.Key]))
+					sb.WriteString(fmt.Sprintf("  %s key(%s key) {\n", typ.ValueLocatorName, DartTypesConvenience[typ.Key]))
 					sb.WriteString(fmt.Sprintf("    return %s(delta.copyAndAppendKey%s(location, %s));\n", typ.ValueLocatorName, strings.Title(typ.Key), DartTypesConversion[typ.Key]("key")))
 					sb.WriteString(fmt.Sprintf("  }\n"))
 
 					/*
-						delta.Op Rename(int from, int to) {
+						delta.Op rename(int from, int to) {
 						  return delta.rename(delta.copyAndAppendIndex(location, fixnum.Int64(from)), delta.keyInt64(fixnum.Int64(to)));
 						}
 					*/
-					sb.WriteString(fmt.Sprintf("  delta.Op Rename(%s from, %s to) {\n", DartTypesConvenience[typ.Key], DartTypesConvenience[typ.Key]))
+					sb.WriteString(fmt.Sprintf("  delta.Op rename(%s from, %s to) {\n", DartTypesConvenience[typ.Key], DartTypesConvenience[typ.Key]))
 					sb.WriteString(fmt.Sprintf("    return delta.rename(delta.copyAndAppendKey%s(location, %s), delta.key%s(%s));\n", strings.Title(typ.Key), DartTypesConversion[typ.Key]("from"), strings.Title(typ.Key), DartTypesConversion[typ.Key]("to")))
 					sb.WriteString("  }\n")
 					sb.WriteString("\n")
@@ -796,11 +819,11 @@ func (s *state) genDart() error {
 							}
 						}
 						/*
-							delta.String_scalar Id() {
+							delta.String_scalar get id {
 							  return delta.String_scalar(delta.copyAndAppendField(location, "id", 1));
 							}
 						*/
-						sb.WriteString(fmt.Sprintf("  %s %s() {\n", qualifiedTypeName, field.NameTitle))
+						sb.WriteString(fmt.Sprintf("  %s get %s {\n", qualifiedTypeName, field.NameLower))
 						switch field.ValueType {
 						case ONEOF:
 							var fields string
@@ -819,32 +842,32 @@ func (s *state) genDart() error {
 				}
 
 				/*
-				  delta.Op Delete() {
+				  delta.Op delete() {
 				    return delta.delete(location);
 				  }
 				*/
-				sb.WriteString("  delta.Op Delete() {\n")
+				sb.WriteString("  delta.Op delete() {\n")
 				sb.WriteString("    return delta.delete(location);\n")
 				sb.WriteString("  }\n")
 				sb.WriteString("\n")
 				if typ.ValueType != ONEOF {
 					/*
-						delta.Op Set(pb.Company value) {
+						delta.Op set(pb.Company value) {
 						  return delta.set(location, value);
 						}
 					*/
-					sb.WriteString(fmt.Sprintf("  delta.Op Set(%s value) {\n", typ.DartCollectionType()))
+					sb.WriteString(fmt.Sprintf("  delta.Op set(%s value) {\n", typ.DartCollectionType()))
 					sb.WriteString(fmt.Sprintf("    return delta.set(location, %s);\n", typ.DartCollectionConversion("value")))
 					sb.WriteString("  }\n")
 					sb.WriteString("\n")
 				}
 				if typ.CollectionType == BASE && typ.ValueType == SCALAR && typ.Value == "string" {
 					/*
-						delta.Op Edit(String from, String to) {
+						delta.Op edit(String from, String to) {
 						  return delta.edit(location, from, to)
 						}
 					*/
-					sb.WriteString("  delta.Op Edit(String from, String to) {\n")
+					sb.WriteString("  delta.Op edit(String from, String to) {\n")
 					sb.WriteString("    return delta.edit(location, from, to);\n")
 					sb.WriteString("  }\n")
 					sb.WriteString("\n")
@@ -1001,6 +1024,7 @@ type Type struct {
 	Key              string // only for CollectionType == MAP
 	Value            string // name WITHOUT SCOPE PREFIX
 	ValueName        string // capitalised version of Value WITH SCOPE PREFIX
+	ValueNameLower   string // Value WITH SCOPE PREFIX
 	LocatorName      string
 	ValueLocatorName string
 	Fields           []*Field // only for ValueType == MESSAGE
@@ -1013,6 +1037,7 @@ type Field struct {
 	Message           *Type
 	Name              string
 	NameTitle         string
+	NameLower         string
 	Number            int
 	ValueType         ValueType
 	CollectionType    CollectionType
@@ -1488,10 +1513,11 @@ var DartScalarFields = map[string]string{
 const deltaPath = "github.com/dave/protod/delta"
 
 type Scope struct {
-	Parent *Scope
-	Prefix string
-	Types  map[string]*Type
-	Scopes map[string]*Scope
+	Parent      *Scope
+	Prefix      string
+	PrefixLower string
+	Types       map[string]*Type
+	Scopes      map[string]*Scope
 }
 
 func (s *Scope) Lookup(name string) *Type {
@@ -1502,4 +1528,33 @@ func (s *Scope) Lookup(name string) *Type {
 		return nil
 	}
 	return s.Parent.Lookup(name)
+}
+
+func lowerInitial(s string) string {
+	if s == "" {
+		return ""
+	}
+	firstRune, runeLen := utf8.DecodeRuneInString(s)
+	return string(unicode.ToLower(firstRune)) + s[runeLen:]
+}
+
+var dartKeywords = map[string]bool{
+	// Reserved Words: These are main keywords in dart and they are:
+	"assert": true, "break": true, "case": true, "catch": true, "class": true, "const": true, "continue": true, "default": true, "do": true, "else": true, "enum": true, "extends": true, "false": true, "final": true, "finally": true, "for": true, "if": true, "in": true, "is": true, "new": true, "null": true, "rethrow": true, "return": true, "super": true, "switch": true, "this": true, "throw": true, "true": true, "try": true, "var": true, "void": true, "while": true, "with": true,
+
+	// Contextual Keywords: These Keywords have meaning only in specific places. They’re valid identifiers everywhere. Contextual Keywords are:
+	//"async": true, "hide": true, "on": true, "show": true, "sync": true,
+
+	// Keywords for Asynchrony Support: These are newer, limited reserved words related to the asynchrony support. And these keywords are:
+	"await": true, "yield": true,
+
+	// Built-in Identifier Words: These are used to simplify the task of porting JavaScript code to Dart, these keywords are valid identifiers in most places, but they can’t be used as class or type names, or as import prefixes. These words are:
+	//"abstract": true, "as": true, "covariant": true, "deferred": true, "dynamic": true, "export": true, "extension": true, "external": true, "factory": true, "function": true, "get": true, "implements": true, "import": true, "interface": true, "library": true, "mixin": true, "operator": true, "part": true, "set": true, "static": true, "typedef": true,
+}
+
+func avoidDartKeywords(s string) string {
+	if dartKeywords[s] {
+		return s + "_"
+	}
+	return s
 }

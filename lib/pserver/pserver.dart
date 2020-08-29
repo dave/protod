@@ -34,7 +34,7 @@ class Store<T extends GeneratedMessage> {
     if (!_adapter.connected()) {
       return;
     }
-    var futures = <Future>[];
+    List<Future> futures = [];
     _box.keys.forEach((id) {
       if (!_items.containsKey(id)) {
         final response = _getFromBox(id);
@@ -98,6 +98,24 @@ class Store<T extends GeneratedMessage> {
   }
 
   bool has(String id) => _items.containsKey(id) || _box.containsKey(id);
+
+  Future<Item<T>> refresh(String id) async {
+    final response = get(id);
+    if (response.future != null) {
+      // item has an uncommitted change... once that is complete, item will be refreshed.
+      return await response.future;
+    } else if (response.item != null) {
+      // item didn't have any uncommitted changes, so we trigger a refresh:
+      await response.item.send();
+      return response.item;
+    }
+    return null;
+  }
+
+  Future<void> deleteLocal(String id) async {
+    _items.remove(id);
+    await _box.delete(id);
+  }
 
   Response<T> get(String id, {bool create = false}) {
     if (_items.containsKey(id)) {
@@ -219,6 +237,10 @@ class Item<T extends GeneratedMessage> {
     _store._put(id, this);
 
     // Trigger the server request
+    await send();
+  }
+
+  Future<void> refresh() async {
     await send();
   }
 
