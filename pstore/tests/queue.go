@@ -15,12 +15,12 @@ func Queue(ctx context.Context, s *pserver.Server, message proto.Message) (*task
 
 	client, err := cloudtasks.NewClient(ctx)
 	if err != nil {
-		return nil, perr.Wrap(err, "getting new cloudtasks client")
+		return nil, perr.Wrap(err).Debug("getting new cloudtasks client")
 	}
 
 	body, err := proto.Marshal(message)
 	if err != nil {
-		return nil, perr.Wrap(err, "marshaling refresh message")
+		return nil, perr.Wrap(err).Debug("marshaling refresh message")
 	}
 
 	req := &taskspb.CreateTaskRequest{
@@ -39,7 +39,7 @@ func Queue(ctx context.Context, s *pserver.Server, message proto.Message) (*task
 
 	task, err := client.CreateTask(ctx, req)
 	if err != nil {
-		return nil, perr.Wrap(err, "creating task")
+		return nil, perr.Wrap(err).Debug("creating task")
 	}
 
 	return task, nil

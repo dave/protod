@@ -9,8 +9,10 @@ import 'package:protod/delta/delta.dart';
 import 'package:protod/delta/delta.pb.dart';
 
 class Store<T extends GeneratedMessage> {
-  final hive.Box<Item<T>> _box;
+  hive.Box<Item<T>> _box;
+  hive.Box<bool> _dirty;
   final StoreAdapter<T> _adapter;
+  final bool Function() _offline;
   final String _type;
   final TypeRegistry _registry;
   Map<String, Item<T>> _items = {};
@@ -18,60 +20,39 @@ class Store<T extends GeneratedMessage> {
 
   Store(
     T empty,
-    hive.Box<Item<T>> box,
     StoreAdapter<T> adapter,
+    bool Function() offline,
     TypeRegistry registry,
   )   : this._type = empty.info_.qualifiedMessageName,
-        this._box = box,
         this._adapter = adapter,
+        this._offline = offline,
         this._registry = registry;
 
   Iterable<String> ids() {
     return _box.keys;
   }
 
-  Future<void> init() async {
-    if (!_adapter.connected()) {
-      return;
-    }
-    List<Future> futures = [];
-    _box.keys.forEach((id) {
-      if (!_items.containsKey(id)) {
-        final response = _getFromBox(id);
-        if (response.future != null) {
-          futures.add(response.future);
-        }
-      }
-      if (!_items.containsKey(id)) {}
-    });
-    await Future.wait(futures);
+  Iterable<String> dirty() {
+    // This box makes it possible to track the documents that require an update
+    // without opening and parsing them all. Opening and parsing a document may
+    // be an expensive process for systems with many large documents.
+    return _dirty.keys;
   }
 
-  Response<T> _getFromBox(String id) {
-    var item = _box.get(id);
-    item._sending = false;
-    item._store = this;
-    item.id = id;
+  Future<void> init() async {
+    _box = await hive.Hive.openBox(this._type);
+    _dirty = await hive.Hive.openBox("${this._type}:dirty");
+  }
 
-    _items[id] = item;
-
-    if (item.state == 0 || item.requestId != '') {
-      // If a previous request was interrupted, send again and return the
-      // future along with the item. It is safe to use this item and continue
-      // adding operations while the future is pending.
-
-      if (!_adapter.connected()) {
-        // if the device is offline, just return the item
-        return Response<T>(item, null);
+  Future<void> update() async {
+    List<Future> futures = [];
+    _dirty.keys.forEach((id) {
+      final response = get(id, update: true);
+      if (response.future != null) {
+        futures.add(response.future);
       }
-
-      print("sending $id");
-      final future = item.send();
-      return Response<T>(item, future);
-    }
-
-    // The item is ready, and no future is needed.
-    return Response<T>(item, null);
+    });
+    await Future.wait(futures);
   }
 
   Response<T> add(String documentId, T value) {
@@ -86,10 +67,11 @@ class Store<T extends GeneratedMessage> {
       ..overflow = [];
 
     _items[documentId] = item;
-    // TODO: do we need to wait for this future to finish??
-    _put(documentId, item);
 
-    if (!_adapter.connected()) {
+    _persist(documentId, item);
+
+    if (_offline()) {
+      // if the adapter is offline, just return the item
       return Response<T>(item, null);
     }
 
@@ -98,66 +80,83 @@ class Store<T extends GeneratedMessage> {
   }
 
   bool has(String id) => _items.containsKey(id) || _box.containsKey(id);
+  bool open(String id) => _items.containsKey(id);
 
   Future<Item<T>> refresh(String id) async {
-    final response = get(id);
+    final response = get(id, refresh: true);
     if (response.future != null) {
-      // item has an uncommitted change... once that is complete, item will be refreshed.
       return await response.future;
-    } else if (response.item != null) {
-      // item didn't have any uncommitted changes, so we trigger a refresh:
-      await response.item.send();
+    }
+    if (response.item != null) {
       return response.item;
     }
     return null;
   }
 
-  Future<void> deleteLocal(String id) async {
+  Future<void> delete(String id) async {
     _items.remove(id);
-    await _box.delete(id);
+    _box.delete(id);
+    _dirty.delete(id);
   }
 
-  Response<T> get(String id, {bool create = false}) {
-    if (_items.containsKey(id)) {
+  Response<T> get(
+    String id, {
+    bool create = false, // create the document if it doesn't exist
+    bool update = false, // update the document if it's dirty
+    bool refresh = false, // update the document even if it's not dirty
+  }) {
+    if (_box.containsKey(id)) {
+      if (!_items.containsKey(id)) {
+        _items[id] = _box.get(id);
+        _items[id]._sending = false;
+        _items[id]._store = this;
+        _items[id].id = id;
+      }
+
+      if (refresh || (update && _items[id].dirty())) {
+        // If required, send the refresh / update and return the future along
+        // with the item. It is safe to use this item and continue adding
+        // operations while the future is pending.
+        final future = _items[id].send();
+        return Response<T>(_items[id], future);
+      }
+
       return Response<T>(_items[id], null);
     }
 
-    if (_box.containsKey(id)) {
-      return _getFromBox(id);
-    }
+    Future<Item<T>> send(String id, {bool create = false}) async {
+      final response = await _adapter.get(_type, id, create, _registry);
 
-    if (!_adapter.connected()) {
-      // Item doesn't exist yet AND the device is not connected, so return null.
-      return Response<T>(null, null);
+      var item = Item<T>()
+        .._store = this
+        .._sending = false
+        ..id = id
+        ..value = response.value
+        ..state = response.state
+        ..requestId = ''
+        ..buffer = []
+        ..overflow = [];
+
+      _items[id] = item;
+
+      _persist(id, item);
+
+      return item;
     }
 
     // Item doesn't exist yet, so just return the future.
-    final future = _sendGet(id, create: create);
+    final future = send(id, create: create);
     return Response<T>(null, future);
   }
 
-  Future<Item<T>> _sendGet(String id, {bool create = false}) async {
-    final response = await _adapter.get(_type, id, create, _registry);
-
-    var item = Item<T>()
-      .._store = this
-      .._sending = false
-      ..id = id
-      ..value = response.value
-      ..state = response.state
-      ..requestId = ''
-      ..buffer = []
-      ..overflow = [];
-
-    _items[id] = item;
-    // TODO: do we need to wait for this future to finish?
-    _put(id, item);
-
-    return item;
-  }
-
-  Future<void> _put(String id, Item<T> item) async {
-    await _box.put(id, item);
+  void _persist(String id, Item<T> item) {
+    // put is async but we don't need to await, as per https://pub.dev/packages/hive
+    _box.put(id, item);
+    if (item.dirty()) {
+      _dirty.put(id, true);
+    } else {
+      _dirty.delete(id);
+    }
   }
 
   String randomUnique() {
@@ -233,11 +232,17 @@ class Item<T extends GeneratedMessage> {
     apply(op, value);
 
     // Persist the item
-    // TODO: do we need to wait for this future to finish?
-    _store._put(id, this);
+    _store._persist(id, this);
 
     // Trigger the server request
     await send();
+  }
+
+  bool dirty() {
+    return state == Int64(0) ||
+        requestId != "" ||
+        buffer.length > 0 ||
+        overflow.length > 0;
   }
 
   Future<void> refresh() async {
@@ -246,6 +251,8 @@ class Item<T extends GeneratedMessage> {
 
   Future<Item<T>> send() async {
     if (_sending) {
+      // if this item is already sending, instead of starting a duplicate request we
+      // return a future that waits for the _current Completer.
       Future<Item<T>> f() async {
         await _current.future;
         return this;
@@ -253,17 +260,13 @@ class Item<T extends GeneratedMessage> {
 
       return f();
     }
-    if (!_store._adapter.connected()) {
-      // if the device is not connected, return immediately without error.
-      return this;
-    }
     _sending = true;
     _current = Completer<void>();
     try {
       await _sendEdit();
     } catch (e) {
       _current.completeError(e);
-      return this;
+      throw e;
     } finally {
       _sending = false;
     }
@@ -280,8 +283,7 @@ class Item<T extends GeneratedMessage> {
     // Persist the item before sending the request. If the request never returns,
     // we should use the same request ID on subsequent attempts, even after app
     // shutdown / restart.
-    // TODO: do we need to wait for this future to finish?
-    _store._put(id, this);
+    _store._persist(id, this);
 
     final response = await _store._adapter.edit(
       _store._type,
@@ -324,13 +326,12 @@ class Item<T extends GeneratedMessage> {
     }
 
     // Persist the item
-    // TODO: do we need to wait for this future to finish?
-    _store._put(id, this);
+    _store._persist(id, this);
 
     // If buffer has an operation, send again.
     if (buffer.length > 0) {
-      if (!_store._adapter.connected()) {
-        // if the device isn't connected, don't start sending.
+      if (_store._offline()) {
+        // if the adapter is offline, don't send.
         return;
       }
       await _sendEdit();
@@ -412,18 +413,12 @@ class ItemAdapter<T extends GeneratedMessage>
 }
 
 abstract class StoreAdapter<T extends GeneratedMessage> {
-  bool connected();
   Future<StoreAdapterGetResponse<T>> get(
     String documentType,
     String documentId,
     bool create,
     TypeRegistry r,
   );
-//  Future<StoreAdapterAddResponse> add(
-//    String documentType,
-//    String documentId,
-//    T value,
-//  );
   Future<StoreAdapterEditResponse> edit(
     String documentType,
     String documentId,

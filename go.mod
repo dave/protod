@@ -15,4 +15,5 @@ require (
 	google.golang.org/genproto v0.0.0-20200325114520-5b2d0af7952b
 	google.golang.org/grpc v1.28.0
 	google.golang.org/protobuf v1.21.0
+	github.com/pkg/errors v0.9.1
 )

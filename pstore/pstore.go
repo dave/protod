@@ -2,8 +2,6 @@ package pstore
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"math/rand"
 	"time"
 
@@ -11,8 +9,6 @@ import (
 	"github.com/dave/protod/delta"
 	"github.com/dave/protod/perr"
 	"github.com/dave/protod/pserver"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -49,7 +45,7 @@ func Edit(ctx context.Context, s *pserver.Server, documentType string, documentI
 
 	t := s.Type(documentType)
 	if t == nil {
-		return 0, nil, fmt.Errorf("type %q not found", documentType)
+		return 0, nil, perr.Debugf("type %q not found", documentType)
 	}
 
 	ref := s.Firestore.Collection(t.CollectionName()).Doc(string(documentId))
@@ -58,7 +54,7 @@ func Edit(ctx context.Context, s *pserver.Server, documentType string, documentI
 	if state == 0 {
 		ops := op2.Flatten()
 		if len(ops) == 0 || ops[0].Type != delta.Op_Set || ops[0].Location != nil {
-			return 0, nil, errors.New("if state is 0, first op must be a single set operation with nil location")
+			return 0, nil, perr.Debug("if state is 0, first op must be a single set operation with nil location")
 		}
 	}
 
@@ -70,7 +66,7 @@ func Edit(ctx context.Context, s *pserver.Server, documentType string, documentI
 			return nil
 		})
 		if err != nil {
-			return 0, nil, err
+			return 0, nil, perr.Wrap(err).Debug("changes")
 		}
 		return newState, delta.Compound(ops...), nil
 	}
@@ -84,22 +80,22 @@ func Edit(ctx context.Context, s *pserver.Server, documentType string, documentI
 		// check for documents with the same unique request id
 		documentExists, err := s.DocumentExists(ctx, tx, ref)
 		if err != nil {
-			return err
+			return perr.Wrap(err).Debug("getting existing document")
 		}
 		if !documentExists {
 
 			if state != 0 {
-				return errors.New("document didn't exist but edit operation supplied non zero state")
+				return perr.Debug("document didn't exist but edit operation supplied non zero state")
 			}
 
 			if t.OnAdd != nil {
 				if err := t.OnAdd(ctx, s, tx, string(documentId)); err != nil {
-					return err
+					return perr.Wrap(err).Debug("add handler")
 				}
 			}
 
 			if newState, err = createDocument(ctx, s, tx, t, ref, stateRef, op2); err != nil {
-				return err
+				return perr.Wrap(err).Debug("create document")
 			}
 
 			return nil
@@ -107,7 +103,7 @@ func Edit(ctx context.Context, s *pserver.Server, documentType string, documentI
 
 		duplicate, err = s.QueryState(ctx, tx, stateRef)
 		if err != nil {
-			return err
+			return perr.Wrap(err).Debug("querying state")
 		}
 		if duplicate != nil {
 			// Exit from transaction and continue processing outside (no writes needed)
@@ -120,23 +116,23 @@ func Edit(ctx context.Context, s *pserver.Server, documentType string, documentI
 
 			lastState, err := s.Latest(ctx, tx, t, ref)
 			if err != nil {
-				return err
+				return perr.Wrap(err).Debug("getting latest state")
 			}
 
 			newState = lastState + 1
 
 			opBlob := t.NewBlob()
 			if err := opBlob.MarshalBlob(ctx, op2); err != nil {
-				return err
+				return perr.Wrap(err).Debug("unmarshaling op blob")
 			}
 
 			stateItem := t.NewState()
 			if err := stateItem.PackState(ctx, newState, opBlob); err != nil {
-				return err
+				return perr.Wrap(err).Debug("packing state")
 			}
 
 			if err := tx.Create(stateRef, stateItem); err != nil {
-				return err
+				return perr.Wrap(err).Debug("firestore create").Flag(pserver.Firestore)
 			}
 
 			return nil
@@ -144,13 +140,13 @@ func Edit(ctx context.Context, s *pserver.Server, documentType string, documentI
 
 		lastState, op1x, op2x, err = s.Transform(ctx, tx, t, ref, op2, state, 0)
 		if err != nil {
-			return err
+			return perr.Wrap(err).Debug("transform")
 		}
 
 		// custom code
 		if t.OnEdit != nil {
 			if err := t.OnEdit(ctx, s, tx, string(documentId)); err != nil {
-				return err
+				return perr.Wrap(err).Debug("edit handler")
 			}
 		}
 
@@ -160,26 +156,29 @@ func Edit(ctx context.Context, s *pserver.Server, documentType string, documentI
 		// Store op2x in the database
 		op2xBlob := t.NewBlob()
 		if err := op2xBlob.MarshalBlob(ctx, op2x); err != nil {
-			return err
+			return perr.Wrap(err).Debug("marshaling op2x blob")
 		}
 
 		newStateItem := t.NewState()
 		if err := newStateItem.PackState(ctx, newState, op2xBlob); err != nil {
-			return err
+			return perr.Wrap(err).Debug("packing state")
 		}
 
 		if err := tx.Create(stateRef, newStateItem); err != nil {
-			return err
+			return perr.Wrap(err).Debug("firestore create").Flag(pserver.Firestore)
 		}
 
 		return nil
 
 	}
 	tf := func() error {
-		return s.Firestore.RunTransaction(s.FirestoreContext(ctx), f)
+		if err := s.Firestore.RunTransaction(s.FirestoreContext(ctx), f); err != nil {
+			return perr.Wrap(err).Debug("running transaction").Flag(pserver.Firestore)
+		}
+		return nil
 	}
 	if err := pserver.Lock(ctx, ref.Path, tf); err != nil {
-		return 0, nil, err
+		return 0, nil, perr.Wrap(err).Debug("locking")
 	}
 
 	if duplicate == nil {
@@ -190,14 +189,14 @@ func Edit(ctx context.Context, s *pserver.Server, documentType string, documentI
 	// stored in the database.
 	duplicateState, _, err := s.UnpackState(ctx, duplicate, t)
 	if err != nil {
-		return 0, nil, err
+		return 0, nil, perr.Wrap(err).Debug("unpacking duplicate state")
 	}
 
 	// Note that the state provided by the client is the "before" state for the transform, and the state from the
 	// duplicate record is the "after" state in the transform:
 	_, op1x, _, err = s.Transform(ctx, nil, t, ref, op2, state, duplicateState)
 	if err != nil {
-		return 0, nil, err
+		return 0, nil, perr.Wrap(err).Debug("transforming duplicate state")
 	}
 
 	return duplicateState, op1x, nil
@@ -206,7 +205,10 @@ func Edit(ctx context.Context, s *pserver.Server, documentType string, documentI
 
 func Add(ctx context.Context, s *pserver.Server, documentType string, documentId DocumentId, stateId StateId, document proto.Message) (int64, error) {
 	state, _, err := Edit(ctx, s, documentType, documentId, stateId, 0, delta.Root(document))
-	return state, err
+	if err != nil {
+		return 0, perr.Wrap(err).Debug("editing")
+	}
+	return state, nil
 }
 
 func createDocument(ctx context.Context, s *pserver.Server, tx *firestore.Transaction, t *pserver.DocumentType, ref, stateRef *firestore.DocumentRef, op2 *delta.Op) (int64, error) {
@@ -218,28 +220,28 @@ func createDocument(ctx context.Context, s *pserver.Server, tx *firestore.Transa
 	document := t.NewDocument()
 	documentBlob := t.NewBlob()
 	if err := documentBlob.MarshalBlob(ctx, document); err != nil {
-		return 0, err
+		return 0, perr.Wrap(err).Debug("marchaling document blob")
 	}
 	snapshotItem := t.NewSnapshot()
 	if err := snapshotItem.PackSnapshot(ctx, 0, documentBlob, nil, document); err != nil {
-		return 0, err
+		return 0, perr.Wrap(err).Debug("packing snapshot")
 	}
 	if err := tx.Create(ref, snapshotItem); err != nil {
-		return 0, err
+		return 0, perr.Wrap(err).Debug("firestore create snapshot").Flag(pserver.Firestore)
 	}
 
 	opBlob := t.NewBlob()
 	if err := opBlob.MarshalBlob(ctx, op2); err != nil {
-		return 0, err
+		return 0, perr.Wrap(err).Debug("marshaling op blob")
 	}
 	newState := int64(1)
 	stateItem := t.NewState()
 	if err := stateItem.PackState(ctx, newState, opBlob); err != nil {
-		return 0, err
+		return 0, perr.Wrap(err).Debug("packing state")
 	}
 
 	if err := tx.Create(stateRef, stateItem); err != nil {
-		return 0, err
+		return 0, perr.Wrap(err).Debug("firestore create state").Flag(pserver.Firestore)
 	}
 
 	return newState, nil
@@ -249,13 +251,13 @@ func Get(ctx context.Context, s *pserver.Server, documentType string, documentId
 
 	t := s.Type(documentType)
 	if t == nil {
-		return 0, nil, fmt.Errorf("type %q not found", documentType)
+		return 0, nil, perr.Debugf("type %q not found", documentType)
 	}
 
 	// custom code
 	if t.OnGet != nil {
 		if err := t.OnGet(ctx, s, string(documentId)); err != nil {
-			return 0, nil, err
+			return 0, nil, perr.Wrap(err).Debug("get handler")
 		}
 	}
 
@@ -270,7 +272,7 @@ func Get(ctx context.Context, s *pserver.Server, documentType string, documentId
 		// if not create on missing, no need for transaction:
 		var err error
 		if snapshotState, document, _, err = s.UnpackSnapshot(ctx, nil, t, ref); err != nil {
-			return 0, nil, err
+			return 0, nil, perr.Wrap(err).Debug("unpacking snapshot")
 		}
 
 	} else {
@@ -280,26 +282,28 @@ func Get(ctx context.Context, s *pserver.Server, documentType string, documentId
 			var err error
 			snapshotState, document, _, err = s.UnpackSnapshot(ctx, tx, t, ref)
 			switch {
-			case status.Code(err) == codes.NotFound:
+			case perr.Any(err, pserver.IsNotFound):
 				added = true
 				document = t.NewDocument()
 				state, err = createDocument(ctx, s, tx, t, ref, nil, delta.Root(document))
 				if err != nil {
-					return err
+					return perr.Wrap(err).Debug("creating document")
 				}
 			case err != nil:
-				return err
+				return perr.Wrap(err).Debug("unpacking snapshot")
 			}
 
 			return nil
 		}
 		tf := func() error {
-			return s.Firestore.RunTransaction(s.FirestoreContext(ctx), f)
+			if err := s.Firestore.RunTransaction(s.FirestoreContext(ctx), f); err != nil {
+				return perr.Wrap(err).Debug("running transaction").Flag(pserver.Firestore)
+			}
+			return nil
 		}
 		if err := pserver.Lock(ctx, ref.Path, tf); err != nil {
-			return 0, nil, err
+			return 0, nil, perr.Wrap(err).Debug("locking")
 		}
-
 	}
 
 	if !added {
@@ -308,12 +312,12 @@ func Get(ctx context.Context, s *pserver.Server, documentType string, documentId
 		var err error
 		state, err = s.Changes(ctx, nil, t, ref, snapshotState, 0, func(op *delta.Op) error {
 			if err := delta.Apply(op, document); err != nil {
-				return err
+				return perr.Wrap(err).Debug("applying")
 			}
 			return nil
 		})
 		if err != nil {
-			return 0, nil, err
+			return 0, nil, perr.Wrap(err).Debug("running changes")
 		}
 	}
 
@@ -324,7 +328,7 @@ func Refresh(ctx context.Context, s *pserver.Server, documentType string, docume
 
 	t := s.Type(documentType)
 	if t == nil {
-		return fmt.Errorf("type %q not found", documentType)
+		return perr.Debugf("type %q not found", documentType)
 	}
 
 	ref := s.Firestore.Collection(t.CollectionName()).Doc(string(documentId))
@@ -333,32 +337,32 @@ func Refresh(ctx context.Context, s *pserver.Server, documentType string, docume
 	// snapshot is slightly out of date it doesn't matter.
 	snapshotState, document, oldSnapshot, err := s.UnpackSnapshot(ctx, nil, t, ref)
 	if err != nil {
-		return perr.Wrap(err, "unpacking snapshot")
+		return perr.Wrap(err).Debug("unpacking snapshot")
 	}
 
 	state, err := s.Changes(ctx, nil, t, ref, snapshotState, 0, func(op *delta.Op) error {
 		if err := delta.Apply(op, document); err != nil {
-			return err
+			return perr.Wrap(err).Debug("applying")
 		}
 		return nil
 	})
 	if err != nil {
-		return err
+		return perr.Wrap(err).Debug("running changes")
 	}
 	if state == snapshotState {
 		return nil
 	}
 	documentBlob := t.NewBlob()
 	if err := documentBlob.MarshalBlob(ctx, document); err != nil {
-		return err
+		return perr.Wrap(err).Debug("marshaling document blob")
 	}
 
 	newSnapshot := t.NewSnapshot()
 	if err := newSnapshot.PackSnapshot(ctx, state, documentBlob, oldSnapshot, document); err != nil {
-		return err
+		return perr.Wrap(err).Debug("packing snapshot")
 	}
 	if _, err := ref.Set(s.FirestoreContext(ctx), newSnapshot); err != nil {
-		return err
+		return perr.Wrap(err).Debug("firestore set").Flag(pserver.Firestore)
 	}
 	return nil
 }

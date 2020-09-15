@@ -62,11 +62,11 @@ func (a *App) indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response, err := a.ProcessRequest(ctx, r.URL.Path, requestBytes)
-	if pserver.IsBusyError(err) {
+	if perr.AnyFlag(err, perr.Busy) || perr.Any(err, pserver.IsBusy) {
 		http.Error(w, "503 server busy", http.StatusServiceUnavailable)
 		return
 	}
-	if err == pserver.PathNotFound {
+	if perr.AnyFlag(err, perr.NotFound) {
 		http.NotFound(w, r)
 		return
 	}
@@ -118,7 +118,7 @@ func (a *App) ProcessRequest(ctx context.Context, path string, request []byte) (
 	case httpPath(&Person_Refresh_Request{}):
 		return nil, a.PersonRefreshRequest(ctx, request)
 	default:
-		return nil, pserver.PathNotFound
+		return nil, perr.Flag(perr.NotFound)
 	}
 }
 
@@ -128,11 +128,11 @@ func (a *App) PersonGetRequest(ctx context.Context, requestBytes []byte) (*Perso
 	}
 	request := &Person_Get_Request{}
 	if err := proto.Unmarshal(requestBytes, request); err != nil {
-		return wrap(perr.Wrap(err, "unmarshaling get request"))
+		return wrap(perr.Wrap(err).Debug("unmarshaling get request"))
 	}
 	state, document, err := pstore.Get(ctx, a.Server, PersonTypeName, pstore.DocumentId(request.DocumentId), false)
 	if err != nil {
-		return wrap(perr.Wrap(err, "getting"))
+		return wrap(perr.Wrap(err).Debug("getting"))
 	}
 	return &Person_Get_Response{State: state, Person: document.(*tests.Person)}, nil
 }
@@ -143,10 +143,10 @@ func (a *App) PersonGetRequest(ctx context.Context, requestBytes []byte) (*Perso
 //	}
 //	request := &Person_Add_Request{}
 //	if err := proto.Unmarshal(requestBytes, request); err != nil {
-//		return wrap(perr.Wrap(err, "unmarshaling add request"))
+//		return wrap(perr.Wrap(err).Debug("unmarshaling add request"))
 //	}
 //	if err := pstore.Add(ctx, a.Server, PERSON, request.Id, request.Person); err != nil {
-//		return wrap(perr.Wrap(err, "adding"))
+//		return wrap(perr.Wrap(err).Debug("adding"))
 //	}
 //	return &Person_Add_Response{}, nil
 //}
@@ -157,25 +157,22 @@ func (a *App) PersonEditRequest(ctx context.Context, requestBytes []byte) (*Pers
 	}
 	request := &Person_Edit_Request{}
 	if err := proto.Unmarshal(requestBytes, request); err != nil {
-		return wrap(perr.Wrap(err, "unmarshaling edit request"))
+		return wrap(perr.Wrap(err).Debug("unmarshaling edit request"))
 	}
 	state, op, err := pstore.Edit(ctx, a.Server, PersonTypeName, pstore.DocumentId(request.DocumentId), pstore.StateId(request.StateId), request.State, request.Op)
-	switch {
-	case pserver.IsBusyError(err):
-		return wrap(pserver.ServerBusy)
-	case err != nil:
-		return wrap(perr.Wrap(err, "editing"))
+	if err != nil {
+		return wrap(perr.Wrap(err).Debug("editing"))
 	}
 	if state%UPDATE_SNAPSHOT_FREQUENCY == 0 {
 		if appengine.IsAppEngine() {
 			if _, err := Queue(ctx, a.Server, &Person_Refresh_Request{DocumentId: request.DocumentId}); err != nil {
-				return wrap(perr.Wrap(err, "triggering refresh task"))
+				return wrap(perr.Wrap(err).Debug("triggering refresh task"))
 			}
 		} else {
 			// for local tests
 			reqBytes, err := proto.Marshal(&Person_Refresh_Request{DocumentId: request.DocumentId})
 			if err != nil {
-				return wrap(perr.Wrap(err, "marshaling refresh task"))
+				return wrap(perr.Wrap(err).Debug("marshaling refresh task"))
 			}
 			if err := a.PersonRefreshRequest(ctx, reqBytes); err != nil {
 				return wrap(err)
@@ -188,10 +185,10 @@ func (a *App) PersonEditRequest(ctx context.Context, requestBytes []byte) (*Pers
 func (a *App) PersonRefreshRequest(ctx context.Context, requestBytes []byte) error {
 	request := &Person_Refresh_Request{}
 	if err := proto.Unmarshal(requestBytes, request); err != nil {
-		return perr.Wrap(err, "unmarshaling edit request")
+		return perr.Wrap(err).Debug("unmarshaling edit request")
 	}
 	if err := pstore.Refresh(ctx, a.Server, PersonTypeName, pstore.DocumentId(request.DocumentId)); err != nil {
-		return perr.Wrap(err, "refreshing")
+		return perr.Wrap(err).Debug("refreshing")
 	}
 	return nil
 }

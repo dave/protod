@@ -4,16 +4,18 @@ import 'package:protod/delta/delta.pb.dart';
 import 'package:protod/pserver/pserver.dart';
 import 'package:protod/pstore/pstore.pb.dart';
 
+// T: The data type
+// R: response message type
+// Q: request message type
+
 class Adapter<T extends GeneratedMessage> extends StoreAdapter<T> {
   final Future<R>
-          Function<R extends GeneratedMessage, Q extends GeneratedMessage>(R, Q)
-      _send;
-  final bool Function() _connected;
+      Function<R extends GeneratedMessage, Q extends GeneratedMessage>(
+    R response,
+    Q request,
+  ) _send;
 
-  Adapter(this._send, this._connected);
-
-  @override
-  bool connected() => _connected();
+  Adapter(this._send);
 
   @override
   Future<StoreAdapterGetResponse<T>> get(

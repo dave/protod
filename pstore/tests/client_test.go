@@ -144,20 +144,20 @@ func req(prefix string, response, message proto.Message) proto.Message {
 		var messageBytes []byte
 		messageBytes, err = proto.Marshal(message)
 		if err != nil {
-			err = perr.Wrap(err, "marshaling message")
+			err = perr.Wrap(err).Debug("marshaling message")
 			continue // <- restart the loop or exit when retry count exceeded
 		}
 		buf := bytes.NewBuffer(messageBytes)
 		var resp *http.Response
 		resp, err = http.Post(path, "application/protobuf", buf)
 		if err != nil {
-			err = perr.Wrap(err, "http post")
+			err = perr.Wrap(err).Debug("http post")
 			continue // <- restart the loop or exit when retry count exceeded
 		}
 		var body []byte
 		body, err = ioutil.ReadAll(resp.Body)
 		if err != nil {
-			err = perr.Wrap(err, "reading body")
+			err = perr.Wrap(err).Debug("reading body")
 			continue // <- restart the loop or exit when retry count exceeded
 		}
 		// TODO: special handling for 503 busy?
@@ -170,7 +170,7 @@ func req(prefix string, response, message proto.Message) proto.Message {
 		}
 		err = proto.Unmarshal(body, response)
 		if err != nil {
-			err = perr.Wrap(err, "unmarshaling response")
+			err = perr.Wrap(err).Debug("unmarshaling response")
 			continue // <- restart the loop or exit when retry count exceeded
 		}
 		//if i > 0 {

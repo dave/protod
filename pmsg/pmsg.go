@@ -2,6 +2,7 @@ package pmsg
 
 import (
 	"github.com/dave/protod/delta"
+	"github.com/dave/protod/perr"
 	any "github.com/golang/protobuf/ptypes/any"
 	"google.golang.org/protobuf/proto"
 )
@@ -13,7 +14,7 @@ func New() *Bundle {
 func (b *Bundle) Set(m proto.Message) error {
 	a, err := delta.MarshalAny(m)
 	if err != nil {
-		return err
+		return perr.Wrap(err).Debug("marshaling message")
 	}
 	b.Messages[string(m.ProtoReflect().Descriptor().FullName())] = a
 	return nil
@@ -30,7 +31,7 @@ func (b *Bundle) Get(m proto.Message) (bool, error) {
 		return false, nil
 	}
 	if err := delta.UnmarshalAnyInto(a, m); err != nil {
-		return false, err
+		return false, perr.Wrap(err).Debug("unmarshaling message")
 	}
 	return true, nil
 }

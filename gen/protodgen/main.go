@@ -51,15 +51,15 @@ func run() error {
 		}
 
 		if err := filepath.Walk(s.protoRoot, s.scanFiles); err != nil {
-			return perr.Wrap(err, "scanFiles")
+			return perr.Wrap(err).Debug("scanFiles")
 		}
 
 		if err := s.scanMessages(); err != nil {
-			return perr.Wrap(err, "scanMessages")
+			return perr.Wrap(err).Debug("scanMessages")
 		}
 
 		if err := s.gen(); err != nil {
-			return perr.Wrap(err, "gen")
+			return perr.Wrap(err).Debug("gen")
 		}
 	}
 
@@ -73,11 +73,11 @@ func run() error {
 		}
 
 		if err := s.initScalars(); err != nil {
-			return perr.Wrap(err, "initScalars")
+			return perr.Wrap(err).Debug("initScalars")
 		}
 
 		if err := s.gen(); err != nil {
-			return perr.Wrap(err, "gen")
+			return perr.Wrap(err).Debug("gen")
 		}
 	}
 
@@ -147,13 +147,13 @@ func (s *state) initScalars() error {
 func (s *state) gen() error {
 	if s.goRoot != "" {
 		if err := s.genGo(); err != nil {
-			return perr.Wrap(err, "genGo")
+			return perr.Wrap(err).Debug("genGo")
 		}
 	}
 
 	if s.dartRoot != "" {
 		if err := s.genDart(); err != nil {
-			return perr.Wrap(err, "genDart")
+			return perr.Wrap(err).Debug("genDart")
 		}
 	}
 	return nil
@@ -184,13 +184,13 @@ func (s *state) scanFiles(fpath string, info os.FileInfo, err error) error {
 
 	reader, err := os.Open(fpath)
 	if err != nil {
-		return perr.Wrapf(err, "failed to open %q", fpath)
+		return fmt.Errorf("failed to open %q: %w", fpath, err)
 	}
 	defer reader.Close()
 
 	parsedFile, err := protoparser.Parse(reader)
 	if err != nil {
-		return perr.Wrap(err, "failed to parse")
+		return perr.Wrap(err).Debug("failed to parse")
 	}
 	var goPkgPath, goPkgName string
 	var pkg *parser.Package
@@ -210,7 +210,7 @@ func (s *state) scanFiles(fpath string, info os.FileInfo, err error) error {
 			if v.OptionName == "go_package" {
 				c, err := strconv.Unquote(v.Constant)
 				if err != nil {
-					return perr.Wrap(err, "unquoting go_package option")
+					return perr.Wrap(err).Debug("unquoting go_package option")
 				}
 				parts := strings.Split(c, ";")
 				if len(parts) == 1 {
@@ -419,7 +419,7 @@ func (s *state) dartImportPath(pathCurrent, pathTarget string) (string, error) {
 	}
 	rel, err := filepath.Rel(pathCurrent, pathTarget)
 	if err != nil {
-		return "", perr.Wrap(err, "rel in dartPath")
+		return "", perr.Wrap(err).Debug("rel in dartPath")
 	}
 	return rel, nil
 }
@@ -465,7 +465,7 @@ func (s *state) parseField(v parser.Visitee, typ *Type, file *File, pkg *Package
 			}
 			fieldNumber, err := strconv.Atoi(b.FieldNumber)
 			if err != nil {
-				return nil, perr.Wrap(err, "parsing field number")
+				return nil, perr.Wrap(err).Debug("parsing field number")
 			}
 			field.Number = fieldNumber
 		case *parser.MapField:
@@ -476,7 +476,7 @@ func (s *state) parseField(v parser.Visitee, typ *Type, file *File, pkg *Package
 			field.CollectionType = MAP
 			fieldNumber, err := strconv.Atoi(b.FieldNumber)
 			if err != nil {
-				return nil, perr.Wrap(err, "parsing field number")
+				return nil, perr.Wrap(err).Debug("parsing field number")
 			}
 			field.Number = fieldNumber
 			field.Key = b.KeyType
@@ -527,7 +527,7 @@ func (s *state) parseField(v parser.Visitee, typ *Type, file *File, pkg *Package
 			field.CollectionType = BASE
 			fieldNumber, err := strconv.Atoi(b.FieldNumber)
 			if err != nil {
-				return nil, perr.Wrap(err, "parsing field number")
+				return nil, perr.Wrap(err).Debug("parsing field number")
 			}
 			field.Number = fieldNumber
 		}
