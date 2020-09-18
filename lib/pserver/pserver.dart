@@ -8,13 +8,51 @@ import 'package:protobuf/protobuf.dart';
 import 'package:protod/delta/delta.dart';
 import 'package:protod/delta/delta.pb.dart';
 
+class StoreMeta<T extends GeneratedMessage, M> extends Store<T> {
+  hive.Box<M> _metaBox;
+  final M Function(T) _meta;
+
+  StoreMeta(
+    T empty,
+    StoreAdapter<T> adapter,
+    bool Function() offline,
+    TypeRegistry registry,
+    M Function(T) meta,
+  )   : this._meta = meta,
+        super(empty, adapter, offline, registry);
+
+  M meta(String id) {
+    return _metaBox.get(id);
+  }
+
+  @override
+  Future<void> init() async {
+    super.init();
+    _metaBox = await hive.Hive.openBox<M>("${this._type}:meta");
+  }
+
+  @override
+  Future<void> delete(String id) async {
+    super.delete(id);
+    _metaBox.delete(id);
+  }
+
+  @override
+  void _persist(String id, Item<T> item) {
+    super._persist(id, item);
+    _metaBox.put(id, _meta(item.value));
+  }
+}
+
 class Store<T extends GeneratedMessage> {
   hive.Box<Item<T>> _box;
   hive.Box<bool> _dirty;
+
   final StoreAdapter<T> _adapter;
   final bool Function() _offline;
   final String _type;
   final TypeRegistry _registry;
+
   Map<String, Item<T>> _items = {};
   final _rand = Random();
 
@@ -40,8 +78,8 @@ class Store<T extends GeneratedMessage> {
   }
 
   Future<void> init() async {
-    _box = await hive.Hive.openBox(this._type);
-    _dirty = await hive.Hive.openBox("${this._type}:dirty");
+    _box = await hive.Hive.openBox<Item<T>>(this._type);
+    _dirty = await hive.Hive.openBox<bool>("${this._type}:dirty");
   }
 
   Future<void> update() async {
