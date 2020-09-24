@@ -80,24 +80,6 @@ func (s *Server) Close() error {
 	return s.Firestore.Close()
 }
 
-//func (s *Server) FromBlob(b *Blob) ([]byte, error) {
-//	// TODO
-//	return b.Value, nil
-//}
-//
-//func (s *Server) ToBlob(b []byte) (*Blob, error) {
-//	// TODO
-//	return &Blob{Value: b}, nil
-//}
-//
-//func (s *Server) MarshalToBlob(m proto.Message) (*Blob, error) {
-//	b, err := proto.Marshal(m)
-//	if err != nil {
-//		return nil, perr.Wrap(err).Debug("marshaling")
-//	}
-//	return &Blob{Value: b}, nil
-//}
-
 func (s *Server) Latest(ctx context.Context, tx *firestore.Transaction, t *DocumentType, ref *firestore.DocumentRef) (state int64, err error) {
 	query := ref.Collection(STATES_COLLECTION).OrderBy(t.StateQueryFieldPath(), firestore.Desc).Limit(1)
 	var docs []*firestore.DocumentSnapshot
@@ -531,7 +513,7 @@ var retryCodes = map[codes.Code]bool{
 	// an error-space that is not known in this address space. Also
 	// errors raised by APIs that do not return enough error information
 	// may be converted to this error.
-	codes.Unknown: true,
+	codes.Unknown: false,
 
 	// DeadlineExceeded means operation expired before completion.
 	// For operations that change the state of the system, this error may be
@@ -601,7 +583,7 @@ var stopCodes = map[codes.Code]bool{
 	// an error-space that is not known in this address space. Also
 	// errors raised by APIs that do not return enough error information
 	// may be converted to this error.
-	codes.Unknown: true,
+	codes.Unknown: false,
 
 	// DeadlineExceeded means operation expired before completion.
 	// For operations that change the state of the system, this error may be

@@ -27,20 +27,20 @@ class StoreMeta<T extends GeneratedMessage, M> extends Store<T> {
 
   @override
   Future<void> init() async {
-    super.init();
     _metaBox = await hive.Hive.openBox<M>("${this._type}:meta");
+    await super.init();
   }
 
   @override
   Future<void> delete(String id) async {
-    super.delete(id);
     _metaBox.delete(id);
+    await super.delete(id);
   }
 
   @override
   void _persist(String id, Item<T> item) {
-    super._persist(id, item);
     _metaBox.put(id, _meta(item.value));
+    super._persist(id, item);
   }
 }
 
@@ -54,6 +54,8 @@ class Store<T extends GeneratedMessage> {
   final TypeRegistry _registry;
 
   Map<String, Item<T>> _items = {};
+  Map<String, StreamSubscription> _subscriptions = {};
+  Map<String, bool> _getting = {};
   final _rand = Random();
 
   Store(
@@ -74,13 +76,19 @@ class Store<T extends GeneratedMessage> {
     // This box makes it possible to track the documents that require an update
     // without opening and parsing them all. Opening and parsing a document may
     // be an expensive process for systems with many large documents.
-    return _dirty.keys;
+    return _dirty.keys.map((e) => e.toString());
+  }
+
+  Iterable<String> getting() {
+    return _getting.keys;
   }
 
   Future<void> init() async {
     _box = await hive.Hive.openBox<Item<T>>(this._type);
     _dirty = await hive.Hive.openBox<bool>("${this._type}:dirty");
   }
+
+  // ************************ Update ************************
 
   Future<void> update() async {
     List<Future> futures = [];
@@ -93,20 +101,38 @@ class Store<T extends GeneratedMessage> {
     await Future.wait(futures);
   }
 
-  Response<T> add(String documentId, T value) {
+  // ************************ Has / Open ************************
+
+  bool has(String id) => _items.containsKey(id) || _box.containsKey(id);
+
+  bool open(String id) => _items.containsKey(id);
+
+  // ************************ Add ************************
+
+  Response<T> add(String id, T value) {
+    if (has(id)) {
+      throw Exception("document $id already exists, delete first");
+    }
+
     var item = Item<T>()
       .._store = this
       .._sending = false
-      ..id = documentId
+      ..id = id
       ..value = value
       ..state = Int64(0)
       ..requestId = ""
       ..buffer = [set(null, value)]
       ..overflow = [];
 
-    _items[documentId] = item;
+    _items[id] = item;
 
-    _persist(documentId, item);
+    _subscriptions[id] = item.stream.listen((DataEvent<T> event) {
+      _stream.add(event);
+    });
+
+    _persist(id, item);
+
+    item._broadcast(DataEvent.adding(item));
 
     if (_offline()) {
       // if the adapter is offline, just return the item
@@ -117,8 +143,7 @@ class Store<T extends GeneratedMessage> {
     return Response<T>(item, future);
   }
 
-  bool has(String id) => _items.containsKey(id) || _box.containsKey(id);
-  bool open(String id) => _items.containsKey(id);
+  // ************************ Refresh ************************
 
   Future<Item<T>> refresh(String id) async {
     final response = get(id, refresh: true);
@@ -131,11 +156,31 @@ class Store<T extends GeneratedMessage> {
     return null;
   }
 
+  // ************************ Delete ************************
+
   Future<void> delete(String id) async {
+    _subscriptions[id]?.cancel();
+    _items[id]?.dispose();
     _items.remove(id);
     _box.delete(id);
     _dirty.delete(id);
+    _broadcast(DataEvent.deleted(id));
   }
+
+  // ************************ Item ************************
+
+  Future<Item<T>> item(String id) async {
+    final resp = get(id);
+    if (resp.item != null) {
+      return resp.item;
+    }
+    if (resp.future != null) {
+      return await resp.future;
+    }
+    return null;
+  }
+
+  // ************************ Get ************************
 
   Response<T> get(
     String id, {
@@ -143,39 +188,60 @@ class Store<T extends GeneratedMessage> {
     bool update = false, // update the document if it's dirty
     bool refresh = false, // update the document even if it's not dirty
   }) {
+    // ************************ Get from cache ************************
     if (_box.containsKey(id)) {
       if (!_items.containsKey(id)) {
         _items[id] = _box.get(id);
         _items[id]._sending = false;
         _items[id]._store = this;
         _items[id].id = id;
+        _subscriptions[id] = _items[id].stream.listen((DataEvent<T> event) {
+          _stream.add(event);
+        });
+        _items[id]._broadcast(DataEvent.opened(_items[id]));
       }
 
-      if (refresh || (update && _items[id].dirty())) {
+      final item = _items[id];
+
+      if (refresh || (update && item.dirty())) {
         // If required, send the refresh / update and return the future along
         // with the item. It is safe to use this item and continue adding
         // operations while the future is pending.
-        final future = _items[id].send();
-        return Response<T>(_items[id], future);
+        final future = item.send();
+        return Response<T>(item, future);
       }
 
-      return Response<T>(_items[id], null);
+      return Response<T>(item, null);
     }
 
-    Future<Item<T>> send(String id, {bool create = false}) async {
-      final response = await _adapter.get(_type, id, create, _registry);
+    // ************************ Get from server ************************
+    Future<Item<T>> doGet(String id, {bool create = false}) async {
+      Item<T> item;
 
-      var item = Item<T>()
-        .._store = this
-        .._sending = false
-        ..id = id
-        ..value = response.value
-        ..state = response.state
-        ..requestId = ''
-        ..buffer = []
-        ..overflow = [];
+      try {
+        _getting[id] = true;
+        _broadcast(DataEvent.getting(id));
+        final response = await _adapter.get(_type, id, create, _registry);
 
-      _items[id] = item;
+        item = Item<T>()
+          .._store = this
+          .._sending = false
+          ..id = id
+          ..value = response.value
+          ..state = response.state
+          ..requestId = ''
+          ..buffer = []
+          ..overflow = [];
+
+        _items[id] = item;
+        _subscriptions[id] = item.stream.listen((DataEvent<T> event) {
+          _stream.add(event);
+        });
+      } finally {
+        _getting.remove(id);
+      }
+
+      item._broadcast(DataEvent.got(item));
 
       _persist(id, item);
 
@@ -183,9 +249,11 @@ class Store<T extends GeneratedMessage> {
     }
 
     // Item doesn't exist yet, so just return the future.
-    final future = send(id, create: create);
+    final future = doGet(id, create: create);
     return Response<T>(null, future);
   }
+
+  // ************************ Persist ************************
 
   void _persist(String id, Item<T> item) {
     // put is async but we don't need to await, as per https://pub.dev/packages/hive
@@ -195,6 +263,23 @@ class Store<T extends GeneratedMessage> {
     } else {
       _dirty.delete(id);
     }
+  }
+
+  // ************************ Stream ************************
+
+  final _stream = StreamController<DataEvent<T>>.broadcast();
+
+  Stream<DataEvent<T>> get stream => _stream.stream;
+
+  _broadcast(DataEvent<T> event) {
+    _stream.add(event);
+  }
+
+  void dispose() {
+    _items.forEach((key, value) {
+      value.dispose();
+    });
+    _stream.close();
   }
 
   String randomUnique() {
@@ -269,6 +354,8 @@ class Item<T extends GeneratedMessage> {
     // Apply to value
     apply(op, value);
 
+    _broadcast(DataEvent.apply(this, op));
+
     // Persist the item
     _store._persist(id, this);
 
@@ -282,6 +369,8 @@ class Item<T extends GeneratedMessage> {
         buffer.length > 0 ||
         overflow.length > 0;
   }
+
+  bool sending() => _sending;
 
   Future<void> refresh() async {
     await send();
@@ -300,6 +389,7 @@ class Item<T extends GeneratedMessage> {
     }
     _sending = true;
     _current = Completer<void>();
+    _broadcast(DataEvent.sending(this));
     try {
       await _sendEdit();
     } catch (e) {
@@ -307,6 +397,7 @@ class Item<T extends GeneratedMessage> {
       throw e;
     } finally {
       _sending = false;
+      _broadcast(DataEvent.sent(this));
     }
     _current.complete();
     return this;
@@ -338,6 +429,8 @@ class Item<T extends GeneratedMessage> {
       // Apply response
       apply(response.op, value);
 
+      _broadcast(DataEvent.apply(this, response.op));
+
       // Reset buffer and request
       buffer = [];
       requestId = '';
@@ -351,6 +444,8 @@ class Item<T extends GeneratedMessage> {
 
       // Apply responsex
       apply(responsex, value);
+
+      _broadcast(DataEvent.apply(this, responsex));
 
       // Replace buffer with overflowx
       buffer = [];
@@ -375,11 +470,26 @@ class Item<T extends GeneratedMessage> {
       await _sendEdit();
     }
   }
+
+  // ************************ Stream ************************
+
+  final _stream = StreamController<DataEvent<T>>.broadcast();
+
+  Stream<DataEvent<T>> get stream => _stream.stream;
+
+  _broadcast(DataEvent<T> event) {
+    _stream.add(event);
+  }
+
+  void dispose() {
+    _stream.close();
+  }
 }
 
 class Response<T extends GeneratedMessage> {
   final Item<T> item;
   final Future<Item<T>> future;
+
   Response(this.item, this.future);
 }
 
@@ -457,6 +567,7 @@ abstract class StoreAdapter<T extends GeneratedMessage> {
     bool create,
     TypeRegistry r,
   );
+
   Future<StoreAdapterEditResponse> edit(
     String documentType,
     String documentId,
@@ -469,12 +580,14 @@ abstract class StoreAdapter<T extends GeneratedMessage> {
 class StoreAdapterGetResponse<T extends GeneratedMessage> {
   final Int64 state;
   final T value;
+
   StoreAdapterGetResponse(this.state, this.value);
 }
 
 class StoreAdapterEditResponse {
   final Int64 state;
   final Op op;
+
   StoreAdapterEditResponse(this.state, this.op);
 }
 
@@ -482,3 +595,66 @@ class StoreAdapterEditResponse {
 //  final Int64 state;
 //  StoreAdapterAddResponse(this.state);
 //}
+
+// TODO: Should I use freezed for the DataEvent class? Would prefer to stay un-opinionated in the protod package
+
+abstract class DataEvent<T extends GeneratedMessage> {
+  DataEvent._(this.id);
+
+  final String id;
+
+  factory DataEvent.apply(Item<T> item, Op op) = DataEventApply;
+
+  factory DataEvent.getting(String id) = DataEventGetting;
+
+  factory DataEvent.got(Item<T> item) = DataEventGot;
+
+  factory DataEvent.adding(Item<T> item) = DataEventAdding;
+
+  factory DataEvent.sending(Item<T> item) = DataEventSending;
+
+  factory DataEvent.sent(Item<T> item) = DataEventSent;
+
+  factory DataEvent.opened(Item<T> item) = DataEventOpened;
+
+  factory DataEvent.deleted(String id) = DataEventDeleted;
+}
+
+class DataEventApply<T extends GeneratedMessage> extends DataEvent<T> {
+  DataEventApply(this.item, this.op) : super._(item.id);
+  final Item<T> item;
+  final Op op;
+}
+
+class DataEventGetting<T extends GeneratedMessage> extends DataEvent<T> {
+  DataEventGetting(String id) : super._(id);
+}
+
+class DataEventGot<T extends GeneratedMessage> extends DataEvent<T> {
+  DataEventGot(this.item) : super._(item.id);
+  final Item<T> item;
+}
+
+class DataEventAdding<T extends GeneratedMessage> extends DataEvent<T> {
+  DataEventAdding(this.item) : super._(item.id);
+  final Item<T> item;
+}
+
+class DataEventSending<T extends GeneratedMessage> extends DataEvent<T> {
+  DataEventSending(this.item) : super._(item.id);
+  final Item<T> item;
+}
+
+class DataEventSent<T extends GeneratedMessage> extends DataEvent<T> {
+  DataEventSent(this.item) : super._(item.id);
+  final Item<T> item;
+}
+
+class DataEventOpened<T extends GeneratedMessage> extends DataEvent<T> {
+  DataEventOpened(this.item) : super._(item.id);
+  final Item<T> item;
+}
+
+class DataEventDeleted<T extends GeneratedMessage> extends DataEvent<T> {
+  DataEventDeleted(String id) : super._(id);
+}

@@ -10,6 +10,7 @@ import (
 	"github.com/dave/protod/delta"
 	"github.com/dave/protod/delta/randop"
 	"github.com/dave/protod/delta/tests"
+	"github.com/dave/protod/perr"
 	"github.com/dave/protod/pserver"
 	"github.com/dave/protod/pstore"
 	"google.golang.org/protobuf/proto"
@@ -145,9 +146,9 @@ func repeatOnBusy(f func() error) error {
 			delay := 500 + rand.Intn(500*(1<<i))
 			time.Sleep(time.Duration(delay) * time.Millisecond)
 		}
-		if err := f(); !pserver.IsBusyError(err) {
+		if err := f(); !(perr.AnyFlag(err, perr.Busy) || perr.Any(err, pserver.IsBusy)) {
 			return err
 		}
 	}
-	return pserver.ServerBusy
+	return perr.Flag(perr.Busy)
 }
