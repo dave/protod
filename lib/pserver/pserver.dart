@@ -42,6 +42,11 @@ class StoreMeta<T extends GeneratedMessage, M> extends Store<T> {
     _metaBox.put(id, _meta(item.value));
     super._persist(id, item);
   }
+
+  Future<void> reset() async {
+    await _metaBox.deleteAll(_metaBox.keys);
+    await super.reset();
+  }
 }
 
 class Store<T extends GeneratedMessage> {
@@ -86,6 +91,14 @@ class Store<T extends GeneratedMessage> {
   Future<void> init() async {
     _box = await hive.Hive.openBox<Item<T>>(this._type);
     _dirty = await hive.Hive.openBox<bool>("${this._type}:dirty");
+  }
+
+  Future<void> reset() async {
+    await _box.deleteAll(_box.keys);
+    await _dirty.deleteAll(_dirty.keys);
+    _items.clear();
+    _subscriptions.clear();
+    _getting.clear();
   }
 
   // ************************ Update ************************
