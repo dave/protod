@@ -252,9 +252,12 @@ class Store<T extends GeneratedMessage> {
         });
       } finally {
         _getting.remove(id);
+        if (item == null ) {
+          _broadcast(DataEvent.getFailed(id));
+        } else {
+          item._broadcast(DataEvent.got(item));
+        }
       }
-
-      item._broadcast(DataEvent.got(item));
 
       _persist(id, item);
 
@@ -620,6 +623,8 @@ abstract class DataEvent<T extends GeneratedMessage> {
 
   factory DataEvent.getting(String id) = DataEventGetting;
 
+  factory DataEvent.getFailed(String id) = DataEventGetFailed;
+
   factory DataEvent.got(Item<T> item) = DataEventGot;
 
   factory DataEvent.adding(Item<T> item) = DataEventAdding;
@@ -641,6 +646,10 @@ class DataEventApply<T extends GeneratedMessage> extends DataEvent<T> {
 
 class DataEventGetting<T extends GeneratedMessage> extends DataEvent<T> {
   DataEventGetting(String id) : super._(id);
+}
+
+class DataEventGetFailed<T extends GeneratedMessage> extends DataEvent<T> {
+  DataEventGetFailed(String id) : super._(id);
 }
 
 class DataEventGot<T extends GeneratedMessage> extends DataEvent<T> {
