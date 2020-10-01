@@ -442,10 +442,12 @@ class Item<T extends GeneratedMessage> {
       // Reset state
       state = response.state;
 
-      // Apply response
-      apply(response.op, value);
+      if (response.op != null && response.op.type != Op_Type.Null) {
+        // Apply response
+        apply(response.op, value);
 
-      _broadcast(DataEvent.apply(this, response.op));
+        _broadcast(DataEvent.apply(this, response.op));
+      }
 
       // Reset buffer and request
       buffer = [];
@@ -458,10 +460,12 @@ class Item<T extends GeneratedMessage> {
       final responsex = transform(compound(overflow), response.op, false);
       final overflowx = transform(response.op, compound(overflow), true);
 
-      // Apply responsex
-      apply(responsex, value);
+      if (responsex != null && responsex.type != Op_Type.Null) {
+        // Apply responsex
+        apply(responsex, value);
 
-      _broadcast(DataEvent.apply(this, responsex));
+        _broadcast(DataEvent.apply(this, responsex));
+      }
 
       // Replace buffer with overflowx
       buffer = [];
