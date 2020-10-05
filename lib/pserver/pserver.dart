@@ -177,7 +177,7 @@ class Store<T extends GeneratedMessage> {
     if (resp.future != null) {
       return await resp.future;
     }
-    throw Exception("Get document failed");
+    throw Exception("get failed");
   }
 
   // ************************ Refresh ************************
@@ -188,7 +188,7 @@ class Store<T extends GeneratedMessage> {
       return await response.future;
     }
     // with refresh:true, we always get a future or null
-    throw Exception("Refresh document failed");
+    throw Exception("refresh failed");
   }
 
   // ************************ Get ************************
