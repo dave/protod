@@ -156,19 +156,6 @@ class Store<T extends GeneratedMessage> {
     return Response<T>(item, future);
   }
 
-  // ************************ Refresh ************************
-
-  Future<Item<T>> refresh(String id) async {
-    final response = get(id, refresh: true);
-    if (response.future != null) {
-      return await response.future;
-    }
-    if (response.item != null) {
-      return response.item;
-    }
-    return null;
-  }
-
   // ************************ Delete ************************
 
   Future<void> delete(String id) async {
@@ -190,7 +177,18 @@ class Store<T extends GeneratedMessage> {
     if (resp.future != null) {
       return await resp.future;
     }
-    return null;
+    throw Exception("Get document failed");
+  }
+
+  // ************************ Refresh ************************
+
+  Future<Item<T>> refresh(String id) async {
+    final response = get(id, refresh: true);
+    if (response.future != null) {
+      return await response.future;
+    }
+    // with refresh:true, we always get a future or null
+    throw Exception("Refresh document failed");
   }
 
   // ************************ Get ************************
@@ -381,7 +379,6 @@ class Item<T extends GeneratedMessage> {
 
   bool dirty() {
     return state == Int64(0) ||
-        requestId != "" ||
         buffer.length > 0 ||
         overflow.length > 0;
   }
