@@ -4,7 +4,7 @@ package messages;
 import "tests/tests.proto";
 import "delta/delta.proto";
 
-option go_package = "github.com/dave/protod/pserver/example/gae;main";
+option go_package = "github.com/dave/protod/pstore/example/gae;main";
 
 message Person {
 

@@ -27,7 +27,9 @@ class StoreMeta<T extends GeneratedMessage, M> extends Store<T> {
 
   @override
   Future<void> init() async {
-    _metaBox = await hive.Hive.openBox<M>("${this._type}:meta");
+    if (_metaBox == null) {
+      _metaBox = await hive.Hive.openBox<M>("${this._type}:meta");
+    }
     await super.init();
   }
 
@@ -89,8 +91,12 @@ class Store<T extends GeneratedMessage> {
   }
 
   Future<void> init() async {
-    _box = await hive.Hive.openBox<Item<T>>(this._type);
-    _dirty = await hive.Hive.openBox<bool>("${this._type}:dirty");
+    if (_box == null) {
+      _box = await hive.Hive.openBox<Item<T>>(this._type);
+    }
+    if (_dirty == null) {
+      _dirty = await hive.Hive.openBox<bool>("${this._type}:dirty");
+    }
   }
 
   Future<void> reset() async {
