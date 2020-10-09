@@ -45,7 +45,7 @@ pb.Op compound(List<pb.Op> ops) {
 }
 
 apply(pb.Op op, protobuf.GeneratedMessage m, [protobuf.TypeRegistry r]) {
-  if (op == null || op.type == pb.Op_Type.Null) {
+  if (isNull(op)) {
     return;
   }
   switch (op.type) {
@@ -164,6 +164,20 @@ Tuple2<dynamic, protobuf.ValueOfFunc> getLocation(
   return Tuple2(current, currentValueOf);
 }
 
+String applyDeltaToString(String value, quill.Delta dlt) {
+  final prevDelta = quill.Delta()..insert(value ?? "");
+  final out = prevDelta.compose(dlt);
+  var outString = "";
+  out.toList().forEach((op) {
+    // TODO: Is there a better way of applying the delta to prevString?
+    if (!op.isInsert) {
+      throw new Exception('non insert operation found after applying delta');
+    }
+    outString += op.data;
+  });
+  return outString;
+}
+
 dynamic getValue(
   dynamic previous,
   pb.Op op,
@@ -201,17 +215,8 @@ dynamic getValue(
   } else if (op.hasDelta()) {
     final prevString = previous as String;
     final dlt = quillFromDelta(op.delta.quill);
-    final prevDelta = quill.Delta()..insert(prevString ?? "");
-    final out = prevDelta.compose(dlt);
-    var outString = "";
-    out.toList().forEach((op) {
-      // TODO: Is there a better way of applying the delta to prevString?
-      if (!op.isInsert) {
-        throw new Exception('non insert operation found after applying delta');
-      }
-      outString += op.data;
-    });
-    return outString;
+    final newString = applyDeltaToString(prevString, dlt);
+    return newString;
   } else if (op.hasMessage()) {
     final info = r.lookup(op.message.typeUrl.substring(20));
     if (info == null) {
@@ -1154,7 +1159,11 @@ pb.QuillDelta deltaFromQuill(quill.Delta q) {
   return dlt;
 }
 
-bool isNullMove(pb.Op op) {
+bool isNull(pb.Op op) {
+  return op == null || op.type == pb.Op_Type.Null || _isNullMove(op);
+}
+
+bool _isNullMove(pb.Op op) {
   if (op.type != pb.Op_Type.Move && op.type != pb.Op_Type.Rename) {
     return false;
   }

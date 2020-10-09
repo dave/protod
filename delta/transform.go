@@ -5,10 +5,10 @@ import (
 )
 
 func (t *Op) Transform(op *Op, priority bool) *Op {
-	if op == nil || op.Type == Op_Null {
+	if IsNull(op) {
 		return nil
 	}
-	if t == nil || t.Type == Op_Null {
+	if IsNull(t) {
 		return proto.Clone(op).(*Op)
 	}
 	if op.Type == Op_Compound {
@@ -45,9 +45,12 @@ func (t *Op) Transform(op *Op, priority bool) *Op {
 	}
 	found, oneofLocation := SplitCommonOneofAncestor(t.Location, op.Location)
 	if found {
-		// t and op have a common oneof ancestor, and are acting on separate values. Any operation on the descendant of
-		// a oneof value will delete the entire tree under all the other oneof values.
+		// t and op have a common oneof ancestor, and are acting on separate oneof root values. Any operation on the
+		// descendant of a oneof value will delete the entire tree under all the other oneof values.
 		valid := func(o *Op) bool {
+			// Since any operation on a descendant of a oneof deletes all the other oneof root values, in most
+			// situations we must delete the entire oneof tree in order to converge. The exception is when an operation
+			// sets the whole oneof root value:
 			return (o.Type == Op_Delete && len(o.Location) == len(oneofLocation)) ||
 				(o.Type == Op_Set && len(o.Location) == len(oneofLocation)+1)
 		}
@@ -74,12 +77,6 @@ func (t *Op) Transform(op *Op, priority bool) *Op {
 				Location: oneofLocation,
 			}
 		}
-	}
-	if op.IsNullMove() {
-		return nil
-	}
-	if t.IsNullMove() {
-		return proto.Clone(op).(*Op)
 	}
 	return t.transform(op, priority)
 }
@@ -217,10 +214,6 @@ func tMoveModify(t, op *Op) *Op {
 	// tMoveIndexEditIndex
 	// tMoveIndexSetIndex
 
-	if t.IsNullMove() {
-		return proto.Clone(op).(*Op)
-	}
-
 	// op is trying to modify a value after t has moved values. Even when t and op act on the same location, they are
 	// independent.
 	return tIndependent(t, op)
@@ -230,9 +223,6 @@ func tModifyMove(t, op *Op) *Op {
 	// tEditIndexMoveIndex
 	// tSetIndexMoveIndex
 
-	if op.IsNullMove() {
-		return nil
-	}
 	// Op is trying to move a value in a list after op modified a value. Even when t and op act on the same
 	// location, they are independent.
 	return tIndependent(t, op)
@@ -243,17 +233,11 @@ func tEditIndexMoveIndex(t, op *Op, priority bool) *Op { return tModifyMove(t, o
 func tSetIndexMoveIndex(t, op *Op, priority bool) *Op  { return tModifyMove(t, op) }
 
 func tMoveIndexDeleteIndex(t, op *Op, priority bool) *Op {
-	if t.IsNullMove() {
-		return proto.Clone(op).(*Op)
-	}
 	// op is trying to delete a value after t has moved values. Even when t and op act on the same location,
 	// they are independent.
 	return tIndependent(t, op)
 }
 func tDeleteIndexMoveIndex(t, op *Op, priority bool) *Op {
-	if op.IsNullMove() {
-		return nil
-	}
 	from := TreeRelationship(t.Location, op.Location)
 	to := TreeRelationship(t.Location, op.To())
 	switch {
@@ -271,9 +255,6 @@ func tDeleteIndexMoveIndex(t, op *Op, priority bool) *Op {
 }
 
 func tEditKeyRenameKey(t, op *Op, priority bool) *Op {
-	if op.IsNullMove() {
-		return nil
-	}
 	from := TreeRelationship(t.Location, op.Location)
 	to := TreeRelationship(t.Location, op.To())
 	switch {
@@ -290,9 +271,6 @@ func tEditKeyRenameKey(t, op *Op, priority bool) *Op {
 	}
 }
 func tRenameKeyEditKey(t, op *Op, priority bool) *Op {
-	if t.IsNullMove() {
-		return proto.Clone(op).(*Op)
-	}
 	from := TreeRelationship(t.Location, op.Location)
 	to := TreeRelationship(t.To(), op.Location)
 	switch {
@@ -353,9 +331,6 @@ func tInsertIndexSetIndex(t, op *Op, priority bool) *Op {
 }
 
 func tSetKeyRenameKey(t, op *Op, priority bool) *Op {
-	if op.IsNullMove() {
-		return nil
-	}
 	from := TreeRelationship(t.Location, op.Location)
 	to := TreeRelationship(t.Location, op.To())
 	switch {
@@ -380,9 +355,6 @@ func tSetKeyRenameKey(t, op *Op, priority bool) *Op {
 	}
 }
 func tRenameKeySetKey(t, op *Op, priority bool) *Op {
-	if t.IsNullMove() {
-		return proto.Clone(op).(*Op)
-	}
 	from := TreeRelationship(t.Location, op.Location)
 	to := TreeRelationship(t.To(), op.Location)
 	switch {
@@ -417,9 +389,6 @@ func tInsertIndexInsertIndex(t, op *Op, priority bool) *Op {
 }
 
 func tInsertIndexMoveIndex(t, op *Op, priority bool) *Op {
-	if op.IsNullMove() {
-		return nil
-	}
 	from := TreeRelationship(t.Location, op.Location)
 	to := TreeRelationship(t.Location, op.To())
 	switch {
@@ -444,9 +413,6 @@ func tInsertIndexMoveIndex(t, op *Op, priority bool) *Op {
 	}
 }
 func tMoveIndexInsertIndex(t, op *Op, priority bool) *Op {
-	if t.IsNullMove() {
-		return proto.Clone(op).(*Op)
-	}
 	from := TreeRelationship(t.Location, op.Location)
 	to := TreeRelationship(t.To(), op.Location)
 	switch {
@@ -486,12 +452,6 @@ func tDeleteIndexInsertIndex(t, op *Op, priority bool) *Op {
 }
 
 func tMoveIndexMoveIndex(t, op *Op, priority bool) *Op {
-	if op.IsNullMove() {
-		return nil
-	}
-	if t.IsNullMove() {
-		return proto.Clone(op).(*Op)
-	}
 	fromFrom := TreeRelationship(t.Location, op.Location)
 	fromTo := TreeRelationship(t.Location, op.To())
 	toFrom := TreeRelationship(t.To(), op.Location)
@@ -547,12 +507,6 @@ func tMoveIndexMoveIndex(t, op *Op, priority bool) *Op {
 }
 
 func tRenameKeyRenameKey(t, op *Op, priority bool) *Op {
-	if op.IsNullMove() {
-		return nil
-	}
-	if t.IsNullMove() {
-		return proto.Clone(op).(*Op)
-	}
 	// t has moved the value from t.Location and overwritten t.To().
 	// op wants to move from op.Location and overwrite op.To()
 	toFrom := TreeRelationship(t.To(), op.Location)
@@ -613,9 +567,6 @@ func tRenameKeyRenameKey(t, op *Op, priority bool) *Op {
 }
 
 func tRenameKeyDeleteKey(t, op *Op, priority bool) *Op {
-	if t.IsNullMove() {
-		return proto.Clone(op).(*Op)
-	}
 	from := TreeRelationship(t.Location, op.Location)
 	to := TreeRelationship(t.To(), op.Location)
 	switch {
@@ -633,9 +584,6 @@ func tRenameKeyDeleteKey(t, op *Op, priority bool) *Op {
 	}
 }
 func tDeleteKeyRenameKey(t, op *Op, priority bool) *Op {
-	if op.IsNullMove() {
-		return nil
-	}
 	from := TreeRelationship(t.Location, op.Location)
 	to := TreeRelationship(t.Location, op.To())
 	switch {

@@ -5,10 +5,10 @@ import 'package:protod/delta/delta_shifters.dart';
 import 'package:protod/delta/delta_transform_generated.dart';
 
 pb.Op transform(pb.Op t, pb.Op op, bool priority) {
-  if (op == null || op.type == pb.Op_Type.Null) {
+  if (isNull(op)) {
     return null;
   }
-  if (t == null || t.type == pb.Op_Type.Null) {
+  if (isNull(t)) {
     return op.clone();
   }
   if (op.type == pb.Op_Type.Compound) {
@@ -46,9 +46,12 @@ pb.Op transform(pb.Op t, pb.Op op, bool priority) {
   }
   final oneofLocation = splitCommonOneofAncestor(t.location, op.location);
   if (oneofLocation != null) {
-    // t and op have a common oneof ancestor, and are acting on separate values. Any operation on the descendant of
-    // a oneof value will delete the entire tree under all the other oneof values.
+    // t and op have a common oneof ancestor, and are acting on separate oneof root values. Any operation on the
+    // descendant of a oneof value will delete the entire tree under all the other oneof values.
     bool valid(pb.Op o) {
+      // Since any operation on a descendant of a oneof deletes all the other oneof root values, in most
+      // situations we must delete the entire oneof tree in order to converge. The exception is when an operation
+      // sets the whole oneof root value:
       return (o.type == pb.Op_Type.Delete &&
               o.location.length == oneofLocation.length) ||
           (o.type == pb.Op_Type.Set &&
@@ -76,12 +79,6 @@ pb.Op transform(pb.Op t, pb.Op op, bool priority) {
         ..type = pb.Op_Type.Delete
         ..location.addAll(oneofLocation);
     }
-  }
-  if (isNullMove(op)) {
-    return null;
-  }
-  if (isNullMove(t)) {
-    return op.clone();
   }
   return transformGenerated(t, op, priority);
 }
@@ -282,10 +279,6 @@ pb.Op tMoveModify(pb.Op t, pb.Op op) {
   // tMoveIndexEditIndex
   // tMoveIndexSetIndex
 
-  if (isNullMove(t)) {
-    return op.clone();
-  }
-
   // op is trying to modify a value after t has moved values. Even when t and op act on the same location, they are
   // independent.
   return tIndependent(t, op);
@@ -296,9 +289,6 @@ pb.Op tModifyMove(pb.Op t, pb.Op op) {
   // tEditIndexMoveIndex
   // tSetIndexMoveIndex
 
-  if (isNullMove(op)) {
-    return null;
-  }
   // Op is trying to move a value in a list after op modified a value. Even when t and op act on the same
   // location, they are independent.
   return tIndependent(t, op);
@@ -321,18 +311,12 @@ pb.Op tSetIndexMoveIndex(pb.Op t, pb.Op op, bool priority) {
 }
 
 pb.Op tMoveIndexDeleteIndex(pb.Op t, pb.Op op, bool priority) {
-  if (isNullMove(t)) {
-    return op.clone();
-  }
   // op is trying to delete a value after t has moved values. Even when t and op act on the same location,
   // they are independent.
   return tIndependent(t, op);
 }
 
 pb.Op tDeleteIndexMoveIndex(pb.Op t, pb.Op op, bool priority) {
-  if (isNullMove(op)) {
-    return null;
-  }
   final from = treeRelationship(t.location, op.location);
   final to = treeRelationship(t.location, toLoc(op));
   if (from != TreeRelationshipType.EQUAL && to != TreeRelationshipType.EQUAL) {
@@ -349,9 +333,6 @@ pb.Op tDeleteIndexMoveIndex(pb.Op t, pb.Op op, bool priority) {
 }
 
 pb.Op tEditKeyRenameKey(pb.Op t, pb.Op op, bool priority) {
-  if (isNullMove(op)) {
-    return null;
-  }
   final from = treeRelationship(t.location, op.location);
   final to = treeRelationship(t.location, toLoc(op));
   if (from != TreeRelationshipType.EQUAL && to != TreeRelationshipType.EQUAL) {
@@ -368,9 +349,6 @@ pb.Op tEditKeyRenameKey(pb.Op t, pb.Op op, bool priority) {
 }
 
 pb.Op tRenameKeyEditKey(pb.Op t, pb.Op op, bool priority) {
-  if (isNullMove(t)) {
-    return op.clone();
-  }
   final from = treeRelationship(t.location, op.location);
   final to = treeRelationship(toLoc(t), op.location);
   if (from != TreeRelationshipType.EQUAL && to != TreeRelationshipType.EQUAL) {
@@ -452,9 +430,6 @@ pb.Op tInsertIndexSetIndex(pb.Op t, pb.Op op, bool priority) {
 }
 
 pb.Op tSetKeyRenameKey(pb.Op t, pb.Op op, bool priority) {
-  if (isNullMove(op)) {
-    return null;
-  }
   final from = treeRelationship(t.location, op.location);
   final to = treeRelationship(t.location, toLoc(op));
   if (from != TreeRelationshipType.EQUAL && to != TreeRelationshipType.EQUAL) {
@@ -478,9 +453,6 @@ pb.Op tSetKeyRenameKey(pb.Op t, pb.Op op, bool priority) {
 }
 
 pb.Op tRenameKeySetKey(pb.Op t, pb.Op op, bool priority) {
-  if (isNullMove(t)) {
-    return op.clone();
-  }
   final from = treeRelationship(t.location, op.location);
   final to = treeRelationship(toLoc(t), op.location);
   if (from != TreeRelationshipType.EQUAL && to != TreeRelationshipType.EQUAL) {
@@ -514,9 +486,6 @@ pb.Op tInsertIndexInsertIndex(pb.Op t, pb.Op op, bool priority) {
 }
 
 pb.Op tInsertIndexMoveIndex(pb.Op t, pb.Op op, bool priority) {
-  if (isNullMove(op)) {
-    return null;
-  }
   final from = treeRelationship(t.location, op.location);
   final to = treeRelationship(t.location, toLoc(op));
   if (from != TreeRelationshipType.EQUAL && to != TreeRelationshipType.EQUAL) {
@@ -541,9 +510,6 @@ pb.Op tInsertIndexMoveIndex(pb.Op t, pb.Op op, bool priority) {
 }
 
 pb.Op tMoveIndexInsertIndex(pb.Op t, pb.Op op, bool priority) {
-  if (isNullMove(t)) {
-    return op.clone();
-  }
   final from = treeRelationship(t.location, op.location);
   final to = treeRelationship(toLoc(t), op.location);
   if (from != TreeRelationshipType.EQUAL && to != TreeRelationshipType.EQUAL) {
@@ -584,12 +550,6 @@ pb.Op tDeleteIndexInsertIndex(pb.Op t, pb.Op op, bool priority) {
 }
 
 pb.Op tMoveIndexMoveIndex(pb.Op t, pb.Op op, bool priority) {
-  if (isNullMove(op)) {
-    return null;
-  }
-  if (isNullMove(t)) {
-    return op.clone();
-  }
   final fromFrom = treeRelationship(t.location, op.location);
   final fromTo = treeRelationship(t.location, toLoc(op));
   final toFrom = treeRelationship(toLoc(t), op.location);
@@ -647,12 +607,6 @@ pb.Op tMoveIndexMoveIndex(pb.Op t, pb.Op op, bool priority) {
 }
 
 pb.Op tRenameKeyRenameKey(pb.Op t, pb.Op op, bool priority) {
-  if (isNullMove(op)) {
-    return null;
-  }
-  if (isNullMove(t)) {
-    return op.clone();
-  }
   // t has moved the value from t.location and overwritten toLoc(t).
   // op wants to move from op.location and overwrite toLoc(op)
   final toFrom = treeRelationship(toLoc(t), op.location);
@@ -712,9 +666,6 @@ pb.Op tRenameKeyRenameKey(pb.Op t, pb.Op op, bool priority) {
 }
 
 pb.Op tRenameKeyDeleteKey(pb.Op t, pb.Op op, bool priority) {
-  if (isNullMove(t)) {
-    return op.clone();
-  }
   final from = treeRelationship(t.location, op.location);
   final to = treeRelationship(toLoc(t), op.location);
   if (from != TreeRelationshipType.EQUAL && to != TreeRelationshipType.EQUAL) {
@@ -732,9 +683,6 @@ pb.Op tRenameKeyDeleteKey(pb.Op t, pb.Op op, bool priority) {
 }
 
 pb.Op tDeleteKeyRenameKey(pb.Op t, pb.Op op, bool priority) {
-  if (isNullMove(op)) {
-    return null;
-  }
   final from = treeRelationship(t.location, op.location);
   final to = treeRelationship(t.location, toLoc(op));
   if (from != TreeRelationshipType.EQUAL && to != TreeRelationshipType.EQUAL) {

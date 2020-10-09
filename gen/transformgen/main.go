@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	. "github.com/dave/jennifer/jen"
+	"github.com/dave/protod/gen/behaviour"
 )
 
 const PATH = "github.com/dave/protod/delta"
@@ -25,24 +26,24 @@ func genDart() {
 
 	sb.WriteString("pb.Op transformGenerated(pb.Op t, pb.Op op, bool priority) {\n")
 	sb.WriteString("  switch (t.type) {\n")
-	for _, op := range OpTypes {
-		tData := Behaviours[op]
+	for _, op := range behaviour.OpTypes {
+		tData := behaviour.Behaviours[op]
 		sb.WriteString(fmt.Sprintf("  case pb.Op_Type.%s:\n", tData.Name))
 		sb.WriteString("    final tItem = item(t);\n")
 		for i, tLocType := range tData.Locators {
-			tLoc := Locators[tLocType]
+			tLoc := behaviour.Locators[tLocType]
 			var elseString = ""
 			if i > 0 {
 				elseString = "} else "
 			}
 			sb.WriteString(fmt.Sprintf("    %sif (tItem.%s()) {\n", elseString, tLoc.Dart))
 			sb.WriteString("      switch (op.type) {\n")
-			for _, op := range OpTypes {
-				opData := Behaviours[op]
+			for _, op := range behaviour.OpTypes {
+				opData := behaviour.Behaviours[op]
 				sb.WriteString(fmt.Sprintf("      case pb.Op_Type.%s:\n", opData.Name))
 				sb.WriteString("        final opItem = item(op);\n")
 				for i, opLocType := range opData.Locators {
-					opLoc := Locators[opLocType]
+					opLoc := behaviour.Locators[opLocType]
 					//opLoc.Type
 					var elseString = ""
 					if i > 0 {
@@ -94,26 +95,26 @@ func genGo() {
 					_, transformerItem := t.Pop()
 		*/
 		Switch(Id("t").Dot("Type")).BlockFunc(func(g *Group) {
-			for _, op := range OpTypes {
-				tData := Behaviours[op]
+			for _, op := range behaviour.OpTypes {
+				tData := behaviour.Behaviours[op]
 				g.Case(Id(tData.Type)).Block(
 					// _, tItem := t.Pop()
 					List(Op("_"), Id("tItem")).Op(":=").Id("t").Dot("Pop").Call(),
 					Switch(Id("tItem").Dot("V").Assert(Type())).BlockFunc(func(g *Group) {
 						for _, tLocType := range tData.Locators {
-							tLoc := Locators[tLocType]
+							tLoc := behaviour.Locators[tLocType]
 							g.Case(Op("*").Id(tLoc.Type)).Block(
 								// switch op.Type {
 								//	case Op_Edit:
 								Switch(Id("op").Dot("Type")).BlockFunc(func(g *Group) {
-									for _, op := range OpTypes {
-										opData := Behaviours[op]
+									for _, op := range behaviour.OpTypes {
+										opData := behaviour.Behaviours[op]
 										g.Case(Id(opData.Type)).Block(
 											// _, opItem := op.Pop()
 											List(Op("_"), Id("opItem")).Op(":=").Id("op").Dot("Pop").Call(),
 											Switch(Id("opItem").Dot("V").Assert(Type())).BlockFunc(func(g *Group) {
 												for _, opLocType := range opData.Locators {
-													opLoc := Locators[opLocType]
+													opLoc := behaviour.Locators[opLocType]
 													g.Case(Op("*").Id(opLoc.Type)).BlockFunc(func(g *Group) {
 														if tLoc.Name == opLoc.Name {
 															// return transformEditFieldEditField(t, op, priority)

@@ -20,28 +20,6 @@ import (
 
 const DEBUG = false
 
-func Reduce(op *Op) *Op {
-	panic("not implemented")
-	//var ops []*Op
-	//var flatten func(*Op)
-	//flatten = func(o *Op) {
-	//	if o.Type == Op_Compound {
-	//		for _, child := range o.Ops {
-	//			flatten(child)
-	//		}
-	//	} else {
-	//		ops = append(ops, o)
-	//	}
-	//}
-	//flatten(proto.Clone(op).(*Op))
-	//for i := 0; i < len(ops)-1; i++ {
-	//	for j := i + 1; j < len(ops); j++ {
-	//		// TODO???
-	//	}
-	//}
-	//return Compound(ops...)
-}
-
 func (o *Op) Flatten() []*Op {
 	if o == nil {
 		return []*Op{}
@@ -86,13 +64,14 @@ func Transform(op1, op2 *Op, op1priority bool) (op1x *Op, op2x *Op, err error) {
 			}
 		}()
 	}
-	if op1 == nil && op2 == nil {
+
+	op1IsNull, op2IsNull := IsNull(op1), IsNull(op2)
+	switch {
+	case op1IsNull && op2IsNull:
 		return nil, nil, nil
-	}
-	if op1 == nil {
+	case op1IsNull:
 		return nil, proto.Clone(op2).(*Op), nil
-	}
-	if op2 == nil {
+	case op2IsNull:
 		return proto.Clone(op1).(*Op), nil, nil
 	}
 
@@ -126,7 +105,7 @@ func Apply(op *Op, input proto.Message) (err error) {
 			}
 		}()
 	}
-	if op == nil || op.Type == Op_Null {
+	if IsNull(op) {
 		return nil
 	}
 	switch op.Type {
@@ -503,6 +482,19 @@ func getValue(factory func() protoreflect.Value, current protoreflect.Value, val
 	return getValueField(factory, current, value)
 }
 
+func applyDeltaToString(value string, dlt *quill.Delta) string {
+	// TODO: Is there a better way of applying the delta to prevString?
+	out := quill.New(nil).Insert(value, nil).Compose(*dlt)
+	var sb strings.Builder
+	for _, o := range out.Ops {
+		if len(o.Insert) == 0 {
+			panic("non insert operation found after applying delta")
+		}
+		sb.WriteString(string(o.Insert))
+	}
+	return sb.String()
+}
+
 func getValueField(factory func() protoreflect.Value, current protoreflect.Value, value isOp_Value) protoreflect.Value {
 	switch value := value.(type) {
 	case *Op_Scalar:
@@ -513,17 +505,8 @@ func getValueField(factory func() protoreflect.Value, current protoreflect.Value
 			prevString = current.String()
 		}
 		dlt := value.Delta.V.(*Delta_Quill).Quill.Quill()
-
-		// TODO: Is there a better way of applying the delta to prevString?
-		out := quill.New(nil).Insert(prevString, nil).Compose(*dlt)
-		var sb strings.Builder
-		for _, o := range out.Ops {
-			if len(o.Insert) == 0 {
-				panic("non insert operation found after applying delta")
-			}
-			sb.WriteString(string(o.Insert))
-		}
-		return protoreflect.ValueOfString(sb.String())
+		newString := applyDeltaToString(prevString, dlt)
+		return protoreflect.ValueOfString(newString)
 	case *Op_Message:
 		return protoreflect.ValueOfMessage(MustUnmarshalAny(value.Message).ProtoReflect())
 	case *Op_Object:
@@ -1233,24 +1216,6 @@ func isAncestor(ancestor, descendent []*Locator) bool {
 	return true
 }
 
-// IsNullMove returns true if o is an Op_Move and the from and to locations are the same.
-func (o *Op) IsNullMove() bool {
-	if o.Type != Op_Move && o.Type != Op_Rename {
-		return false
-	}
-	from := o.Item()
-	to := o.Value
-	switch fromValue := from.V.(type) {
-	case *Locator_Index:
-		toValue := to.(*Op_Index)
-		return fromValue.Index == toValue.Index || fromValue.Index == toValue.Index-1
-	case *Locator_Key:
-		toValue := to.(*Op_Key)
-		return proto.Equal(fromValue.Key, toValue.Key)
-	}
-	panic("")
-}
-
 func (o *Op) To() []*Locator {
 	op := proto.Clone(o).(*Op)
 
@@ -1464,4 +1429,26 @@ func mustJson(message proto.Message) string {
 		panic(err)
 	}
 	return string(b)
+}
+
+func IsNull(op *Op) bool {
+	return op == nil || op.Type == Op_Null || op.isNullMove()
+}
+
+// IsNullMove returns true if o is an Op_Move and the from and to locations are the same.
+func (o *Op) isNullMove() bool {
+	if o.Type != Op_Move && o.Type != Op_Rename {
+		return false
+	}
+	from := o.Item()
+	to := o.Value
+	switch fromValue := from.V.(type) {
+	case *Locator_Index:
+		toValue := to.(*Op_Index)
+		return fromValue.Index == toValue.Index || fromValue.Index == toValue.Index-1
+	case *Locator_Key:
+		toValue := to.(*Op_Key)
+		return proto.Equal(fromValue.Key, toValue.Key)
+	}
+	panic(fmt.Sprintf("invalid operation %v", o))
 }

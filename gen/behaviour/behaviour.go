@@ -1,4 +1,4 @@
-package main
+package behaviour
 
 type OpType int
 
