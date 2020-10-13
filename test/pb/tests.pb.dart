@@ -662,3 +662,72 @@ class RandomTestItem extends $pb.GeneratedMessage {
   Person ensureExpected() => $_ensure(1);
 }
 
+class ReduceTestItem extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('ReduceTestItem', package: const $pb.PackageName('tests'), createEmptyInstance: create)
+    ..aOM<Person>(1, 'data', subBuilder: Person.create)
+    ..aOM<$0.Op>(2, 'op1', subBuilder: $0.Op.create)
+    ..aOM<$0.Op>(3, 'op2', subBuilder: $0.Op.create)
+    ..aOM<$0.Op>(4, 'reduced', subBuilder: $0.Op.create)
+    ..hasRequiredFields = false
+  ;
+
+  ReduceTestItem._() : super();
+  factory ReduceTestItem() => create();
+  factory ReduceTestItem.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ReduceTestItem.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  ReduceTestItem clone() => ReduceTestItem()..mergeFromMessage(this);
+  ReduceTestItem copyWith(void Function(ReduceTestItem) updates) => super.copyWith((message) => updates(message as ReduceTestItem));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static ReduceTestItem create() => ReduceTestItem._();
+  ReduceTestItem createEmptyInstance() => create();
+  static $pb.PbList<ReduceTestItem> createRepeated() => $pb.PbList<ReduceTestItem>();
+  @$core.pragma('dart2js:noInline')
+  static ReduceTestItem getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ReduceTestItem>(create);
+  static ReduceTestItem _defaultInstance;
+
+  @$pb.TagNumber(1)
+  Person get data => $_getN(0);
+  @$pb.TagNumber(1)
+  set data(Person v) { setField(1, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasData() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearData() => clearField(1);
+  @$pb.TagNumber(1)
+  Person ensureData() => $_ensure(0);
+
+  @$pb.TagNumber(2)
+  $0.Op get op1 => $_getN(1);
+  @$pb.TagNumber(2)
+  set op1($0.Op v) { setField(2, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasOp1() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearOp1() => clearField(2);
+  @$pb.TagNumber(2)
+  $0.Op ensureOp1() => $_ensure(1);
+
+  @$pb.TagNumber(3)
+  $0.Op get op2 => $_getN(2);
+  @$pb.TagNumber(3)
+  set op2($0.Op v) { setField(3, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasOp2() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearOp2() => clearField(3);
+  @$pb.TagNumber(3)
+  $0.Op ensureOp2() => $_ensure(2);
+
+  @$pb.TagNumber(4)
+  $0.Op get reduced => $_getN(3);
+  @$pb.TagNumber(4)
+  set reduced($0.Op v) { setField(4, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasReduced() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearReduced() => clearField(4);
+  @$pb.TagNumber(4)
+  $0.Op ensureReduced() => $_ensure(3);
+}
+

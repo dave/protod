@@ -35,22 +35,167 @@ func TestRandomApplyCases(t *testing.T) {
 		if err := delta.Apply(item.Op, p); err != nil {
 			t.Fatal(err)
 		}
-		expcted, err := protojson.Marshal(item.Expected)
-		if err != nil {
-			t.Fatal(err)
-		}
-		result, err := protojson.Marshal(p)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if !compareJson(string(result), string(expcted)) {
+		if !compareProto(item.Expected, p) {
 			input, err := protojson.Marshal(before)
 			if err != nil {
 				t.Fatal(err)
 			}
-			t.Fatalf("input: %s\nop: %s\nexpected: %s\nresult:%s", string(input), item.Op.Debug(), string(expcted), string(result))
+			t.Fatalf("input: %s\nop: %s\nexpected: %s\nresult:%s", string(input), item.Op.Debug(), mustJson(item.Expected), mustJson(p))
 		}
 		//fmt.Printf("input: %s\nop: %s\nexpected: %s\nresult:%s\n\n", string(input), item.Op.Debug(), string(expcted), string(result))
+	}
+}
+
+func TestRandomReduceCases(t *testing.T) {
+	cases := strings.Split(RANDOM_REDUCE_CASES, "\n")
+	//cases := []string{`{"data":{"age":667, "embedded":{}}, "op1":{"type":"Set", "location":[{"field":{"name":"company", "number":5}}], "message":{"@type":"type.googleapis.com/tests.Company", "name":"HLBKf"}}, "op2":{"type":"Set", "location":[{"field":{"name":"company", "number":5}}, {"field":{"name":"flags", "number":13}}, {"key":{"int64":"-816"}}], "scalar":{"string":"og4Zf"}}, "reduced":{"type":"Compound", "ops":[{"type":"Set", "location":[{"field":{"name":"company", "number":5}}], "message":{"@type":"type.googleapis.com/tests.Company", "name":"HLBKf"}}, {"type":"Set", "location":[{"field":{"name":"company", "number":5}}, {"field":{"name":"flags", "number":13}}, {"key":{"int64":"-816"}}], "scalar":{"string":"og4Zf"}}]}}`}
+	for _, caseJson := range cases {
+		item := &tests.ReduceTestItem{}
+		if err := protojson.Unmarshal([]byte(caseJson), item); err != nil {
+			t.Fatalf("unmarshaling %q: %+v", caseJson, err)
+		}
+		data1 := proto.Clone(item.Data).(*tests.Person)
+		data2 := proto.Clone(item.Data).(*tests.Person)
+		opMerged := delta.Reduce(delta.Compound(item.Op1, item.Op2))
+		if !compareProto(item.Reduced, opMerged) {
+			t.Fatalf("\nexpected: %v (%v)\nfound: %v (%v)\n", item.Reduced.Debug(), mustJson(item.Reduced), opMerged.Debug(), mustJson(opMerged))
+		}
+		if err := delta.Apply(item.Op1, data1); err != nil {
+			t.Fatal(err)
+		}
+		if err := delta.Apply(item.Op2, data1); err != nil {
+			t.Fatal(err)
+		}
+		if err := delta.Apply(opMerged, data2); err != nil {
+			t.Fatal(err)
+		}
+		if !compareProto(data1, data2) {
+			t.Fatalf("op1: %v\nop2: %v\nreduced: %v\ndata: %v\nexpected: %v\nfound: %v\n", item.Op1.Debug(), item.Op2.Debug(), opMerged.Debug(), mustJson(item.Data), mustJson(data1), mustJson(data2))
+		}
+	}
+}
+
+//func TestRandomReduceSingle(t *testing.T) {
+//
+//	item := &tests.ReduceTestItem{
+//		Data: &tests.Person{},
+//		Op1:  tests.Op().Person().Company().Ceo().Alias().Move(0, 2),
+//		Op2:  tests.Op().Person().Company().Ceo().Alias().Move(1, 0),
+//	}
+//
+//	//item := &tests.ReduceTestItem{}
+//	//b := []byte(`{"data":{"name":"6TWQw","cases":{"3yhwR":{},"FAlaC":{"name":"fzYv5"},"Qsfke":{"flags":{"46":"qfCb5"}},"gD6EW":{"flags":{"-663":"dpsTI","0":"G9EXs"}},"kOj6n":{"name":"0ix48"}},"company":{"flags":{"-1018":"PU9F7"}},"alias":["AkTEc"],"type":"Bravo","typeList":["Alpha","Alpha"],"typeMap":{"xRPRd":"Charlie"},"embedded":{"name":"jriDW"},"dbl":-257},"op1":{"type":"Set","location":[{"oneof":{"name":"choice","fields":[{"name":"str","number":11},{"name":"dbl","number":12},{"name":"itm","number":13},{"name":"cas","number":14},{"name":"cho","number":15}]}},{"field":{"name":"cas","number":14}},{"field":{"name":"flags","number":23}}],"object":{"mapInt64":{"map":{"-587":{"scalar":{"string":"Zwn3Z"}},"415":{"scalar":{"string":"TlXIi"}}}}}},"op2":{"type":"Delete","location":[{"oneof":{"name":"choice","fields":[{"name":"str","number":11},{"name":"dbl","number":12},{"name":"itm","number":13},{"name":"cas","number":14},{"name":"cho","number":15}]}},{"field":{"name":"cas","number":14}}]}}`)
+//	//if err := protojson.Unmarshal(b, item); err != nil {
+//	//	t.Fatal(err)
+//	//}
+//
+//	p := proto.Clone(item.Data).(*tests.Person)
+//	if err := delta.Apply(item.Op1, p); err != nil {
+//		t.Fatal(err)
+//	}
+//	if err := delta.Apply(item.Op2, p); err != nil {
+//		t.Fatal(err)
+//	}
+//	opMerged := delta.Reduce(delta.Compound(item.Op1, item.Op2))
+//	p1 := proto.Clone(item.Data).(*tests.Person)
+//	if err := delta.Apply(opMerged, p1); err != nil {
+//		t.Fatal(err)
+//	}
+//	if !proto.Equal(p, p1) {
+//		t.Fatalf("op1: %v\nop2: %v\nmerged: %v\nbefore: %v\nwant: %v\ngot: %v\n", item.Op1.Debug(), item.Op2.Debug(), opMerged.Debug(), mustJson(item.Data), mustJson(p), mustJson(p1))
+//	}
+//}
+
+func TestRandomReduce(t *testing.T) {
+
+	const disabled = true
+	if disabled {
+		return
+	}
+
+	const write = false
+
+	p := &tests.Person{Name: "a"}
+	var sbd, sbg strings.Builder
+	if write {
+		sbd.WriteString("const RANDOM_REDUCE_CASES = '''")
+		sbg.WriteString("package randop\n\nconst RANDOM_REDUCE_CASES = `")
+	}
+	two := 0
+	one := 0
+	zero := 0
+	for i := 0; i < 5000; i++ {
+
+		pBefore := proto.Clone(p).(*tests.Person)
+		pAfterMerged := proto.Clone(p).(*tests.Person)
+
+		op1 := Get(p)
+		if err := delta.Apply(op1, p); err != nil {
+			t.Fatal(err)
+		}
+
+		op2 := Get(p)
+		if err := delta.Apply(op2, p); err != nil {
+			t.Fatal(err)
+		}
+		pAfterTwo := proto.Clone(p).(*tests.Person)
+
+		opMerged := delta.Reduce(delta.Compound(op1, op2))
+		if err := delta.Apply(opMerged, pAfterMerged); err != nil {
+			t.Fatal(err)
+		}
+
+		if !delta.IsNull(op1) && !delta.IsNull(op2) {
+			if delta.IsNull(opMerged) {
+				//fmt.Printf("op1: %v\nop2: %v\nmerged: %v\n", op1.Debug(), op2.Debug(), opMerged.Debug())
+				zero++
+			} else if len(opMerged.Flatten()) == 1 {
+				one++
+			} else if len(opMerged.Flatten()) == 2 {
+				two++
+			}
+		}
+
+		item := &tests.ReduceTestItem{
+			Data:    pBefore,
+			Op1:     op1,
+			Op2:     op2,
+			Reduced: opMerged,
+		}
+		b, err := protojson.Marshal(item)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if !proto.Equal(pAfterTwo, pAfterMerged) {
+			fmt.Println(string(b))
+			t.Fatalf("op1: %v\nop2: %v\nmerged: %v\nbefore: %v\nwant: %v\ngot: %v\n", op1.Debug(), op2.Debug(), opMerged.Debug(), mustJson(pBefore), mustJson(pAfterTwo), mustJson(pAfterMerged))
+		}
+
+		if i%1000 == 0 {
+			fmt.Printf("2: %d, 1: %d, 0: %d (%d)\n", two, one, zero, len(b))
+			//s := mustJson(p)
+			//fmt.Println(len(s), s)
+		}
+
+		if write {
+			if i > 0 {
+				sbd.WriteString("\n")
+				sbg.WriteString("\n")
+			}
+			sbd.Write(b)
+			sbg.Write(b)
+		}
+	}
+	if write {
+		sbd.WriteString("''';")
+		sbg.WriteString("`")
+		if err := ioutil.WriteFile("../../test/random_reduce_cases.dart", []byte(sbd.String()), 0666); err != nil {
+			t.Fatal(err)
+		}
+		if err := ioutil.WriteFile("./cases_reduce_test.go", []byte(sbg.String()), 0666); err != nil {
+			t.Fatal(err)
+		}
 	}
 }
 
@@ -250,6 +395,25 @@ func compareJson(s1, s2 string) bool {
 	}
 	if err := json.Unmarshal([]byte(s2), &i2); err != nil {
 		return false
+	}
+	return reflect.DeepEqual(i1, i2)
+}
+
+func compareProto(m1, m2 proto.Message) bool {
+	m1b, err := protojson.Marshal(m1)
+	if err != nil {
+		panic(err)
+	}
+	m2b, err := protojson.Marshal(m2)
+	if err != nil {
+		panic(err)
+	}
+	var i1, i2 interface{}
+	if err := json.Unmarshal(m1b, &i1); err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(m2b, &i2); err != nil {
+		panic(err)
 	}
 	return reflect.DeepEqual(i1, i2)
 }

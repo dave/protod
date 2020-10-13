@@ -14,7 +14,22 @@ func TestReduce(t *testing.T) {
 		expected *delta.Op
 	}
 	items := []itemType{
-
+		//{
+		//	name: "SET_EDIT_CHILD_OBJECT",
+		//	op: delta.Compound(
+		//		Op().Person().Cases().Set(map[string]*Case{"a": {}}),
+		//		Op().Person().Cases().Key("a").Name().Set("b"),
+		//	),
+		//	expected: Op().Person().Cases().Set(map[string]*Case{"a": {Name: "b"}}),
+		//},
+		{
+			name: "SET_EDIT_CHILD_MESSAGE",
+			op: delta.Compound(
+				Op().Person().Company().Set(&Company{Name: "a"}),
+				Op().Person().Company().Name().Set("b"),
+			),
+			expected: Op().Person().Company().Set(&Company{Name: "b"}),
+		},
 		{
 			// EDIT A d1, EDIT A d2 => EDIT A d3 (use quill to merge d1 and d2)
 			name: "EDIT_EDIT",
@@ -153,15 +168,17 @@ func TestReduce(t *testing.T) {
 			expected: Op().Person().Alias().Insert(0, "a"),
 		},
 
-		{
-			// INSERT A, DELETE A => null
-			name: "INSERT_DELETE",
-			op: delta.Compound(
-				Op().Person().Alias().Insert(0, "a"),
-				Op().Person().Alias().Index(0).Delete(),
-			),
-			expected: nil,
-		},
+		// Removed, because the insert operation will create the parent if it doesn't already exist. The delete
+		// operation will reverse the insert but not the creation of the parent.
+		//{
+		//	// INSERT A, DELETE A => null
+		//	name: "INSERT_DELETE",
+		//	op: delta.Compound(
+		//		Op().Person().Alias().Insert(0, "a"),
+		//		Op().Person().Alias().Index(0).Delete(),
+		//	),
+		//	expected: nil,
+		//},
 
 		{
 			// MOVE A to B, MOVE B to A => null

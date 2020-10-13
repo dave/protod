@@ -43,7 +43,7 @@ func (t *Op) Transform(op *Op, priority bool) *Op {
 		}
 		return opx
 	}
-	found, oneofLocation := SplitCommonOneofAncestor(t.Location, op.Location)
+	found, oneofLocation := SplitCommonOneofAncestor(t.Location, op.Location, true)
 	if found {
 		// t and op have a common oneof ancestor, and are acting on separate oneof root values. Any operation on the
 		// descendant of a oneof value will delete the entire tree under all the other oneof values.

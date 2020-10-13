@@ -64,20 +64,41 @@ func rIndependent(op1, op2 *Op) []*Op {
 	//op1Behaviour := GetBehaviour(op1)
 	op2Behaviour := GetBehaviour(op2)
 
-	if op2Behaviour.ItemIsDeleted && TreeRelationship(op2.Location, op1.Location) == TREE_ANCESTOR {
+	if op1.Type == Op_Set && TreeRelationship(op1.Location, op2.Location) == TREE_ANCESTOR {
+		// op1 is a set operation, and op2 is acting on a descendent. We can just apply op2 to the value and use that
+		// in the set:
+
+		// op1.Value can be:
+		// &Op_Scalar (don't think so because scalars don't have descendents?)
+		// &Op_Message
+		// &Op_Object
+
+		switch value := op1.Value.(type) {
+		case *Op_Scalar:
+			panic("value is scalar?!?")
+		case *Op_Object:
+			// TODO
+			// applying an operation to an Op_Object is not straightforward.
+		case *Op_Message:
+			msg := MustUnmarshalAny(value.Message)
+			op2new := proto.Clone(op2).(*Op)
+			op2new.Location = op2new.Location[len(op1.Location):]
+			if err := Apply(op2new, msg); err != nil {
+				panic(err)
+			}
+			out := proto.Clone(op1).(*Op)
+			out.Value = &Op_Message{Message: MustMarshalAny(msg)}
+			return []*Op{out}
+		}
+	}
+
+	if op2Behaviour.ItemIsDeleted && TreeRelationship(op1.Location, op2.Location) == TREE_DESCENDENT {
 		// Op1 is acting on a value that is a descendent of a value that op2 deleted. We can remove op1.
 		return []*Op{proto.Clone(op2).(*Op)}
 	}
 
-	if op2Behaviour.ValueIsLocation && op2Behaviour.ValueIsDeleted && TreeRelationship(op2.To(), op1.Location) == TREE_ANCESTOR {
+	if op2Behaviour.ValueIsLocation && op2Behaviour.ValueIsDeleted && TreeRelationship(op1.Location, op2.To()) == TREE_DESCENDENT {
 		// Op1 is acting on a value that is a descendent of a value that op2 deleted. We can remove op1.
-		return []*Op{proto.Clone(op2).(*Op)}
-	}
-
-	found, _ := SplitCommonOneofAncestor(op1.Location, op2.Location)
-	if found {
-		// op1 and op2 have a common oneof ancestor, and are acting on separate oneof root values. Any operation on the
-		// descendant of a oneof value will delete the entire tree under all the other oneof values.
 		return []*Op{proto.Clone(op2).(*Op)}
 	}
 
@@ -342,7 +363,22 @@ func rInsertIndexDeleteIndex(op1, op2 *Op) []*Op {
 		return rIndependent(op1, op2)
 	}
 
-	return []*Op{}
+	// This is not actually correct, because the insert operation will create the parent if it doesn't already exist.
+	// The delete operation will reverse the insert but not the creation of the parent. Perhaps operations should fail
+	// if the parent doesn't exist? This would without a doubt be less convenient in general use. Here's an example:
+	//
+	// op1: INSERT(cases/["a"]/items/0, message[tests.Item])
+	// op2: DELETE(cases/["a"]/items/0)
+	// merged: NIL
+	// before: {"name":"b"}
+	// want: {"name":"b", "cases":{"a":{}}}
+	// got: {"name":"b"}
+	//
+	// So, we return both operations unchanged:
+	return []*Op{proto.Clone(op1).(*Op), proto.Clone(op2).(*Op)}
+
+	// Naive logic would return nothing:
+	// return []*Op{}
 }
 func rMoveIndexDeleteIndex(op1, op2 *Op) []*Op {
 	// e.g. MOVE A to B, DELETE B => DELETE A

@@ -89,3 +89,10 @@ message RandomTestItem {
   delta.Op op = 1;
   Person expected = 2;
 }
+
+message ReduceTestItem {
+  Person data = 1;
+  delta.Op op1 = 2;
+  delta.Op op2 = 3;
+  delta.Op reduced = 4;
+}

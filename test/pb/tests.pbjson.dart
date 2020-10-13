@@ -158,3 +158,13 @@ const RandomTestItem$json = const {
   ],
 };
 
+const ReduceTestItem$json = const {
+  '1': 'ReduceTestItem',
+  '2': const [
+    const {'1': 'data', '3': 1, '4': 1, '5': 11, '6': '.tests.Person', '10': 'data'},
+    const {'1': 'op1', '3': 2, '4': 1, '5': 11, '6': '.delta.Op', '10': 'op1'},
+    const {'1': 'op2', '3': 3, '4': 1, '5': 11, '6': '.delta.Op', '10': 'op2'},
+    const {'1': 'reduced', '3': 4, '4': 1, '5': 11, '6': '.delta.Op', '10': 'reduced'},
+  ],
+};
+

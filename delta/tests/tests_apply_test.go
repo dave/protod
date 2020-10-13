@@ -24,6 +24,24 @@ func TestApply(t *testing.T) {
 	}
 	items := []itemType{
 		{
+			name:     "oneof_deep_delete_3",
+			op:       Op().Person().Choice().Itm().Flags().Delete(),
+			data:     &Person{Choice: &Person_Str{Str: "a"}},
+			expected: &Person{Choice: &Person_Itm{Itm: &Item{}}},
+		},
+		{
+			name:     "oneof_deep_delete_2",
+			op:       Op().Person().Choice().Itm().Delete(),
+			data:     &Person{Choice: &Person_Str{Str: "a"}},
+			expected: &Person{},
+		},
+		{
+			name:     "oneof_deep_delete_1",
+			op:       Op().Person().Choice().Itm().Done().Delete(),
+			data:     &Person{Choice: &Person_Str{Str: "a"}},
+			expected: &Person{Choice: &Person_Itm{Itm: &Item{}}},
+		},
+		{
 			name:     "oneof_string_edit_null",
 			op:       Op().Person().Choice().Str().Edit("", "a"),
 			data:     &Person{},

@@ -393,6 +393,12 @@ func applyDelete(op *Op, input proto.Message) error {
 			return fmt.Errorf("can't delete field locator from %T", parent)
 		}
 		field := getField(locator.Field, parent)
+
+		// TODO: Does this break anything else?
+		// First create the field before deleting. This ensures that if this is the descendent of a oneof field that
+		// the other oneof root values are deleted. If not, we have problems in the Reduce function.
+		parent.Set(field, parent.NewField(field))
+
 		parent.Clear(field)
 	case *Locator_Index:
 		parent, ok := parent.(protoreflect.List)
@@ -1136,7 +1142,7 @@ func TreeRelationship(p1, p2 []*Locator) TreeRelationshipType {
 	}
 }
 
-func SplitCommonOneofAncestor(p1, p2 []*Locator) (found bool, oneof []*Locator) {
+func SplitCommonOneofAncestor(p1, p2 []*Locator, includeRoot bool) (found bool, oneof []*Locator) {
 	// Searches the locations for a "oneof" ancestor that they both share. Only returns true if they use different
 	// oneof values. e.g.:
 	// Op().Chooser().Choice().Dbl().Set(2), Op().Chooser().Choice().Str().Set("a") => true, Op().Chooser().Choice()
@@ -1181,12 +1187,16 @@ func SplitCommonOneofAncestor(p1, p2 []*Locator) (found bool, oneof []*Locator) 
 		switch {
 		case !hasNext1 && !hasNext2:
 			// the only operations that finish at a oneof locator are operations that delete the whole oneof. We can
-			// continue of this is the case.
+			// continue if this is the case.
 			continue
 		case !hasNext1 || !hasNext2:
 			// one of the operations is deleting the whole oneof, and one is manipulating inside. this deserves special
 			// attention so we return true.
-			return true, p1[0 : i+1]
+			if includeRoot {
+				return true, p1[0 : i+1]
+			} else {
+				continue
+			}
 		case hasNext1 && hasNext2:
 			next1 := p1[i+1]
 			next2 := p2[i+1]
