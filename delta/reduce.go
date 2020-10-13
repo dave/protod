@@ -78,7 +78,8 @@ func rIndependent(op1, op2 *Op) []*Op {
 			panic("value is scalar?!?")
 		case *Op_Object:
 			// TODO
-			// applying an operation to an Op_Object is not straightforward.
+			// Applying an operation to an Op_Object is not straightforward. We can't currently extract an *Object into
+			// a protoreflect.Value without the message it came from. Not sure what we have to do to enable this.
 		case *Op_Message:
 			msg := MustUnmarshalAny(value.Message)
 			op2new := proto.Clone(op2).(*Op)
