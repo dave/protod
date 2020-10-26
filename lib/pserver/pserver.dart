@@ -9,17 +9,20 @@ import 'package:protod/delta/delta.dart';
 import 'package:protod/delta/delta.pb.dart';
 
 class StoreMeta<T extends GeneratedMessage, M> extends Store<T> {
-  hive.Box<M> _metaBox;
+  hive.Box<M> _metaBoxInit;
+
+  hive.Box<M> get _metaBox => _metaBoxInit;
   final M Function(T) _meta;
 
   StoreMeta(
+    int typeId,
     T empty,
     StoreAdapter<T> adapter,
     bool Function() offline,
     TypeRegistry registry,
     M Function(T) meta,
   )   : this._meta = meta,
-        super(empty, adapter, offline, registry);
+        super(typeId, empty, adapter, offline, registry);
 
   M meta(String id) {
     return _metaBox.get(id);
@@ -27,8 +30,8 @@ class StoreMeta<T extends GeneratedMessage, M> extends Store<T> {
 
   @override
   Future<void> init() async {
-    if (_metaBox == null) {
-      _metaBox = await hive.Hive.openBox<M>("${this._type}:meta");
+    if (_metaBoxInit == null) {
+      _metaBoxInit = await hive.Hive.openBox<M>("${this._type}:meta");
     }
     await super.init();
   }
@@ -52,8 +55,13 @@ class StoreMeta<T extends GeneratedMessage, M> extends Store<T> {
 }
 
 class Store<T extends GeneratedMessage> {
-  hive.Box<Item<T>> _box;
-  hive.Box<bool> _dirty;
+  hive.Box<Item<T>> _boxInit;
+
+  hive.Box<Item<T>> get _box => _boxInit;
+
+  hive.Box<bool> _dirtyInit;
+
+  hive.Box<bool> get _dirty => _dirtyInit;
 
   final StoreAdapter<T> _adapter;
   final bool Function() _offline;
@@ -66,6 +74,7 @@ class Store<T extends GeneratedMessage> {
   final _rand = Random();
 
   Store(
+    int typeId,
     T empty,
     StoreAdapter<T> adapter,
     bool Function() offline,
@@ -73,10 +82,12 @@ class Store<T extends GeneratedMessage> {
   )   : this._type = empty.info_.qualifiedMessageName,
         this._adapter = adapter,
         this._offline = offline,
-        this._registry = registry;
+        this._registry = registry {
+    hive.Hive.registerAdapter(ItemAdapter<T>(typeId, registry, this));
+  }
 
   Iterable<String> ids() {
-    return _box.keys;
+    return _box.keys.map((e) => e.toString());
   }
 
   Iterable<String> dirty() {
@@ -91,11 +102,11 @@ class Store<T extends GeneratedMessage> {
   }
 
   Future<void> init() async {
-    if (_box == null) {
-      _box = await hive.Hive.openBox<Item<T>>(this._type);
+    if (_boxInit == null) {
+      _boxInit = await hive.Hive.openBox<Item<T>>(this._type);
     }
-    if (_dirty == null) {
-      _dirty = await hive.Hive.openBox<bool>("${this._type}:dirty");
+    if (_dirtyInit == null) {
+      _dirtyInit = await hive.Hive.openBox<bool>("${this._type}:dirty");
     }
   }
 
@@ -133,15 +144,7 @@ class Store<T extends GeneratedMessage> {
       throw Exception("document $id already exists, delete first");
     }
 
-    var item = Item<T>()
-      .._store = this
-      .._sending = false
-      ..id = id
-      ..value = value
-      ..state = Int64(0)
-      ..requestId = ""
-      ..buffer = [set(null, value)]
-      ..overflow = [];
+    var item = Item<T>(this, id, value, Int64(0), "", [root(value)], []);
 
     _items[id] = item;
 
@@ -207,18 +210,16 @@ class Store<T extends GeneratedMessage> {
   }) {
     // ************************ Get from cache ************************
     if (_box.containsKey(id)) {
+      final item = _items[id] ?? _box.get(id);
+
       if (!_items.containsKey(id)) {
-        _items[id] = _box.get(id);
-        _items[id]._sending = false;
-        _items[id]._store = this;
-        _items[id].id = id;
-        _subscriptions[id] = _items[id].stream.listen((DataEvent<T> event) {
+        _items[id] = item;
+        item.id = id;
+        _subscriptions[id] = item.stream.listen((DataEvent<T> event) {
           _stream.add(event);
         });
-        _items[id]._broadcast(DataEvent.opened(_items[id]));
+        item._broadcast(DataEvent.opened(item));
       }
-
-      final item = _items[id];
 
       if (refresh || (update && item.dirty())) {
         // If required, send the refresh / update and return the future along
@@ -240,15 +241,7 @@ class Store<T extends GeneratedMessage> {
         _broadcast(DataEvent.getting(id));
         final response = await _adapter.get(_type, id, create, _registry);
 
-        item = Item<T>()
-          .._store = this
-          .._sending = false
-          ..id = id
-          ..value = response.value
-          ..state = response.state
-          ..requestId = ''
-          ..buffer = []
-          ..overflow = [];
+        item = Item<T>(this, id, response.value, response.state, "", [], []);
 
         _items[id] = item;
         _subscriptions[id] = item.stream.listen((DataEvent<T> event) {
@@ -256,7 +249,7 @@ class Store<T extends GeneratedMessage> {
         });
       } finally {
         _getting.remove(id);
-        if (item == null ) {
+        if (item == null) {
           _broadcast(DataEvent.getFailed(id));
         } else {
           item._broadcast(DataEvent.got(item));
@@ -342,8 +335,19 @@ class Item<T extends GeneratedMessage> {
   // to get to the eventual state [E]. We replace the contents of [buffer] with
   // [overflowx], and trigger another server request.
 
+  Item(
+    this._store,
+    this.id,
+    this.value,
+    this.state,
+    this.requestId,
+    this.buffer,
+    this.overflow,
+  ) : _current = Completer<void>();
+
   String id = '';
-  Store<T> _store;
+  final Store<T> _store;
+
   bool _sending = false;
   Completer<void> _current;
 
@@ -384,9 +388,7 @@ class Item<T extends GeneratedMessage> {
   }
 
   bool dirty() {
-    return state == Int64(0) ||
-        buffer.length > 0 ||
-        overflow.length > 0;
+    return state == Int64(0) || buffer.length > 0 || overflow.length > 0;
   }
 
   bool sending() => _sending;
@@ -445,7 +447,7 @@ class Item<T extends GeneratedMessage> {
       // Reset state
       state = response.state;
 
-      if (response.op != null && response.op.type != Op_Type.Null) {
+      if (!isNull(response.op)) {
         // Apply response
         apply(response.op, value);
 
@@ -463,7 +465,7 @@ class Item<T extends GeneratedMessage> {
       final responsex = transform(compound(overflow), response.op, false);
       final overflowx = transform(response.op, compound(overflow), true);
 
-      if (responsex != null && responsex.type != Op_Type.Null) {
+      if (!isNull(responsex)) {
         // Apply responsex
         apply(responsex, value);
 
@@ -472,7 +474,7 @@ class Item<T extends GeneratedMessage> {
 
       // Replace buffer with overflowx
       buffer = [];
-      if (overflowx != null) {
+      if (!isNull(overflowx)) {
         buffer = [overflowx];
       }
 
@@ -522,8 +524,9 @@ class ItemAdapter<T extends GeneratedMessage>
   final int typeId;
 
   final TypeRegistry _types;
+  final Store<T> _store;
 
-  ItemAdapter(this.typeId, this._types);
+  ItemAdapter(this.typeId, this._types, Store<T> this._store);
 
   @override
   Item<T> read(hive.BinaryReader reader) {
@@ -555,12 +558,7 @@ class ItemAdapter<T extends GeneratedMessage>
         .map((e) => e == null ? null : (Op()..mergeFromBuffer(e)))
         .toList();
 
-    return Item<T>()
-      ..value = value
-      ..state = state
-      ..buffer = buffer
-      ..requestId = request
-      ..overflow = overflow;
+    return Item<T>(_store, "", value, state, request, buffer, overflow);
   }
 
   @override

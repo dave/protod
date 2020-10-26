@@ -15,15 +15,16 @@ setDefaultRegistry(protobuf.TypeRegistry r) {
   _defaultTypeRegistry = r;
 }
 
-protobuf.GeneratedMessage unpack(any.Any packed, [protobuf.TypeRegistry r]) {
-  if (r == null) {
-    r = _defaultTypeRegistry;
-  }
+protobuf.GeneratedMessage unpack(
+  any.Any packed, [
+  protobuf.TypeRegistry reg,
+]) {
+  final registry = reg ?? _defaultTypeRegistry;
   if (packed == null || packed.typeUrl == "") {
-    return null;
+    throw Exception("typeUrl is empty");
   }
   final name = packed.typeUrl.substring(20);
-  final info = r.lookup(name);
+  final info = registry.lookup(name);
   if (info == null) {
     throw Exception("can't find ${packed.typeUrl} in registry");
   }
@@ -34,7 +35,7 @@ protobuf.GeneratedMessage unpack(any.Any packed, [protobuf.TypeRegistry r]) {
 
 pb.Op compound(List<pb.Op> ops) {
   if (ops.length == 0) {
-    return null;
+    return nullOp;
   } else if (ops.length == 1) {
     return ops[0];
   } else {
@@ -44,33 +45,39 @@ pb.Op compound(List<pb.Op> ops) {
   }
 }
 
-apply(pb.Op op, protobuf.GeneratedMessage m, [protobuf.TypeRegistry r]) {
+pb.Op get nullOp => pb.Op()..type = pb.Op_Type.Null;
+
+apply(
+  pb.Op op,
+  protobuf.GeneratedMessage m, [
+  protobuf.TypeRegistry reg,
+]) {
   if (isNull(op)) {
     return;
   }
   switch (op.type) {
     case pb.Op_Type.Compound:
       op.ops.forEach((o) {
-        apply(o, m, r);
+        apply(o, m, reg);
       });
       break;
     case pb.Op_Type.Edit:
-      applySetEdit(op, m, r);
+      applySetEdit(op, m, reg);
       break;
     case pb.Op_Type.Set:
-      applySetEdit(op, m, r);
+      applySetEdit(op, m, reg);
       break;
     case pb.Op_Type.Insert:
-      applyInsert(op, m, r);
+      applyInsert(op, m, reg);
       break;
     case pb.Op_Type.Move:
-      applyMove(op, m, r);
+      applyMove(op, m);
       break;
     case pb.Op_Type.Rename:
-      applyRename(op, m, r);
+      applyRename(op, m);
       break;
     case pb.Op_Type.Delete:
-      applyDelete(op, m, r);
+      applyDelete(op, m);
       break;
   }
 }
@@ -89,45 +96,43 @@ Tuple2<dynamic, protobuf.ValueOfFunc> getLocation(
   List<pb.Locator> location,
 ) {
   dynamic current = m;
-  protobuf.FieldInfo fi = null;
-  protobuf.ValueOfFunc currentValueOf = null;
-  pb.Locator previous;
+  protobuf.FieldInfo previousField;
+  protobuf.ValueOfFunc currentValueOf;
+  pb.Locator previousLocator;
   location.forEach((locator) {
     if (locator.hasField_1()) {
       if (current is protobuf.GeneratedMessage) {
         final msg = current as protobuf.GeneratedMessage;
         final fieldNumber = getFieldNumber(msg, locator.field_1);
-        fi = msg.info_.fieldInfo[fieldNumber];
+        final field = msg.info_.fieldInfo[fieldNumber];
+        previousField = field;
         if (!msg.hasField(fieldNumber)) {
-          if (!fi.isRepeated && fi.subBuilder != null) {
-            msg.setField(fieldNumber, fi.subBuilder());
-          } else if (fi is protobuf.MapFieldInfo) {
+          if (!field.isRepeated && field.subBuilder != null) {
+            msg.setField(fieldNumber, field.subBuilder());
+          } else if (field is protobuf.MapFieldInfo) {
             // TODO: work-around for: https://github.com/dart-lang/protobuf/issues/373
-            msg.$_getMap((fi as protobuf.MapFieldInfo).index);
+            msg.$_getMap(field.index);
           }
         }
         current = msg.getField(fieldNumber);
-        if (fi is protobuf.MapFieldInfo) {
-          currentValueOf = (fi as protobuf.MapFieldInfo)
-              .mapEntryBuilderInfo
-              .byIndex[1]
-              .valueOf;
+        if (field is protobuf.MapFieldInfo) {
+          currentValueOf = field.mapEntryBuilderInfo.byIndex[1].valueOf;
         } else {
-          currentValueOf = fi.valueOf;
+          currentValueOf = field.valueOf;
         }
 
         if (current is protobuf.GeneratedMessage) {
           final currentMessage = current as protobuf.GeneratedMessage;
           if (currentMessage.isFrozen &&
-              previous != null &&
-              previous.hasOneof()) {
-            previous.oneof.fields.forEach((field) {
+              previousLocator != null &&
+              previousLocator.hasOneof()) {
+            previousLocator.oneof.fields.forEach((field) {
               // clear other oneof items
               final fieldNumber = getFieldNumber(msg, field);
               msg.clearField(fieldNumber);
             });
-            if (!fi.isRepeated) {
-              msg.setField(fieldNumber, fi.subBuilder());
+            if (!field.isRepeated) {
+              msg.setField(fieldNumber, field.subBuilder());
             }
             current = msg.getField(fieldNumber);
           }
@@ -147,7 +152,7 @@ Tuple2<dynamic, protobuf.ValueOfFunc> getLocation(
       if (current is protobuf.PbMap) {
         final k = valueFromKey(locator.key);
         if (current[k] == null) {
-          current[k] = (fi as protobuf.MapFieldInfo).valueCreator();
+          current[k] = (previousField as protobuf.MapFieldInfo).valueCreator();
         }
         current = current[k];
       } else {
@@ -159,7 +164,7 @@ Tuple2<dynamic, protobuf.ValueOfFunc> getLocation(
     } else {
       throw Exception('invalid locator $locator');
     }
-    previous = locator;
+    previousLocator = locator;
   });
   return Tuple2(current, currentValueOf);
 }
@@ -288,18 +293,19 @@ dynamic fromObject(pb.Object value, protobuf.TypeRegistry r) {
   }
 }
 
-applySetEdit(pb.Op o, protobuf.GeneratedMessage input,
-    [protobuf.TypeRegistry r]) {
-  if (r == null) {
-    r = _defaultTypeRegistry;
-  }
+applySetEdit(
+  pb.Op o,
+  protobuf.GeneratedMessage input, [
+  protobuf.TypeRegistry reg,
+]) {
+  final registry = reg ?? _defaultTypeRegistry;
   var op = o.clone();
   if (op.location.length == 0) {
     input.clear();
     final value = getValue(
       input,
       op,
-      r,
+      registry,
       null,
     );
     input.mergeFromMessage(value);
@@ -316,7 +322,7 @@ applySetEdit(pb.Op o, protobuf.GeneratedMessage input,
       final value = getValue(
         parent.getField(field),
         op,
-        r,
+        registry,
         parent.info_.valueOfFunc(field),
       );
       final fi = parent.info_.fieldInfo[field];
@@ -360,7 +366,7 @@ applySetEdit(pb.Op o, protobuf.GeneratedMessage input,
       final value = getValue(
         parent[index],
         op,
-        r,
+        registry,
         valueOf,
       );
       parent[index] = value;
@@ -373,7 +379,7 @@ applySetEdit(pb.Op o, protobuf.GeneratedMessage input,
       final value = getValue(
         parent[key],
         op,
-        r,
+        registry,
         valueOf,
       );
       parent[key] = value;
@@ -385,11 +391,12 @@ applySetEdit(pb.Op o, protobuf.GeneratedMessage input,
   }
 }
 
-applyInsert(pb.Op o, protobuf.GeneratedMessage input,
-    [protobuf.TypeRegistry r]) {
-  if (r == null) {
-    r = _defaultTypeRegistry;
-  }
+applyInsert(
+  pb.Op o,
+  protobuf.GeneratedMessage input, [
+  protobuf.TypeRegistry reg,
+]) {
+  final registry = reg ?? _defaultTypeRegistry;
   var op = o.clone();
   final itemLocator = op.location.removeLast();
   final parentLocator = op.location;
@@ -405,7 +412,7 @@ applyInsert(pb.Op o, protobuf.GeneratedMessage input,
       final value = getValue(
         previous,
         op,
-        r,
+        registry,
         valueOf,
       );
       if (index < parent.length) {
@@ -424,10 +431,7 @@ applyInsert(pb.Op o, protobuf.GeneratedMessage input,
   }
 }
 
-applyMove(pb.Op o, protobuf.GeneratedMessage input, [protobuf.TypeRegistry r]) {
-  if (r == null) {
-    r = _defaultTypeRegistry;
-  }
+applyMove(pb.Op o, protobuf.GeneratedMessage input) {
   var op = o.clone();
   final itemLocator = op.location.removeLast();
   final parentLocator = op.location;
@@ -467,11 +471,9 @@ applyMove(pb.Op o, protobuf.GeneratedMessage input, [protobuf.TypeRegistry r]) {
   }
 }
 
-applyRename(pb.Op o, protobuf.GeneratedMessage input,
-    [protobuf.TypeRegistry r]) {
-  if (r == null) {
-    r = _defaultTypeRegistry;
-  }
+applyRename(
+  pb.Op o,
+  protobuf.GeneratedMessage input) {
   var op = o.clone();
   final itemLocator = op.location.removeLast();
   final parentLocator = op.location;
@@ -498,11 +500,9 @@ applyRename(pb.Op o, protobuf.GeneratedMessage input,
   }
 }
 
-applyDelete(pb.Op o, protobuf.GeneratedMessage input,
-    [protobuf.TypeRegistry r]) {
-  if (r == null) {
-    r = _defaultTypeRegistry;
-  }
+applyDelete(
+  pb.Op o,
+  protobuf.GeneratedMessage input) {
   var op = o.clone();
   if (op.location.length == 0) {
     input.clear();
@@ -586,7 +586,7 @@ pb.Op edit(List<pb.Locator> location, String from, String to) {
 }
 
 pb.Op root(dynamic value) {
-  return set(null, value);
+  return set([], value);
 }
 
 pb.Op set(List<pb.Locator> location, dynamic value) {
@@ -1018,14 +1018,14 @@ List<pb.Locator> splitCommonOneofAncestor(
     }
   }
   if (foundP1 == -1 || foundP2 == -1 || foundP1 != foundP2) {
-    return null;
+    return [];
   }
 
   for (var i = 0; i < p1.length && i < p2.length; i++) {
     final l1 = p1[i];
     final l2 = p2[i];
     if (l1 != l2) {
-      return null;
+      return [];
     }
     if (!l1.hasOneof()) {
       // we know they're equal, so only need to investigate one of them
@@ -1056,7 +1056,7 @@ List<pb.Locator> splitCommonOneofAncestor(
       // impossible
     }
   }
-  return null;
+  return [];
 }
 
 enum TreeRelationshipType {

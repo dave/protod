@@ -15,11 +15,10 @@ extension Extensions on Bundle {
 
   T get<T extends GeneratedMessage>(T m) {
     if (!this.has(m)) {
-      return null;
+      throw Exception("not found");
     }
-    final name = m.info_.qualifiedMessageName;
-    m = m.info_.createEmptyInstance();
-    this.messages[name].unpackInto(m);
+    m = m.info_.createEmptyInstance() as T;
+    this.messages[m.info_.qualifiedMessageName].unpackInto(m);
     return m;
   }
 }

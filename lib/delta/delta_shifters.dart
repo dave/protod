@@ -9,6 +9,7 @@ int Function(int) deleteShifter(int deleteIndex) {
     } else if (i < deleteIndex) {
       return i;
     }
+    throw Exception();
   }
 
   return f;
@@ -33,6 +34,7 @@ int Function(int) insertValueShifter(int insertIndex) {
     } else if (i < insertIndex) {
       return i;
     }
+    throw Exception();
   }
 
   return f;
@@ -69,6 +71,7 @@ int Function(int) insertLocationShifter(
     } else if (i < insertIndex) {
       return i;
     }
+    throw Exception();
   }
 
   return f;
@@ -162,6 +165,7 @@ int Function(int) moveLocationShifter(
         return i;
       }
     }
+    throw Exception();
   }
 
   return f;
@@ -230,6 +234,7 @@ int Function(int) moveValueShifter(int fromIndex, int toIndex) {
         return i;
       }
     }
+    throw Exception();
   }
 
   return f;

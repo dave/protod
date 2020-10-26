@@ -6,14 +6,14 @@ import 'package:protod/delta/delta_transform_generated.dart';
 
 pb.Op transform(pb.Op t, pb.Op op, bool priority) {
   if (isNull(op)) {
-    return null;
+    return nullOp;
   }
   if (isNull(t)) {
     return op.clone();
   }
   if (op.type == pb.Op_Type.Compound) {
-    var transformed = List<pb.Op>();
-    pb.Op tx;
+    var transformed = <pb.Op>[];
+    pb.Op tx = nullOp;
 
     for (var i = 0; i < op.ops.length; i++) {
       var o = op.ops[i];
@@ -28,7 +28,7 @@ pb.Op transform(pb.Op t, pb.Op op, bool priority) {
 
       final ox = transform(tx, o, priority);
 
-      if (ox != null) {
+      if (!isNull(ox)) {
         transformed.add(ox);
       }
     }
@@ -39,13 +39,13 @@ pb.Op transform(pb.Op t, pb.Op op, bool priority) {
     for (final tx in t.ops) {
       opx = transform(tx, opx, priority);
       if (opx == null) {
-        return null;
+        return nullOp;
       }
     }
     return opx;
   }
   final oneofLocation = splitCommonOneofAncestor(t.location, op.location);
-  if (oneofLocation != null) {
+  if (oneofLocation.length > 0) {
     // t and op have a common oneof ancestor, and are acting on separate oneof root values. Any operation on the
     // descendant of a oneof value will delete the entire tree under all the other oneof values.
     bool valid(pb.Op o) {
@@ -62,14 +62,14 @@ pb.Op transform(pb.Op t, pb.Op op, bool priority) {
       // if both operations are valid, then use priority to determine if op should be removed
       if (priority) {
         // t has priority, so remove op
-        return null;
+        return nullOp;
       } else {
         // op has priority, so continue
         return op.clone();
       }
     } else if (valid(t)) {
       // if only t is valid, remove op
-      return null;
+      return nullOp;
     } else if (valid(op)) {
       // if only op is valid, continue
       return op.clone();
@@ -92,7 +92,7 @@ pb.Op tIndependent(pb.Op t, pb.Op op) {
       treeRelationship(t.location, op.location) ==
           TreeRelationshipType.ANCESTOR) {
     // Op is acting on a value that is a descendent of a value that t deleted. We should delete op.
-    return null;
+    return nullOp;
   }
 
   if (behaviour.valueIsLocation &&
@@ -100,7 +100,7 @@ pb.Op tIndependent(pb.Op t, pb.Op op) {
       treeRelationship(toLoc(t), op.location) ==
           TreeRelationshipType.ANCESTOR) {
     // Op is acting on a value that is a descendent of a value that t deleted. We should delete op.
-    return null;
+    return nullOp;
   }
 
   if (behaviour.indexValueShifter != null &&
@@ -203,7 +203,7 @@ pb.Op tOverwriteEdit(pb.Op t, pb.Op op) {
     return tIndependent(t, op);
   }
   // op is trying to edit a value that t has already overwritten. In order to converge, t must take priority.
-  return null;
+  return nullOp;
 }
 
 pb.Op tEditFieldSetField(pb.Op t, pb.Op op, bool priority) {
@@ -323,7 +323,7 @@ pb.Op tDeleteIndexMoveIndex(pb.Op t, pb.Op op, bool priority) {
     return tIndependent(t, op);
   } else if (from == TreeRelationshipType.EQUAL) {
     // op is trying to move the value that t has already deleted. In order to converge, t must take priority.
-    return null;
+    return nullOp;
   } else if (to == TreeRelationshipType.EQUAL) {
     // op is trying to move to the index of the value that t already deleted. Operations are independent.
     return tIndependent(t, op);
@@ -360,7 +360,7 @@ pb.Op tRenameKeyEditKey(pb.Op t, pb.Op op, bool priority) {
   } else if (to == TreeRelationshipType.EQUAL) {
     // op is trying to modify the value that t has already overwritten. In order to converge, the move must take
     // priority.
-    return null;
+    return nullOp;
   } else {
     throw Exception("");
   }
@@ -382,7 +382,7 @@ pb.Op tOverwrite(pb.Op t, pb.Op op, bool priority) {
   // Op and t are both overwriting the same value. Use priority to determine the outcome.
   if (priority) {
     // When t has priority, remove op.
-    return null;
+    return nullOp;
   }
   return op.clone();
 }
@@ -465,7 +465,7 @@ pb.Op tRenameKeySetKey(pb.Op t, pb.Op op, bool priority) {
     // op is trying to replace the value that t has overwritten. We can use priority to determine the winner.
     if (priority) {
       // if t has priority, we can just remove op
-      return null;
+      return nullOp;
     }
     // if op has priority, it can continue with a shifted key, which is correctly handled by tIndependent.
     return tIndependent(t, op);
@@ -558,14 +558,14 @@ pb.Op tMoveIndexMoveIndex(pb.Op t, pb.Op op, bool priority) {
       toTo == TreeRelationshipType.EQUAL) {
     // Op is trying to move the value that t already moved, and the "to" locations are the same. Operations are
     // identical so we can simply delete op.
-    return null;
+    return nullOp;
   } else if (fromFrom == TreeRelationshipType.EQUAL) {
     // Op is trying to move the value that t already moved, and the "to" locations are different. So we can use
     // priority ot determine which operation should win. If the transformer has priority, we can just remove op.
     // If not, we use the index shifter to update the from and to location so that op moves the correct value to
     // the intended location.
     if (priority) {
-      return null;
+      return nullOp;
     }
     // Here all we need to do is modify the from location of op so that is uses the value at the to location of t.
     // We don't need to use the shifter.
@@ -617,7 +617,7 @@ pb.Op tRenameKeyRenameKey(pb.Op t, pb.Op op, bool priority) {
       toTo == TreeRelationshipType.EQUAL) {
     // Op is trying to move the value that t already moved, and the "to" locations are the same. We can simply
     // remove op.
-    return null;
+    return nullOp;
   } else if (fromFrom == TreeRelationshipType.EQUAL) {
     // Op is trying to move the value that t already moved, and the "to" locations are different. We can use
     // priority to determine which to location is used. If t has priority, delete the op. If not, we change the
@@ -676,7 +676,7 @@ pb.Op tRenameKeyDeleteKey(pb.Op t, pb.Op op, bool priority) {
     return tIndependent(t, op);
   } else if (to == TreeRelationshipType.EQUAL) {
     // op is trying to delete the value that t has already overwritten. We can simply remove op.
-    return null;
+    return nullOp;
   } else {
     throw Exception("");
   }
@@ -711,7 +711,7 @@ pb.Op tDelete(pb.Op t, pb.Op op) {
     return tIndependent(t, op);
   }
   // op and t are both deleting the same value. We can remove op.
-  return null;
+  return nullOp;
 }
 
 pb.Op tDeleteFieldDeleteField(pb.Op t, pb.Op op, bool priority) {

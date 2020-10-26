@@ -19,7 +19,7 @@ class testInfo {
   final bool solo;
 
   testInfo({
-    this.solo,
+    this.solo = false,
     this.name,
     this.op,
     this.data,

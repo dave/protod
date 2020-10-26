@@ -29,7 +29,7 @@ class Adapter<T extends GeneratedMessage> extends StoreAdapter<T> {
       ..documentId = documentId
       ..create_3 = create;
     final response = await _send(Payload_Get_Response(), request);
-    var value = r.lookup(documentType).createEmptyInstance();
+    var value = r.lookup(documentType).createEmptyInstance() as T;
     response.value.unpackInto(value);
     return StoreAdapterGetResponse<T>(response.state, value);
   }
@@ -53,18 +53,4 @@ class Adapter<T extends GeneratedMessage> extends StoreAdapter<T> {
     final response = await _send(Payload_Edit_Response(), request);
     return StoreAdapterEditResponse(response.state, response.op);
   }
-
-//  @override
-//  Future<StoreAdapterAddResponse> add(
-//    String documentType,
-//    String documentId,
-//    T value,
-//  ) async {
-//    final request = Payload_Add_Request()
-//      ..documentType = documentType
-//      ..documentId = documentId
-//      ..value = Any.pack(value);
-//    final response = await _send(request, Payload_Add_Response());
-//    return StoreAdapterAddResponse(response.state);
-//  }
 }
