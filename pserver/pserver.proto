@@ -1,7 +1,10 @@
 syntax = "proto3";
 package pserver;
 
+import "google/protobuf/dart_options.proto";
+
 option go_package = "github.com/dave/protod/pserver;pserver";
+option (dart_options.dart_package) = "protod";
 
 // Snapshot is a lazy snapshot of the state of the document at some point in the recent past. It
 // is NOT updated on every state change. To get the document in it's latest state, all future

@@ -42,6 +42,8 @@ syntax = "proto3";
 
 package google.protobuf;
 
+import "google/protobuf/dart_options.proto";
+
 option csharp_namespace = "Google.Protobuf.WellKnownTypes";
 option cc_enable_arenas = true;
 option go_package = "github.com/golang/protobuf/ptypes/wrappers";
@@ -49,6 +51,7 @@ option java_package = "com.google.protobuf";
 option java_outer_classname = "WrappersProto";
 option java_multiple_files = true;
 option objc_class_prefix = "GPB";
+option (dart_options.dart_package) = "protod/google/protobuf";
 
 // Wrapper message for `double`.
 //

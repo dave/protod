@@ -3,8 +3,13 @@ package tests;
 
 import "google/protobuf/any.proto";
 import "delta/delta.proto";
+import "delta/tests/tests1.proto";
+import "delta/tests2/tests2.proto";
+import "delta/tests2/tests3/tests3.proto";
+import "google/protobuf/dart_options.proto";
 
 option go_package = "github.com/dave/protod/delta/tests;tests";
+option (dart_options.dart_package) = "protod/test/pb/tests";
 
 // [proto:data]
 message Person {
@@ -16,6 +21,13 @@ message Person {
   }
   message Embed {
     string name = 1;
+    message Double {
+      string name = 1;
+      oneof foo {
+        string bar = 2;
+        int64 baz = 3;
+      }
+    }
   }
   string name = 1;
   uint32 age = 2;
@@ -33,6 +45,10 @@ message Person {
     Case cas = 14;
     Chooser cho = 15;
   }
+  House house = 16;
+  tests2.Shirt shirt = 17;
+  tests3.Pants pants = 18;
+  Embed.Double double = 19;
 }
 
 // [proto:data]

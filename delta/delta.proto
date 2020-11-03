@@ -1,10 +1,11 @@
 syntax = "proto3";
 package delta;
 
+import "google/protobuf/dart_options.proto";
 import "google/protobuf/any.proto";
 
 option go_package = "github.com/dave/protod/delta;delta";
-// option dart_package = "protod";
+option (dart_options.dart_package) = "protod";
 
 message Op {
   enum Type {
@@ -41,12 +42,12 @@ message Locator {
 
 message Key {
   oneof v {
-      bool bool = 1;
-      int32 int32 = 2;
-      int64 int64 = 3;
-      uint32 uint32 = 4;
-      uint64 uint64 = 5;
-      string string = 6;
+    bool bool = 1;
+    int32 int32 = 2;
+    int64 int64 = 3;
+    uint32 uint32 = 4;
+    uint64 uint64 = 5;
+    string string = 6;
   }
 }
 

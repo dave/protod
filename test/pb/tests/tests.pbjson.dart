@@ -1,6 +1,6 @@
 ///
 //  Generated code. Do not modify.
-//  source: tests.proto
+//  source: tests/tests.proto
 //
 // @dart = 2.3
 // ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type
@@ -22,6 +22,10 @@ const Person$json = const {
     const {'1': 'itm', '3': 13, '4': 1, '5': 11, '6': '.tests.Item', '9': 0, '10': 'itm'},
     const {'1': 'cas', '3': 14, '4': 1, '5': 11, '6': '.tests.Case', '9': 0, '10': 'cas'},
     const {'1': 'cho', '3': 15, '4': 1, '5': 11, '6': '.tests.Chooser', '9': 0, '10': 'cho'},
+    const {'1': 'house', '3': 16, '4': 1, '5': 11, '6': '.tests.House', '10': 'house'},
+    const {'1': 'shirt', '3': 17, '4': 1, '5': 11, '6': '.tests2.Shirt', '10': 'shirt'},
+    const {'1': 'pants', '3': 18, '4': 1, '5': 11, '6': '.tests3.Pants', '10': 'pants'},
+    const {'1': 'double', '3': 19, '4': 1, '5': 11, '6': '.tests.Person.Embed.Double', '10': 'double'},
   ],
   '3': const [Person_Embed$json, Person_CasesEntry$json, Person_TypeMapEntry$json],
   '4': const [Person_Type$json],
@@ -34,6 +38,19 @@ const Person_Embed$json = const {
   '1': 'Embed',
   '2': const [
     const {'1': 'name', '3': 1, '4': 1, '5': 9, '10': 'name'},
+  ],
+  '3': const [Person_Embed_Double$json],
+};
+
+const Person_Embed_Double$json = const {
+  '1': 'Double',
+  '2': const [
+    const {'1': 'name', '3': 1, '4': 1, '5': 9, '10': 'name'},
+    const {'1': 'bar', '3': 2, '4': 1, '5': 9, '9': 0, '10': 'bar'},
+    const {'1': 'baz', '3': 3, '4': 1, '5': 3, '9': 0, '10': 'baz'},
+  ],
+  '8': const [
+    const {'1': 'foo'},
   ],
 };
 

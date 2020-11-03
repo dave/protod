@@ -34,6 +34,7 @@ package google.protobuf;
 
 import "google/protobuf/any.proto";
 import "google/protobuf/source_context.proto";
+import "google/protobuf/dart_options.proto";
 
 option csharp_namespace = "Google.Protobuf.WellKnownTypes";
 option cc_enable_arenas = true;
@@ -42,6 +43,7 @@ option java_outer_classname = "TypeProto";
 option java_multiple_files = true;
 option objc_class_prefix = "GPB";
 option go_package = "google.golang.org/genproto/protobuf/ptype;ptype";
+option (dart_options.dart_package) = "protod/google/protobuf";
 
 // A protocol buffer message type.
 message Type {

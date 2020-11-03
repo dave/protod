@@ -34,6 +34,7 @@ package google.protobuf;
 
 import "google/protobuf/source_context.proto";
 import "google/protobuf/type.proto";
+import "google/protobuf/dart_options.proto";
 
 option csharp_namespace = "Google.Protobuf.WellKnownTypes";
 option java_package = "com.google.protobuf";
@@ -41,6 +42,7 @@ option java_outer_classname = "ApiProto";
 option java_multiple_files = true;
 option objc_class_prefix = "GPB";
 option go_package = "google.golang.org/genproto/protobuf/api;api";
+option (dart_options.dart_package) = "protod/google/protobuf";
 
 // Api is a light-weight descriptor for an API Interface.
 //

@@ -1,0 +1,13 @@
+syntax = "proto3";
+package tests2;
+
+import "google/protobuf/dart_options.proto";
+
+option go_package = "github.com/dave/protod/delta/tests2;tests2";
+option (dart_options.dart_package) = "protod/test/pb/test2";
+
+// [proto:data]
+message Shirt {
+  string designer = 1;
+  uint32 size = 2;
+}

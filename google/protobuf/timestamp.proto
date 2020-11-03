@@ -32,6 +32,8 @@ syntax = "proto3";
 
 package google.protobuf;
 
+import "google/protobuf/dart_options.proto";
+
 option csharp_namespace = "Google.Protobuf.WellKnownTypes";
 option cc_enable_arenas = true;
 option go_package = "github.com/golang/protobuf/ptypes/timestamp";
@@ -39,6 +41,7 @@ option java_package = "com.google.protobuf";
 option java_outer_classname = "TimestampProto";
 option java_multiple_files = true;
 option objc_class_prefix = "GPB";
+option (dart_options.dart_package) = "protod/google/protobuf";
 
 // A Timestamp represents a point in time independent of any time zone or local
 // calendar, encoded as a count of seconds and fractions of seconds at
