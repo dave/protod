@@ -1,0 +1,15 @@
+name: pdelta
+description: Protocol deltas.
+version: 1.0.0
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  protobuf: ^1.0.1
+  fixnum: ^0.10.11
+  quill_delta: ^1.0.2
+  diff_match_patch: ^0.3.0
+  tuple: ^1.0.3
+  ptypes:
+    path: '../ptypes'

@@ -1,0 +1,114 @@
+syntax = "proto3";
+package pdelta_tests;
+
+import "google/protobuf/any.proto";
+import "pdelta/pdelta.proto";
+import "pdelta_tests/house.proto";
+import "pdelta_tests_clothes/shirt.proto";
+import "pdelta_tests_clothes/pants/pants.proto";
+import "google/protobuf/dart_options.proto";
+
+option go_package = "github.com/dave/protod/packages/pdelta_tests/pkg/pdelta_tests;pdelta_tests";
+option (dart_options.dart_package) = "pdelta_tests";
+
+// [proto:data]
+message Person {
+  enum Type {
+    Null = 0;
+    Alpha = 1;
+    Bravo = 2;
+    Charlie = 3;
+  }
+  message Embed {
+    string name = 1;
+    message Double {
+      string name = 1;
+      oneof foo {
+        string bar = 2;
+        int64 baz = 3;
+      }
+    }
+  }
+  string name = 1;
+  uint32 age = 2;
+  map<string, Case> cases = 4;
+  Company company = 5;
+  repeated string alias = 6;
+  Type type = 7;
+  repeated Type typeList = 8;
+  map<string, Type> typeMap = 9;
+  Embed embedded = 10;
+  oneof choice {
+    string str = 11;
+    double dbl = 12;
+    Item itm = 13;
+    Case cas = 14;
+    Chooser cho = 15;
+  }
+  House house = 16;
+  pdelta_tests_clothes.Shirt shirt = 17;
+  pants.Pants pants = 18;
+  Embed.Double double = 19;
+}
+
+// [proto:data]
+message Company {
+  string name = 11;
+  float revenue = 12;
+  map<int64, string> flags = 13;
+  Person ceo = 14;
+}
+
+// [proto:data]
+message Case {
+  string name = 21;
+  repeated Item items = 22;
+  map<int64, string> flags = 23;
+}
+
+// [proto:data]
+message Item {
+  string title = 31;
+  bool done = 34;
+  repeated string flags = 35;
+}
+
+// [proto:data]
+message Chooser {
+  oneof choice {
+    string str = 1;
+    double dbl = 2;
+    Item itm = 3;
+  }
+}
+
+message ApplyTestCase {
+  bool solo = 1;
+  string name = 2;
+  pdelta.Op op = 3;
+  google.protobuf.Any data = 4;
+  google.protobuf.Any expected = 5;
+}
+
+message TransformTestCase {
+  bool solo = 1;
+  string name = 2;
+  pdelta.Op op1 = 3;
+  pdelta.Op op2 = 4;
+  google.protobuf.Any data = 5;
+  google.protobuf.Any expected = 6;
+  google.protobuf.Any expected1 = 7;
+  google.protobuf.Any expected2 = 8;
+}
+
+message RandomTestItem {
+  pdelta.Op op = 1;
+  Person expected = 2;
+}
+
+message ReduceTestItem {
+  Person data = 1;
+  pdelta.Op op1 = 2;
+  pdelta.Op op2 = 3;
+  pdelta.Op reduced = 4;
+}

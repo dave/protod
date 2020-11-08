@@ -1,0 +1,15 @@
+name: pstore
+description: Uses pserver and introduces higher level abstractions for executing edit operations, refreshing snapshots etc.
+version: 1.0.0
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  protobuf: ^1.0.1
+  fixnum: ^0.10.11
+  hive: ^1.4.1
+  pserver:
+    path: ../pserver
+  pdelta:
+    path: ../pdelta

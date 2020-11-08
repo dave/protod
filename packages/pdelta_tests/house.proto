@@ -1,0 +1,13 @@
+syntax = "proto3";
+package pdelta_tests;
+
+import "google/protobuf/dart_options.proto";
+
+option go_package = "github.com/dave/protod/packages/pdelta_tests/pkg/pdelta_tests;pdelta_tests";
+option (dart_options.dart_package) = "pdelta_tests";
+
+// [proto:data]
+message House {
+  string name = 1;
+  uint32 number = 2;
+}

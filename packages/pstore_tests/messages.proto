@@ -1,0 +1,54 @@
+syntax = "proto3";
+package pstore_tests;
+
+import "pdelta_tests/tests.proto";
+import "pdelta/pdelta.proto";
+
+option go_package = "github.com/dave/protod/packages/pstore_tests/pkg/pstore_tests;pstore_tests";
+
+message Person {
+
+  message Get {
+    message Request {
+      string documentId = 1;
+    }
+    message Response {
+      int64 state = 2;
+      pdelta_tests.Person person = 3;
+      string err = 4;
+    }
+  }
+
+//  message Add {
+//    message Request {
+//      string id = 1;
+//      tests.Person person = 2;
+//    }
+//    message Response {
+//      string err = 2;
+//    }
+//  }
+
+  message Edit {
+    message Request {
+      string stateId = 1;       // state id
+      string documentId = 2; // document id
+      int64 state = 3;     // state of the document that this op is acting on
+      pdelta.Op op = 4;     // operation
+    }
+    message Response {
+      int64 state = 1; // state of the document after the op from the client and the response op have been applied
+      pdelta.Op op = 2; // response op that must be applied to the document in order to get to the server state
+      string err = 3;
+    }
+  }
+
+  message Refresh {
+    message Request {
+      string documentId = 1; // document id
+    }
+    message Response {
+      string err = 1;
+    }
+  }
+}

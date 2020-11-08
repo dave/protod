@@ -1,0 +1,13 @@
+name: pserver
+description: Server helper functions for implementations using Google Firestore as the persistence database.
+version: 1.0.0
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  protobuf: ^1.0.1
+  fixnum: ^0.10.11
+  hive: ^1.4.1
+  pdelta:
+    path: ../pdelta

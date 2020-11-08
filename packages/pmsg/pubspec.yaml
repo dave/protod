@@ -1,0 +1,12 @@
+name: pmsg
+description: Messaging passing helper.
+version: 1.0.0
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  protobuf: ^1.0.1
+  fixnum: ^0.10.11
+  ptypes:
+    path: ../ptypes

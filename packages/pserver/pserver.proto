@@ -1,0 +1,28 @@
+syntax = "proto3";
+package pserver;
+
+import "google/protobuf/dart_options.proto";
+
+option go_package = "github.com/dave/protod/packages/pserver/pkg/pserver;pserver";
+option (dart_options.dart_package) = "pserver";
+
+// Snapshot is a lazy snapshot of the state of the document at some point in the recent past. It
+// is NOT updated on every state change. To get the document in it's latest state, all future
+// operations must be applied to this value.
+message Snapshot {
+  int64 state = 1; // state of this document
+  Blob value = 2;  // marshaled protobuf
+}
+
+// State is a single state change that increments the state counter by one.
+message State {
+  int64 state = 1; // state of this document after the this op
+  Blob op = 2;     // the operation that was applied to change the state from (state-1)->state
+}
+
+message Blob {
+  bytes value = 1; // binary value
+  // TODO: remember firestore has a 1MB limit on document size
+  // TODO: add compression?
+  // TODO: add facility to store data externally if over 1mb?
+}

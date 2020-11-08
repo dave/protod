@@ -1,0 +1,13 @@
+syntax = "proto3";
+package pdelta_tests_clothes;
+
+import "google/protobuf/dart_options.proto";
+
+option go_package = "github.com/dave/protod/packages/pdelta_tests_clothes/pkg/pdelta_tests_clothes;pdelta_tests_clothes";
+option (dart_options.dart_package) = "pdelta_tests_clothes";
+
+// [proto:data]
+message Shirt {
+  string designer = 1;
+  uint32 size = 2;
+}
