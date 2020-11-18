@@ -15,6 +15,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/reflect/protoregistry"
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
@@ -149,7 +150,7 @@ func Compound(ops ...*Op) *Op {
 func applySet(op *Op, input proto.Message) error {
 	if op.Location == nil {
 		// root
-		v := getValue(nil, protoreflect.ValueOfMessage(input.ProtoReflect()), op.Value)
+		v := getValue(protoreflect.ValueOfMessage(input.ProtoReflect()), op.Value)
 		if !v.IsValid() {
 			return errors.New("invalid value in applySet (root)")
 		}
@@ -168,8 +169,7 @@ func applySet(op *Op, input proto.Message) error {
 			return fmt.Errorf("can't apply field locator to %T", parent)
 		}
 		field := getField(locator.Field, parent)
-		factory := func() protoreflect.Value { return parent.NewField(field) }
-		value := getValueField(factory, parent.Get(field), op.Value)
+		value := getValueField(parent.Get(field), op.Value)
 		if !value.IsValid() {
 			return errors.New("invalid value in applySet (field)")
 		}
@@ -179,14 +179,9 @@ func applySet(op *Op, input proto.Message) error {
 		if !ok {
 			return fmt.Errorf("can't apply list locator to %T", parent)
 		}
-		parentParentLocator, parentParentItemLocator := pop(parentLocator)
-		parentParent, _ := getLocation(input.ProtoReflect(), parentParentLocator)
-		parentParentMessage := parentParent.(protoreflect.Message)
-		parentParentField := getField(parentParentItemLocator.V.(*Locator_Field).Field, parentParentMessage)
-		factory := func() protoreflect.Value { return parentParentMessage.NewField(parentParentField) }
 
 		index := int(locator.Index)
-		value := getValue(factory, parent.Get(index), op.Value)
+		value := getValue(parent.Get(index), op.Value)
 		if !value.IsValid() {
 			return errors.New("invalid value in applySet (index)")
 		}
@@ -197,14 +192,8 @@ func applySet(op *Op, input proto.Message) error {
 			return fmt.Errorf("can't apply map locator to %T", parent)
 		}
 
-		parentParentLocator, parentParentItemLocator := pop(parentLocator)
-		parentParent, _ := getLocation(input.ProtoReflect(), parentParentLocator)
-		parentParentMessage := parentParent.(protoreflect.Message)
-		parentParentField := getField(parentParentItemLocator.V.(*Locator_Field).Field, parentParentMessage)
-		factory := func() protoreflect.Value { return parentParentMessage.NewField(parentParentField) }
-
 		key := getMapKey(locator.Key)
-		value := getValue(factory, parent.Get(key), op.Value)
+		value := getValue(parent.Get(key), op.Value)
 		if !value.IsValid() {
 			return errors.New("invalid value in applySet (key)")
 		}
@@ -259,7 +248,7 @@ func applyInsert(op *Op, input proto.Message) error {
 			return fmt.Errorf("can't insert with list locator in %T", parent)
 		}
 
-		value := getValue(parent.NewElement, protoreflect.ValueOfList(parent), op.Value)
+		value := getValue(protoreflect.ValueOfList(parent), op.Value)
 		if !value.IsValid() {
 			return errors.New("invalid value in applyInsert")
 		}
@@ -484,8 +473,8 @@ func valueOfScalar(scalar *Scalar) interface{} {
 	}
 }
 
-func getValue(factory func() protoreflect.Value, current protoreflect.Value, value isOp_Value) protoreflect.Value {
-	return getValueField(factory, current, value)
+func getValue(current protoreflect.Value, value isOp_Value) protoreflect.Value {
+	return getValueField(current, value)
 }
 
 func applyDeltaToString(value string, dlt *quill.Delta) string {
@@ -501,7 +490,7 @@ func applyDeltaToString(value string, dlt *quill.Delta) string {
 	return sb.String()
 }
 
-func getValueField(factory func() protoreflect.Value, current protoreflect.Value, value isOp_Value) protoreflect.Value {
+func getValueField(current protoreflect.Value, value isOp_Value) protoreflect.Value {
 	switch value := value.(type) {
 	case *Op_Scalar:
 		return reflectValueOfScalar(value.Scalar)
@@ -515,8 +504,8 @@ func getValueField(factory func() protoreflect.Value, current protoreflect.Value
 		return protoreflect.ValueOfString(newString)
 	case *Op_Message:
 		return protoreflect.ValueOfMessage(MustUnmarshalAny(value.Message).ProtoReflect())
-	case *Op_Object:
-		return fromObject(factory, value.Object)
+	case *Op_Fragment:
+		return fromFragment(value.Fragment)
 	default:
 		//	*Op_Index
 		//	*Op_Key
@@ -525,60 +514,21 @@ func getValueField(factory func() protoreflect.Value, current protoreflect.Value
 	}
 }
 
-func fromObject(factory func() protoreflect.Value, object *Object) protoreflect.Value {
-	switch value := object.V.(type) {
-	case *Object_Scalar:
-		return reflectValueOfScalar(value.Scalar)
-	case *Object_Message:
-		return protoreflect.ValueOfMessage(MustUnmarshalAny(value.Message).ProtoReflect())
-	case *Object_List:
-		list := factory().List()
-		for _, o := range value.List.List {
-			list.Append(fromObject(nil, o))
-		}
-		return protoreflect.ValueOfList(list)
-	case *Object_MapBool:
-		m := factory().Map()
-		for k, o := range value.MapBool.Map {
-			m.Set(protoreflect.ValueOfBool(k).MapKey(), fromObject(nil, o))
-		}
-		return protoreflect.ValueOfMap(m)
-	case *Object_MapInt32:
-		m := factory().Map()
-		for k, o := range value.MapInt32.Map {
-			m.Set(protoreflect.ValueOfInt32(k).MapKey(), fromObject(nil, o))
-		}
-		return protoreflect.ValueOfMap(m)
-	case *Object_MapInt64:
-		m := factory().Map()
-		for k, o := range value.MapInt64.Map {
-			m.Set(protoreflect.ValueOfInt64(k).MapKey(), fromObject(nil, o))
-		}
-		return protoreflect.ValueOfMap(m)
-	case *Object_MapUint32:
-		m := factory().Map()
-		for k, o := range value.MapUint32.Map {
-			m.Set(protoreflect.ValueOfUint32(k).MapKey(), fromObject(nil, o))
-		}
-		return protoreflect.ValueOfMap(m)
-	case *Object_MapUint64:
-		m := factory().Map()
-		for k, o := range value.MapUint64.Map {
-			m.Set(protoreflect.ValueOfUint64(k).MapKey(), fromObject(nil, o))
-		}
-		return protoreflect.ValueOfMap(m)
-	case *Object_MapString:
-		m := factory().Map()
-		for k, o := range value.MapString.Map {
-			m.Set(protoreflect.ValueOfString(k).MapKey(), fromObject(nil, o))
-		}
-		return protoreflect.ValueOfMap(m)
-	default:
-		panic(fmt.Sprintf("invalid type in fromObject %T", value))
+func fromFragment(fragment *Fragment) protoreflect.Value {
+	da := &ptypes.DynamicAny{}
+	err := ptypes.UnmarshalAny(fragment.Message, da)
+	if err != nil {
+		panic(fmt.Sprintf("Error unpacking fragment from %q, %#v: %v", fragment.Message.TypeUrl, fragment.Field, err))
 	}
+	protoMessage := da.ProtoReflect()
+	protoField := getField(fragment.Field, protoMessage)
+	return protoMessage.Get(protoField)
 }
 
 func getField(locatorField *Field, message protoreflect.Message) protoreflect.FieldDescriptor {
+	if string(message.Descriptor().FullName()) != locatorField.TypeUrl {
+		panic(fmt.Sprintf("message type %q / does not match field type url %q", message.Descriptor().FullName(), locatorField.TypeUrl))
+	}
 	field := message.Descriptor().Fields().ByNumber(protoreflect.FieldNumber(locatorField.Number))
 	if string(field.Name()) != locatorField.Name {
 		panic("field name / number mismatch")
@@ -717,19 +667,22 @@ func Insert(location []*Locator, value interface{}) *Op {
 	return &Op{
 		Type:     Op_Insert,
 		Location: location,
-		Value:    opValue(value),
+		Value:    opValue(value, nil),
 	}
 }
 
 // Root creates a set operation at the root.
 func Root(value interface{}) *Op {
 	if value == nil {
-		panic("nil value used in add operation")
+		panic("nil value used in root operation")
+	}
+	if _, ok := value.(proto.Message); !ok {
+		panic(fmt.Sprintf("value for root operations should be a proto message. %T found.", value))
 	}
 	return &Op{
 		Type:     Op_Set,
 		Location: nil,
-		Value:    opValue(value),
+		Value:    opValue(value, nil),
 	}
 }
 
@@ -737,10 +690,16 @@ func Set(location []*Locator, value interface{}) *Op {
 	if value == nil {
 		panic("nil value used in set operation")
 	}
+	var field *Field
+	if len(location) > 0 {
+		if locatorField, ok := location[len(location)-1].V.(*Locator_Field); ok {
+			field = locatorField.Field
+		}
+	}
 	return &Op{
 		Type:     Op_Set,
 		Location: location,
-		Value:    opValue(value),
+		Value:    opValue(value, field),
 	}
 }
 
@@ -790,101 +749,104 @@ type ProtoEnum interface {
 	Number() protoreflect.EnumNumber
 }
 
-func opValue(value interface{}) isOp_Value {
+func opValue(value interface{}, field *Field) isOp_Value {
 	switch value := value.(type) {
 	case int, string, float64, float32, int64, int32, uint64, uint32, bool, []byte, ProtoEnum:
 		return &Op_Scalar{Scalar: getScalar(value)}
 	case proto.Message:
 		return &Op_Message{Message: MustMarshalAny(value)}
 	default:
-		return &Op_Object{Object: NewObject(value)}
+		return &Op_Fragment{Fragment: NewFragment(value, field)}
 	}
 }
 
-func NewObject(value interface{}) *Object {
-	return newObject(reflect.ValueOf(value))
+func NewFragment(value interface{}, field *Field) *Fragment {
+	return newFragment(reflect.ValueOf(value), field)
 }
 
-func newObject(value reflect.Value) *Object {
-	switch value.Kind() {
-	case reflect.Bool,
-		reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
-		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
-		reflect.Float32, reflect.Float64,
-		reflect.String:
-		return &Object{V: &Object_Scalar{Scalar: getScalar(value.Interface())}}
+func newFragment(value reflect.Value, field *Field) *Fragment {
 
-	case reflect.Array, reflect.Slice:
-		if value.Kind() == reflect.Slice && value.Type().Elem().Kind() == reflect.Uint8 {
-			// special case for []byte
-			return &Object{V: &Object_Scalar{Scalar: getScalar(value.Interface())}}
-		}
-		list := make([]*Object, value.Len())
+	mt, err := protoregistry.GlobalTypes.FindMessageByName(protoreflect.FullName(field.TypeUrl))
+	if err != nil {
+		panic(fmt.Sprintf("error looking up type %q: %v", field.TypeUrl, err))
+	}
+
+	message := mt.New()
+	messageField := getField(field, message)
+
+	// TODO: this is awful!!!
+
+	if messageField.IsList() {
+		fieldValue := message.NewField(messageField)
+		fieldValueList := fieldValue.List()
 		for i := 0; i < value.Len(); i++ {
-			list[i] = newObject(value.Index(i))
+			if messageField.Kind() == protoreflect.EnumKind {
+				fieldValueList.Append(protoreflect.ValueOfEnum(protoreflect.EnumNumber(value.Index(i).Int())))
+			} else if messageField.Kind() == protoreflect.MessageKind {
+				fieldValueList.Append(protoreflect.ValueOfMessage(proto1.MessageReflect(value.Index(i).Interface().(proto1.Message))))
+			} else {
+				fieldValueList.Append(protoreflect.ValueOf(value.Index(i).Interface()))
+			}
 		}
-		return &Object{V: &Object_List{List: &List{List: list}}}
-	case reflect.Map:
-		switch value.Type().Key().Kind() {
-		case reflect.Bool:
-			m := make(map[bool]*Object, value.Len())
-			for _, v := range value.MapKeys() {
-				m[v.Bool()] = newObject(value.MapIndex(v))
+		message.Set(messageField, fieldValue)
+	} else if messageField.IsMap() {
+		fieldValue := message.NewField(messageField)
+		fieldValueMap := fieldValue.Map()
+		keys := value.MapKeys()
+		for i := 0; i < len(keys); i++ {
+			if messageField.MapValue().Kind() == protoreflect.EnumKind {
+				fieldValueMap.Set(protoreflect.ValueOf(keys[i].Interface()).MapKey(), protoreflect.ValueOfEnum(protoreflect.EnumNumber(value.MapIndex(keys[i]).Int())))
+			} else if messageField.MapValue().Kind() == protoreflect.MessageKind {
+				fieldValueMap.Set(protoreflect.ValueOf(keys[i].Interface()).MapKey(), protoreflect.ValueOfMessage(proto1.MessageReflect(value.MapIndex(keys[i]).Interface().(proto1.Message))))
+			} else {
+				fieldValueMap.Set(protoreflect.ValueOf(keys[i].Interface()).MapKey(), protoreflect.ValueOf(value.MapIndex(keys[i]).Interface()))
 			}
-			return &Object{V: &Object_MapBool{MapBool: &MapBool{Map: m}}}
-		case reflect.Int8, reflect.Int16, reflect.Int32:
-			m := make(map[int32]*Object, value.Len())
-			for _, v := range value.MapKeys() {
-				m[int32(v.Int())] = newObject(value.MapIndex(v))
-			}
-			return &Object{V: &Object_MapInt32{MapInt32: &MapInt32{Map: m}}}
-		case reflect.Int, reflect.Int64:
-			m := make(map[int64]*Object, value.Len())
-			for _, v := range value.MapKeys() {
-				m[v.Int()] = newObject(value.MapIndex(v))
-			}
-			return &Object{V: &Object_MapInt64{MapInt64: &MapInt64{Map: m}}}
-		case reflect.Uint8, reflect.Uint16, reflect.Uint32:
-			m := make(map[uint32]*Object, value.Len())
-			for _, v := range value.MapKeys() {
-				m[uint32(v.Uint())] = newObject(value.MapIndex(v))
-			}
-			return &Object{V: &Object_MapUint32{MapUint32: &MapUint32{Map: m}}}
-		case reflect.Uint, reflect.Uint64:
-			m := make(map[uint64]*Object, value.Len())
-			for _, v := range value.MapKeys() {
-				m[v.Uint()] = newObject(value.MapIndex(v))
-			}
-			return &Object{V: &Object_MapUint64{MapUint64: &MapUint64{Map: m}}}
-		case reflect.String:
-			m := make(map[string]*Object, value.Len())
-			for _, v := range value.MapKeys() {
-				m[v.String()] = newObject(value.MapIndex(v))
-			}
-			return &Object{V: &Object_MapString{MapString: &MapString{Map: m}}}
+		}
+		message.Set(messageField, fieldValue)
+	} else {
+		message.Set(messageField, protoreflect.ValueOf(value.Interface()))
+	}
 
-		default:
-			panic(fmt.Sprintf("invalid map key type %s", value.Type().Key().String()))
-		}
+	return &Fragment{
+		Field:   field,
+		Message: MustMarshalAny(message.Interface().(proto.Message)),
+	}
+}
 
-	case reflect.Struct:
-		if m, ok := value.Interface().(proto.Message); ok {
-			return &Object{V: &Object_Message{Message: MustMarshalAny(m)}}
-		}
-		if m, ok := value.Addr().Interface().(proto.Message); ok {
-			return &Object{V: &Object_Message{Message: MustMarshalAny(m)}}
-		}
-		panic(fmt.Sprintf("invalid type %T", value))
+func newFragmentFromProto(value protoreflect.Value, field *Field) *Fragment {
 
-	case reflect.Interface, reflect.Ptr:
-		if m, ok := value.Interface().(proto.Message); ok {
-			return &Object{V: &Object_Message{Message: MustMarshalAny(m)}}
-		}
-		return newObject(value.Elem())
+	mt, err := protoregistry.GlobalTypes.FindMessageByName(protoreflect.FullName(field.TypeUrl))
+	if err != nil {
+		panic(fmt.Sprintf("error looking up type %q: %v", field.TypeUrl, err))
+	}
 
-	default:
-		// reflect.Uintptr, reflect.Complex64, reflect.Complex128, reflect.Chan, reflect.Func, reflect.UnsafePointer
-		panic(fmt.Sprintf("invalid type %T", value))
+	message := mt.New()
+	messageField := getField(field, message)
+
+	// TODO: this is awful!!!
+
+	if messageField.IsList() {
+		fieldValue := message.NewField(messageField)
+		fieldValueList := fieldValue.List()
+		for i := 0; i < value.List().Len(); i++ {
+			fieldValueList.Append(value.List().Get(i))
+		}
+		message.Set(messageField, fieldValue)
+	} else if messageField.IsMap() {
+		fieldValue := message.NewField(messageField)
+		fieldValueMap := fieldValue.Map()
+		value.Map().Range(func(key protoreflect.MapKey, value protoreflect.Value) bool {
+			fieldValueMap.Set(key, value)
+			return true
+		})
+		message.Set(messageField, fieldValue)
+	} else {
+		message.Set(messageField, value)
+	}
+
+	return &Fragment{
+		Field:   field,
+		Message: MustMarshalAny(message.Interface().(proto.Message)),
 	}
 }
 
@@ -1006,7 +968,7 @@ func MarshalAny(m proto.Message) (*anypb.Any, error) {
 
 func UnmarshalAny(any *anypb.Any) (proto.Message, error) {
 	da := &ptypes.DynamicAny{}
-	err := ptypes.UnmarshalAny(any.ProtoReflect().Interface().(*anypb.Any), da)
+	err := ptypes.UnmarshalAny(any, da)
 	if err != nil {
 		return nil, err
 	}
@@ -1046,8 +1008,8 @@ func CopyAndAppend(in []*Locator, v *Locator) []*Locator {
 func CopyAndAppendOneof(in []*Locator, name string, fields ...*Field) []*Locator {
 	return CopyAndAppend(in, NewLocatorOneof(name, fields...))
 }
-func CopyAndAppendField(in []*Locator, name string, number int32) []*Locator {
-	return CopyAndAppend(in, NewLocatorField(name, number))
+func CopyAndAppendField(in []*Locator, typeUrl, name string, number int32) []*Locator {
+	return CopyAndAppend(in, NewLocatorField(typeUrl, name, number))
 }
 func CopyAndAppendIndex(in []*Locator, index int64) []*Locator {
 	return CopyAndAppend(in, NewLocatorIndex(index))
@@ -1077,8 +1039,8 @@ func CopyAndAppendKeyUint64(in []*Locator, key uint64) []*Locator {
 func NewLocatorOneof(name string, fields ...*Field) *Locator {
 	return &Locator{V: &Locator_Oneof{Oneof: &Oneof{Name: name, Fields: fields}}}
 }
-func NewLocatorField(name string, number int32) *Locator {
-	return &Locator{V: &Locator_Field{Field: &Field{Name: name, Number: number}}}
+func NewLocatorField(typeUrl, name string, number int32) *Locator {
+	return &Locator{V: &Locator_Field{Field: &Field{Name: name, Number: number, TypeUrl: typeUrl}}}
 }
 func NewLocatorIndex(index int64) *Locator {
 	return &Locator{V: &Locator_Index{Index: index}}
@@ -1394,8 +1356,8 @@ func debugValue(v isOp_Value) string {
 		}
 	case *Op_Message:
 		return fmt.Sprintf("message[%v]", v.Message.TypeUrl[20:])
-	case *Op_Object:
-		return fmt.Sprintf("%v", v.Object)
+	case *Op_Fragment:
+		return fmt.Sprintf("%v", v.Fragment)
 	case *Op_Delta:
 		return fmt.Sprintf("%v", func() string { b, _ := json.Marshal(v.Delta.GetQuill().Quill()); return string(b) }())
 	case *Op_Index:

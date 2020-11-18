@@ -14,14 +14,14 @@ func TestReduce(t *testing.T) {
 		expected *pdelta.Op
 	}
 	items := []itemType{
-		//{
-		//	name: "SET_EDIT_CHILD_OBJECT",
-		//	op: pdelta.Compound(
-		//		Op().Person().Cases().Set(map[string]*Case{"a": {}}),
-		//		Op().Person().Cases().Key("a").Name().Set("b"),
-		//	),
-		//	expected: Op().Person().Cases().Set(map[string]*Case{"a": {Name: "b"}}),
-		//},
+		{
+			name: "SET_EDIT_CHILD_OBJECT",
+			op: pdelta.Compound(
+				Op().Person().Cases().Set(map[string]*Case{"a": {}}),
+				Op().Person().Cases().Key("a").Name().Set("b"),
+			),
+			expected: Op().Person().Cases().Set(map[string]*Case{"a": {Name: "b"}}),
+		},
 		{
 			name: "SET_EDIT_CHILD_MESSAGE",
 			op: pdelta.Compound(

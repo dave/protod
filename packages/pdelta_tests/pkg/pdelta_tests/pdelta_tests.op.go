@@ -54,13 +54,13 @@ func (b Case_type) Set(value *Case) *pdelta.Op {
 	return pdelta.Set(b.location, value)
 }
 func (b Case_type) Name() pdelta.String_scalar {
-	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "name", 21))
+	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Case", "name", 21))
 }
 func (b Case_type) Items() Item_list {
-	return NewItem_list(pdelta.CopyAndAppendField(b.location, "items", 22))
+	return NewItem_list(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Case", "items", 22))
 }
 func (b Case_type) Flags() pdelta.String_int64_map {
-	return pdelta.NewString_int64_map(pdelta.CopyAndAppendField(b.location, "flags", 23))
+	return pdelta.NewString_int64_map(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Case", "flags", 23))
 }
 
 type Case_list struct {
@@ -245,14 +245,17 @@ func (b Chooser_type) Set(value *Chooser) *pdelta.Op {
 }
 func (b Chooser_type) Choice() Chooser_Choice_oneof {
 	return NewChooser_Choice_oneof(pdelta.CopyAndAppendOneof(b.location, "choice", &pdelta.Field{
-		Name:   "str",
-		Number: 1,
+		Name:    "str",
+		Number:  1,
+		TypeUrl: "pdelta_tests.Chooser",
 	}, &pdelta.Field{
-		Name:   "dbl",
-		Number: 2,
+		Name:    "dbl",
+		Number:  2,
+		TypeUrl: "pdelta_tests.Chooser",
 	}, &pdelta.Field{
-		Name:   "itm",
-		Number: 3,
+		Name:    "itm",
+		Number:  3,
+		TypeUrl: "pdelta_tests.Chooser",
 	}))
 }
 
@@ -434,13 +437,13 @@ func (b Chooser_Choice_oneof) Delete() *pdelta.Op {
 	return pdelta.Delete(b.location)
 }
 func (b Chooser_Choice_oneof) Str() pdelta.String_scalar {
-	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "str", 1))
+	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Chooser", "str", 1))
 }
 func (b Chooser_Choice_oneof) Dbl() pdelta.Double_scalar {
-	return pdelta.NewDouble_scalar(pdelta.CopyAndAppendField(b.location, "dbl", 2))
+	return pdelta.NewDouble_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Chooser", "dbl", 2))
 }
 func (b Chooser_Choice_oneof) Itm() Item_type {
-	return NewItem_type(pdelta.CopyAndAppendField(b.location, "itm", 3))
+	return NewItem_type(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Chooser", "itm", 3))
 }
 
 type Company_type struct {
@@ -460,16 +463,16 @@ func (b Company_type) Set(value *Company) *pdelta.Op {
 	return pdelta.Set(b.location, value)
 }
 func (b Company_type) Name() pdelta.String_scalar {
-	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "name", 11))
+	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Company", "name", 11))
 }
 func (b Company_type) Revenue() pdelta.Float_scalar {
-	return pdelta.NewFloat_scalar(pdelta.CopyAndAppendField(b.location, "revenue", 12))
+	return pdelta.NewFloat_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Company", "revenue", 12))
 }
 func (b Company_type) Flags() pdelta.String_int64_map {
-	return pdelta.NewString_int64_map(pdelta.CopyAndAppendField(b.location, "flags", 13))
+	return pdelta.NewString_int64_map(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Company", "flags", 13))
 }
 func (b Company_type) Ceo() Person_type {
-	return NewPerson_type(pdelta.CopyAndAppendField(b.location, "ceo", 14))
+	return NewPerson_type(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Company", "ceo", 14))
 }
 
 type Company_list struct {
@@ -653,10 +656,10 @@ func (b House_type) Set(value *House) *pdelta.Op {
 	return pdelta.Set(b.location, value)
 }
 func (b House_type) Name() pdelta.String_scalar {
-	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "name", 1))
+	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.House", "name", 1))
 }
 func (b House_type) Number() pdelta.Uint32_scalar {
-	return pdelta.NewUint32_scalar(pdelta.CopyAndAppendField(b.location, "number", 2))
+	return pdelta.NewUint32_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.House", "number", 2))
 }
 
 type House_list struct {
@@ -840,13 +843,13 @@ func (b Item_type) Set(value *Item) *pdelta.Op {
 	return pdelta.Set(b.location, value)
 }
 func (b Item_type) Title() pdelta.String_scalar {
-	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "title", 31))
+	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Item", "title", 31))
 }
 func (b Item_type) Done() pdelta.Bool_scalar {
-	return pdelta.NewBool_scalar(pdelta.CopyAndAppendField(b.location, "done", 34))
+	return pdelta.NewBool_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Item", "done", 34))
 }
 func (b Item_type) Flags() pdelta.String_list {
-	return pdelta.NewString_list(pdelta.CopyAndAppendField(b.location, "flags", 35))
+	return pdelta.NewString_list(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Item", "flags", 35))
 }
 
 type Item_list struct {
@@ -1030,61 +1033,66 @@ func (b Person_type) Set(value *Person) *pdelta.Op {
 	return pdelta.Set(b.location, value)
 }
 func (b Person_type) Name() pdelta.String_scalar {
-	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "name", 1))
+	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person", "name", 1))
 }
 func (b Person_type) Age() pdelta.Uint32_scalar {
-	return pdelta.NewUint32_scalar(pdelta.CopyAndAppendField(b.location, "age", 2))
+	return pdelta.NewUint32_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person", "age", 2))
 }
 func (b Person_type) Cases() Case_string_map {
-	return NewCase_string_map(pdelta.CopyAndAppendField(b.location, "cases", 4))
+	return NewCase_string_map(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person", "cases", 4))
 }
 func (b Person_type) Company() Company_type {
-	return NewCompany_type(pdelta.CopyAndAppendField(b.location, "company", 5))
+	return NewCompany_type(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person", "company", 5))
 }
 func (b Person_type) Alias() pdelta.String_list {
-	return pdelta.NewString_list(pdelta.CopyAndAppendField(b.location, "alias", 6))
+	return pdelta.NewString_list(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person", "alias", 6))
 }
 func (b Person_type) Type() Person_Type_enum {
-	return NewPerson_Type_enum(pdelta.CopyAndAppendField(b.location, "type", 7))
+	return NewPerson_Type_enum(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person", "type", 7))
 }
 func (b Person_type) TypeList() Person_Type_list {
-	return NewPerson_Type_list(pdelta.CopyAndAppendField(b.location, "typeList", 8))
+	return NewPerson_Type_list(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person", "typeList", 8))
 }
 func (b Person_type) TypeMap() Person_Type_string_map {
-	return NewPerson_Type_string_map(pdelta.CopyAndAppendField(b.location, "typeMap", 9))
+	return NewPerson_Type_string_map(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person", "typeMap", 9))
 }
 func (b Person_type) Embedded() Person_Embed_type {
-	return NewPerson_Embed_type(pdelta.CopyAndAppendField(b.location, "embedded", 10))
+	return NewPerson_Embed_type(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person", "embedded", 10))
 }
 func (b Person_type) Choice() Person_Choice_oneof {
 	return NewPerson_Choice_oneof(pdelta.CopyAndAppendOneof(b.location, "choice", &pdelta.Field{
-		Name:   "str",
-		Number: 11,
+		Name:    "str",
+		Number:  11,
+		TypeUrl: "pdelta_tests.Person",
 	}, &pdelta.Field{
-		Name:   "dbl",
-		Number: 12,
+		Name:    "dbl",
+		Number:  12,
+		TypeUrl: "pdelta_tests.Person",
 	}, &pdelta.Field{
-		Name:   "itm",
-		Number: 13,
+		Name:    "itm",
+		Number:  13,
+		TypeUrl: "pdelta_tests.Person",
 	}, &pdelta.Field{
-		Name:   "cas",
-		Number: 14,
+		Name:    "cas",
+		Number:  14,
+		TypeUrl: "pdelta_tests.Person",
 	}, &pdelta.Field{
-		Name:   "cho",
-		Number: 15,
+		Name:    "cho",
+		Number:  15,
+		TypeUrl: "pdelta_tests.Person",
 	}))
 }
 func (b Person_type) House() House_type {
-	return NewHouse_type(pdelta.CopyAndAppendField(b.location, "house", 16))
+	return NewHouse_type(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person", "house", 16))
 }
 func (b Person_type) Shirt() pdelta_tests_clothes.Shirt_type {
-	return pdelta_tests_clothes.NewShirt_type(pdelta.CopyAndAppendField(b.location, "shirt", 17))
+	return pdelta_tests_clothes.NewShirt_type(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person", "shirt", 17))
 }
 func (b Person_type) Pants() pants.Pants_type {
-	return pants.NewPants_type(pdelta.CopyAndAppendField(b.location, "pants", 18))
+	return pants.NewPants_type(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person", "pants", 18))
 }
 func (b Person_type) Double() Person_Embed_Double_type {
-	return NewPerson_Embed_Double_type(pdelta.CopyAndAppendField(b.location, "double", 19))
+	return NewPerson_Embed_Double_type(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person", "double", 19))
 }
 
 type Person_list struct {
@@ -1265,19 +1273,19 @@ func (b Person_Choice_oneof) Delete() *pdelta.Op {
 	return pdelta.Delete(b.location)
 }
 func (b Person_Choice_oneof) Str() pdelta.String_scalar {
-	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "str", 11))
+	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person", "str", 11))
 }
 func (b Person_Choice_oneof) Dbl() pdelta.Double_scalar {
-	return pdelta.NewDouble_scalar(pdelta.CopyAndAppendField(b.location, "dbl", 12))
+	return pdelta.NewDouble_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person", "dbl", 12))
 }
 func (b Person_Choice_oneof) Itm() Item_type {
-	return NewItem_type(pdelta.CopyAndAppendField(b.location, "itm", 13))
+	return NewItem_type(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person", "itm", 13))
 }
 func (b Person_Choice_oneof) Cas() Case_type {
-	return NewCase_type(pdelta.CopyAndAppendField(b.location, "cas", 14))
+	return NewCase_type(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person", "cas", 14))
 }
 func (b Person_Choice_oneof) Cho() Chooser_type {
-	return NewChooser_type(pdelta.CopyAndAppendField(b.location, "cho", 15))
+	return NewChooser_type(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person", "cho", 15))
 }
 
 type Person_Embed_type struct {
@@ -1297,7 +1305,7 @@ func (b Person_Embed_type) Set(value *Person_Embed) *pdelta.Op {
 	return pdelta.Set(b.location, value)
 }
 func (b Person_Embed_type) Name() pdelta.String_scalar {
-	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "name", 1))
+	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Embed", "name", 1))
 }
 
 type Person_Embed_list struct {
@@ -1481,15 +1489,17 @@ func (b Person_Embed_Double_type) Set(value *Person_Embed_Double) *pdelta.Op {
 	return pdelta.Set(b.location, value)
 }
 func (b Person_Embed_Double_type) Name() pdelta.String_scalar {
-	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "name", 1))
+	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Double", "name", 1))
 }
 func (b Person_Embed_Double_type) Foo() Person_Embed_Double_Foo_oneof {
 	return NewPerson_Embed_Double_Foo_oneof(pdelta.CopyAndAppendOneof(b.location, "foo", &pdelta.Field{
-		Name:   "bar",
-		Number: 2,
+		Name:    "bar",
+		Number:  2,
+		TypeUrl: "pdelta_tests.Double",
 	}, &pdelta.Field{
-		Name:   "baz",
-		Number: 3,
+		Name:    "baz",
+		Number:  3,
+		TypeUrl: "pdelta_tests.Double",
 	}))
 }
 
@@ -1671,10 +1681,10 @@ func (b Person_Embed_Double_Foo_oneof) Delete() *pdelta.Op {
 	return pdelta.Delete(b.location)
 }
 func (b Person_Embed_Double_Foo_oneof) Bar() pdelta.String_scalar {
-	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "bar", 2))
+	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Double", "bar", 2))
 }
 func (b Person_Embed_Double_Foo_oneof) Baz() pdelta.Int64_scalar {
-	return pdelta.NewInt64_scalar(pdelta.CopyAndAppendField(b.location, "baz", 3))
+	return pdelta.NewInt64_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Double", "baz", 3))
 }
 
 type Person_Type_enum struct {

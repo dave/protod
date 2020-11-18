@@ -29,10 +29,10 @@ func (b Shirt_type) Set(value *Shirt) *pdelta.Op {
 	return pdelta.Set(b.location, value)
 }
 func (b Shirt_type) Designer() pdelta.String_scalar {
-	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "designer", 1))
+	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests_clothes.Shirt", "designer", 1))
 }
 func (b Shirt_type) Size() pdelta.Uint32_scalar {
-	return pdelta.NewUint32_scalar(pdelta.CopyAndAppendField(b.location, "size", 2))
+	return pdelta.NewUint32_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests_clothes.Shirt", "size", 2))
 }
 
 type Shirt_list struct {

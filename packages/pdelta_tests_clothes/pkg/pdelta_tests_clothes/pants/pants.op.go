@@ -29,13 +29,13 @@ func (b Pants_type) Set(value *Pants) *pdelta.Op {
 	return pdelta.Set(b.location, value)
 }
 func (b Pants_type) Style() pdelta.String_scalar {
-	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "style", 1))
+	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "pants.Pants", "style", 1))
 }
 func (b Pants_type) Length() pdelta.Uint32_scalar {
-	return pdelta.NewUint32_scalar(pdelta.CopyAndAppendField(b.location, "length", 2))
+	return pdelta.NewUint32_scalar(pdelta.CopyAndAppendField(b.location, "pants.Pants", "length", 2))
 }
 func (b Pants_type) Waist() pdelta.Uint32_scalar {
-	return pdelta.NewUint32_scalar(pdelta.CopyAndAppendField(b.location, "waist", 3))
+	return pdelta.NewUint32_scalar(pdelta.CopyAndAppendField(b.location, "pants.Pants", "waist", 3))
 }
 
 type Pants_list struct {

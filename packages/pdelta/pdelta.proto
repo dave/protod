@@ -3,6 +3,7 @@ package pdelta;
 
 import "google/protobuf/dart_options.proto";
 import "google/protobuf/any.proto";
+import "google/protobuf/struct.proto";
 
 option go_package = "github.com/dave/protod/packages/pdelta/pkg/pdelta;pdelta";
 option (dart_options.dart_package) = "pdelta";
@@ -24,7 +25,7 @@ message Op {
   oneof value {
     Scalar scalar = 4;               // new value [Set, Insert]
     google.protobuf.Any message = 6; // new value [Set, Insert]
-    Object object = 7;               // new value [Set, Insert]
+    Fragment fragment = 7;           // new value [Set, Insert]
     Delta delta = 8;                 // modification of a scalar value - quill, math etc [Edit]
     int64 index = 9;                 // new index [Move]
     Key key = 10;                    // new key [Rename]
@@ -54,6 +55,7 @@ message Key {
 message Field {
   string name = 1;
   int32 number = 2;
+  string type_url = 3;
 }
 
 message Oneof {
@@ -99,41 +101,10 @@ message Quill {
     int64 retain = 2;  // length of text retained - note: this counts unicode codepoints, not bytes or grapheme clusters TODO: check this works cross platform
     int64 delete = 3;  // length of text deleted - note: this counts unicode codepoints, not bytes or grapheme clusters TODO: check this works cross platform
   }
-  Object attributes = 4;
+  google.protobuf.Struct attributes = 4;
 }
 
-message Object {
-  oneof v {
-    Scalar scalar = 1;
-    google.protobuf.Any message = 2;
-    List list = 3;
-    MapBool mapBool = 4;
-    MapInt32 mapInt32 = 5;
-    MapInt64 mapInt64 = 6;
-    MapUint32 mapUint32 = 7;
-    MapUint64 mapUint64 = 8;
-    MapString mapString = 9;
-  }
-}
-
-message MapBool {
-  map<bool, Object> map = 1;
-}
-message MapInt32 {
-  map<int32, Object> map = 1;
-}
-message MapInt64 {
-  map<int64, Object> map = 1;
-}
-message MapUint32 {
-  map<uint32, Object> map = 1;
-}
-message MapUint64 {
-  map<uint64, Object> map = 1;
-}
-message MapString {
-  map<string, Object> map = 1;
-}
-message List {
-  repeated Object list = 1;
+message Fragment {
+  Field field = 1;
+  google.protobuf.Any message = 2;
 }

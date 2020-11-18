@@ -4,14 +4,8 @@ import (
 	"testing"
 
 	"github.com/dave/protod/packages/pdelta/pkg/pdelta"
-	proto1 "github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
-	any "github.com/golang/protobuf/ptypes/any"
 	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
 )
-
-const OUTPUT_CASES = true
 
 func TestDiffs(t *testing.T) {
 	cases := []struct {
@@ -37,15 +31,4 @@ func TestDiffs(t *testing.T) {
 			t.Fatalf("\ndiff result:   %s\ndiff expected: %s", string(diff), tc.diff)
 		}
 	}
-}
-
-func mustUnmarshalAny(a *any.Any) proto.Message {
-	if a == nil {
-		return nil
-	}
-	var da ptypes.DynamicAny
-	if err := ptypes.UnmarshalAny(a, &da); err != nil {
-		panic(err)
-	}
-	return proto1.MessageV2(da.Message)
 }

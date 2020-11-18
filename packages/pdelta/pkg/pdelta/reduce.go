@@ -2,6 +2,7 @@ package pdelta
 
 import (
 	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 // op1    | op2
@@ -69,17 +70,26 @@ func rIndependent(op1, op2 *Op) []*Op {
 		// in the set:
 
 		// op1.Value can be:
-		// &Op_Scalar (don't think so because scalars don't have descendents?)
+		// &Op_Scalar (impossible because scalars don't have descendents)
 		// &Op_Message
 		// &Op_Object
 
 		switch value := op1.Value.(type) {
 		case *Op_Scalar:
-			panic("value is scalar?!?")
-		case *Op_Object:
-			// TODO
-			// Applying an operation to an Op_Object is not straightforward. We can't currently extract an *Object into
-			// a protoreflect.Value without the message it came from. Not sure what we have to do to enable this.
+			panic("invalid operation (scalars shouldn't have descendents)")
+		case *Op_Fragment:
+			msg := MustUnmarshalAny(value.Fragment.Message)
+			op2new := proto.Clone(op2).(*Op)
+			op2new.Location = append([]*Locator{{V: &Locator_Field{Field: value.Fragment.Field}}}, op2new.Location[len(op1.Location):]...)
+			if err := Apply(op2new, msg); err != nil {
+				panic(err)
+			}
+			msgProtoReflect := protoreflect.ValueOfMessage(msg.ProtoReflect()).Message()
+			field := getField(value.Fragment.Field, msgProtoReflect)
+			out := proto.Clone(op1).(*Op)
+			out.Value = &Op_Fragment{Fragment: newFragmentFromProto(msgProtoReflect.Get(field), value.Fragment.Field)}
+			return []*Op{out}
+
 		case *Op_Message:
 			msg := MustUnmarshalAny(value.Message)
 			op2new := proto.Clone(op2).(*Op)

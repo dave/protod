@@ -483,7 +483,6 @@ func TestApply(t *testing.T) {
 			continue
 		}
 		t.Run(item.name, func(t *testing.T) {
-
 			dataAny, err := ptypes.MarshalAny(proto1.MessageV1(item.data))
 			if err != nil {
 				t.Fatal(err)

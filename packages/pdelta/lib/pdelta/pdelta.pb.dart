@@ -11,6 +11,7 @@ import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:protobuf/protobuf.dart' as $pb;
 
 import 'package:ptypes/google/protobuf/any.pb.dart' as $0;
+import 'package:ptypes/google/protobuf/struct.pb.dart' as $1;
 
 import 'pdelta.pbenum.dart';
 
@@ -19,7 +20,7 @@ export 'pdelta.pbenum.dart';
 enum Op_Value {
   scalar, 
   message, 
-  object, 
+  fragment, 
   delta, 
   index_, 
   key, 
@@ -30,7 +31,7 @@ class Op extends $pb.GeneratedMessage {
   static const $core.Map<$core.int, Op_Value> _Op_ValueByTag = {
     4 : Op_Value.scalar,
     6 : Op_Value.message,
-    7 : Op_Value.object,
+    7 : Op_Value.fragment,
     8 : Op_Value.delta,
     9 : Op_Value.index_,
     10 : Op_Value.key,
@@ -43,7 +44,7 @@ class Op extends $pb.GeneratedMessage {
     ..pc<Op>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'ops', $pb.PbFieldType.PM, subBuilder: Op.create)
     ..aOM<Scalar>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'scalar', subBuilder: Scalar.create)
     ..aOM<$0.Any>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'message', subBuilder: $0.Any.create)
-    ..aOM<Object>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'object', subBuilder: Object.create)
+    ..aOM<Fragment>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'fragment', subBuilder: Fragment.create)
     ..aOM<Delta>(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'delta', subBuilder: Delta.create)
     ..aInt64(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'index')
     ..aOM<Key>(10, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'key', subBuilder: Key.create)
@@ -114,15 +115,15 @@ class Op extends $pb.GeneratedMessage {
   $0.Any ensureMessage() => $_ensure(4);
 
   @$pb.TagNumber(7)
-  Object get object => $_getN(5);
+  Fragment get fragment => $_getN(5);
   @$pb.TagNumber(7)
-  set object(Object v) { setField(7, v); }
+  set fragment(Fragment v) { setField(7, v); }
   @$pb.TagNumber(7)
-  $core.bool hasObject() => $_has(5);
+  $core.bool hasFragment() => $_has(5);
   @$pb.TagNumber(7)
-  void clearObject() => clearField(7);
+  void clearFragment() => clearField(7);
   @$pb.TagNumber(7)
-  Object ensureObject() => $_ensure(5);
+  Fragment ensureFragment() => $_ensure(5);
 
   @$pb.TagNumber(8)
   Delta get delta => $_getN(6);
@@ -366,6 +367,7 @@ class Field extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'Field', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'pdelta'), createEmptyInstance: create)
     ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'name')
     ..a<$core.int>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'number', $pb.PbFieldType.O3)
+    ..aOS(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'typeUrl')
     ..hasRequiredFields = false
   ;
 
@@ -409,6 +411,15 @@ class Field extends $pb.GeneratedMessage {
   $core.bool hasNumber() => $_has(1);
   @$pb.TagNumber(2)
   void clearNumber() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get typeUrl => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set typeUrl($core.String v) { $_setString(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasTypeUrl() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearTypeUrl() => clearField(3);
 }
 
 class Oneof extends $pb.GeneratedMessage {
@@ -792,7 +803,7 @@ class Quill extends $pb.GeneratedMessage {
     ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'insert')
     ..aInt64(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'retain')
     ..aInt64(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'delete')
-    ..aOM<Object>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'attributes', subBuilder: Object.create)
+    ..aOM<$1.Struct>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'attributes', subBuilder: $1.Struct.create)
     ..hasRequiredFields = false
   ;
 
@@ -850,93 +861,57 @@ class Quill extends $pb.GeneratedMessage {
   void clearDelete() => clearField(3);
 
   @$pb.TagNumber(4)
-  Object get attributes => $_getN(3);
+  $1.Struct get attributes => $_getN(3);
   @$pb.TagNumber(4)
-  set attributes(Object v) { setField(4, v); }
+  set attributes($1.Struct v) { setField(4, v); }
   @$pb.TagNumber(4)
   $core.bool hasAttributes() => $_has(3);
   @$pb.TagNumber(4)
   void clearAttributes() => clearField(4);
   @$pb.TagNumber(4)
-  Object ensureAttributes() => $_ensure(3);
+  $1.Struct ensureAttributes() => $_ensure(3);
 }
 
-enum Object_V {
-  scalar, 
-  message, 
-  list, 
-  mapBool, 
-  mapInt32, 
-  mapInt64, 
-  mapUint32, 
-  mapUint64, 
-  mapString, 
-  notSet
-}
-
-class Object extends $pb.GeneratedMessage {
-  static const $core.Map<$core.int, Object_V> _Object_VByTag = {
-    1 : Object_V.scalar,
-    2 : Object_V.message,
-    3 : Object_V.list,
-    4 : Object_V.mapBool,
-    5 : Object_V.mapInt32,
-    6 : Object_V.mapInt64,
-    7 : Object_V.mapUint32,
-    8 : Object_V.mapUint64,
-    9 : Object_V.mapString,
-    0 : Object_V.notSet
-  };
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'Object', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'pdelta'), createEmptyInstance: create)
-    ..oo(0, [1, 2, 3, 4, 5, 6, 7, 8, 9])
-    ..aOM<Scalar>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'scalar', subBuilder: Scalar.create)
+class Fragment extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'Fragment', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'pdelta'), createEmptyInstance: create)
+    ..aOM<Field>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'field', subBuilder: Field.create)
     ..aOM<$0.Any>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'message', subBuilder: $0.Any.create)
-    ..aOM<List_>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'list', subBuilder: List_.create)
-    ..aOM<MapBool>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'mapBool', protoName: 'mapBool', subBuilder: MapBool.create)
-    ..aOM<MapInt32>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'mapInt32', protoName: 'mapInt32', subBuilder: MapInt32.create)
-    ..aOM<MapInt64>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'mapInt64', protoName: 'mapInt64', subBuilder: MapInt64.create)
-    ..aOM<MapUint32>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'mapUint32', protoName: 'mapUint32', subBuilder: MapUint32.create)
-    ..aOM<MapUint64>(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'mapUint64', protoName: 'mapUint64', subBuilder: MapUint64.create)
-    ..aOM<MapString>(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'mapString', protoName: 'mapString', subBuilder: MapString.create)
     ..hasRequiredFields = false
   ;
 
-  Object._() : super();
-  factory Object() => create();
-  factory Object.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory Object.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  Fragment._() : super();
+  factory Fragment() => create();
+  factory Fragment.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory Fragment.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
   'Will be removed in next major version')
-  Object clone() => Object()..mergeFromMessage(this);
+  Fragment clone() => Fragment()..mergeFromMessage(this);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Object copyWith(void Function(Object) updates) => super.copyWith((message) => updates(message as Object)); // ignore: deprecated_member_use
+  Fragment copyWith(void Function(Fragment) updates) => super.copyWith((message) => updates(message as Fragment)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
-  static Object create() => Object._();
-  Object createEmptyInstance() => create();
-  static $pb.PbList<Object> createRepeated() => $pb.PbList<Object>();
+  static Fragment create() => Fragment._();
+  Fragment createEmptyInstance() => create();
+  static $pb.PbList<Fragment> createRepeated() => $pb.PbList<Fragment>();
   @$core.pragma('dart2js:noInline')
-  static Object getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Object>(create);
-  static Object _defaultInstance;
-
-  Object_V whichV() => _Object_VByTag[$_whichOneof(0)];
-  void clearV() => clearField($_whichOneof(0));
+  static Fragment getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Fragment>(create);
+  static Fragment _defaultInstance;
 
   @$pb.TagNumber(1)
-  Scalar get scalar => $_getN(0);
+  Field get field_1 => $_getN(0);
   @$pb.TagNumber(1)
-  set scalar(Scalar v) { setField(1, v); }
+  set field_1(Field v) { setField(1, v); }
   @$pb.TagNumber(1)
-  $core.bool hasScalar() => $_has(0);
+  $core.bool hasField_1() => $_has(0);
   @$pb.TagNumber(1)
-  void clearScalar() => clearField(1);
+  void clearField_1() => clearField(1);
   @$pb.TagNumber(1)
-  Scalar ensureScalar() => $_ensure(0);
+  Field ensureField_1() => $_ensure(0);
 
   @$pb.TagNumber(2)
   $0.Any get message => $_getN(1);
@@ -948,313 +923,5 @@ class Object extends $pb.GeneratedMessage {
   void clearMessage() => clearField(2);
   @$pb.TagNumber(2)
   $0.Any ensureMessage() => $_ensure(1);
-
-  @$pb.TagNumber(3)
-  List_ get list => $_getN(2);
-  @$pb.TagNumber(3)
-  set list(List_ v) { setField(3, v); }
-  @$pb.TagNumber(3)
-  $core.bool hasList() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearList() => clearField(3);
-  @$pb.TagNumber(3)
-  List_ ensureList() => $_ensure(2);
-
-  @$pb.TagNumber(4)
-  MapBool get mapBool => $_getN(3);
-  @$pb.TagNumber(4)
-  set mapBool(MapBool v) { setField(4, v); }
-  @$pb.TagNumber(4)
-  $core.bool hasMapBool() => $_has(3);
-  @$pb.TagNumber(4)
-  void clearMapBool() => clearField(4);
-  @$pb.TagNumber(4)
-  MapBool ensureMapBool() => $_ensure(3);
-
-  @$pb.TagNumber(5)
-  MapInt32 get mapInt32 => $_getN(4);
-  @$pb.TagNumber(5)
-  set mapInt32(MapInt32 v) { setField(5, v); }
-  @$pb.TagNumber(5)
-  $core.bool hasMapInt32() => $_has(4);
-  @$pb.TagNumber(5)
-  void clearMapInt32() => clearField(5);
-  @$pb.TagNumber(5)
-  MapInt32 ensureMapInt32() => $_ensure(4);
-
-  @$pb.TagNumber(6)
-  MapInt64 get mapInt64 => $_getN(5);
-  @$pb.TagNumber(6)
-  set mapInt64(MapInt64 v) { setField(6, v); }
-  @$pb.TagNumber(6)
-  $core.bool hasMapInt64() => $_has(5);
-  @$pb.TagNumber(6)
-  void clearMapInt64() => clearField(6);
-  @$pb.TagNumber(6)
-  MapInt64 ensureMapInt64() => $_ensure(5);
-
-  @$pb.TagNumber(7)
-  MapUint32 get mapUint32 => $_getN(6);
-  @$pb.TagNumber(7)
-  set mapUint32(MapUint32 v) { setField(7, v); }
-  @$pb.TagNumber(7)
-  $core.bool hasMapUint32() => $_has(6);
-  @$pb.TagNumber(7)
-  void clearMapUint32() => clearField(7);
-  @$pb.TagNumber(7)
-  MapUint32 ensureMapUint32() => $_ensure(6);
-
-  @$pb.TagNumber(8)
-  MapUint64 get mapUint64 => $_getN(7);
-  @$pb.TagNumber(8)
-  set mapUint64(MapUint64 v) { setField(8, v); }
-  @$pb.TagNumber(8)
-  $core.bool hasMapUint64() => $_has(7);
-  @$pb.TagNumber(8)
-  void clearMapUint64() => clearField(8);
-  @$pb.TagNumber(8)
-  MapUint64 ensureMapUint64() => $_ensure(7);
-
-  @$pb.TagNumber(9)
-  MapString get mapString => $_getN(8);
-  @$pb.TagNumber(9)
-  set mapString(MapString v) { setField(9, v); }
-  @$pb.TagNumber(9)
-  $core.bool hasMapString() => $_has(8);
-  @$pb.TagNumber(9)
-  void clearMapString() => clearField(9);
-  @$pb.TagNumber(9)
-  MapString ensureMapString() => $_ensure(8);
-}
-
-class MapBool extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'MapBool', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'pdelta'), createEmptyInstance: create)
-    ..m<$core.bool, Object>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'map', entryClassName: 'MapBool.MapEntry', keyFieldType: $pb.PbFieldType.OB, valueFieldType: $pb.PbFieldType.OM, valueCreator: Object.create, packageName: const $pb.PackageName('pdelta'))
-    ..hasRequiredFields = false
-  ;
-
-  MapBool._() : super();
-  factory MapBool() => create();
-  factory MapBool.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory MapBool.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  MapBool clone() => MapBool()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  MapBool copyWith(void Function(MapBool) updates) => super.copyWith((message) => updates(message as MapBool)); // ignore: deprecated_member_use
-  $pb.BuilderInfo get info_ => _i;
-  @$core.pragma('dart2js:noInline')
-  static MapBool create() => MapBool._();
-  MapBool createEmptyInstance() => create();
-  static $pb.PbList<MapBool> createRepeated() => $pb.PbList<MapBool>();
-  @$core.pragma('dart2js:noInline')
-  static MapBool getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<MapBool>(create);
-  static MapBool _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.Map<$core.bool, Object> get map => $_getMap(0);
-}
-
-class MapInt32 extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'MapInt32', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'pdelta'), createEmptyInstance: create)
-    ..m<$core.int, Object>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'map', entryClassName: 'MapInt32.MapEntry', keyFieldType: $pb.PbFieldType.O3, valueFieldType: $pb.PbFieldType.OM, valueCreator: Object.create, packageName: const $pb.PackageName('pdelta'))
-    ..hasRequiredFields = false
-  ;
-
-  MapInt32._() : super();
-  factory MapInt32() => create();
-  factory MapInt32.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory MapInt32.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  MapInt32 clone() => MapInt32()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  MapInt32 copyWith(void Function(MapInt32) updates) => super.copyWith((message) => updates(message as MapInt32)); // ignore: deprecated_member_use
-  $pb.BuilderInfo get info_ => _i;
-  @$core.pragma('dart2js:noInline')
-  static MapInt32 create() => MapInt32._();
-  MapInt32 createEmptyInstance() => create();
-  static $pb.PbList<MapInt32> createRepeated() => $pb.PbList<MapInt32>();
-  @$core.pragma('dart2js:noInline')
-  static MapInt32 getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<MapInt32>(create);
-  static MapInt32 _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.Map<$core.int, Object> get map => $_getMap(0);
-}
-
-class MapInt64 extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'MapInt64', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'pdelta'), createEmptyInstance: create)
-    ..m<$fixnum.Int64, Object>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'map', entryClassName: 'MapInt64.MapEntry', keyFieldType: $pb.PbFieldType.O6, valueFieldType: $pb.PbFieldType.OM, valueCreator: Object.create, packageName: const $pb.PackageName('pdelta'))
-    ..hasRequiredFields = false
-  ;
-
-  MapInt64._() : super();
-  factory MapInt64() => create();
-  factory MapInt64.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory MapInt64.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  MapInt64 clone() => MapInt64()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  MapInt64 copyWith(void Function(MapInt64) updates) => super.copyWith((message) => updates(message as MapInt64)); // ignore: deprecated_member_use
-  $pb.BuilderInfo get info_ => _i;
-  @$core.pragma('dart2js:noInline')
-  static MapInt64 create() => MapInt64._();
-  MapInt64 createEmptyInstance() => create();
-  static $pb.PbList<MapInt64> createRepeated() => $pb.PbList<MapInt64>();
-  @$core.pragma('dart2js:noInline')
-  static MapInt64 getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<MapInt64>(create);
-  static MapInt64 _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.Map<$fixnum.Int64, Object> get map => $_getMap(0);
-}
-
-class MapUint32 extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'MapUint32', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'pdelta'), createEmptyInstance: create)
-    ..m<$core.int, Object>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'map', entryClassName: 'MapUint32.MapEntry', keyFieldType: $pb.PbFieldType.OU3, valueFieldType: $pb.PbFieldType.OM, valueCreator: Object.create, packageName: const $pb.PackageName('pdelta'))
-    ..hasRequiredFields = false
-  ;
-
-  MapUint32._() : super();
-  factory MapUint32() => create();
-  factory MapUint32.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory MapUint32.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  MapUint32 clone() => MapUint32()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  MapUint32 copyWith(void Function(MapUint32) updates) => super.copyWith((message) => updates(message as MapUint32)); // ignore: deprecated_member_use
-  $pb.BuilderInfo get info_ => _i;
-  @$core.pragma('dart2js:noInline')
-  static MapUint32 create() => MapUint32._();
-  MapUint32 createEmptyInstance() => create();
-  static $pb.PbList<MapUint32> createRepeated() => $pb.PbList<MapUint32>();
-  @$core.pragma('dart2js:noInline')
-  static MapUint32 getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<MapUint32>(create);
-  static MapUint32 _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.Map<$core.int, Object> get map => $_getMap(0);
-}
-
-class MapUint64 extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'MapUint64', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'pdelta'), createEmptyInstance: create)
-    ..m<$fixnum.Int64, Object>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'map', entryClassName: 'MapUint64.MapEntry', keyFieldType: $pb.PbFieldType.OU6, valueFieldType: $pb.PbFieldType.OM, valueCreator: Object.create, packageName: const $pb.PackageName('pdelta'))
-    ..hasRequiredFields = false
-  ;
-
-  MapUint64._() : super();
-  factory MapUint64() => create();
-  factory MapUint64.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory MapUint64.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  MapUint64 clone() => MapUint64()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  MapUint64 copyWith(void Function(MapUint64) updates) => super.copyWith((message) => updates(message as MapUint64)); // ignore: deprecated_member_use
-  $pb.BuilderInfo get info_ => _i;
-  @$core.pragma('dart2js:noInline')
-  static MapUint64 create() => MapUint64._();
-  MapUint64 createEmptyInstance() => create();
-  static $pb.PbList<MapUint64> createRepeated() => $pb.PbList<MapUint64>();
-  @$core.pragma('dart2js:noInline')
-  static MapUint64 getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<MapUint64>(create);
-  static MapUint64 _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.Map<$fixnum.Int64, Object> get map => $_getMap(0);
-}
-
-class MapString extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'MapString', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'pdelta'), createEmptyInstance: create)
-    ..m<$core.String, Object>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'map', entryClassName: 'MapString.MapEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OM, valueCreator: Object.create, packageName: const $pb.PackageName('pdelta'))
-    ..hasRequiredFields = false
-  ;
-
-  MapString._() : super();
-  factory MapString() => create();
-  factory MapString.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory MapString.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  MapString clone() => MapString()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  MapString copyWith(void Function(MapString) updates) => super.copyWith((message) => updates(message as MapString)); // ignore: deprecated_member_use
-  $pb.BuilderInfo get info_ => _i;
-  @$core.pragma('dart2js:noInline')
-  static MapString create() => MapString._();
-  MapString createEmptyInstance() => create();
-  static $pb.PbList<MapString> createRepeated() => $pb.PbList<MapString>();
-  @$core.pragma('dart2js:noInline')
-  static MapString getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<MapString>(create);
-  static MapString _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.Map<$core.String, Object> get map => $_getMap(0);
-}
-
-class List_ extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'List', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'pdelta'), createEmptyInstance: create)
-    ..pc<Object>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'list', $pb.PbFieldType.PM, subBuilder: Object.create)
-    ..hasRequiredFields = false
-  ;
-
-  List_._() : super();
-  factory List_() => create();
-  factory List_.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory List_.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  List_ clone() => List_()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  List_ copyWith(void Function(List_) updates) => super.copyWith((message) => updates(message as List_)); // ignore: deprecated_member_use
-  $pb.BuilderInfo get info_ => _i;
-  @$core.pragma('dart2js:noInline')
-  static List_ create() => List_._();
-  List_ createEmptyInstance() => create();
-  static $pb.PbList<List_> createRepeated() => $pb.PbList<List_>();
-  @$core.pragma('dart2js:noInline')
-  static List_ getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<List_>(create);
-  static List_ _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.List<Object> get list => $_getList(0);
 }
 
