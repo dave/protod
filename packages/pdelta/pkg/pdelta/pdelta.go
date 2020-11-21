@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dave/protod/packages/pdelta/pkg/pdelta/converter"
 	quill "github.com/fmpwizard/go-quilljs-delta/delta"
 	proto1 "github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
@@ -771,41 +772,12 @@ func newFragment(value reflect.Value, field *Field) *Fragment {
 		panic(fmt.Sprintf("error looking up type %q: %v", field.TypeUrl, err))
 	}
 
+	// See: https://github.com/golang/protobuf/issues/1245
+
 	message := mt.New()
-	messageField := getField(field, message)
-
-	// TODO: this is awful!!!
-
-	if messageField.IsList() {
-		fieldValue := message.NewField(messageField)
-		fieldValueList := fieldValue.List()
-		for i := 0; i < value.Len(); i++ {
-			if messageField.Kind() == protoreflect.EnumKind {
-				fieldValueList.Append(protoreflect.ValueOfEnum(protoreflect.EnumNumber(value.Index(i).Int())))
-			} else if messageField.Kind() == protoreflect.MessageKind {
-				fieldValueList.Append(protoreflect.ValueOfMessage(proto1.MessageReflect(value.Index(i).Interface().(proto1.Message))))
-			} else {
-				fieldValueList.Append(protoreflect.ValueOf(value.Index(i).Interface()))
-			}
-		}
-		message.Set(messageField, fieldValue)
-	} else if messageField.IsMap() {
-		fieldValue := message.NewField(messageField)
-		fieldValueMap := fieldValue.Map()
-		keys := value.MapKeys()
-		for i := 0; i < len(keys); i++ {
-			if messageField.MapValue().Kind() == protoreflect.EnumKind {
-				fieldValueMap.Set(protoreflect.ValueOf(keys[i].Interface()).MapKey(), protoreflect.ValueOfEnum(protoreflect.EnumNumber(value.MapIndex(keys[i]).Int())))
-			} else if messageField.MapValue().Kind() == protoreflect.MessageKind {
-				fieldValueMap.Set(protoreflect.ValueOf(keys[i].Interface()).MapKey(), protoreflect.ValueOfMessage(proto1.MessageReflect(value.MapIndex(keys[i]).Interface().(proto1.Message))))
-			} else {
-				fieldValueMap.Set(protoreflect.ValueOf(keys[i].Interface()).MapKey(), protoreflect.ValueOf(value.MapIndex(keys[i]).Interface()))
-			}
-		}
-		message.Set(messageField, fieldValue)
-	} else {
-		message.Set(messageField, protoreflect.ValueOf(value.Interface()))
-	}
+	protoField := getField(field, message)
+	protoValue := converter.ValueOf(value, message, protoField)
+	message.Set(protoField, protoValue)
 
 	return &Fragment{
 		Field:   field,
@@ -821,28 +793,8 @@ func newFragmentFromProto(value protoreflect.Value, field *Field) *Fragment {
 	}
 
 	message := mt.New()
-	messageField := getField(field, message)
-
-	// TODO: this is awful!!!
-
-	if messageField.IsList() {
-		fieldValue := message.NewField(messageField)
-		fieldValueList := fieldValue.List()
-		for i := 0; i < value.List().Len(); i++ {
-			fieldValueList.Append(value.List().Get(i))
-		}
-		message.Set(messageField, fieldValue)
-	} else if messageField.IsMap() {
-		fieldValue := message.NewField(messageField)
-		fieldValueMap := fieldValue.Map()
-		value.Map().Range(func(key protoreflect.MapKey, value protoreflect.Value) bool {
-			fieldValueMap.Set(key, value)
-			return true
-		})
-		message.Set(messageField, fieldValue)
-	} else {
-		message.Set(messageField, value)
-	}
+	protoField := getField(field, message)
+	message.Set(protoField, value)
 
 	return &Fragment{
 		Field:   field,
