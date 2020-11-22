@@ -210,6 +210,9 @@ func (m *Main) scanMessage(parent *Scope, message *parser.Message) error {
 			if err != nil {
 				return perr.Wrap(err).Debug("parsing field number")
 			}
+			if !ProtoKeyTypesMap[v.KeyType] {
+				return perr.Wrap(err).Debugf("unsupported key type %q in %s.%s (protod supports proto key types: %s)", v.KeyType, data.Scope.Full(), v.MapName, strings.Join(ProtoKeyTypes, ", "))
+			}
 			field := &MessageField{
 				Message:  data,
 				Name:     v.MapName,

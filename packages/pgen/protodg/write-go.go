@@ -310,4 +310,13 @@ var ProtoKeyTypes = []string{
 	"string",
 }
 
+var ProtoKeyTypesMap = map[string]bool{
+	"bool":   true,
+	"int32":  true,
+	"int64":  true,
+	"uint32": true,
+	"uint64": true,
+	"string": true,
+}
+
 const deltaPath = "github.com/dave/protod/packages/pdelta/pkg/pdelta"
