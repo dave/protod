@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// This is a copy of https://pkg.go.dev/google.golang.org/protobuf@v1.25.0/internal/impl#Converter with the map / list functionality removed, so it just converts scalar / message values.
+// This is a copy of https://pkg.go.dev/google.golang.org/protobuf@v1.25.0/internal/impl#Converter
+// ... with the map / list functionality removed, so it just converts scalar / message values.
 
 package converter
 

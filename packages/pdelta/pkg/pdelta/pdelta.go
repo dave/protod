@@ -527,8 +527,8 @@ func fromFragment(fragment *Fragment) protoreflect.Value {
 }
 
 func getField(locatorField *Field, message protoreflect.Message) protoreflect.FieldDescriptor {
-	if string(message.Descriptor().FullName()) != locatorField.TypeUrl {
-		panic(fmt.Sprintf("message type %q / does not match field type url %q", message.Descriptor().FullName(), locatorField.TypeUrl))
+	if string(message.Descriptor().FullName()) != locatorField.MessageFullName {
+		panic(fmt.Sprintf("message %q / does not match locator %q", message.Descriptor().FullName(), locatorField.MessageFullName))
 	}
 	field := message.Descriptor().Fields().ByNumber(protoreflect.FieldNumber(locatorField.Number))
 	if string(field.Name()) != locatorField.Name {
@@ -767,9 +767,9 @@ func NewFragment(value interface{}, field *Field) *Fragment {
 
 func newFragment(value reflect.Value, field *Field) *Fragment {
 
-	mt, err := protoregistry.GlobalTypes.FindMessageByName(protoreflect.FullName(field.TypeUrl))
+	mt, err := protoregistry.GlobalTypes.FindMessageByName(protoreflect.FullName(field.MessageFullName))
 	if err != nil {
-		panic(fmt.Sprintf("error looking up type %q: %v", field.TypeUrl, err))
+		panic(fmt.Sprintf("error looking up type %q: %v", field.MessageFullName, err))
 	}
 
 	// See: https://github.com/golang/protobuf/issues/1245
@@ -787,9 +787,9 @@ func newFragment(value reflect.Value, field *Field) *Fragment {
 
 func newFragmentFromProto(value protoreflect.Value, field *Field) *Fragment {
 
-	mt, err := protoregistry.GlobalTypes.FindMessageByName(protoreflect.FullName(field.TypeUrl))
+	mt, err := protoregistry.GlobalTypes.FindMessageByName(protoreflect.FullName(field.MessageFullName))
 	if err != nil {
-		panic(fmt.Sprintf("error looking up type %q: %v", field.TypeUrl, err))
+		panic(fmt.Sprintf("error looking up type %q: %v", field.MessageFullName, err))
 	}
 
 	message := mt.New()
@@ -960,8 +960,8 @@ func CopyAndAppend(in []*Locator, v *Locator) []*Locator {
 func CopyAndAppendOneof(in []*Locator, name string, fields ...*Field) []*Locator {
 	return CopyAndAppend(in, NewLocatorOneof(name, fields...))
 }
-func CopyAndAppendField(in []*Locator, typeUrl, name string, number int32) []*Locator {
-	return CopyAndAppend(in, NewLocatorField(typeUrl, name, number))
+func CopyAndAppendField(in []*Locator, messageFullName, name string, number int32) []*Locator {
+	return CopyAndAppend(in, NewLocatorField(messageFullName, name, number))
 }
 func CopyAndAppendIndex(in []*Locator, index int64) []*Locator {
 	return CopyAndAppend(in, NewLocatorIndex(index))
@@ -991,8 +991,8 @@ func CopyAndAppendKeyUint64(in []*Locator, key uint64) []*Locator {
 func NewLocatorOneof(name string, fields ...*Field) *Locator {
 	return &Locator{V: &Locator_Oneof{Oneof: &Oneof{Name: name, Fields: fields}}}
 }
-func NewLocatorField(typeUrl, name string, number int32) *Locator {
-	return &Locator{V: &Locator_Field{Field: &Field{Name: name, Number: number, TypeUrl: typeUrl}}}
+func NewLocatorField(messageFullName, name string, number int32) *Locator {
+	return &Locator{V: &Locator_Field{Field: &Field{Name: name, Number: number, MessageFullName: messageFullName}}}
 }
 func NewLocatorIndex(index int64) *Locator {
 	return &Locator{V: &Locator_Index{Index: index}}

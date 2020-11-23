@@ -245,17 +245,17 @@ func (b Chooser_type) Set(value *Chooser) *pdelta.Op {
 }
 func (b Chooser_type) Choice() Chooser_Choice_oneof {
 	return NewChooser_Choice_oneof(pdelta.CopyAndAppendOneof(b.location, "choice", &pdelta.Field{
-		Name:    "str",
-		Number:  1,
-		TypeUrl: "pdelta_tests.Chooser",
+		MessageFullName: "pdelta_tests.Chooser",
+		Name:            "str",
+		Number:          1,
 	}, &pdelta.Field{
-		Name:    "dbl",
-		Number:  2,
-		TypeUrl: "pdelta_tests.Chooser",
+		MessageFullName: "pdelta_tests.Chooser",
+		Name:            "dbl",
+		Number:          2,
 	}, &pdelta.Field{
-		Name:    "itm",
-		Number:  3,
-		TypeUrl: "pdelta_tests.Chooser",
+		MessageFullName: "pdelta_tests.Chooser",
+		Name:            "itm",
+		Number:          3,
 	}))
 }
 
@@ -1061,25 +1061,25 @@ func (b Person_type) Embedded() Person_Embed_type {
 }
 func (b Person_type) Choice() Person_Choice_oneof {
 	return NewPerson_Choice_oneof(pdelta.CopyAndAppendOneof(b.location, "choice", &pdelta.Field{
-		Name:    "str",
-		Number:  11,
-		TypeUrl: "pdelta_tests.Person",
+		MessageFullName: "pdelta_tests.Person",
+		Name:            "str",
+		Number:          11,
 	}, &pdelta.Field{
-		Name:    "dbl",
-		Number:  12,
-		TypeUrl: "pdelta_tests.Person",
+		MessageFullName: "pdelta_tests.Person",
+		Name:            "dbl",
+		Number:          12,
 	}, &pdelta.Field{
-		Name:    "itm",
-		Number:  13,
-		TypeUrl: "pdelta_tests.Person",
+		MessageFullName: "pdelta_tests.Person",
+		Name:            "itm",
+		Number:          13,
 	}, &pdelta.Field{
-		Name:    "cas",
-		Number:  14,
-		TypeUrl: "pdelta_tests.Person",
+		MessageFullName: "pdelta_tests.Person",
+		Name:            "cas",
+		Number:          14,
 	}, &pdelta.Field{
-		Name:    "cho",
-		Number:  15,
-		TypeUrl: "pdelta_tests.Person",
+		MessageFullName: "pdelta_tests.Person",
+		Name:            "cho",
+		Number:          15,
 	}))
 }
 func (b Person_type) House() House_type {
@@ -1493,13 +1493,13 @@ func (b Person_Embed_Double_type) Name() pdelta.String_scalar {
 }
 func (b Person_Embed_Double_type) Foo() Person_Embed_Double_Foo_oneof {
 	return NewPerson_Embed_Double_Foo_oneof(pdelta.CopyAndAppendOneof(b.location, "foo", &pdelta.Field{
-		Name:    "bar",
-		Number:  2,
-		TypeUrl: "pdelta_tests.Double",
+		MessageFullName: "pdelta_tests.Double",
+		Name:            "bar",
+		Number:          2,
 	}, &pdelta.Field{
-		Name:    "baz",
-		Number:  3,
-		TypeUrl: "pdelta_tests.Double",
+		MessageFullName: "pdelta_tests.Double",
+		Name:            "baz",
+		Number:          3,
 	}))
 }
 

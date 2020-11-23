@@ -367,7 +367,7 @@ class Field extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'Field', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'pdelta'), createEmptyInstance: create)
     ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'name')
     ..a<$core.int>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'number', $pb.PbFieldType.O3)
-    ..aOS(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'typeUrl')
+    ..aOS(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'messageFullName')
     ..hasRequiredFields = false
   ;
 
@@ -413,13 +413,13 @@ class Field extends $pb.GeneratedMessage {
   void clearNumber() => clearField(2);
 
   @$pb.TagNumber(3)
-  $core.String get typeUrl => $_getSZ(2);
+  $core.String get messageFullName => $_getSZ(2);
   @$pb.TagNumber(3)
-  set typeUrl($core.String v) { $_setString(2, v); }
+  set messageFullName($core.String v) { $_setString(2, v); }
   @$pb.TagNumber(3)
-  $core.bool hasTypeUrl() => $_has(2);
+  $core.bool hasMessageFullName() => $_has(2);
   @$pb.TagNumber(3)
-  void clearTypeUrl() => clearField(3);
+  void clearMessageFullName() => clearField(3);
 }
 
 class Oneof extends $pb.GeneratedMessage {

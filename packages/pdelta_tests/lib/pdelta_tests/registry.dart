@@ -1,6 +1,6 @@
 import 'package:protobuf/protobuf.dart' as protobuf;
-import 'package:pdelta_tests/pdelta_tests/house.pb.dart' as pkg_pdelta_tests_pdelta_tests_pdelta_tests;
 import 'package:pdelta_tests/pdelta_tests/tests.pb.dart' as pkg_pdelta_tests_pdelta_tests_pdelta_tests;
+import 'package:pdelta_tests/pdelta_tests/house.pb.dart' as pkg_pdelta_tests_pdelta_tests_pdelta_tests;
 import 'package:pdelta_tests_clothes/pdelta_tests_clothes/shirt.pb.dart' as pkg_pdelta_tests_clothes_pdelta_tests_clothes_pdelta_tests_clothes;
 import 'package:pdelta_tests_clothes/pdelta_tests_clothes/pants/pants.pb.dart' as pkg_pdelta_tests_clothes_pdelta_tests_clothes_pants_pants;
 

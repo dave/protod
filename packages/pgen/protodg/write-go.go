@@ -258,7 +258,7 @@ func (m *Main) writeGoFields(f *File, locatable Locatable, fields []*MessageFiel
 	default:
 		panic(fmt.Sprintf("invalid locatable %T in writeGoFields", locatable))
 	}
-	typeUrl := fmt.Sprintf("%s.%s", parent.Scope.Package().Name, parent.Name)
+	messageFullName := fmt.Sprintf("%s.%s", parent.Scope.Package().Name, parent.Name)
 
 	for _, field := range fields {
 		//func (b Person_type) Name() pdelta.String_scalar {
@@ -275,22 +275,22 @@ func (m *Main) writeGoFields(f *File, locatable Locatable, fields []*MessageFiel
 			jen.Return(
 				jen.Qual(field.GoTypePackagePath(), fmt.Sprintf("New%s", field.GoTypeLocatableName())).CallFunc(func(g *jen.Group) {
 					if field.Oneof {
-						// CopyAndAppendOneof(b.location, "name", &Field{TypeUrl: "foo.Bar", Name: "n1", Number:"1"})
+						// CopyAndAppendOneof(b.location, "name", &Field{MessageFullName: "foo.Bar", Name: "n1", Number:"1"})
 						g.Qual(deltaPath, "CopyAndAppendOneof").CallFunc(func(g *jen.Group) {
 							g.Id("b").Dot("location")
 							g.Lit(field.Name)
 							for _, oneofField := range field.OneofFields {
 								g.Op("&").Qual(deltaPath, "Field").Values(jen.Dict{
-									jen.Id("TypeUrl"): jen.Lit(typeUrl),
-									jen.Id("Name"):    jen.Lit(oneofField.Name),
-									jen.Id("Number"):  jen.Lit(oneofField.Number),
+									jen.Id("MessageFullName"): jen.Lit(messageFullName),
+									jen.Id("Name"):            jen.Lit(oneofField.Name),
+									jen.Id("Number"):          jen.Lit(oneofField.Number),
 								})
 							}
 						})
 					} else {
 						g.Qual(deltaPath, "CopyAndAppendField").Call(
 							jen.Id("b").Dot("location"),
-							jen.Lit(typeUrl),
+							jen.Lit(messageFullName),
 							jen.Lit(field.Name),
 							jen.Lit(field.Number),
 						)

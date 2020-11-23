@@ -71,7 +71,7 @@ const Field$json = const {
   '2': const [
     const {'1': 'name', '3': 1, '4': 1, '5': 9, '10': 'name'},
     const {'1': 'number', '3': 2, '4': 1, '5': 5, '10': 'number'},
-    const {'1': 'type_url', '3': 3, '4': 1, '5': 9, '10': 'typeUrl'},
+    const {'1': 'message_full_name', '3': 3, '4': 1, '5': 9, '10': 'messageFullName'},
   ],
 };
 

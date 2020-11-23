@@ -55,7 +55,7 @@ message Key {
 message Field {
   string name = 1;
   int32 number = 2;
-  string type_url = 3;
+  string message_full_name = 3;
 }
 
 message Oneof {
