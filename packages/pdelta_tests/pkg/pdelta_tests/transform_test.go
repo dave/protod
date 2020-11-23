@@ -1,7 +1,7 @@
 package pdelta_tests
 
 import (
-	"fmt"
+	"io/ioutil"
 	"strings"
 	"testing"
 
@@ -944,14 +944,19 @@ func TestTransform(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			cases += string(sb) + "\n"
+			if len(cases) > 0 {
+				cases += ",\n"
+			}
+			cases += string(sb)
 
 			runTransformTest(t, tc)
 
 		})
 	}
 	if OUTPUT_CASES {
-		fmt.Println(cases)
+		if err := ioutil.WriteFile("../../cases_transform.json", []byte("["+cases+"]"), 0666); err != nil {
+			t.Fatal(err)
+		}
 	}
 	if solo {
 		t.Fatal("tests skipped")
@@ -959,8 +964,15 @@ func TestTransform(t *testing.T) {
 }
 
 func TestTransformCases(t *testing.T) {
-	caseStrings := strings.Split(transformCases, "\n")
+	casesBytes, err := ioutil.ReadFile("../../cases_transform.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	caseStrings := strings.Split(string(casesBytes), "\n")
 	for _, caseString := range caseStrings {
+		caseString = strings.TrimPrefix(caseString, "[")
+		caseString = strings.TrimSuffix(caseString, "]")
+		caseString = strings.TrimSuffix(caseString, ",")
 		var tc TransformTestCase
 		if err := protojson.Unmarshal([]byte(caseString), &tc); err != nil {
 			t.Fatal(err)

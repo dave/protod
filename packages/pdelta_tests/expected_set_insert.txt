@@ -1,0 +1,80 @@
+set0* ins0 : Y X b c d
+set0  ins0*: Y X b c d
+ins0* set0 : Y X b c d
+ins0  set0*: Y X b c d
+set0* ins1 : X Y b c d
+set0  ins1*: X Y b c d
+ins1* set0 : X Y b c d
+ins1  set0*: X Y b c d
+set0* ins2 : X b Y c d
+set0  ins2*: X b Y c d
+ins2* set0 : X b Y c d
+ins2  set0*: X b Y c d
+set0* ins3 : X b c Y d
+set0  ins3*: X b c Y d
+ins3* set0 : X b c Y d
+ins3  set0*: X b c Y d
+set0* ins4 : X b c d Y
+set0  ins4*: X b c d Y
+ins4* set0 : X b c d Y
+ins4  set0*: X b c d Y
+set1* ins0 : Y a X c d
+set1  ins0*: Y a X c d
+ins0* set1 : Y a X c d
+ins0  set1*: Y a X c d
+set1* ins1 : a Y X c d
+set1  ins1*: a Y X c d
+ins1* set1 : a Y X c d
+ins1  set1*: a Y X c d
+set1* ins2 : a X Y c d
+set1  ins2*: a X Y c d
+ins2* set1 : a X Y c d
+ins2  set1*: a X Y c d
+set1* ins3 : a X c Y d
+set1  ins3*: a X c Y d
+ins3* set1 : a X c Y d
+ins3  set1*: a X c Y d
+set1* ins4 : a X c d Y
+set1  ins4*: a X c d Y
+ins4* set1 : a X c d Y
+ins4  set1*: a X c d Y
+set2* ins0 : Y a b X d
+set2  ins0*: Y a b X d
+ins0* set2 : Y a b X d
+ins0  set2*: Y a b X d
+set2* ins1 : a Y b X d
+set2  ins1*: a Y b X d
+ins1* set2 : a Y b X d
+ins1  set2*: a Y b X d
+set2* ins2 : a b Y X d
+set2  ins2*: a b Y X d
+ins2* set2 : a b Y X d
+ins2  set2*: a b Y X d
+set2* ins3 : a b X Y d
+set2  ins3*: a b X Y d
+ins3* set2 : a b X Y d
+ins3  set2*: a b X Y d
+set2* ins4 : a b X d Y
+set2  ins4*: a b X d Y
+ins4* set2 : a b X d Y
+ins4  set2*: a b X d Y
+set3* ins0 : Y a b c X
+set3  ins0*: Y a b c X
+ins0* set3 : Y a b c X
+ins0  set3*: Y a b c X
+set3* ins1 : a Y b c X
+set3  ins1*: a Y b c X
+ins1* set3 : a Y b c X
+ins1  set3*: a Y b c X
+set3* ins2 : a b Y c X
+set3  ins2*: a b Y c X
+ins2* set3 : a b Y c X
+ins2  set3*: a b Y c X
+set3* ins3 : a b c Y X
+set3  ins3*: a b c Y X
+ins3* set3 : a b c Y X
+ins3  set3*: a b c Y X
+set3* ins4 : a b c X Y
+set3  ins4*: a b c X Y
+ins4* set3 : a b c X Y
+ins4  set3*: a b c X Y

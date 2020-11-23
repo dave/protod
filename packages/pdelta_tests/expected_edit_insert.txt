@@ -1,0 +1,80 @@
+edit0* ins0 : Y X b c d
+edit0  ins0*: Y X b c d
+ins0* edit0 : Y X b c d
+ins0  edit0*: Y X b c d
+edit0* ins1 : X Y b c d
+edit0  ins1*: X Y b c d
+ins1* edit0 : X Y b c d
+ins1  edit0*: X Y b c d
+edit0* ins2 : X b Y c d
+edit0  ins2*: X b Y c d
+ins2* edit0 : X b Y c d
+ins2  edit0*: X b Y c d
+edit0* ins3 : X b c Y d
+edit0  ins3*: X b c Y d
+ins3* edit0 : X b c Y d
+ins3  edit0*: X b c Y d
+edit0* ins4 : X b c d Y
+edit0  ins4*: X b c d Y
+ins4* edit0 : X b c d Y
+ins4  edit0*: X b c d Y
+edit1* ins0 : Y a X c d
+edit1  ins0*: Y a X c d
+ins0* edit1 : Y a X c d
+ins0  edit1*: Y a X c d
+edit1* ins1 : a Y X c d
+edit1  ins1*: a Y X c d
+ins1* edit1 : a Y X c d
+ins1  edit1*: a Y X c d
+edit1* ins2 : a X Y c d
+edit1  ins2*: a X Y c d
+ins2* edit1 : a X Y c d
+ins2  edit1*: a X Y c d
+edit1* ins3 : a X c Y d
+edit1  ins3*: a X c Y d
+ins3* edit1 : a X c Y d
+ins3  edit1*: a X c Y d
+edit1* ins4 : a X c d Y
+edit1  ins4*: a X c d Y
+ins4* edit1 : a X c d Y
+ins4  edit1*: a X c d Y
+edit2* ins0 : Y a b X d
+edit2  ins0*: Y a b X d
+ins0* edit2 : Y a b X d
+ins0  edit2*: Y a b X d
+edit2* ins1 : a Y b X d
+edit2  ins1*: a Y b X d
+ins1* edit2 : a Y b X d
+ins1  edit2*: a Y b X d
+edit2* ins2 : a b Y X d
+edit2  ins2*: a b Y X d
+ins2* edit2 : a b Y X d
+ins2  edit2*: a b Y X d
+edit2* ins3 : a b X Y d
+edit2  ins3*: a b X Y d
+ins3* edit2 : a b X Y d
+ins3  edit2*: a b X Y d
+edit2* ins4 : a b X d Y
+edit2  ins4*: a b X d Y
+ins4* edit2 : a b X d Y
+ins4  edit2*: a b X d Y
+edit3* ins0 : Y a b c X
+edit3  ins0*: Y a b c X
+ins0* edit3 : Y a b c X
+ins0  edit3*: Y a b c X
+edit3* ins1 : a Y b c X
+edit3  ins1*: a Y b c X
+ins1* edit3 : a Y b c X
+ins1  edit3*: a Y b c X
+edit3* ins2 : a b Y c X
+edit3  ins2*: a b Y c X
+ins2* edit3 : a b Y c X
+ins2  edit3*: a b Y c X
+edit3* ins3 : a b c Y X
+edit3  ins3*: a b c Y X
+ins3* edit3 : a b c Y X
+ins3  edit3*: a b c Y X
+edit3* ins4 : a b c X Y
+edit3  ins4*: a b c X Y
+ins4* edit3 : a b c X Y
+ins4  edit3*: a b c X Y

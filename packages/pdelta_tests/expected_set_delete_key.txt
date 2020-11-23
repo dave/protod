@@ -1,0 +1,64 @@
+set0* del0 : 0:X 1:b 2:c 3:d
+set0  del0*: 1:b 2:c 3:d
+del0* set0 : 1:b 2:c 3:d
+del0  set0*: 0:X 1:b 2:c 3:d
+set0* del1 : 0:X 2:c 3:d
+set0  del1*: 0:X 2:c 3:d
+del1* set0 : 0:X 2:c 3:d
+del1  set0*: 0:X 2:c 3:d
+set0* del2 : 0:X 1:b 3:d
+set0  del2*: 0:X 1:b 3:d
+del2* set0 : 0:X 1:b 3:d
+del2  set0*: 0:X 1:b 3:d
+set0* del3 : 0:X 1:b 2:c
+set0  del3*: 0:X 1:b 2:c
+del3* set0 : 0:X 1:b 2:c
+del3  set0*: 0:X 1:b 2:c
+set1* del0 : 1:X 2:c 3:d
+set1  del0*: 1:X 2:c 3:d
+del0* set1 : 1:X 2:c 3:d
+del0  set1*: 1:X 2:c 3:d
+set1* del1 : 0:a 1:X 2:c 3:d
+set1  del1*: 0:a 2:c 3:d
+del1* set1 : 0:a 2:c 3:d
+del1  set1*: 0:a 1:X 2:c 3:d
+set1* del2 : 0:a 1:X 3:d
+set1  del2*: 0:a 1:X 3:d
+del2* set1 : 0:a 1:X 3:d
+del2  set1*: 0:a 1:X 3:d
+set1* del3 : 0:a 1:X 2:c
+set1  del3*: 0:a 1:X 2:c
+del3* set1 : 0:a 1:X 2:c
+del3  set1*: 0:a 1:X 2:c
+set2* del0 : 1:b 2:X 3:d
+set2  del0*: 1:b 2:X 3:d
+del0* set2 : 1:b 2:X 3:d
+del0  set2*: 1:b 2:X 3:d
+set2* del1 : 0:a 2:X 3:d
+set2  del1*: 0:a 2:X 3:d
+del1* set2 : 0:a 2:X 3:d
+del1  set2*: 0:a 2:X 3:d
+set2* del2 : 0:a 1:b 2:X 3:d
+set2  del2*: 0:a 1:b 3:d
+del2* set2 : 0:a 1:b 3:d
+del2  set2*: 0:a 1:b 2:X 3:d
+set2* del3 : 0:a 1:b 2:X
+set2  del3*: 0:a 1:b 2:X
+del3* set2 : 0:a 1:b 2:X
+del3  set2*: 0:a 1:b 2:X
+set3* del0 : 1:b 2:c 3:X
+set3  del0*: 1:b 2:c 3:X
+del0* set3 : 1:b 2:c 3:X
+del0  set3*: 1:b 2:c 3:X
+set3* del1 : 0:a 2:c 3:X
+set3  del1*: 0:a 2:c 3:X
+del1* set3 : 0:a 2:c 3:X
+del1  set3*: 0:a 2:c 3:X
+set3* del2 : 0:a 1:b 3:X
+set3  del2*: 0:a 1:b 3:X
+del2* set3 : 0:a 1:b 3:X
+del2  set3*: 0:a 1:b 3:X
+set3* del3 : 0:a 1:b 2:c 3:X
+set3  del3*: 0:a 1:b 2:c
+del3* set3 : 0:a 1:b 2:c
+del3  set3*: 0:a 1:b 2:c 3:X

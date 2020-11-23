@@ -1,0 +1,50 @@
+ins0* ins0 : X Y a b c d
+ins0  ins0*: Y X a b c d
+ins0* ins1 : X a Y b c d
+ins0  ins1*: X a Y b c d
+ins0* ins2 : X a b Y c d
+ins0  ins2*: X a b Y c d
+ins0* ins3 : X a b c Y d
+ins0  ins3*: X a b c Y d
+ins0* ins4 : X a b c d Y
+ins0  ins4*: X a b c d Y
+ins1* ins0 : Y a X b c d
+ins1  ins0*: Y a X b c d
+ins1* ins1 : a X Y b c d
+ins1  ins1*: a Y X b c d
+ins1* ins2 : a X b Y c d
+ins1  ins2*: a X b Y c d
+ins1* ins3 : a X b c Y d
+ins1  ins3*: a X b c Y d
+ins1* ins4 : a X b c d Y
+ins1  ins4*: a X b c d Y
+ins2* ins0 : Y a b X c d
+ins2  ins0*: Y a b X c d
+ins2* ins1 : a Y b X c d
+ins2  ins1*: a Y b X c d
+ins2* ins2 : a b X Y c d
+ins2  ins2*: a b Y X c d
+ins2* ins3 : a b X c Y d
+ins2  ins3*: a b X c Y d
+ins2* ins4 : a b X c d Y
+ins2  ins4*: a b X c d Y
+ins3* ins0 : Y a b c X d
+ins3  ins0*: Y a b c X d
+ins3* ins1 : a Y b c X d
+ins3  ins1*: a Y b c X d
+ins3* ins2 : a b Y c X d
+ins3  ins2*: a b Y c X d
+ins3* ins3 : a b c X Y d
+ins3  ins3*: a b c Y X d
+ins3* ins4 : a b c X d Y
+ins3  ins4*: a b c X d Y
+ins4* ins0 : Y a b c d X
+ins4  ins0*: Y a b c d X
+ins4* ins1 : a Y b c d X
+ins4  ins1*: a Y b c d X
+ins4* ins2 : a b Y c d X
+ins4  ins2*: a b Y c d X
+ins4* ins3 : a b c Y d X
+ins4  ins3*: a b c Y d X
+ins4* ins4 : a b c d X Y
+ins4  ins4*: a b c d Y X

@@ -1,0 +1,32 @@
+set0* set0 : X b c d
+set0  set0*: Y b c d
+set0* set1 : X Y c d
+set0  set1*: X Y c d
+set0* set2 : X b Y d
+set0  set2*: X b Y d
+set0* set3 : X b c Y
+set0  set3*: X b c Y
+set1* set0 : Y X c d
+set1  set0*: Y X c d
+set1* set1 : a X c d
+set1  set1*: a Y c d
+set1* set2 : a X Y d
+set1  set2*: a X Y d
+set1* set3 : a X c Y
+set1  set3*: a X c Y
+set2* set0 : Y b X d
+set2  set0*: Y b X d
+set2* set1 : a Y X d
+set2  set1*: a Y X d
+set2* set2 : a b X d
+set2  set2*: a b Y d
+set2* set3 : a b X Y
+set2  set3*: a b X Y
+set3* set0 : Y b c X
+set3  set0*: Y b c X
+set3* set1 : a Y c X
+set3  set1*: a Y c X
+set3* set2 : a b Y X
+set3  set2*: a b Y X
+set3* set3 : a b c X
+set3  set3*: a b c Y

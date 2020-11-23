@@ -806,65 +806,76 @@ class TransformTestCase extends $pb.GeneratedMessage {
   $4.Any ensureExpected2() => $_ensure(7);
 }
 
-class RandomTestItem extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'RandomTestItem', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'pdelta_tests'), createEmptyInstance: create)
-    ..aOM<$3.Op>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'op', subBuilder: $3.Op.create)
-    ..aOM<Person>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'expected', subBuilder: Person.create)
+class ApplyTestItem extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'ApplyTestItem', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'pdelta_tests'), createEmptyInstance: create)
+    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'name')
+    ..aOM<$3.Op>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'op', subBuilder: $3.Op.create)
+    ..aOM<Person>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'expected', subBuilder: Person.create)
     ..hasRequiredFields = false
   ;
 
-  RandomTestItem._() : super();
-  factory RandomTestItem() => create();
-  factory RandomTestItem.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory RandomTestItem.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  ApplyTestItem._() : super();
+  factory ApplyTestItem() => create();
+  factory ApplyTestItem.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ApplyTestItem.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
   'Will be removed in next major version')
-  RandomTestItem clone() => RandomTestItem()..mergeFromMessage(this);
+  ApplyTestItem clone() => ApplyTestItem()..mergeFromMessage(this);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  RandomTestItem copyWith(void Function(RandomTestItem) updates) => super.copyWith((message) => updates(message as RandomTestItem)); // ignore: deprecated_member_use
+  ApplyTestItem copyWith(void Function(ApplyTestItem) updates) => super.copyWith((message) => updates(message as ApplyTestItem)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
-  static RandomTestItem create() => RandomTestItem._();
-  RandomTestItem createEmptyInstance() => create();
-  static $pb.PbList<RandomTestItem> createRepeated() => $pb.PbList<RandomTestItem>();
+  static ApplyTestItem create() => ApplyTestItem._();
+  ApplyTestItem createEmptyInstance() => create();
+  static $pb.PbList<ApplyTestItem> createRepeated() => $pb.PbList<ApplyTestItem>();
   @$core.pragma('dart2js:noInline')
-  static RandomTestItem getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<RandomTestItem>(create);
-  static RandomTestItem _defaultInstance;
+  static ApplyTestItem getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ApplyTestItem>(create);
+  static ApplyTestItem _defaultInstance;
 
   @$pb.TagNumber(1)
-  $3.Op get op => $_getN(0);
+  $core.String get name => $_getSZ(0);
   @$pb.TagNumber(1)
-  set op($3.Op v) { setField(1, v); }
+  set name($core.String v) { $_setString(0, v); }
   @$pb.TagNumber(1)
-  $core.bool hasOp() => $_has(0);
+  $core.bool hasName() => $_has(0);
   @$pb.TagNumber(1)
-  void clearOp() => clearField(1);
-  @$pb.TagNumber(1)
-  $3.Op ensureOp() => $_ensure(0);
+  void clearName() => clearField(1);
 
   @$pb.TagNumber(2)
-  Person get expected => $_getN(1);
+  $3.Op get op => $_getN(1);
   @$pb.TagNumber(2)
-  set expected(Person v) { setField(2, v); }
+  set op($3.Op v) { setField(2, v); }
   @$pb.TagNumber(2)
-  $core.bool hasExpected() => $_has(1);
+  $core.bool hasOp() => $_has(1);
   @$pb.TagNumber(2)
-  void clearExpected() => clearField(2);
+  void clearOp() => clearField(2);
   @$pb.TagNumber(2)
-  Person ensureExpected() => $_ensure(1);
+  $3.Op ensureOp() => $_ensure(1);
+
+  @$pb.TagNumber(3)
+  Person get expected => $_getN(2);
+  @$pb.TagNumber(3)
+  set expected(Person v) { setField(3, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasExpected() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearExpected() => clearField(3);
+  @$pb.TagNumber(3)
+  Person ensureExpected() => $_ensure(2);
 }
 
 class ReduceTestItem extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'ReduceTestItem', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'pdelta_tests'), createEmptyInstance: create)
-    ..aOM<Person>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'data', subBuilder: Person.create)
-    ..aOM<$3.Op>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'op1', subBuilder: $3.Op.create)
-    ..aOM<$3.Op>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'op2', subBuilder: $3.Op.create)
-    ..aOM<$3.Op>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'reduced', subBuilder: $3.Op.create)
+    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'name')
+    ..aOM<Person>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'data', subBuilder: Person.create)
+    ..aOM<$3.Op>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'op1', subBuilder: $3.Op.create)
+    ..aOM<$3.Op>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'op2', subBuilder: $3.Op.create)
+    ..aOM<$3.Op>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'reduced', subBuilder: $3.Op.create)
     ..hasRequiredFields = false
   ;
 
@@ -892,47 +903,56 @@ class ReduceTestItem extends $pb.GeneratedMessage {
   static ReduceTestItem _defaultInstance;
 
   @$pb.TagNumber(1)
-  Person get data => $_getN(0);
+  $core.String get name => $_getSZ(0);
   @$pb.TagNumber(1)
-  set data(Person v) { setField(1, v); }
+  set name($core.String v) { $_setString(0, v); }
   @$pb.TagNumber(1)
-  $core.bool hasData() => $_has(0);
+  $core.bool hasName() => $_has(0);
   @$pb.TagNumber(1)
-  void clearData() => clearField(1);
-  @$pb.TagNumber(1)
-  Person ensureData() => $_ensure(0);
+  void clearName() => clearField(1);
 
   @$pb.TagNumber(2)
-  $3.Op get op1 => $_getN(1);
+  Person get data => $_getN(1);
   @$pb.TagNumber(2)
-  set op1($3.Op v) { setField(2, v); }
+  set data(Person v) { setField(2, v); }
   @$pb.TagNumber(2)
-  $core.bool hasOp1() => $_has(1);
+  $core.bool hasData() => $_has(1);
   @$pb.TagNumber(2)
-  void clearOp1() => clearField(2);
+  void clearData() => clearField(2);
   @$pb.TagNumber(2)
-  $3.Op ensureOp1() => $_ensure(1);
+  Person ensureData() => $_ensure(1);
 
   @$pb.TagNumber(3)
-  $3.Op get op2 => $_getN(2);
+  $3.Op get op1 => $_getN(2);
   @$pb.TagNumber(3)
-  set op2($3.Op v) { setField(3, v); }
+  set op1($3.Op v) { setField(3, v); }
   @$pb.TagNumber(3)
-  $core.bool hasOp2() => $_has(2);
+  $core.bool hasOp1() => $_has(2);
   @$pb.TagNumber(3)
-  void clearOp2() => clearField(3);
+  void clearOp1() => clearField(3);
   @$pb.TagNumber(3)
-  $3.Op ensureOp2() => $_ensure(2);
+  $3.Op ensureOp1() => $_ensure(2);
 
   @$pb.TagNumber(4)
-  $3.Op get reduced => $_getN(3);
+  $3.Op get op2 => $_getN(3);
   @$pb.TagNumber(4)
-  set reduced($3.Op v) { setField(4, v); }
+  set op2($3.Op v) { setField(4, v); }
   @$pb.TagNumber(4)
-  $core.bool hasReduced() => $_has(3);
+  $core.bool hasOp2() => $_has(3);
   @$pb.TagNumber(4)
-  void clearReduced() => clearField(4);
+  void clearOp2() => clearField(4);
   @$pb.TagNumber(4)
-  $3.Op ensureReduced() => $_ensure(3);
+  $3.Op ensureOp2() => $_ensure(3);
+
+  @$pb.TagNumber(5)
+  $3.Op get reduced => $_getN(4);
+  @$pb.TagNumber(5)
+  set reduced($3.Op v) { setField(5, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasReduced() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearReduced() => clearField(5);
+  @$pb.TagNumber(5)
+  $3.Op ensureReduced() => $_ensure(4);
 }
 

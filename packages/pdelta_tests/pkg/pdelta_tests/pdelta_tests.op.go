@@ -1305,7 +1305,7 @@ func (b Person_Embed_type) Set(value *Person_Embed) *pdelta.Op {
 	return pdelta.Set(b.location, value)
 }
 func (b Person_Embed_type) Name() pdelta.String_scalar {
-	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Embed", "name", 1))
+	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person.Embed", "name", 1))
 }
 
 type Person_Embed_list struct {
@@ -1489,15 +1489,15 @@ func (b Person_Embed_Double_type) Set(value *Person_Embed_Double) *pdelta.Op {
 	return pdelta.Set(b.location, value)
 }
 func (b Person_Embed_Double_type) Name() pdelta.String_scalar {
-	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Double", "name", 1))
+	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person.Embed.Double", "name", 1))
 }
 func (b Person_Embed_Double_type) Foo() Person_Embed_Double_Foo_oneof {
 	return NewPerson_Embed_Double_Foo_oneof(pdelta.CopyAndAppendOneof(b.location, "foo", &pdelta.Field{
-		MessageFullName: "pdelta_tests.Double",
+		MessageFullName: "pdelta_tests.Person.Embed.Double",
 		Name:            "bar",
 		Number:          2,
 	}, &pdelta.Field{
-		MessageFullName: "pdelta_tests.Double",
+		MessageFullName: "pdelta_tests.Person.Embed.Double",
 		Name:            "baz",
 		Number:          3,
 	}))
@@ -1681,10 +1681,10 @@ func (b Person_Embed_Double_Foo_oneof) Delete() *pdelta.Op {
 	return pdelta.Delete(b.location)
 }
 func (b Person_Embed_Double_Foo_oneof) Bar() pdelta.String_scalar {
-	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Double", "bar", 2))
+	return pdelta.NewString_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person.Embed.Double", "bar", 2))
 }
 func (b Person_Embed_Double_Foo_oneof) Baz() pdelta.Int64_scalar {
-	return pdelta.NewInt64_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Double", "baz", 3))
+	return pdelta.NewInt64_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person.Embed.Double", "baz", 3))
 }
 
 type Person_Type_enum struct {

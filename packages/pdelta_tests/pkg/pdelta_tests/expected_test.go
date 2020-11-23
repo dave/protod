@@ -24,7 +24,7 @@ func TestTransformEditEditIndex(t *testing.T) {
 			result += testTwoOpsConverge(t, opA, opB, descA, descB, data)
 		}
 	}
-	compareResults(t, result, expectedTestTransformEditEditIndex)
+	compareResults(t, result, "edit_edit_index")
 }
 
 // EditSetIndex
@@ -43,7 +43,7 @@ func TestTransformEditSetIndex(t *testing.T) {
 			result += testTwoOpsConverge(t, opB, opA, descB, descA, data)
 		}
 	}
-	compareResults(t, result, expectedTestTransformEditSetIndex)
+	compareResults(t, result, "edit_set_index")
 }
 
 // EditDeleteIndex
@@ -62,7 +62,7 @@ func TestTransformEditDeleteIndex(t *testing.T) {
 			result += testTwoOpsConverge(t, opB, opA, descB, descA, data)
 		}
 	}
-	compareResults(t, result, expectedTestTransformEditDeleteIndex)
+	compareResults(t, result, "edit_delete_index")
 }
 
 // SetSetIndex
@@ -80,7 +80,7 @@ func TestTransformSetSetIndex(t *testing.T) {
 			result += testTwoOpsConverge(t, opA, opB, descA, descB, data)
 		}
 	}
-	compareResults(t, result, expectedTestTransformSetSetIndex)
+	compareResults(t, result, "set_set_index")
 }
 
 // EditInsert
@@ -100,7 +100,7 @@ func TestTransformEditInsert(t *testing.T) {
 			result += testTwoOpsConverge(t, opB, opA, descB, descA, data)
 		}
 	}
-	compareResults(t, result, expectedTestTransformEditInsert)
+	compareResults(t, result, "edit_insert")
 }
 
 // SetInsert
@@ -120,7 +120,7 @@ func TestTransformSetInsert(t *testing.T) {
 			result += testTwoOpsConverge(t, opB, opA, descB, descA, data)
 		}
 	}
-	compareResults(t, result, expectedTestTransformSetInsert)
+	compareResults(t, result, "set_insert")
 }
 
 // SetDeleteIndex
@@ -139,7 +139,7 @@ func TestTransformSetDeleteIndex(t *testing.T) {
 			result += testTwoOpsConverge(t, opB, opA, descB, descA, data)
 		}
 	}
-	compareResults(t, result, expectedTestTransformSetDeleteIndex)
+	compareResults(t, result, "set_delete_index")
 }
 
 // InsertDelete
@@ -159,7 +159,7 @@ func TestTransformInsertDelete(t *testing.T) {
 			result += testTwoOpsConverge(t, opB, opA, descB, descA, data)
 		}
 	}
-	compareResults(t, result, expectedTestTransformInsertDelete)
+	compareResults(t, result, "insert_delete")
 }
 
 // DeleteDeleteIndex
@@ -177,7 +177,7 @@ func TestTransformDeleteDeleteIndex(t *testing.T) {
 			result += testTwoOpsConverge(t, opA, opB, descA, descB, data)
 		}
 	}
-	compareResults(t, result, expectedTestTransformDeleteDeleteIndex)
+	compareResults(t, result, "delete_delete_index")
 }
 
 // MoveMove
@@ -200,7 +200,7 @@ func TestTransformMoveMove(t *testing.T) {
 			}
 		}
 	}
-	compareResults(t, result, expectedTestTransformMoveMove)
+	compareResults(t, result, "move_move")
 }
 
 // MoveInsert
@@ -223,7 +223,7 @@ func TestTransformMoveInsert(t *testing.T) {
 			}
 		}
 	}
-	compareResults(t, result, expectedTestTransformMoveInsert)
+	compareResults(t, result, "move_insert")
 }
 
 // InsertInsert
@@ -241,7 +241,7 @@ func TestTransformInsertInsert(t *testing.T) {
 			result += testTwoOpsConverge(t, opA, opB, descA, descB, data)
 		}
 	}
-	compareResults(t, result, expectedTestTransformInsertInsert)
+	compareResults(t, result, "insert_insert")
 }
 
 // MoveDelete
@@ -264,7 +264,7 @@ func TestTransformMoveDelete(t *testing.T) {
 			}
 		}
 	}
-	compareResults(t, result, expectedTestTransformMoveDelete)
+	compareResults(t, result, "move_delete")
 }
 
 // SetMove
@@ -287,7 +287,7 @@ func TestTransformMoveSet(t *testing.T) {
 			}
 		}
 	}
-	compareResults(t, result, expectedTestTransformMoveSet)
+	compareResults(t, result, "move_set")
 }
 
 // EditMove
@@ -310,7 +310,7 @@ func TestTransformMoveEdit(t *testing.T) {
 			}
 		}
 	}
-	compareResults(t, result, expectedTestTransformMoveEdit)
+	compareResults(t, result, "move_edit")
 }
 
 // RenameRename
@@ -332,7 +332,7 @@ func TestTransformRenameRename(t *testing.T) {
 			}
 		}
 	}
-	compareResults(t, result, expectedTestTransformRenameRename)
+	compareResults(t, result, "rename_rename")
 }
 
 // EditEditKey
@@ -350,7 +350,7 @@ func TestTransformEditEditKey(t *testing.T) {
 			result += testTwoOpsConverge(t, opA, opB, descA, descB, data)
 		}
 	}
-	compareResults(t, result, expectedTestTransformEditEditKey)
+	compareResults(t, result, "edit_edit_key")
 }
 
 // EditSetKey
@@ -369,7 +369,7 @@ func TestTransformEditSetKey(t *testing.T) {
 			result += testTwoOpsConverge(t, opB, opA, descB, descA, data)
 		}
 	}
-	compareResults(t, result, expectedTestTransformEditSetKey)
+	compareResults(t, result, "edit_set_key")
 }
 
 // EditDeleteKey
@@ -388,7 +388,7 @@ func TestTransformEditDeleteKey(t *testing.T) {
 			result += testTwoOpsConverge(t, opB, opA, descB, descA, data)
 		}
 	}
-	compareResults(t, result, expectedTestTransformEditDeleteKey)
+	compareResults(t, result, "edit_delete_key")
 }
 
 // EditRename
@@ -411,7 +411,7 @@ func TestTransformEditRenameKey(t *testing.T) {
 			}
 		}
 	}
-	compareResults(t, result, expectedTestTransformEditRenameKey)
+	compareResults(t, result, "edit_rename_key")
 }
 
 // SetRename
@@ -434,7 +434,7 @@ func TestTransformSetRenameKey(t *testing.T) {
 			}
 		}
 	}
-	compareResults(t, result, expectedTestTransformSetRenameKey)
+	compareResults(t, result, "set_rename_key")
 }
 
 // RenameDelete
@@ -457,7 +457,7 @@ func TestTransformRenameDelete(t *testing.T) {
 			}
 		}
 	}
-	compareResults(t, result, expectedTestTransformRenameDelete)
+	compareResults(t, result, "rename_delete")
 }
 
 // SetSetKey
@@ -475,7 +475,7 @@ func TestTransformSetSetKey(t *testing.T) {
 			result += testTwoOpsConverge(t, opA, opB, descA, descB, data)
 		}
 	}
-	compareResults(t, result, expectedTestTransformSetSetKey)
+	compareResults(t, result, "set_set_key")
 }
 
 // SetDeleteKey
@@ -494,7 +494,7 @@ func TestTransformSetDeleteKey(t *testing.T) {
 			result += testTwoOpsConverge(t, opB, opA, descB, descA, data)
 		}
 	}
-	compareResults(t, result, expectedTestTransformSetDeleteKey)
+	compareResults(t, result, "set_delete_key")
 }
 
 // DeleteDeleteKey
@@ -512,7 +512,7 @@ func TestTransformDeleteDeleteKey(t *testing.T) {
 			result += testTwoOpsConverge(t, opA, opB, descA, descB, data)
 		}
 	}
-	compareResults(t, result, expectedTestTransformDeleteDeleteKey)
+	compareResults(t, result, "delete_delete_key")
 }
 
 func testTwoOpsConverge(t *testing.T, opA, opB *pdelta.Op, descA, descB string, data proto.Message) string {

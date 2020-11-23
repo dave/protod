@@ -1,0 +1,64 @@
+edit0* del0 : 1:b 2:c 3:d
+edit0  del0*: 1:b 2:c 3:d
+del0* edit0 : 1:b 2:c 3:d
+del0  edit0*: 1:b 2:c 3:d
+edit0* del1 : 0:X 2:c 3:d
+edit0  del1*: 0:X 2:c 3:d
+del1* edit0 : 0:X 2:c 3:d
+del1  edit0*: 0:X 2:c 3:d
+edit0* del2 : 0:X 1:b 3:d
+edit0  del2*: 0:X 1:b 3:d
+del2* edit0 : 0:X 1:b 3:d
+del2  edit0*: 0:X 1:b 3:d
+edit0* del3 : 0:X 1:b 2:c
+edit0  del3*: 0:X 1:b 2:c
+del3* edit0 : 0:X 1:b 2:c
+del3  edit0*: 0:X 1:b 2:c
+edit1* del0 : 1:X 2:c 3:d
+edit1  del0*: 1:X 2:c 3:d
+del0* edit1 : 1:X 2:c 3:d
+del0  edit1*: 1:X 2:c 3:d
+edit1* del1 : 0:a 2:c 3:d
+edit1  del1*: 0:a 2:c 3:d
+del1* edit1 : 0:a 2:c 3:d
+del1  edit1*: 0:a 2:c 3:d
+edit1* del2 : 0:a 1:X 3:d
+edit1  del2*: 0:a 1:X 3:d
+del2* edit1 : 0:a 1:X 3:d
+del2  edit1*: 0:a 1:X 3:d
+edit1* del3 : 0:a 1:X 2:c
+edit1  del3*: 0:a 1:X 2:c
+del3* edit1 : 0:a 1:X 2:c
+del3  edit1*: 0:a 1:X 2:c
+edit2* del0 : 1:b 2:X 3:d
+edit2  del0*: 1:b 2:X 3:d
+del0* edit2 : 1:b 2:X 3:d
+del0  edit2*: 1:b 2:X 3:d
+edit2* del1 : 0:a 2:X 3:d
+edit2  del1*: 0:a 2:X 3:d
+del1* edit2 : 0:a 2:X 3:d
+del1  edit2*: 0:a 2:X 3:d
+edit2* del2 : 0:a 1:b 3:d
+edit2  del2*: 0:a 1:b 3:d
+del2* edit2 : 0:a 1:b 3:d
+del2  edit2*: 0:a 1:b 3:d
+edit2* del3 : 0:a 1:b 2:X
+edit2  del3*: 0:a 1:b 2:X
+del3* edit2 : 0:a 1:b 2:X
+del3  edit2*: 0:a 1:b 2:X
+edit3* del0 : 1:b 2:c 3:X
+edit3  del0*: 1:b 2:c 3:X
+del0* edit3 : 1:b 2:c 3:X
+del0  edit3*: 1:b 2:c 3:X
+edit3* del1 : 0:a 2:c 3:X
+edit3  del1*: 0:a 2:c 3:X
+del1* edit3 : 0:a 2:c 3:X
+del1  edit3*: 0:a 2:c 3:X
+edit3* del2 : 0:a 1:b 3:X
+edit3  del2*: 0:a 1:b 3:X
+del2* edit3 : 0:a 1:b 3:X
+del2  edit3*: 0:a 1:b 3:X
+edit3* del3 : 0:a 1:b 2:c
+edit3  del3*: 0:a 1:b 2:c
+del3* edit3 : 0:a 1:b 2:c
+del3  edit3*: 0:a 1:b 2:c

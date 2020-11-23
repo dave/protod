@@ -1,0 +1,80 @@
+ins0* del0 : X b c d
+ins0  del0*: X b c d
+del0* ins0 : X b c d
+del0  ins0*: X b c d
+ins0* del1 : X a c d
+ins0  del1*: X a c d
+del1* ins0 : X a c d
+del1  ins0*: X a c d
+ins0* del2 : X a b d
+ins0  del2*: X a b d
+del2* ins0 : X a b d
+del2  ins0*: X a b d
+ins0* del3 : X a b c
+ins0  del3*: X a b c
+del3* ins0 : X a b c
+del3  ins0*: X a b c
+ins1* del0 : X b c d
+ins1  del0*: X b c d
+del0* ins1 : X b c d
+del0  ins1*: X b c d
+ins1* del1 : a X c d
+ins1  del1*: a X c d
+del1* ins1 : a X c d
+del1  ins1*: a X c d
+ins1* del2 : a X b d
+ins1  del2*: a X b d
+del2* ins1 : a X b d
+del2  ins1*: a X b d
+ins1* del3 : a X b c
+ins1  del3*: a X b c
+del3* ins1 : a X b c
+del3  ins1*: a X b c
+ins2* del0 : b X c d
+ins2  del0*: b X c d
+del0* ins2 : b X c d
+del0  ins2*: b X c d
+ins2* del1 : a X c d
+ins2  del1*: a X c d
+del1* ins2 : a X c d
+del1  ins2*: a X c d
+ins2* del2 : a b X d
+ins2  del2*: a b X d
+del2* ins2 : a b X d
+del2  ins2*: a b X d
+ins2* del3 : a b X c
+ins2  del3*: a b X c
+del3* ins2 : a b X c
+del3  ins2*: a b X c
+ins3* del0 : b c X d
+ins3  del0*: b c X d
+del0* ins3 : b c X d
+del0  ins3*: b c X d
+ins3* del1 : a c X d
+ins3  del1*: a c X d
+del1* ins3 : a c X d
+del1  ins3*: a c X d
+ins3* del2 : a b X d
+ins3  del2*: a b X d
+del2* ins3 : a b X d
+del2  ins3*: a b X d
+ins3* del3 : a b c X
+ins3  del3*: a b c X
+del3* ins3 : a b c X
+del3  ins3*: a b c X
+ins4* del0 : b c d X
+ins4  del0*: b c d X
+del0* ins4 : b c d X
+del0  ins4*: b c d X
+ins4* del1 : a c d X
+ins4  del1*: a c d X
+del1* ins4 : a c d X
+del1  ins4*: a c d X
+ins4* del2 : a b d X
+ins4  del2*: a b d X
+del2* ins4 : a b d X
+del2  ins4*: a b d X
+ins4* del3 : a b c X
+ins4  del3*: a b c X
+del3* ins4 : a b c X
+del3  ins4*: a b c X

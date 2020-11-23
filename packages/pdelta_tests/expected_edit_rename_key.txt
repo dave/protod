@@ -1,0 +1,384 @@
+edit0* 0->0 : 0:X 1:b 2:c 3:d
+edit0  0->0*: 0:X 1:b 2:c 3:d
+0->0* edit0 : 0:X 1:b 2:c 3:d
+0->0  edit0*: 0:X 1:b 2:c 3:d
+edit0* 0->1 : 1:X 2:c 3:d
+edit0  0->1*: 1:X 2:c 3:d
+0->1* edit0 : 1:X 2:c 3:d
+0->1  edit0*: 1:X 2:c 3:d
+edit0* 0->2 : 1:b 2:X 3:d
+edit0  0->2*: 1:b 2:X 3:d
+0->2* edit0 : 1:b 2:X 3:d
+0->2  edit0*: 1:b 2:X 3:d
+edit0* 0->3 : 1:b 2:c 3:X
+edit0  0->3*: 1:b 2:c 3:X
+0->3* edit0 : 1:b 2:c 3:X
+0->3  edit0*: 1:b 2:c 3:X
+edit0* 0->4 : 1:b 2:c 3:d 4:X
+edit0  0->4*: 1:b 2:c 3:d 4:X
+0->4* edit0 : 1:b 2:c 3:d 4:X
+0->4  edit0*: 1:b 2:c 3:d 4:X
+edit0* 0->5 : 1:b 2:c 3:d 5:X
+edit0  0->5*: 1:b 2:c 3:d 5:X
+0->5* edit0 : 1:b 2:c 3:d 5:X
+0->5  edit0*: 1:b 2:c 3:d 5:X
+edit0* 1->0 : 0:b 2:c 3:d
+edit0  1->0*: 0:b 2:c 3:d
+1->0* edit0 : 0:b 2:c 3:d
+1->0  edit0*: 0:b 2:c 3:d
+edit0* 1->1 : 0:X 1:b 2:c 3:d
+edit0  1->1*: 0:X 1:b 2:c 3:d
+1->1* edit0 : 0:X 1:b 2:c 3:d
+1->1  edit0*: 0:X 1:b 2:c 3:d
+edit0* 1->2 : 0:X 2:b 3:d
+edit0  1->2*: 0:X 2:b 3:d
+1->2* edit0 : 0:X 2:b 3:d
+1->2  edit0*: 0:X 2:b 3:d
+edit0* 1->3 : 0:X 2:c 3:b
+edit0  1->3*: 0:X 2:c 3:b
+1->3* edit0 : 0:X 2:c 3:b
+1->3  edit0*: 0:X 2:c 3:b
+edit0* 1->4 : 0:X 2:c 3:d 4:b
+edit0  1->4*: 0:X 2:c 3:d 4:b
+1->4* edit0 : 0:X 2:c 3:d 4:b
+1->4  edit0*: 0:X 2:c 3:d 4:b
+edit0* 1->5 : 0:X 2:c 3:d 5:b
+edit0  1->5*: 0:X 2:c 3:d 5:b
+1->5* edit0 : 0:X 2:c 3:d 5:b
+1->5  edit0*: 0:X 2:c 3:d 5:b
+edit0* 2->0 : 0:c 1:b 3:d
+edit0  2->0*: 0:c 1:b 3:d
+2->0* edit0 : 0:c 1:b 3:d
+2->0  edit0*: 0:c 1:b 3:d
+edit0* 2->1 : 0:X 1:c 3:d
+edit0  2->1*: 0:X 1:c 3:d
+2->1* edit0 : 0:X 1:c 3:d
+2->1  edit0*: 0:X 1:c 3:d
+edit0* 2->2 : 0:X 1:b 2:c 3:d
+edit0  2->2*: 0:X 1:b 2:c 3:d
+2->2* edit0 : 0:X 1:b 2:c 3:d
+2->2  edit0*: 0:X 1:b 2:c 3:d
+edit0* 2->3 : 0:X 1:b 3:c
+edit0  2->3*: 0:X 1:b 3:c
+2->3* edit0 : 0:X 1:b 3:c
+2->3  edit0*: 0:X 1:b 3:c
+edit0* 2->4 : 0:X 1:b 3:d 4:c
+edit0  2->4*: 0:X 1:b 3:d 4:c
+2->4* edit0 : 0:X 1:b 3:d 4:c
+2->4  edit0*: 0:X 1:b 3:d 4:c
+edit0* 2->5 : 0:X 1:b 3:d 5:c
+edit0  2->5*: 0:X 1:b 3:d 5:c
+2->5* edit0 : 0:X 1:b 3:d 5:c
+2->5  edit0*: 0:X 1:b 3:d 5:c
+edit0* 3->0 : 0:d 1:b 2:c
+edit0  3->0*: 0:d 1:b 2:c
+3->0* edit0 : 0:d 1:b 2:c
+3->0  edit0*: 0:d 1:b 2:c
+edit0* 3->1 : 0:X 1:d 2:c
+edit0  3->1*: 0:X 1:d 2:c
+3->1* edit0 : 0:X 1:d 2:c
+3->1  edit0*: 0:X 1:d 2:c
+edit0* 3->2 : 0:X 1:b 2:d
+edit0  3->2*: 0:X 1:b 2:d
+3->2* edit0 : 0:X 1:b 2:d
+3->2  edit0*: 0:X 1:b 2:d
+edit0* 3->3 : 0:X 1:b 2:c 3:d
+edit0  3->3*: 0:X 1:b 2:c 3:d
+3->3* edit0 : 0:X 1:b 2:c 3:d
+3->3  edit0*: 0:X 1:b 2:c 3:d
+edit0* 3->4 : 0:X 1:b 2:c 4:d
+edit0  3->4*: 0:X 1:b 2:c 4:d
+3->4* edit0 : 0:X 1:b 2:c 4:d
+3->4  edit0*: 0:X 1:b 2:c 4:d
+edit0* 3->5 : 0:X 1:b 2:c 5:d
+edit0  3->5*: 0:X 1:b 2:c 5:d
+3->5* edit0 : 0:X 1:b 2:c 5:d
+3->5  edit0*: 0:X 1:b 2:c 5:d
+edit1* 0->0 : 0:a 1:X 2:c 3:d
+edit1  0->0*: 0:a 1:X 2:c 3:d
+0->0* edit1 : 0:a 1:X 2:c 3:d
+0->0  edit1*: 0:a 1:X 2:c 3:d
+edit1* 0->1 : 1:a 2:c 3:d
+edit1  0->1*: 1:a 2:c 3:d
+0->1* edit1 : 1:a 2:c 3:d
+0->1  edit1*: 1:a 2:c 3:d
+edit1* 0->2 : 1:X 2:a 3:d
+edit1  0->2*: 1:X 2:a 3:d
+0->2* edit1 : 1:X 2:a 3:d
+0->2  edit1*: 1:X 2:a 3:d
+edit1* 0->3 : 1:X 2:c 3:a
+edit1  0->3*: 1:X 2:c 3:a
+0->3* edit1 : 1:X 2:c 3:a
+0->3  edit1*: 1:X 2:c 3:a
+edit1* 0->4 : 1:X 2:c 3:d 4:a
+edit1  0->4*: 1:X 2:c 3:d 4:a
+0->4* edit1 : 1:X 2:c 3:d 4:a
+0->4  edit1*: 1:X 2:c 3:d 4:a
+edit1* 0->5 : 1:X 2:c 3:d 5:a
+edit1  0->5*: 1:X 2:c 3:d 5:a
+0->5* edit1 : 1:X 2:c 3:d 5:a
+0->5  edit1*: 1:X 2:c 3:d 5:a
+edit1* 1->0 : 0:X 2:c 3:d
+edit1  1->0*: 0:X 2:c 3:d
+1->0* edit1 : 0:X 2:c 3:d
+1->0  edit1*: 0:X 2:c 3:d
+edit1* 1->1 : 0:a 1:X 2:c 3:d
+edit1  1->1*: 0:a 1:X 2:c 3:d
+1->1* edit1 : 0:a 1:X 2:c 3:d
+1->1  edit1*: 0:a 1:X 2:c 3:d
+edit1* 1->2 : 0:a 2:X 3:d
+edit1  1->2*: 0:a 2:X 3:d
+1->2* edit1 : 0:a 2:X 3:d
+1->2  edit1*: 0:a 2:X 3:d
+edit1* 1->3 : 0:a 2:c 3:X
+edit1  1->3*: 0:a 2:c 3:X
+1->3* edit1 : 0:a 2:c 3:X
+1->3  edit1*: 0:a 2:c 3:X
+edit1* 1->4 : 0:a 2:c 3:d 4:X
+edit1  1->4*: 0:a 2:c 3:d 4:X
+1->4* edit1 : 0:a 2:c 3:d 4:X
+1->4  edit1*: 0:a 2:c 3:d 4:X
+edit1* 1->5 : 0:a 2:c 3:d 5:X
+edit1  1->5*: 0:a 2:c 3:d 5:X
+1->5* edit1 : 0:a 2:c 3:d 5:X
+1->5  edit1*: 0:a 2:c 3:d 5:X
+edit1* 2->0 : 0:c 1:X 3:d
+edit1  2->0*: 0:c 1:X 3:d
+2->0* edit1 : 0:c 1:X 3:d
+2->0  edit1*: 0:c 1:X 3:d
+edit1* 2->1 : 0:a 1:c 3:d
+edit1  2->1*: 0:a 1:c 3:d
+2->1* edit1 : 0:a 1:c 3:d
+2->1  edit1*: 0:a 1:c 3:d
+edit1* 2->2 : 0:a 1:X 2:c 3:d
+edit1  2->2*: 0:a 1:X 2:c 3:d
+2->2* edit1 : 0:a 1:X 2:c 3:d
+2->2  edit1*: 0:a 1:X 2:c 3:d
+edit1* 2->3 : 0:a 1:X 3:c
+edit1  2->3*: 0:a 1:X 3:c
+2->3* edit1 : 0:a 1:X 3:c
+2->3  edit1*: 0:a 1:X 3:c
+edit1* 2->4 : 0:a 1:X 3:d 4:c
+edit1  2->4*: 0:a 1:X 3:d 4:c
+2->4* edit1 : 0:a 1:X 3:d 4:c
+2->4  edit1*: 0:a 1:X 3:d 4:c
+edit1* 2->5 : 0:a 1:X 3:d 5:c
+edit1  2->5*: 0:a 1:X 3:d 5:c
+2->5* edit1 : 0:a 1:X 3:d 5:c
+2->5  edit1*: 0:a 1:X 3:d 5:c
+edit1* 3->0 : 0:d 1:X 2:c
+edit1  3->0*: 0:d 1:X 2:c
+3->0* edit1 : 0:d 1:X 2:c
+3->0  edit1*: 0:d 1:X 2:c
+edit1* 3->1 : 0:a 1:d 2:c
+edit1  3->1*: 0:a 1:d 2:c
+3->1* edit1 : 0:a 1:d 2:c
+3->1  edit1*: 0:a 1:d 2:c
+edit1* 3->2 : 0:a 1:X 2:d
+edit1  3->2*: 0:a 1:X 2:d
+3->2* edit1 : 0:a 1:X 2:d
+3->2  edit1*: 0:a 1:X 2:d
+edit1* 3->3 : 0:a 1:X 2:c 3:d
+edit1  3->3*: 0:a 1:X 2:c 3:d
+3->3* edit1 : 0:a 1:X 2:c 3:d
+3->3  edit1*: 0:a 1:X 2:c 3:d
+edit1* 3->4 : 0:a 1:X 2:c 4:d
+edit1  3->4*: 0:a 1:X 2:c 4:d
+3->4* edit1 : 0:a 1:X 2:c 4:d
+3->4  edit1*: 0:a 1:X 2:c 4:d
+edit1* 3->5 : 0:a 1:X 2:c 5:d
+edit1  3->5*: 0:a 1:X 2:c 5:d
+3->5* edit1 : 0:a 1:X 2:c 5:d
+3->5  edit1*: 0:a 1:X 2:c 5:d
+edit2* 0->0 : 0:a 1:b 2:X 3:d
+edit2  0->0*: 0:a 1:b 2:X 3:d
+0->0* edit2 : 0:a 1:b 2:X 3:d
+0->0  edit2*: 0:a 1:b 2:X 3:d
+edit2* 0->1 : 1:a 2:X 3:d
+edit2  0->1*: 1:a 2:X 3:d
+0->1* edit2 : 1:a 2:X 3:d
+0->1  edit2*: 1:a 2:X 3:d
+edit2* 0->2 : 1:b 2:a 3:d
+edit2  0->2*: 1:b 2:a 3:d
+0->2* edit2 : 1:b 2:a 3:d
+0->2  edit2*: 1:b 2:a 3:d
+edit2* 0->3 : 1:b 2:X 3:a
+edit2  0->3*: 1:b 2:X 3:a
+0->3* edit2 : 1:b 2:X 3:a
+0->3  edit2*: 1:b 2:X 3:a
+edit2* 0->4 : 1:b 2:X 3:d 4:a
+edit2  0->4*: 1:b 2:X 3:d 4:a
+0->4* edit2 : 1:b 2:X 3:d 4:a
+0->4  edit2*: 1:b 2:X 3:d 4:a
+edit2* 0->5 : 1:b 2:X 3:d 5:a
+edit2  0->5*: 1:b 2:X 3:d 5:a
+0->5* edit2 : 1:b 2:X 3:d 5:a
+0->5  edit2*: 1:b 2:X 3:d 5:a
+edit2* 1->0 : 0:b 2:X 3:d
+edit2  1->0*: 0:b 2:X 3:d
+1->0* edit2 : 0:b 2:X 3:d
+1->0  edit2*: 0:b 2:X 3:d
+edit2* 1->1 : 0:a 1:b 2:X 3:d
+edit2  1->1*: 0:a 1:b 2:X 3:d
+1->1* edit2 : 0:a 1:b 2:X 3:d
+1->1  edit2*: 0:a 1:b 2:X 3:d
+edit2* 1->2 : 0:a 2:b 3:d
+edit2  1->2*: 0:a 2:b 3:d
+1->2* edit2 : 0:a 2:b 3:d
+1->2  edit2*: 0:a 2:b 3:d
+edit2* 1->3 : 0:a 2:X 3:b
+edit2  1->3*: 0:a 2:X 3:b
+1->3* edit2 : 0:a 2:X 3:b
+1->3  edit2*: 0:a 2:X 3:b
+edit2* 1->4 : 0:a 2:X 3:d 4:b
+edit2  1->4*: 0:a 2:X 3:d 4:b
+1->4* edit2 : 0:a 2:X 3:d 4:b
+1->4  edit2*: 0:a 2:X 3:d 4:b
+edit2* 1->5 : 0:a 2:X 3:d 5:b
+edit2  1->5*: 0:a 2:X 3:d 5:b
+1->5* edit2 : 0:a 2:X 3:d 5:b
+1->5  edit2*: 0:a 2:X 3:d 5:b
+edit2* 2->0 : 0:X 1:b 3:d
+edit2  2->0*: 0:X 1:b 3:d
+2->0* edit2 : 0:X 1:b 3:d
+2->0  edit2*: 0:X 1:b 3:d
+edit2* 2->1 : 0:a 1:X 3:d
+edit2  2->1*: 0:a 1:X 3:d
+2->1* edit2 : 0:a 1:X 3:d
+2->1  edit2*: 0:a 1:X 3:d
+edit2* 2->2 : 0:a 1:b 2:X 3:d
+edit2  2->2*: 0:a 1:b 2:X 3:d
+2->2* edit2 : 0:a 1:b 2:X 3:d
+2->2  edit2*: 0:a 1:b 2:X 3:d
+edit2* 2->3 : 0:a 1:b 3:X
+edit2  2->3*: 0:a 1:b 3:X
+2->3* edit2 : 0:a 1:b 3:X
+2->3  edit2*: 0:a 1:b 3:X
+edit2* 2->4 : 0:a 1:b 3:d 4:X
+edit2  2->4*: 0:a 1:b 3:d 4:X
+2->4* edit2 : 0:a 1:b 3:d 4:X
+2->4  edit2*: 0:a 1:b 3:d 4:X
+edit2* 2->5 : 0:a 1:b 3:d 5:X
+edit2  2->5*: 0:a 1:b 3:d 5:X
+2->5* edit2 : 0:a 1:b 3:d 5:X
+2->5  edit2*: 0:a 1:b 3:d 5:X
+edit2* 3->0 : 0:d 1:b 2:X
+edit2  3->0*: 0:d 1:b 2:X
+3->0* edit2 : 0:d 1:b 2:X
+3->0  edit2*: 0:d 1:b 2:X
+edit2* 3->1 : 0:a 1:d 2:X
+edit2  3->1*: 0:a 1:d 2:X
+3->1* edit2 : 0:a 1:d 2:X
+3->1  edit2*: 0:a 1:d 2:X
+edit2* 3->2 : 0:a 1:b 2:d
+edit2  3->2*: 0:a 1:b 2:d
+3->2* edit2 : 0:a 1:b 2:d
+3->2  edit2*: 0:a 1:b 2:d
+edit2* 3->3 : 0:a 1:b 2:X 3:d
+edit2  3->3*: 0:a 1:b 2:X 3:d
+3->3* edit2 : 0:a 1:b 2:X 3:d
+3->3  edit2*: 0:a 1:b 2:X 3:d
+edit2* 3->4 : 0:a 1:b 2:X 4:d
+edit2  3->4*: 0:a 1:b 2:X 4:d
+3->4* edit2 : 0:a 1:b 2:X 4:d
+3->4  edit2*: 0:a 1:b 2:X 4:d
+edit2* 3->5 : 0:a 1:b 2:X 5:d
+edit2  3->5*: 0:a 1:b 2:X 5:d
+3->5* edit2 : 0:a 1:b 2:X 5:d
+3->5  edit2*: 0:a 1:b 2:X 5:d
+edit3* 0->0 : 0:a 1:b 2:c 3:X
+edit3  0->0*: 0:a 1:b 2:c 3:X
+0->0* edit3 : 0:a 1:b 2:c 3:X
+0->0  edit3*: 0:a 1:b 2:c 3:X
+edit3* 0->1 : 1:a 2:c 3:X
+edit3  0->1*: 1:a 2:c 3:X
+0->1* edit3 : 1:a 2:c 3:X
+0->1  edit3*: 1:a 2:c 3:X
+edit3* 0->2 : 1:b 2:a 3:X
+edit3  0->2*: 1:b 2:a 3:X
+0->2* edit3 : 1:b 2:a 3:X
+0->2  edit3*: 1:b 2:a 3:X
+edit3* 0->3 : 1:b 2:c 3:a
+edit3  0->3*: 1:b 2:c 3:a
+0->3* edit3 : 1:b 2:c 3:a
+0->3  edit3*: 1:b 2:c 3:a
+edit3* 0->4 : 1:b 2:c 3:X 4:a
+edit3  0->4*: 1:b 2:c 3:X 4:a
+0->4* edit3 : 1:b 2:c 3:X 4:a
+0->4  edit3*: 1:b 2:c 3:X 4:a
+edit3* 0->5 : 1:b 2:c 3:X 5:a
+edit3  0->5*: 1:b 2:c 3:X 5:a
+0->5* edit3 : 1:b 2:c 3:X 5:a
+0->5  edit3*: 1:b 2:c 3:X 5:a
+edit3* 1->0 : 0:b 2:c 3:X
+edit3  1->0*: 0:b 2:c 3:X
+1->0* edit3 : 0:b 2:c 3:X
+1->0  edit3*: 0:b 2:c 3:X
+edit3* 1->1 : 0:a 1:b 2:c 3:X
+edit3  1->1*: 0:a 1:b 2:c 3:X
+1->1* edit3 : 0:a 1:b 2:c 3:X
+1->1  edit3*: 0:a 1:b 2:c 3:X
+edit3* 1->2 : 0:a 2:b 3:X
+edit3  1->2*: 0:a 2:b 3:X
+1->2* edit3 : 0:a 2:b 3:X
+1->2  edit3*: 0:a 2:b 3:X
+edit3* 1->3 : 0:a 2:c 3:b
+edit3  1->3*: 0:a 2:c 3:b
+1->3* edit3 : 0:a 2:c 3:b
+1->3  edit3*: 0:a 2:c 3:b
+edit3* 1->4 : 0:a 2:c 3:X 4:b
+edit3  1->4*: 0:a 2:c 3:X 4:b
+1->4* edit3 : 0:a 2:c 3:X 4:b
+1->4  edit3*: 0:a 2:c 3:X 4:b
+edit3* 1->5 : 0:a 2:c 3:X 5:b
+edit3  1->5*: 0:a 2:c 3:X 5:b
+1->5* edit3 : 0:a 2:c 3:X 5:b
+1->5  edit3*: 0:a 2:c 3:X 5:b
+edit3* 2->0 : 0:c 1:b 3:X
+edit3  2->0*: 0:c 1:b 3:X
+2->0* edit3 : 0:c 1:b 3:X
+2->0  edit3*: 0:c 1:b 3:X
+edit3* 2->1 : 0:a 1:c 3:X
+edit3  2->1*: 0:a 1:c 3:X
+2->1* edit3 : 0:a 1:c 3:X
+2->1  edit3*: 0:a 1:c 3:X
+edit3* 2->2 : 0:a 1:b 2:c 3:X
+edit3  2->2*: 0:a 1:b 2:c 3:X
+2->2* edit3 : 0:a 1:b 2:c 3:X
+2->2  edit3*: 0:a 1:b 2:c 3:X
+edit3* 2->3 : 0:a 1:b 3:c
+edit3  2->3*: 0:a 1:b 3:c
+2->3* edit3 : 0:a 1:b 3:c
+2->3  edit3*: 0:a 1:b 3:c
+edit3* 2->4 : 0:a 1:b 3:X 4:c
+edit3  2->4*: 0:a 1:b 3:X 4:c
+2->4* edit3 : 0:a 1:b 3:X 4:c
+2->4  edit3*: 0:a 1:b 3:X 4:c
+edit3* 2->5 : 0:a 1:b 3:X 5:c
+edit3  2->5*: 0:a 1:b 3:X 5:c
+2->5* edit3 : 0:a 1:b 3:X 5:c
+2->5  edit3*: 0:a 1:b 3:X 5:c
+edit3* 3->0 : 0:X 1:b 2:c
+edit3  3->0*: 0:X 1:b 2:c
+3->0* edit3 : 0:X 1:b 2:c
+3->0  edit3*: 0:X 1:b 2:c
+edit3* 3->1 : 0:a 1:X 2:c
+edit3  3->1*: 0:a 1:X 2:c
+3->1* edit3 : 0:a 1:X 2:c
+3->1  edit3*: 0:a 1:X 2:c
+edit3* 3->2 : 0:a 1:b 2:X
+edit3  3->2*: 0:a 1:b 2:X
+3->2* edit3 : 0:a 1:b 2:X
+3->2  edit3*: 0:a 1:b 2:X
+edit3* 3->3 : 0:a 1:b 2:c 3:X
+edit3  3->3*: 0:a 1:b 2:c 3:X
+3->3* edit3 : 0:a 1:b 2:c 3:X
+3->3  edit3*: 0:a 1:b 2:c 3:X
+edit3* 3->4 : 0:a 1:b 2:c 4:X
+edit3  3->4*: 0:a 1:b 2:c 4:X
+3->4* edit3 : 0:a 1:b 2:c 4:X
+3->4  edit3*: 0:a 1:b 2:c 4:X
+edit3* 3->5 : 0:a 1:b 2:c 5:X
+edit3  3->5*: 0:a 1:b 2:c 5:X
+3->5* edit3 : 0:a 1:b 2:c 5:X
+3->5  edit3*: 0:a 1:b 2:c 5:X

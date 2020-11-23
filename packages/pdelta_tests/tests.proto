@@ -101,14 +101,16 @@ message TransformTestCase {
   google.protobuf.Any expected2 = 8;
 }
 
-message RandomTestItem {
-  pdelta.Op op = 1;
-  Person expected = 2;
+message ApplyTestItem {
+  string name = 1;
+  pdelta.Op op = 2;
+  Person expected = 3;
 }
 
 message ReduceTestItem {
-  Person data = 1;
-  pdelta.Op op1 = 2;
-  pdelta.Op op2 = 3;
-  pdelta.Op reduced = 4;
+  string name = 1;
+  Person data = 2;
+  pdelta.Op op1 = 3;
+  pdelta.Op op2 = 4;
+  pdelta.Op reduced = 5;
 }

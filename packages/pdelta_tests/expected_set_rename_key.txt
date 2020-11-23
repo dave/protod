@@ -1,0 +1,384 @@
+set0* 0->0 : 0:X 1:b 2:c 3:d
+set0  0->0*: 0:X 1:b 2:c 3:d
+0->0* set0 : 0:X 1:b 2:c 3:d
+0->0  set0*: 0:X 1:b 2:c 3:d
+set0* 0->1 : 1:X 2:c 3:d
+set0  0->1*: 1:X 2:c 3:d
+0->1* set0 : 1:X 2:c 3:d
+0->1  set0*: 1:X 2:c 3:d
+set0* 0->2 : 1:b 2:X 3:d
+set0  0->2*: 1:b 2:X 3:d
+0->2* set0 : 1:b 2:X 3:d
+0->2  set0*: 1:b 2:X 3:d
+set0* 0->3 : 1:b 2:c 3:X
+set0  0->3*: 1:b 2:c 3:X
+0->3* set0 : 1:b 2:c 3:X
+0->3  set0*: 1:b 2:c 3:X
+set0* 0->4 : 1:b 2:c 3:d 4:X
+set0  0->4*: 1:b 2:c 3:d 4:X
+0->4* set0 : 1:b 2:c 3:d 4:X
+0->4  set0*: 1:b 2:c 3:d 4:X
+set0* 0->5 : 1:b 2:c 3:d 5:X
+set0  0->5*: 1:b 2:c 3:d 5:X
+0->5* set0 : 1:b 2:c 3:d 5:X
+0->5  set0*: 1:b 2:c 3:d 5:X
+set0* 1->0 : 0:X 2:c 3:d
+set0  1->0*: 0:b 2:c 3:d
+1->0* set0 : 0:b 2:c 3:d
+1->0  set0*: 0:X 2:c 3:d
+set0* 1->1 : 0:X 1:b 2:c 3:d
+set0  1->1*: 0:X 1:b 2:c 3:d
+1->1* set0 : 0:X 1:b 2:c 3:d
+1->1  set0*: 0:X 1:b 2:c 3:d
+set0* 1->2 : 0:X 2:b 3:d
+set0  1->2*: 0:X 2:b 3:d
+1->2* set0 : 0:X 2:b 3:d
+1->2  set0*: 0:X 2:b 3:d
+set0* 1->3 : 0:X 2:c 3:b
+set0  1->3*: 0:X 2:c 3:b
+1->3* set0 : 0:X 2:c 3:b
+1->3  set0*: 0:X 2:c 3:b
+set0* 1->4 : 0:X 2:c 3:d 4:b
+set0  1->4*: 0:X 2:c 3:d 4:b
+1->4* set0 : 0:X 2:c 3:d 4:b
+1->4  set0*: 0:X 2:c 3:d 4:b
+set0* 1->5 : 0:X 2:c 3:d 5:b
+set0  1->5*: 0:X 2:c 3:d 5:b
+1->5* set0 : 0:X 2:c 3:d 5:b
+1->5  set0*: 0:X 2:c 3:d 5:b
+set0* 2->0 : 0:X 1:b 3:d
+set0  2->0*: 0:c 1:b 3:d
+2->0* set0 : 0:c 1:b 3:d
+2->0  set0*: 0:X 1:b 3:d
+set0* 2->1 : 0:X 1:c 3:d
+set0  2->1*: 0:X 1:c 3:d
+2->1* set0 : 0:X 1:c 3:d
+2->1  set0*: 0:X 1:c 3:d
+set0* 2->2 : 0:X 1:b 2:c 3:d
+set0  2->2*: 0:X 1:b 2:c 3:d
+2->2* set0 : 0:X 1:b 2:c 3:d
+2->2  set0*: 0:X 1:b 2:c 3:d
+set0* 2->3 : 0:X 1:b 3:c
+set0  2->3*: 0:X 1:b 3:c
+2->3* set0 : 0:X 1:b 3:c
+2->3  set0*: 0:X 1:b 3:c
+set0* 2->4 : 0:X 1:b 3:d 4:c
+set0  2->4*: 0:X 1:b 3:d 4:c
+2->4* set0 : 0:X 1:b 3:d 4:c
+2->4  set0*: 0:X 1:b 3:d 4:c
+set0* 2->5 : 0:X 1:b 3:d 5:c
+set0  2->5*: 0:X 1:b 3:d 5:c
+2->5* set0 : 0:X 1:b 3:d 5:c
+2->5  set0*: 0:X 1:b 3:d 5:c
+set0* 3->0 : 0:X 1:b 2:c
+set0  3->0*: 0:d 1:b 2:c
+3->0* set0 : 0:d 1:b 2:c
+3->0  set0*: 0:X 1:b 2:c
+set0* 3->1 : 0:X 1:d 2:c
+set0  3->1*: 0:X 1:d 2:c
+3->1* set0 : 0:X 1:d 2:c
+3->1  set0*: 0:X 1:d 2:c
+set0* 3->2 : 0:X 1:b 2:d
+set0  3->2*: 0:X 1:b 2:d
+3->2* set0 : 0:X 1:b 2:d
+3->2  set0*: 0:X 1:b 2:d
+set0* 3->3 : 0:X 1:b 2:c 3:d
+set0  3->3*: 0:X 1:b 2:c 3:d
+3->3* set0 : 0:X 1:b 2:c 3:d
+3->3  set0*: 0:X 1:b 2:c 3:d
+set0* 3->4 : 0:X 1:b 2:c 4:d
+set0  3->4*: 0:X 1:b 2:c 4:d
+3->4* set0 : 0:X 1:b 2:c 4:d
+3->4  set0*: 0:X 1:b 2:c 4:d
+set0* 3->5 : 0:X 1:b 2:c 5:d
+set0  3->5*: 0:X 1:b 2:c 5:d
+3->5* set0 : 0:X 1:b 2:c 5:d
+3->5  set0*: 0:X 1:b 2:c 5:d
+set1* 0->0 : 0:a 1:X 2:c 3:d
+set1  0->0*: 0:a 1:X 2:c 3:d
+0->0* set1 : 0:a 1:X 2:c 3:d
+0->0  set1*: 0:a 1:X 2:c 3:d
+set1* 0->1 : 1:X 2:c 3:d
+set1  0->1*: 1:a 2:c 3:d
+0->1* set1 : 1:a 2:c 3:d
+0->1  set1*: 1:X 2:c 3:d
+set1* 0->2 : 1:X 2:a 3:d
+set1  0->2*: 1:X 2:a 3:d
+0->2* set1 : 1:X 2:a 3:d
+0->2  set1*: 1:X 2:a 3:d
+set1* 0->3 : 1:X 2:c 3:a
+set1  0->3*: 1:X 2:c 3:a
+0->3* set1 : 1:X 2:c 3:a
+0->3  set1*: 1:X 2:c 3:a
+set1* 0->4 : 1:X 2:c 3:d 4:a
+set1  0->4*: 1:X 2:c 3:d 4:a
+0->4* set1 : 1:X 2:c 3:d 4:a
+0->4  set1*: 1:X 2:c 3:d 4:a
+set1* 0->5 : 1:X 2:c 3:d 5:a
+set1  0->5*: 1:X 2:c 3:d 5:a
+0->5* set1 : 1:X 2:c 3:d 5:a
+0->5  set1*: 1:X 2:c 3:d 5:a
+set1* 1->0 : 0:X 2:c 3:d
+set1  1->0*: 0:X 2:c 3:d
+1->0* set1 : 0:X 2:c 3:d
+1->0  set1*: 0:X 2:c 3:d
+set1* 1->1 : 0:a 1:X 2:c 3:d
+set1  1->1*: 0:a 1:X 2:c 3:d
+1->1* set1 : 0:a 1:X 2:c 3:d
+1->1  set1*: 0:a 1:X 2:c 3:d
+set1* 1->2 : 0:a 2:X 3:d
+set1  1->2*: 0:a 2:X 3:d
+1->2* set1 : 0:a 2:X 3:d
+1->2  set1*: 0:a 2:X 3:d
+set1* 1->3 : 0:a 2:c 3:X
+set1  1->3*: 0:a 2:c 3:X
+1->3* set1 : 0:a 2:c 3:X
+1->3  set1*: 0:a 2:c 3:X
+set1* 1->4 : 0:a 2:c 3:d 4:X
+set1  1->4*: 0:a 2:c 3:d 4:X
+1->4* set1 : 0:a 2:c 3:d 4:X
+1->4  set1*: 0:a 2:c 3:d 4:X
+set1* 1->5 : 0:a 2:c 3:d 5:X
+set1  1->5*: 0:a 2:c 3:d 5:X
+1->5* set1 : 0:a 2:c 3:d 5:X
+1->5  set1*: 0:a 2:c 3:d 5:X
+set1* 2->0 : 0:c 1:X 3:d
+set1  2->0*: 0:c 1:X 3:d
+2->0* set1 : 0:c 1:X 3:d
+2->0  set1*: 0:c 1:X 3:d
+set1* 2->1 : 0:a 1:X 3:d
+set1  2->1*: 0:a 1:c 3:d
+2->1* set1 : 0:a 1:c 3:d
+2->1  set1*: 0:a 1:X 3:d
+set1* 2->2 : 0:a 1:X 2:c 3:d
+set1  2->2*: 0:a 1:X 2:c 3:d
+2->2* set1 : 0:a 1:X 2:c 3:d
+2->2  set1*: 0:a 1:X 2:c 3:d
+set1* 2->3 : 0:a 1:X 3:c
+set1  2->3*: 0:a 1:X 3:c
+2->3* set1 : 0:a 1:X 3:c
+2->3  set1*: 0:a 1:X 3:c
+set1* 2->4 : 0:a 1:X 3:d 4:c
+set1  2->4*: 0:a 1:X 3:d 4:c
+2->4* set1 : 0:a 1:X 3:d 4:c
+2->4  set1*: 0:a 1:X 3:d 4:c
+set1* 2->5 : 0:a 1:X 3:d 5:c
+set1  2->5*: 0:a 1:X 3:d 5:c
+2->5* set1 : 0:a 1:X 3:d 5:c
+2->5  set1*: 0:a 1:X 3:d 5:c
+set1* 3->0 : 0:d 1:X 2:c
+set1  3->0*: 0:d 1:X 2:c
+3->0* set1 : 0:d 1:X 2:c
+3->0  set1*: 0:d 1:X 2:c
+set1* 3->1 : 0:a 1:X 2:c
+set1  3->1*: 0:a 1:d 2:c
+3->1* set1 : 0:a 1:d 2:c
+3->1  set1*: 0:a 1:X 2:c
+set1* 3->2 : 0:a 1:X 2:d
+set1  3->2*: 0:a 1:X 2:d
+3->2* set1 : 0:a 1:X 2:d
+3->2  set1*: 0:a 1:X 2:d
+set1* 3->3 : 0:a 1:X 2:c 3:d
+set1  3->3*: 0:a 1:X 2:c 3:d
+3->3* set1 : 0:a 1:X 2:c 3:d
+3->3  set1*: 0:a 1:X 2:c 3:d
+set1* 3->4 : 0:a 1:X 2:c 4:d
+set1  3->4*: 0:a 1:X 2:c 4:d
+3->4* set1 : 0:a 1:X 2:c 4:d
+3->4  set1*: 0:a 1:X 2:c 4:d
+set1* 3->5 : 0:a 1:X 2:c 5:d
+set1  3->5*: 0:a 1:X 2:c 5:d
+3->5* set1 : 0:a 1:X 2:c 5:d
+3->5  set1*: 0:a 1:X 2:c 5:d
+set2* 0->0 : 0:a 1:b 2:X 3:d
+set2  0->0*: 0:a 1:b 2:X 3:d
+0->0* set2 : 0:a 1:b 2:X 3:d
+0->0  set2*: 0:a 1:b 2:X 3:d
+set2* 0->1 : 1:a 2:X 3:d
+set2  0->1*: 1:a 2:X 3:d
+0->1* set2 : 1:a 2:X 3:d
+0->1  set2*: 1:a 2:X 3:d
+set2* 0->2 : 1:b 2:X 3:d
+set2  0->2*: 1:b 2:a 3:d
+0->2* set2 : 1:b 2:a 3:d
+0->2  set2*: 1:b 2:X 3:d
+set2* 0->3 : 1:b 2:X 3:a
+set2  0->3*: 1:b 2:X 3:a
+0->3* set2 : 1:b 2:X 3:a
+0->3  set2*: 1:b 2:X 3:a
+set2* 0->4 : 1:b 2:X 3:d 4:a
+set2  0->4*: 1:b 2:X 3:d 4:a
+0->4* set2 : 1:b 2:X 3:d 4:a
+0->4  set2*: 1:b 2:X 3:d 4:a
+set2* 0->5 : 1:b 2:X 3:d 5:a
+set2  0->5*: 1:b 2:X 3:d 5:a
+0->5* set2 : 1:b 2:X 3:d 5:a
+0->5  set2*: 1:b 2:X 3:d 5:a
+set2* 1->0 : 0:b 2:X 3:d
+set2  1->0*: 0:b 2:X 3:d
+1->0* set2 : 0:b 2:X 3:d
+1->0  set2*: 0:b 2:X 3:d
+set2* 1->1 : 0:a 1:b 2:X 3:d
+set2  1->1*: 0:a 1:b 2:X 3:d
+1->1* set2 : 0:a 1:b 2:X 3:d
+1->1  set2*: 0:a 1:b 2:X 3:d
+set2* 1->2 : 0:a 2:X 3:d
+set2  1->2*: 0:a 2:b 3:d
+1->2* set2 : 0:a 2:b 3:d
+1->2  set2*: 0:a 2:X 3:d
+set2* 1->3 : 0:a 2:X 3:b
+set2  1->3*: 0:a 2:X 3:b
+1->3* set2 : 0:a 2:X 3:b
+1->3  set2*: 0:a 2:X 3:b
+set2* 1->4 : 0:a 2:X 3:d 4:b
+set2  1->4*: 0:a 2:X 3:d 4:b
+1->4* set2 : 0:a 2:X 3:d 4:b
+1->4  set2*: 0:a 2:X 3:d 4:b
+set2* 1->5 : 0:a 2:X 3:d 5:b
+set2  1->5*: 0:a 2:X 3:d 5:b
+1->5* set2 : 0:a 2:X 3:d 5:b
+1->5  set2*: 0:a 2:X 3:d 5:b
+set2* 2->0 : 0:X 1:b 3:d
+set2  2->0*: 0:X 1:b 3:d
+2->0* set2 : 0:X 1:b 3:d
+2->0  set2*: 0:X 1:b 3:d
+set2* 2->1 : 0:a 1:X 3:d
+set2  2->1*: 0:a 1:X 3:d
+2->1* set2 : 0:a 1:X 3:d
+2->1  set2*: 0:a 1:X 3:d
+set2* 2->2 : 0:a 1:b 2:X 3:d
+set2  2->2*: 0:a 1:b 2:X 3:d
+2->2* set2 : 0:a 1:b 2:X 3:d
+2->2  set2*: 0:a 1:b 2:X 3:d
+set2* 2->3 : 0:a 1:b 3:X
+set2  2->3*: 0:a 1:b 3:X
+2->3* set2 : 0:a 1:b 3:X
+2->3  set2*: 0:a 1:b 3:X
+set2* 2->4 : 0:a 1:b 3:d 4:X
+set2  2->4*: 0:a 1:b 3:d 4:X
+2->4* set2 : 0:a 1:b 3:d 4:X
+2->4  set2*: 0:a 1:b 3:d 4:X
+set2* 2->5 : 0:a 1:b 3:d 5:X
+set2  2->5*: 0:a 1:b 3:d 5:X
+2->5* set2 : 0:a 1:b 3:d 5:X
+2->5  set2*: 0:a 1:b 3:d 5:X
+set2* 3->0 : 0:d 1:b 2:X
+set2  3->0*: 0:d 1:b 2:X
+3->0* set2 : 0:d 1:b 2:X
+3->0  set2*: 0:d 1:b 2:X
+set2* 3->1 : 0:a 1:d 2:X
+set2  3->1*: 0:a 1:d 2:X
+3->1* set2 : 0:a 1:d 2:X
+3->1  set2*: 0:a 1:d 2:X
+set2* 3->2 : 0:a 1:b 2:X
+set2  3->2*: 0:a 1:b 2:d
+3->2* set2 : 0:a 1:b 2:d
+3->2  set2*: 0:a 1:b 2:X
+set2* 3->3 : 0:a 1:b 2:X 3:d
+set2  3->3*: 0:a 1:b 2:X 3:d
+3->3* set2 : 0:a 1:b 2:X 3:d
+3->3  set2*: 0:a 1:b 2:X 3:d
+set2* 3->4 : 0:a 1:b 2:X 4:d
+set2  3->4*: 0:a 1:b 2:X 4:d
+3->4* set2 : 0:a 1:b 2:X 4:d
+3->4  set2*: 0:a 1:b 2:X 4:d
+set2* 3->5 : 0:a 1:b 2:X 5:d
+set2  3->5*: 0:a 1:b 2:X 5:d
+3->5* set2 : 0:a 1:b 2:X 5:d
+3->5  set2*: 0:a 1:b 2:X 5:d
+set3* 0->0 : 0:a 1:b 2:c 3:X
+set3  0->0*: 0:a 1:b 2:c 3:X
+0->0* set3 : 0:a 1:b 2:c 3:X
+0->0  set3*: 0:a 1:b 2:c 3:X
+set3* 0->1 : 1:a 2:c 3:X
+set3  0->1*: 1:a 2:c 3:X
+0->1* set3 : 1:a 2:c 3:X
+0->1  set3*: 1:a 2:c 3:X
+set3* 0->2 : 1:b 2:a 3:X
+set3  0->2*: 1:b 2:a 3:X
+0->2* set3 : 1:b 2:a 3:X
+0->2  set3*: 1:b 2:a 3:X
+set3* 0->3 : 1:b 2:c 3:X
+set3  0->3*: 1:b 2:c 3:a
+0->3* set3 : 1:b 2:c 3:a
+0->3  set3*: 1:b 2:c 3:X
+set3* 0->4 : 1:b 2:c 3:X 4:a
+set3  0->4*: 1:b 2:c 3:X 4:a
+0->4* set3 : 1:b 2:c 3:X 4:a
+0->4  set3*: 1:b 2:c 3:X 4:a
+set3* 0->5 : 1:b 2:c 3:X 5:a
+set3  0->5*: 1:b 2:c 3:X 5:a
+0->5* set3 : 1:b 2:c 3:X 5:a
+0->5  set3*: 1:b 2:c 3:X 5:a
+set3* 1->0 : 0:b 2:c 3:X
+set3  1->0*: 0:b 2:c 3:X
+1->0* set3 : 0:b 2:c 3:X
+1->0  set3*: 0:b 2:c 3:X
+set3* 1->1 : 0:a 1:b 2:c 3:X
+set3  1->1*: 0:a 1:b 2:c 3:X
+1->1* set3 : 0:a 1:b 2:c 3:X
+1->1  set3*: 0:a 1:b 2:c 3:X
+set3* 1->2 : 0:a 2:b 3:X
+set3  1->2*: 0:a 2:b 3:X
+1->2* set3 : 0:a 2:b 3:X
+1->2  set3*: 0:a 2:b 3:X
+set3* 1->3 : 0:a 2:c 3:X
+set3  1->3*: 0:a 2:c 3:b
+1->3* set3 : 0:a 2:c 3:b
+1->3  set3*: 0:a 2:c 3:X
+set3* 1->4 : 0:a 2:c 3:X 4:b
+set3  1->4*: 0:a 2:c 3:X 4:b
+1->4* set3 : 0:a 2:c 3:X 4:b
+1->4  set3*: 0:a 2:c 3:X 4:b
+set3* 1->5 : 0:a 2:c 3:X 5:b
+set3  1->5*: 0:a 2:c 3:X 5:b
+1->5* set3 : 0:a 2:c 3:X 5:b
+1->5  set3*: 0:a 2:c 3:X 5:b
+set3* 2->0 : 0:c 1:b 3:X
+set3  2->0*: 0:c 1:b 3:X
+2->0* set3 : 0:c 1:b 3:X
+2->0  set3*: 0:c 1:b 3:X
+set3* 2->1 : 0:a 1:c 3:X
+set3  2->1*: 0:a 1:c 3:X
+2->1* set3 : 0:a 1:c 3:X
+2->1  set3*: 0:a 1:c 3:X
+set3* 2->2 : 0:a 1:b 2:c 3:X
+set3  2->2*: 0:a 1:b 2:c 3:X
+2->2* set3 : 0:a 1:b 2:c 3:X
+2->2  set3*: 0:a 1:b 2:c 3:X
+set3* 2->3 : 0:a 1:b 3:X
+set3  2->3*: 0:a 1:b 3:c
+2->3* set3 : 0:a 1:b 3:c
+2->3  set3*: 0:a 1:b 3:X
+set3* 2->4 : 0:a 1:b 3:X 4:c
+set3  2->4*: 0:a 1:b 3:X 4:c
+2->4* set3 : 0:a 1:b 3:X 4:c
+2->4  set3*: 0:a 1:b 3:X 4:c
+set3* 2->5 : 0:a 1:b 3:X 5:c
+set3  2->5*: 0:a 1:b 3:X 5:c
+2->5* set3 : 0:a 1:b 3:X 5:c
+2->5  set3*: 0:a 1:b 3:X 5:c
+set3* 3->0 : 0:X 1:b 2:c
+set3  3->0*: 0:X 1:b 2:c
+3->0* set3 : 0:X 1:b 2:c
+3->0  set3*: 0:X 1:b 2:c
+set3* 3->1 : 0:a 1:X 2:c
+set3  3->1*: 0:a 1:X 2:c
+3->1* set3 : 0:a 1:X 2:c
+3->1  set3*: 0:a 1:X 2:c
+set3* 3->2 : 0:a 1:b 2:X
+set3  3->2*: 0:a 1:b 2:X
+3->2* set3 : 0:a 1:b 2:X
+3->2  set3*: 0:a 1:b 2:X
+set3* 3->3 : 0:a 1:b 2:c 3:X
+set3  3->3*: 0:a 1:b 2:c 3:X
+3->3* set3 : 0:a 1:b 2:c 3:X
+3->3  set3*: 0:a 1:b 2:c 3:X
+set3* 3->4 : 0:a 1:b 2:c 4:X
+set3  3->4*: 0:a 1:b 2:c 4:X
+3->4* set3 : 0:a 1:b 2:c 4:X
+3->4  set3*: 0:a 1:b 2:c 4:X
+set3* 3->5 : 0:a 1:b 2:c 5:X
+set3  3->5*: 0:a 1:b 2:c 5:X
+3->5* set3 : 0:a 1:b 2:c 5:X
+3->5  set3*: 0:a 1:b 2:c 5:X

@@ -1,0 +1,1568 @@
+del0* 0->0 : b c d e f g
+del0  0->0*: b c d e f g
+0->0* del0 : b c d e f g
+0->0  del0*: b c d e f g
+del1* 0->0 : a c d e f g
+del1  0->0*: a c d e f g
+0->0* del1 : a c d e f g
+0->0  del1*: a c d e f g
+del2* 0->0 : a b d e f g
+del2  0->0*: a b d e f g
+0->0* del2 : a b d e f g
+0->0  del2*: a b d e f g
+del3* 0->0 : a b c e f g
+del3  0->0*: a b c e f g
+0->0* del3 : a b c e f g
+0->0  del3*: a b c e f g
+del4* 0->0 : a b c d f g
+del4  0->0*: a b c d f g
+0->0* del4 : a b c d f g
+0->0  del4*: a b c d f g
+del5* 0->0 : a b c d e g
+del5  0->0*: a b c d e g
+0->0* del5 : a b c d e g
+0->0  del5*: a b c d e g
+del6* 0->0 : a b c d e f
+del6  0->0*: a b c d e f
+0->0* del6 : a b c d e f
+0->0  del6*: a b c d e f
+del0* 0->1 : b c d e f g
+del0  0->1*: b c d e f g
+0->1* del0 : b c d e f g
+0->1  del0*: b c d e f g
+del1* 0->1 : a c d e f g
+del1  0->1*: a c d e f g
+0->1* del1 : a c d e f g
+0->1  del1*: a c d e f g
+del2* 0->1 : a b d e f g
+del2  0->1*: a b d e f g
+0->1* del2 : a b d e f g
+0->1  del2*: a b d e f g
+del3* 0->1 : a b c e f g
+del3  0->1*: a b c e f g
+0->1* del3 : a b c e f g
+0->1  del3*: a b c e f g
+del4* 0->1 : a b c d f g
+del4  0->1*: a b c d f g
+0->1* del4 : a b c d f g
+0->1  del4*: a b c d f g
+del5* 0->1 : a b c d e g
+del5  0->1*: a b c d e g
+0->1* del5 : a b c d e g
+0->1  del5*: a b c d e g
+del6* 0->1 : a b c d e f
+del6  0->1*: a b c d e f
+0->1* del6 : a b c d e f
+0->1  del6*: a b c d e f
+del0* 0->2 : b c d e f g
+del0  0->2*: b c d e f g
+0->2* del0 : b c d e f g
+0->2  del0*: b c d e f g
+del1* 0->2 : a c d e f g
+del1  0->2*: a c d e f g
+0->2* del1 : a c d e f g
+0->2  del1*: a c d e f g
+del2* 0->2 : b a d e f g
+del2  0->2*: b a d e f g
+0->2* del2 : b a d e f g
+0->2  del2*: b a d e f g
+del3* 0->2 : b a c e f g
+del3  0->2*: b a c e f g
+0->2* del3 : b a c e f g
+0->2  del3*: b a c e f g
+del4* 0->2 : b a c d f g
+del4  0->2*: b a c d f g
+0->2* del4 : b a c d f g
+0->2  del4*: b a c d f g
+del5* 0->2 : b a c d e g
+del5  0->2*: b a c d e g
+0->2* del5 : b a c d e g
+0->2  del5*: b a c d e g
+del6* 0->2 : b a c d e f
+del6  0->2*: b a c d e f
+0->2* del6 : b a c d e f
+0->2  del6*: b a c d e f
+del0* 0->3 : b c d e f g
+del0  0->3*: b c d e f g
+0->3* del0 : b c d e f g
+0->3  del0*: b c d e f g
+del1* 0->3 : c a d e f g
+del1  0->3*: c a d e f g
+0->3* del1 : c a d e f g
+0->3  del1*: c a d e f g
+del2* 0->3 : b a d e f g
+del2  0->3*: b a d e f g
+0->3* del2 : b a d e f g
+0->3  del2*: b a d e f g
+del3* 0->3 : b c a e f g
+del3  0->3*: b c a e f g
+0->3* del3 : b c a e f g
+0->3  del3*: b c a e f g
+del4* 0->3 : b c a d f g
+del4  0->3*: b c a d f g
+0->3* del4 : b c a d f g
+0->3  del4*: b c a d f g
+del5* 0->3 : b c a d e g
+del5  0->3*: b c a d e g
+0->3* del5 : b c a d e g
+0->3  del5*: b c a d e g
+del6* 0->3 : b c a d e f
+del6  0->3*: b c a d e f
+0->3* del6 : b c a d e f
+0->3  del6*: b c a d e f
+del0* 0->4 : b c d e f g
+del0  0->4*: b c d e f g
+0->4* del0 : b c d e f g
+0->4  del0*: b c d e f g
+del1* 0->4 : c d a e f g
+del1  0->4*: c d a e f g
+0->4* del1 : c d a e f g
+0->4  del1*: c d a e f g
+del2* 0->4 : b d a e f g
+del2  0->4*: b d a e f g
+0->4* del2 : b d a e f g
+0->4  del2*: b d a e f g
+del3* 0->4 : b c a e f g
+del3  0->4*: b c a e f g
+0->4* del3 : b c a e f g
+0->4  del3*: b c a e f g
+del4* 0->4 : b c d a f g
+del4  0->4*: b c d a f g
+0->4* del4 : b c d a f g
+0->4  del4*: b c d a f g
+del5* 0->4 : b c d a e g
+del5  0->4*: b c d a e g
+0->4* del5 : b c d a e g
+0->4  del5*: b c d a e g
+del6* 0->4 : b c d a e f
+del6  0->4*: b c d a e f
+0->4* del6 : b c d a e f
+0->4  del6*: b c d a e f
+del0* 0->5 : b c d e f g
+del0  0->5*: b c d e f g
+0->5* del0 : b c d e f g
+0->5  del0*: b c d e f g
+del1* 0->5 : c d e a f g
+del1  0->5*: c d e a f g
+0->5* del1 : c d e a f g
+0->5  del1*: c d e a f g
+del2* 0->5 : b d e a f g
+del2  0->5*: b d e a f g
+0->5* del2 : b d e a f g
+0->5  del2*: b d e a f g
+del3* 0->5 : b c e a f g
+del3  0->5*: b c e a f g
+0->5* del3 : b c e a f g
+0->5  del3*: b c e a f g
+del4* 0->5 : b c d a f g
+del4  0->5*: b c d a f g
+0->5* del4 : b c d a f g
+0->5  del4*: b c d a f g
+del5* 0->5 : b c d e a g
+del5  0->5*: b c d e a g
+0->5* del5 : b c d e a g
+0->5  del5*: b c d e a g
+del6* 0->5 : b c d e a f
+del6  0->5*: b c d e a f
+0->5* del6 : b c d e a f
+0->5  del6*: b c d e a f
+del0* 0->6 : b c d e f g
+del0  0->6*: b c d e f g
+0->6* del0 : b c d e f g
+0->6  del0*: b c d e f g
+del1* 0->6 : c d e f a g
+del1  0->6*: c d e f a g
+0->6* del1 : c d e f a g
+0->6  del1*: c d e f a g
+del2* 0->6 : b d e f a g
+del2  0->6*: b d e f a g
+0->6* del2 : b d e f a g
+0->6  del2*: b d e f a g
+del3* 0->6 : b c e f a g
+del3  0->6*: b c e f a g
+0->6* del3 : b c e f a g
+0->6  del3*: b c e f a g
+del4* 0->6 : b c d f a g
+del4  0->6*: b c d f a g
+0->6* del4 : b c d f a g
+0->6  del4*: b c d f a g
+del5* 0->6 : b c d e a g
+del5  0->6*: b c d e a g
+0->6* del5 : b c d e a g
+0->6  del5*: b c d e a g
+del6* 0->6 : b c d e f a
+del6  0->6*: b c d e f a
+0->6* del6 : b c d e f a
+0->6  del6*: b c d e f a
+del0* 0->7 : b c d e f g
+del0  0->7*: b c d e f g
+0->7* del0 : b c d e f g
+0->7  del0*: b c d e f g
+del1* 0->7 : c d e f g a
+del1  0->7*: c d e f g a
+0->7* del1 : c d e f g a
+0->7  del1*: c d e f g a
+del2* 0->7 : b d e f g a
+del2  0->7*: b d e f g a
+0->7* del2 : b d e f g a
+0->7  del2*: b d e f g a
+del3* 0->7 : b c e f g a
+del3  0->7*: b c e f g a
+0->7* del3 : b c e f g a
+0->7  del3*: b c e f g a
+del4* 0->7 : b c d f g a
+del4  0->7*: b c d f g a
+0->7* del4 : b c d f g a
+0->7  del4*: b c d f g a
+del5* 0->7 : b c d e g a
+del5  0->7*: b c d e g a
+0->7* del5 : b c d e g a
+0->7  del5*: b c d e g a
+del6* 0->7 : b c d e f a
+del6  0->7*: b c d e f a
+0->7* del6 : b c d e f a
+0->7  del6*: b c d e f a
+del0* 1->0 : b c d e f g
+del0  1->0*: b c d e f g
+1->0* del0 : b c d e f g
+1->0  del0*: b c d e f g
+del1* 1->0 : a c d e f g
+del1  1->0*: a c d e f g
+1->0* del1 : a c d e f g
+1->0  del1*: a c d e f g
+del2* 1->0 : b a d e f g
+del2  1->0*: b a d e f g
+1->0* del2 : b a d e f g
+1->0  del2*: b a d e f g
+del3* 1->0 : b a c e f g
+del3  1->0*: b a c e f g
+1->0* del3 : b a c e f g
+1->0  del3*: b a c e f g
+del4* 1->0 : b a c d f g
+del4  1->0*: b a c d f g
+1->0* del4 : b a c d f g
+1->0  del4*: b a c d f g
+del5* 1->0 : b a c d e g
+del5  1->0*: b a c d e g
+1->0* del5 : b a c d e g
+1->0  del5*: b a c d e g
+del6* 1->0 : b a c d e f
+del6  1->0*: b a c d e f
+1->0* del6 : b a c d e f
+1->0  del6*: b a c d e f
+del0* 1->1 : b c d e f g
+del0  1->1*: b c d e f g
+1->1* del0 : b c d e f g
+1->1  del0*: b c d e f g
+del1* 1->1 : a c d e f g
+del1  1->1*: a c d e f g
+1->1* del1 : a c d e f g
+1->1  del1*: a c d e f g
+del2* 1->1 : a b d e f g
+del2  1->1*: a b d e f g
+1->1* del2 : a b d e f g
+1->1  del2*: a b d e f g
+del3* 1->1 : a b c e f g
+del3  1->1*: a b c e f g
+1->1* del3 : a b c e f g
+1->1  del3*: a b c e f g
+del4* 1->1 : a b c d f g
+del4  1->1*: a b c d f g
+1->1* del4 : a b c d f g
+1->1  del4*: a b c d f g
+del5* 1->1 : a b c d e g
+del5  1->1*: a b c d e g
+1->1* del5 : a b c d e g
+1->1  del5*: a b c d e g
+del6* 1->1 : a b c d e f
+del6  1->1*: a b c d e f
+1->1* del6 : a b c d e f
+1->1  del6*: a b c d e f
+del0* 1->2 : b c d e f g
+del0  1->2*: b c d e f g
+1->2* del0 : b c d e f g
+1->2  del0*: b c d e f g
+del1* 1->2 : a c d e f g
+del1  1->2*: a c d e f g
+1->2* del1 : a c d e f g
+1->2  del1*: a c d e f g
+del2* 1->2 : a b d e f g
+del2  1->2*: a b d e f g
+1->2* del2 : a b d e f g
+1->2  del2*: a b d e f g
+del3* 1->2 : a b c e f g
+del3  1->2*: a b c e f g
+1->2* del3 : a b c e f g
+1->2  del3*: a b c e f g
+del4* 1->2 : a b c d f g
+del4  1->2*: a b c d f g
+1->2* del4 : a b c d f g
+1->2  del4*: a b c d f g
+del5* 1->2 : a b c d e g
+del5  1->2*: a b c d e g
+1->2* del5 : a b c d e g
+1->2  del5*: a b c d e g
+del6* 1->2 : a b c d e f
+del6  1->2*: a b c d e f
+1->2* del6 : a b c d e f
+1->2  del6*: a b c d e f
+del0* 1->3 : c b d e f g
+del0  1->3*: c b d e f g
+1->3* del0 : c b d e f g
+1->3  del0*: c b d e f g
+del1* 1->3 : a c d e f g
+del1  1->3*: a c d e f g
+1->3* del1 : a c d e f g
+1->3  del1*: a c d e f g
+del2* 1->3 : a b d e f g
+del2  1->3*: a b d e f g
+1->3* del2 : a b d e f g
+1->3  del2*: a b d e f g
+del3* 1->3 : a c b e f g
+del3  1->3*: a c b e f g
+1->3* del3 : a c b e f g
+1->3  del3*: a c b e f g
+del4* 1->3 : a c b d f g
+del4  1->3*: a c b d f g
+1->3* del4 : a c b d f g
+1->3  del4*: a c b d f g
+del5* 1->3 : a c b d e g
+del5  1->3*: a c b d e g
+1->3* del5 : a c b d e g
+1->3  del5*: a c b d e g
+del6* 1->3 : a c b d e f
+del6  1->3*: a c b d e f
+1->3* del6 : a c b d e f
+1->3  del6*: a c b d e f
+del0* 1->4 : c d b e f g
+del0  1->4*: c d b e f g
+1->4* del0 : c d b e f g
+1->4  del0*: c d b e f g
+del1* 1->4 : a c d e f g
+del1  1->4*: a c d e f g
+1->4* del1 : a c d e f g
+1->4  del1*: a c d e f g
+del2* 1->4 : a d b e f g
+del2  1->4*: a d b e f g
+1->4* del2 : a d b e f g
+1->4  del2*: a d b e f g
+del3* 1->4 : a c b e f g
+del3  1->4*: a c b e f g
+1->4* del3 : a c b e f g
+1->4  del3*: a c b e f g
+del4* 1->4 : a c d b f g
+del4  1->4*: a c d b f g
+1->4* del4 : a c d b f g
+1->4  del4*: a c d b f g
+del5* 1->4 : a c d b e g
+del5  1->4*: a c d b e g
+1->4* del5 : a c d b e g
+1->4  del5*: a c d b e g
+del6* 1->4 : a c d b e f
+del6  1->4*: a c d b e f
+1->4* del6 : a c d b e f
+1->4  del6*: a c d b e f
+del0* 1->5 : c d e b f g
+del0  1->5*: c d e b f g
+1->5* del0 : c d e b f g
+1->5  del0*: c d e b f g
+del1* 1->5 : a c d e f g
+del1  1->5*: a c d e f g
+1->5* del1 : a c d e f g
+1->5  del1*: a c d e f g
+del2* 1->5 : a d e b f g
+del2  1->5*: a d e b f g
+1->5* del2 : a d e b f g
+1->5  del2*: a d e b f g
+del3* 1->5 : a c e b f g
+del3  1->5*: a c e b f g
+1->5* del3 : a c e b f g
+1->5  del3*: a c e b f g
+del4* 1->5 : a c d b f g
+del4  1->5*: a c d b f g
+1->5* del4 : a c d b f g
+1->5  del4*: a c d b f g
+del5* 1->5 : a c d e b g
+del5  1->5*: a c d e b g
+1->5* del5 : a c d e b g
+1->5  del5*: a c d e b g
+del6* 1->5 : a c d e b f
+del6  1->5*: a c d e b f
+1->5* del6 : a c d e b f
+1->5  del6*: a c d e b f
+del0* 1->6 : c d e f b g
+del0  1->6*: c d e f b g
+1->6* del0 : c d e f b g
+1->6  del0*: c d e f b g
+del1* 1->6 : a c d e f g
+del1  1->6*: a c d e f g
+1->6* del1 : a c d e f g
+1->6  del1*: a c d e f g
+del2* 1->6 : a d e f b g
+del2  1->6*: a d e f b g
+1->6* del2 : a d e f b g
+1->6  del2*: a d e f b g
+del3* 1->6 : a c e f b g
+del3  1->6*: a c e f b g
+1->6* del3 : a c e f b g
+1->6  del3*: a c e f b g
+del4* 1->6 : a c d f b g
+del4  1->6*: a c d f b g
+1->6* del4 : a c d f b g
+1->6  del4*: a c d f b g
+del5* 1->6 : a c d e b g
+del5  1->6*: a c d e b g
+1->6* del5 : a c d e b g
+1->6  del5*: a c d e b g
+del6* 1->6 : a c d e f b
+del6  1->6*: a c d e f b
+1->6* del6 : a c d e f b
+1->6  del6*: a c d e f b
+del0* 1->7 : c d e f g b
+del0  1->7*: c d e f g b
+1->7* del0 : c d e f g b
+1->7  del0*: c d e f g b
+del1* 1->7 : a c d e f g
+del1  1->7*: a c d e f g
+1->7* del1 : a c d e f g
+1->7  del1*: a c d e f g
+del2* 1->7 : a d e f g b
+del2  1->7*: a d e f g b
+1->7* del2 : a d e f g b
+1->7  del2*: a d e f g b
+del3* 1->7 : a c e f g b
+del3  1->7*: a c e f g b
+1->7* del3 : a c e f g b
+1->7  del3*: a c e f g b
+del4* 1->7 : a c d f g b
+del4  1->7*: a c d f g b
+1->7* del4 : a c d f g b
+1->7  del4*: a c d f g b
+del5* 1->7 : a c d e g b
+del5  1->7*: a c d e g b
+1->7* del5 : a c d e g b
+1->7  del5*: a c d e g b
+del6* 1->7 : a c d e f b
+del6  1->7*: a c d e f b
+1->7* del6 : a c d e f b
+1->7  del6*: a c d e f b
+del0* 2->0 : c b d e f g
+del0  2->0*: c b d e f g
+2->0* del0 : c b d e f g
+2->0  del0*: c b d e f g
+del1* 2->0 : c a d e f g
+del1  2->0*: c a d e f g
+2->0* del1 : c a d e f g
+2->0  del1*: c a d e f g
+del2* 2->0 : a b d e f g
+del2  2->0*: a b d e f g
+2->0* del2 : a b d e f g
+2->0  del2*: a b d e f g
+del3* 2->0 : c a b e f g
+del3  2->0*: c a b e f g
+2->0* del3 : c a b e f g
+2->0  del3*: c a b e f g
+del4* 2->0 : c a b d f g
+del4  2->0*: c a b d f g
+2->0* del4 : c a b d f g
+2->0  del4*: c a b d f g
+del5* 2->0 : c a b d e g
+del5  2->0*: c a b d e g
+2->0* del5 : c a b d e g
+2->0  del5*: c a b d e g
+del6* 2->0 : c a b d e f
+del6  2->0*: c a b d e f
+2->0* del6 : c a b d e f
+2->0  del6*: c a b d e f
+del0* 2->1 : c b d e f g
+del0  2->1*: c b d e f g
+2->1* del0 : c b d e f g
+2->1  del0*: c b d e f g
+del1* 2->1 : a c d e f g
+del1  2->1*: a c d e f g
+2->1* del1 : a c d e f g
+2->1  del1*: a c d e f g
+del2* 2->1 : a b d e f g
+del2  2->1*: a b d e f g
+2->1* del2 : a b d e f g
+2->1  del2*: a b d e f g
+del3* 2->1 : a c b e f g
+del3  2->1*: a c b e f g
+2->1* del3 : a c b e f g
+2->1  del3*: a c b e f g
+del4* 2->1 : a c b d f g
+del4  2->1*: a c b d f g
+2->1* del4 : a c b d f g
+2->1  del4*: a c b d f g
+del5* 2->1 : a c b d e g
+del5  2->1*: a c b d e g
+2->1* del5 : a c b d e g
+2->1  del5*: a c b d e g
+del6* 2->1 : a c b d e f
+del6  2->1*: a c b d e f
+2->1* del6 : a c b d e f
+2->1  del6*: a c b d e f
+del0* 2->2 : b c d e f g
+del0  2->2*: b c d e f g
+2->2* del0 : b c d e f g
+2->2  del0*: b c d e f g
+del1* 2->2 : a c d e f g
+del1  2->2*: a c d e f g
+2->2* del1 : a c d e f g
+2->2  del1*: a c d e f g
+del2* 2->2 : a b d e f g
+del2  2->2*: a b d e f g
+2->2* del2 : a b d e f g
+2->2  del2*: a b d e f g
+del3* 2->2 : a b c e f g
+del3  2->2*: a b c e f g
+2->2* del3 : a b c e f g
+2->2  del3*: a b c e f g
+del4* 2->2 : a b c d f g
+del4  2->2*: a b c d f g
+2->2* del4 : a b c d f g
+2->2  del4*: a b c d f g
+del5* 2->2 : a b c d e g
+del5  2->2*: a b c d e g
+2->2* del5 : a b c d e g
+2->2  del5*: a b c d e g
+del6* 2->2 : a b c d e f
+del6  2->2*: a b c d e f
+2->2* del6 : a b c d e f
+2->2  del6*: a b c d e f
+del0* 2->3 : b c d e f g
+del0  2->3*: b c d e f g
+2->3* del0 : b c d e f g
+2->3  del0*: b c d e f g
+del1* 2->3 : a c d e f g
+del1  2->3*: a c d e f g
+2->3* del1 : a c d e f g
+2->3  del1*: a c d e f g
+del2* 2->3 : a b d e f g
+del2  2->3*: a b d e f g
+2->3* del2 : a b d e f g
+2->3  del2*: a b d e f g
+del3* 2->3 : a b c e f g
+del3  2->3*: a b c e f g
+2->3* del3 : a b c e f g
+2->3  del3*: a b c e f g
+del4* 2->3 : a b c d f g
+del4  2->3*: a b c d f g
+2->3* del4 : a b c d f g
+2->3  del4*: a b c d f g
+del5* 2->3 : a b c d e g
+del5  2->3*: a b c d e g
+2->3* del5 : a b c d e g
+2->3  del5*: a b c d e g
+del6* 2->3 : a b c d e f
+del6  2->3*: a b c d e f
+2->3* del6 : a b c d e f
+2->3  del6*: a b c d e f
+del0* 2->4 : b d c e f g
+del0  2->4*: b d c e f g
+2->4* del0 : b d c e f g
+2->4  del0*: b d c e f g
+del1* 2->4 : a d c e f g
+del1  2->4*: a d c e f g
+2->4* del1 : a d c e f g
+2->4  del1*: a d c e f g
+del2* 2->4 : a b d e f g
+del2  2->4*: a b d e f g
+2->4* del2 : a b d e f g
+2->4  del2*: a b d e f g
+del3* 2->4 : a b c e f g
+del3  2->4*: a b c e f g
+2->4* del3 : a b c e f g
+2->4  del3*: a b c e f g
+del4* 2->4 : a b d c f g
+del4  2->4*: a b d c f g
+2->4* del4 : a b d c f g
+2->4  del4*: a b d c f g
+del5* 2->4 : a b d c e g
+del5  2->4*: a b d c e g
+2->4* del5 : a b d c e g
+2->4  del5*: a b d c e g
+del6* 2->4 : a b d c e f
+del6  2->4*: a b d c e f
+2->4* del6 : a b d c e f
+2->4  del6*: a b d c e f
+del0* 2->5 : b d e c f g
+del0  2->5*: b d e c f g
+2->5* del0 : b d e c f g
+2->5  del0*: b d e c f g
+del1* 2->5 : a d e c f g
+del1  2->5*: a d e c f g
+2->5* del1 : a d e c f g
+2->5  del1*: a d e c f g
+del2* 2->5 : a b d e f g
+del2  2->5*: a b d e f g
+2->5* del2 : a b d e f g
+2->5  del2*: a b d e f g
+del3* 2->5 : a b e c f g
+del3  2->5*: a b e c f g
+2->5* del3 : a b e c f g
+2->5  del3*: a b e c f g
+del4* 2->5 : a b d c f g
+del4  2->5*: a b d c f g
+2->5* del4 : a b d c f g
+2->5  del4*: a b d c f g
+del5* 2->5 : a b d e c g
+del5  2->5*: a b d e c g
+2->5* del5 : a b d e c g
+2->5  del5*: a b d e c g
+del6* 2->5 : a b d e c f
+del6  2->5*: a b d e c f
+2->5* del6 : a b d e c f
+2->5  del6*: a b d e c f
+del0* 2->6 : b d e f c g
+del0  2->6*: b d e f c g
+2->6* del0 : b d e f c g
+2->6  del0*: b d e f c g
+del1* 2->6 : a d e f c g
+del1  2->6*: a d e f c g
+2->6* del1 : a d e f c g
+2->6  del1*: a d e f c g
+del2* 2->6 : a b d e f g
+del2  2->6*: a b d e f g
+2->6* del2 : a b d e f g
+2->6  del2*: a b d e f g
+del3* 2->6 : a b e f c g
+del3  2->6*: a b e f c g
+2->6* del3 : a b e f c g
+2->6  del3*: a b e f c g
+del4* 2->6 : a b d f c g
+del4  2->6*: a b d f c g
+2->6* del4 : a b d f c g
+2->6  del4*: a b d f c g
+del5* 2->6 : a b d e c g
+del5  2->6*: a b d e c g
+2->6* del5 : a b d e c g
+2->6  del5*: a b d e c g
+del6* 2->6 : a b d e f c
+del6  2->6*: a b d e f c
+2->6* del6 : a b d e f c
+2->6  del6*: a b d e f c
+del0* 2->7 : b d e f g c
+del0  2->7*: b d e f g c
+2->7* del0 : b d e f g c
+2->7  del0*: b d e f g c
+del1* 2->7 : a d e f g c
+del1  2->7*: a d e f g c
+2->7* del1 : a d e f g c
+2->7  del1*: a d e f g c
+del2* 2->7 : a b d e f g
+del2  2->7*: a b d e f g
+2->7* del2 : a b d e f g
+2->7  del2*: a b d e f g
+del3* 2->7 : a b e f g c
+del3  2->7*: a b e f g c
+2->7* del3 : a b e f g c
+2->7  del3*: a b e f g c
+del4* 2->7 : a b d f g c
+del4  2->7*: a b d f g c
+2->7* del4 : a b d f g c
+2->7  del4*: a b d f g c
+del5* 2->7 : a b d e g c
+del5  2->7*: a b d e g c
+2->7* del5 : a b d e g c
+2->7  del5*: a b d e g c
+del6* 2->7 : a b d e f c
+del6  2->7*: a b d e f c
+2->7* del6 : a b d e f c
+2->7  del6*: a b d e f c
+del0* 3->0 : d b c e f g
+del0  3->0*: d b c e f g
+3->0* del0 : d b c e f g
+3->0  del0*: d b c e f g
+del1* 3->0 : d a c e f g
+del1  3->0*: d a c e f g
+3->0* del1 : d a c e f g
+3->0  del1*: d a c e f g
+del2* 3->0 : d a b e f g
+del2  3->0*: d a b e f g
+3->0* del2 : d a b e f g
+3->0  del2*: d a b e f g
+del3* 3->0 : a b c e f g
+del3  3->0*: a b c e f g
+3->0* del3 : a b c e f g
+3->0  del3*: a b c e f g
+del4* 3->0 : d a b c f g
+del4  3->0*: d a b c f g
+3->0* del4 : d a b c f g
+3->0  del4*: d a b c f g
+del5* 3->0 : d a b c e g
+del5  3->0*: d a b c e g
+3->0* del5 : d a b c e g
+3->0  del5*: d a b c e g
+del6* 3->0 : d a b c e f
+del6  3->0*: d a b c e f
+3->0* del6 : d a b c e f
+3->0  del6*: d a b c e f
+del0* 3->1 : d b c e f g
+del0  3->1*: d b c e f g
+3->1* del0 : d b c e f g
+3->1  del0*: d b c e f g
+del1* 3->1 : a d c e f g
+del1  3->1*: a d c e f g
+3->1* del1 : a d c e f g
+3->1  del1*: a d c e f g
+del2* 3->1 : a d b e f g
+del2  3->1*: a d b e f g
+3->1* del2 : a d b e f g
+3->1  del2*: a d b e f g
+del3* 3->1 : a b c e f g
+del3  3->1*: a b c e f g
+3->1* del3 : a b c e f g
+3->1  del3*: a b c e f g
+del4* 3->1 : a d b c f g
+del4  3->1*: a d b c f g
+3->1* del4 : a d b c f g
+3->1  del4*: a d b c f g
+del5* 3->1 : a d b c e g
+del5  3->1*: a d b c e g
+3->1* del5 : a d b c e g
+3->1  del5*: a d b c e g
+del6* 3->1 : a d b c e f
+del6  3->1*: a d b c e f
+3->1* del6 : a d b c e f
+3->1  del6*: a d b c e f
+del0* 3->2 : b d c e f g
+del0  3->2*: b d c e f g
+3->2* del0 : b d c e f g
+3->2  del0*: b d c e f g
+del1* 3->2 : a d c e f g
+del1  3->2*: a d c e f g
+3->2* del1 : a d c e f g
+3->2  del1*: a d c e f g
+del2* 3->2 : a b d e f g
+del2  3->2*: a b d e f g
+3->2* del2 : a b d e f g
+3->2  del2*: a b d e f g
+del3* 3->2 : a b c e f g
+del3  3->2*: a b c e f g
+3->2* del3 : a b c e f g
+3->2  del3*: a b c e f g
+del4* 3->2 : a b d c f g
+del4  3->2*: a b d c f g
+3->2* del4 : a b d c f g
+3->2  del4*: a b d c f g
+del5* 3->2 : a b d c e g
+del5  3->2*: a b d c e g
+3->2* del5 : a b d c e g
+3->2  del5*: a b d c e g
+del6* 3->2 : a b d c e f
+del6  3->2*: a b d c e f
+3->2* del6 : a b d c e f
+3->2  del6*: a b d c e f
+del0* 3->3 : b c d e f g
+del0  3->3*: b c d e f g
+3->3* del0 : b c d e f g
+3->3  del0*: b c d e f g
+del1* 3->3 : a c d e f g
+del1  3->3*: a c d e f g
+3->3* del1 : a c d e f g
+3->3  del1*: a c d e f g
+del2* 3->3 : a b d e f g
+del2  3->3*: a b d e f g
+3->3* del2 : a b d e f g
+3->3  del2*: a b d e f g
+del3* 3->3 : a b c e f g
+del3  3->3*: a b c e f g
+3->3* del3 : a b c e f g
+3->3  del3*: a b c e f g
+del4* 3->3 : a b c d f g
+del4  3->3*: a b c d f g
+3->3* del4 : a b c d f g
+3->3  del4*: a b c d f g
+del5* 3->3 : a b c d e g
+del5  3->3*: a b c d e g
+3->3* del5 : a b c d e g
+3->3  del5*: a b c d e g
+del6* 3->3 : a b c d e f
+del6  3->3*: a b c d e f
+3->3* del6 : a b c d e f
+3->3  del6*: a b c d e f
+del0* 3->4 : b c d e f g
+del0  3->4*: b c d e f g
+3->4* del0 : b c d e f g
+3->4  del0*: b c d e f g
+del1* 3->4 : a c d e f g
+del1  3->4*: a c d e f g
+3->4* del1 : a c d e f g
+3->4  del1*: a c d e f g
+del2* 3->4 : a b d e f g
+del2  3->4*: a b d e f g
+3->4* del2 : a b d e f g
+3->4  del2*: a b d e f g
+del3* 3->4 : a b c e f g
+del3  3->4*: a b c e f g
+3->4* del3 : a b c e f g
+3->4  del3*: a b c e f g
+del4* 3->4 : a b c d f g
+del4  3->4*: a b c d f g
+3->4* del4 : a b c d f g
+3->4  del4*: a b c d f g
+del5* 3->4 : a b c d e g
+del5  3->4*: a b c d e g
+3->4* del5 : a b c d e g
+3->4  del5*: a b c d e g
+del6* 3->4 : a b c d e f
+del6  3->4*: a b c d e f
+3->4* del6 : a b c d e f
+3->4  del6*: a b c d e f
+del0* 3->5 : b c e d f g
+del0  3->5*: b c e d f g
+3->5* del0 : b c e d f g
+3->5  del0*: b c e d f g
+del1* 3->5 : a c e d f g
+del1  3->5*: a c e d f g
+3->5* del1 : a c e d f g
+3->5  del1*: a c e d f g
+del2* 3->5 : a b e d f g
+del2  3->5*: a b e d f g
+3->5* del2 : a b e d f g
+3->5  del2*: a b e d f g
+del3* 3->5 : a b c e f g
+del3  3->5*: a b c e f g
+3->5* del3 : a b c e f g
+3->5  del3*: a b c e f g
+del4* 3->5 : a b c d f g
+del4  3->5*: a b c d f g
+3->5* del4 : a b c d f g
+3->5  del4*: a b c d f g
+del5* 3->5 : a b c e d g
+del5  3->5*: a b c e d g
+3->5* del5 : a b c e d g
+3->5  del5*: a b c e d g
+del6* 3->5 : a b c e d f
+del6  3->5*: a b c e d f
+3->5* del6 : a b c e d f
+3->5  del6*: a b c e d f
+del0* 3->6 : b c e f d g
+del0  3->6*: b c e f d g
+3->6* del0 : b c e f d g
+3->6  del0*: b c e f d g
+del1* 3->6 : a c e f d g
+del1  3->6*: a c e f d g
+3->6* del1 : a c e f d g
+3->6  del1*: a c e f d g
+del2* 3->6 : a b e f d g
+del2  3->6*: a b e f d g
+3->6* del2 : a b e f d g
+3->6  del2*: a b e f d g
+del3* 3->6 : a b c e f g
+del3  3->6*: a b c e f g
+3->6* del3 : a b c e f g
+3->6  del3*: a b c e f g
+del4* 3->6 : a b c f d g
+del4  3->6*: a b c f d g
+3->6* del4 : a b c f d g
+3->6  del4*: a b c f d g
+del5* 3->6 : a b c e d g
+del5  3->6*: a b c e d g
+3->6* del5 : a b c e d g
+3->6  del5*: a b c e d g
+del6* 3->6 : a b c e f d
+del6  3->6*: a b c e f d
+3->6* del6 : a b c e f d
+3->6  del6*: a b c e f d
+del0* 3->7 : b c e f g d
+del0  3->7*: b c e f g d
+3->7* del0 : b c e f g d
+3->7  del0*: b c e f g d
+del1* 3->7 : a c e f g d
+del1  3->7*: a c e f g d
+3->7* del1 : a c e f g d
+3->7  del1*: a c e f g d
+del2* 3->7 : a b e f g d
+del2  3->7*: a b e f g d
+3->7* del2 : a b e f g d
+3->7  del2*: a b e f g d
+del3* 3->7 : a b c e f g
+del3  3->7*: a b c e f g
+3->7* del3 : a b c e f g
+3->7  del3*: a b c e f g
+del4* 3->7 : a b c f g d
+del4  3->7*: a b c f g d
+3->7* del4 : a b c f g d
+3->7  del4*: a b c f g d
+del5* 3->7 : a b c e g d
+del5  3->7*: a b c e g d
+3->7* del5 : a b c e g d
+3->7  del5*: a b c e g d
+del6* 3->7 : a b c e f d
+del6  3->7*: a b c e f d
+3->7* del6 : a b c e f d
+3->7  del6*: a b c e f d
+del0* 4->0 : e b c d f g
+del0  4->0*: e b c d f g
+4->0* del0 : e b c d f g
+4->0  del0*: e b c d f g
+del1* 4->0 : e a c d f g
+del1  4->0*: e a c d f g
+4->0* del1 : e a c d f g
+4->0  del1*: e a c d f g
+del2* 4->0 : e a b d f g
+del2  4->0*: e a b d f g
+4->0* del2 : e a b d f g
+4->0  del2*: e a b d f g
+del3* 4->0 : e a b c f g
+del3  4->0*: e a b c f g
+4->0* del3 : e a b c f g
+4->0  del3*: e a b c f g
+del4* 4->0 : a b c d f g
+del4  4->0*: a b c d f g
+4->0* del4 : a b c d f g
+4->0  del4*: a b c d f g
+del5* 4->0 : e a b c d g
+del5  4->0*: e a b c d g
+4->0* del5 : e a b c d g
+4->0  del5*: e a b c d g
+del6* 4->0 : e a b c d f
+del6  4->0*: e a b c d f
+4->0* del6 : e a b c d f
+4->0  del6*: e a b c d f
+del0* 4->1 : e b c d f g
+del0  4->1*: e b c d f g
+4->1* del0 : e b c d f g
+4->1  del0*: e b c d f g
+del1* 4->1 : a e c d f g
+del1  4->1*: a e c d f g
+4->1* del1 : a e c d f g
+4->1  del1*: a e c d f g
+del2* 4->1 : a e b d f g
+del2  4->1*: a e b d f g
+4->1* del2 : a e b d f g
+4->1  del2*: a e b d f g
+del3* 4->1 : a e b c f g
+del3  4->1*: a e b c f g
+4->1* del3 : a e b c f g
+4->1  del3*: a e b c f g
+del4* 4->1 : a b c d f g
+del4  4->1*: a b c d f g
+4->1* del4 : a b c d f g
+4->1  del4*: a b c d f g
+del5* 4->1 : a e b c d g
+del5  4->1*: a e b c d g
+4->1* del5 : a e b c d g
+4->1  del5*: a e b c d g
+del6* 4->1 : a e b c d f
+del6  4->1*: a e b c d f
+4->1* del6 : a e b c d f
+4->1  del6*: a e b c d f
+del0* 4->2 : b e c d f g
+del0  4->2*: b e c d f g
+4->2* del0 : b e c d f g
+4->2  del0*: b e c d f g
+del1* 4->2 : a e c d f g
+del1  4->2*: a e c d f g
+4->2* del1 : a e c d f g
+4->2  del1*: a e c d f g
+del2* 4->2 : a b e d f g
+del2  4->2*: a b e d f g
+4->2* del2 : a b e d f g
+4->2  del2*: a b e d f g
+del3* 4->2 : a b e c f g
+del3  4->2*: a b e c f g
+4->2* del3 : a b e c f g
+4->2  del3*: a b e c f g
+del4* 4->2 : a b c d f g
+del4  4->2*: a b c d f g
+4->2* del4 : a b c d f g
+4->2  del4*: a b c d f g
+del5* 4->2 : a b e c d g
+del5  4->2*: a b e c d g
+4->2* del5 : a b e c d g
+4->2  del5*: a b e c d g
+del6* 4->2 : a b e c d f
+del6  4->2*: a b e c d f
+4->2* del6 : a b e c d f
+4->2  del6*: a b e c d f
+del0* 4->3 : b c e d f g
+del0  4->3*: b c e d f g
+4->3* del0 : b c e d f g
+4->3  del0*: b c e d f g
+del1* 4->3 : a c e d f g
+del1  4->3*: a c e d f g
+4->3* del1 : a c e d f g
+4->3  del1*: a c e d f g
+del2* 4->3 : a b e d f g
+del2  4->3*: a b e d f g
+4->3* del2 : a b e d f g
+4->3  del2*: a b e d f g
+del3* 4->3 : a b c e f g
+del3  4->3*: a b c e f g
+4->3* del3 : a b c e f g
+4->3  del3*: a b c e f g
+del4* 4->3 : a b c d f g
+del4  4->3*: a b c d f g
+4->3* del4 : a b c d f g
+4->3  del4*: a b c d f g
+del5* 4->3 : a b c e d g
+del5  4->3*: a b c e d g
+4->3* del5 : a b c e d g
+4->3  del5*: a b c e d g
+del6* 4->3 : a b c e d f
+del6  4->3*: a b c e d f
+4->3* del6 : a b c e d f
+4->3  del6*: a b c e d f
+del0* 4->4 : b c d e f g
+del0  4->4*: b c d e f g
+4->4* del0 : b c d e f g
+4->4  del0*: b c d e f g
+del1* 4->4 : a c d e f g
+del1  4->4*: a c d e f g
+4->4* del1 : a c d e f g
+4->4  del1*: a c d e f g
+del2* 4->4 : a b d e f g
+del2  4->4*: a b d e f g
+4->4* del2 : a b d e f g
+4->4  del2*: a b d e f g
+del3* 4->4 : a b c e f g
+del3  4->4*: a b c e f g
+4->4* del3 : a b c e f g
+4->4  del3*: a b c e f g
+del4* 4->4 : a b c d f g
+del4  4->4*: a b c d f g
+4->4* del4 : a b c d f g
+4->4  del4*: a b c d f g
+del5* 4->4 : a b c d e g
+del5  4->4*: a b c d e g
+4->4* del5 : a b c d e g
+4->4  del5*: a b c d e g
+del6* 4->4 : a b c d e f
+del6  4->4*: a b c d e f
+4->4* del6 : a b c d e f
+4->4  del6*: a b c d e f
+del0* 4->5 : b c d e f g
+del0  4->5*: b c d e f g
+4->5* del0 : b c d e f g
+4->5  del0*: b c d e f g
+del1* 4->5 : a c d e f g
+del1  4->5*: a c d e f g
+4->5* del1 : a c d e f g
+4->5  del1*: a c d e f g
+del2* 4->5 : a b d e f g
+del2  4->5*: a b d e f g
+4->5* del2 : a b d e f g
+4->5  del2*: a b d e f g
+del3* 4->5 : a b c e f g
+del3  4->5*: a b c e f g
+4->5* del3 : a b c e f g
+4->5  del3*: a b c e f g
+del4* 4->5 : a b c d f g
+del4  4->5*: a b c d f g
+4->5* del4 : a b c d f g
+4->5  del4*: a b c d f g
+del5* 4->5 : a b c d e g
+del5  4->5*: a b c d e g
+4->5* del5 : a b c d e g
+4->5  del5*: a b c d e g
+del6* 4->5 : a b c d e f
+del6  4->5*: a b c d e f
+4->5* del6 : a b c d e f
+4->5  del6*: a b c d e f
+del0* 4->6 : b c d f e g
+del0  4->6*: b c d f e g
+4->6* del0 : b c d f e g
+4->6  del0*: b c d f e g
+del1* 4->6 : a c d f e g
+del1  4->6*: a c d f e g
+4->6* del1 : a c d f e g
+4->6  del1*: a c d f e g
+del2* 4->6 : a b d f e g
+del2  4->6*: a b d f e g
+4->6* del2 : a b d f e g
+4->6  del2*: a b d f e g
+del3* 4->6 : a b c f e g
+del3  4->6*: a b c f e g
+4->6* del3 : a b c f e g
+4->6  del3*: a b c f e g
+del4* 4->6 : a b c d f g
+del4  4->6*: a b c d f g
+4->6* del4 : a b c d f g
+4->6  del4*: a b c d f g
+del5* 4->6 : a b c d e g
+del5  4->6*: a b c d e g
+4->6* del5 : a b c d e g
+4->6  del5*: a b c d e g
+del6* 4->6 : a b c d f e
+del6  4->6*: a b c d f e
+4->6* del6 : a b c d f e
+4->6  del6*: a b c d f e
+del0* 4->7 : b c d f g e
+del0  4->7*: b c d f g e
+4->7* del0 : b c d f g e
+4->7  del0*: b c d f g e
+del1* 4->7 : a c d f g e
+del1  4->7*: a c d f g e
+4->7* del1 : a c d f g e
+4->7  del1*: a c d f g e
+del2* 4->7 : a b d f g e
+del2  4->7*: a b d f g e
+4->7* del2 : a b d f g e
+4->7  del2*: a b d f g e
+del3* 4->7 : a b c f g e
+del3  4->7*: a b c f g e
+4->7* del3 : a b c f g e
+4->7  del3*: a b c f g e
+del4* 4->7 : a b c d f g
+del4  4->7*: a b c d f g
+4->7* del4 : a b c d f g
+4->7  del4*: a b c d f g
+del5* 4->7 : a b c d g e
+del5  4->7*: a b c d g e
+4->7* del5 : a b c d g e
+4->7  del5*: a b c d g e
+del6* 4->7 : a b c d f e
+del6  4->7*: a b c d f e
+4->7* del6 : a b c d f e
+4->7  del6*: a b c d f e
+del0* 5->0 : f b c d e g
+del0  5->0*: f b c d e g
+5->0* del0 : f b c d e g
+5->0  del0*: f b c d e g
+del1* 5->0 : f a c d e g
+del1  5->0*: f a c d e g
+5->0* del1 : f a c d e g
+5->0  del1*: f a c d e g
+del2* 5->0 : f a b d e g
+del2  5->0*: f a b d e g
+5->0* del2 : f a b d e g
+5->0  del2*: f a b d e g
+del3* 5->0 : f a b c e g
+del3  5->0*: f a b c e g
+5->0* del3 : f a b c e g
+5->0  del3*: f a b c e g
+del4* 5->0 : f a b c d g
+del4  5->0*: f a b c d g
+5->0* del4 : f a b c d g
+5->0  del4*: f a b c d g
+del5* 5->0 : a b c d e g
+del5  5->0*: a b c d e g
+5->0* del5 : a b c d e g
+5->0  del5*: a b c d e g
+del6* 5->0 : f a b c d e
+del6  5->0*: f a b c d e
+5->0* del6 : f a b c d e
+5->0  del6*: f a b c d e
+del0* 5->1 : f b c d e g
+del0  5->1*: f b c d e g
+5->1* del0 : f b c d e g
+5->1  del0*: f b c d e g
+del1* 5->1 : a f c d e g
+del1  5->1*: a f c d e g
+5->1* del1 : a f c d e g
+5->1  del1*: a f c d e g
+del2* 5->1 : a f b d e g
+del2  5->1*: a f b d e g
+5->1* del2 : a f b d e g
+5->1  del2*: a f b d e g
+del3* 5->1 : a f b c e g
+del3  5->1*: a f b c e g
+5->1* del3 : a f b c e g
+5->1  del3*: a f b c e g
+del4* 5->1 : a f b c d g
+del4  5->1*: a f b c d g
+5->1* del4 : a f b c d g
+5->1  del4*: a f b c d g
+del5* 5->1 : a b c d e g
+del5  5->1*: a b c d e g
+5->1* del5 : a b c d e g
+5->1  del5*: a b c d e g
+del6* 5->1 : a f b c d e
+del6  5->1*: a f b c d e
+5->1* del6 : a f b c d e
+5->1  del6*: a f b c d e
+del0* 5->2 : b f c d e g
+del0  5->2*: b f c d e g
+5->2* del0 : b f c d e g
+5->2  del0*: b f c d e g
+del1* 5->2 : a f c d e g
+del1  5->2*: a f c d e g
+5->2* del1 : a f c d e g
+5->2  del1*: a f c d e g
+del2* 5->2 : a b f d e g
+del2  5->2*: a b f d e g
+5->2* del2 : a b f d e g
+5->2  del2*: a b f d e g
+del3* 5->2 : a b f c e g
+del3  5->2*: a b f c e g
+5->2* del3 : a b f c e g
+5->2  del3*: a b f c e g
+del4* 5->2 : a b f c d g
+del4  5->2*: a b f c d g
+5->2* del4 : a b f c d g
+5->2  del4*: a b f c d g
+del5* 5->2 : a b c d e g
+del5  5->2*: a b c d e g
+5->2* del5 : a b c d e g
+5->2  del5*: a b c d e g
+del6* 5->2 : a b f c d e
+del6  5->2*: a b f c d e
+5->2* del6 : a b f c d e
+5->2  del6*: a b f c d e
+del0* 5->3 : b c f d e g
+del0  5->3*: b c f d e g
+5->3* del0 : b c f d e g
+5->3  del0*: b c f d e g
+del1* 5->3 : a c f d e g
+del1  5->3*: a c f d e g
+5->3* del1 : a c f d e g
+5->3  del1*: a c f d e g
+del2* 5->3 : a b f d e g
+del2  5->3*: a b f d e g
+5->3* del2 : a b f d e g
+5->3  del2*: a b f d e g
+del3* 5->3 : a b c f e g
+del3  5->3*: a b c f e g
+5->3* del3 : a b c f e g
+5->3  del3*: a b c f e g
+del4* 5->3 : a b c f d g
+del4  5->3*: a b c f d g
+5->3* del4 : a b c f d g
+5->3  del4*: a b c f d g
+del5* 5->3 : a b c d e g
+del5  5->3*: a b c d e g
+5->3* del5 : a b c d e g
+5->3  del5*: a b c d e g
+del6* 5->3 : a b c f d e
+del6  5->3*: a b c f d e
+5->3* del6 : a b c f d e
+5->3  del6*: a b c f d e
+del0* 5->4 : b c d f e g
+del0  5->4*: b c d f e g
+5->4* del0 : b c d f e g
+5->4  del0*: b c d f e g
+del1* 5->4 : a c d f e g
+del1  5->4*: a c d f e g
+5->4* del1 : a c d f e g
+5->4  del1*: a c d f e g
+del2* 5->4 : a b d f e g
+del2  5->4*: a b d f e g
+5->4* del2 : a b d f e g
+5->4  del2*: a b d f e g
+del3* 5->4 : a b c f e g
+del3  5->4*: a b c f e g
+5->4* del3 : a b c f e g
+5->4  del3*: a b c f e g
+del4* 5->4 : a b c d f g
+del4  5->4*: a b c d f g
+5->4* del4 : a b c d f g
+5->4  del4*: a b c d f g
+del5* 5->4 : a b c d e g
+del5  5->4*: a b c d e g
+5->4* del5 : a b c d e g
+5->4  del5*: a b c d e g
+del6* 5->4 : a b c d f e
+del6  5->4*: a b c d f e
+5->4* del6 : a b c d f e
+5->4  del6*: a b c d f e
+del0* 5->5 : b c d e f g
+del0  5->5*: b c d e f g
+5->5* del0 : b c d e f g
+5->5  del0*: b c d e f g
+del1* 5->5 : a c d e f g
+del1  5->5*: a c d e f g
+5->5* del1 : a c d e f g
+5->5  del1*: a c d e f g
+del2* 5->5 : a b d e f g
+del2  5->5*: a b d e f g
+5->5* del2 : a b d e f g
+5->5  del2*: a b d e f g
+del3* 5->5 : a b c e f g
+del3  5->5*: a b c e f g
+5->5* del3 : a b c e f g
+5->5  del3*: a b c e f g
+del4* 5->5 : a b c d f g
+del4  5->5*: a b c d f g
+5->5* del4 : a b c d f g
+5->5  del4*: a b c d f g
+del5* 5->5 : a b c d e g
+del5  5->5*: a b c d e g
+5->5* del5 : a b c d e g
+5->5  del5*: a b c d e g
+del6* 5->5 : a b c d e f
+del6  5->5*: a b c d e f
+5->5* del6 : a b c d e f
+5->5  del6*: a b c d e f
+del0* 5->6 : b c d e f g
+del0  5->6*: b c d e f g
+5->6* del0 : b c d e f g
+5->6  del0*: b c d e f g
+del1* 5->6 : a c d e f g
+del1  5->6*: a c d e f g
+5->6* del1 : a c d e f g
+5->6  del1*: a c d e f g
+del2* 5->6 : a b d e f g
+del2  5->6*: a b d e f g
+5->6* del2 : a b d e f g
+5->6  del2*: a b d e f g
+del3* 5->6 : a b c e f g
+del3  5->6*: a b c e f g
+5->6* del3 : a b c e f g
+5->6  del3*: a b c e f g
+del4* 5->6 : a b c d f g
+del4  5->6*: a b c d f g
+5->6* del4 : a b c d f g
+5->6  del4*: a b c d f g
+del5* 5->6 : a b c d e g
+del5  5->6*: a b c d e g
+5->6* del5 : a b c d e g
+5->6  del5*: a b c d e g
+del6* 5->6 : a b c d e f
+del6  5->6*: a b c d e f
+5->6* del6 : a b c d e f
+5->6  del6*: a b c d e f
+del0* 5->7 : b c d e g f
+del0  5->7*: b c d e g f
+5->7* del0 : b c d e g f
+5->7  del0*: b c d e g f
+del1* 5->7 : a c d e g f
+del1  5->7*: a c d e g f
+5->7* del1 : a c d e g f
+5->7  del1*: a c d e g f
+del2* 5->7 : a b d e g f
+del2  5->7*: a b d e g f
+5->7* del2 : a b d e g f
+5->7  del2*: a b d e g f
+del3* 5->7 : a b c e g f
+del3  5->7*: a b c e g f
+5->7* del3 : a b c e g f
+5->7  del3*: a b c e g f
+del4* 5->7 : a b c d g f
+del4  5->7*: a b c d g f
+5->7* del4 : a b c d g f
+5->7  del4*: a b c d g f
+del5* 5->7 : a b c d e g
+del5  5->7*: a b c d e g
+5->7* del5 : a b c d e g
+5->7  del5*: a b c d e g
+del6* 5->7 : a b c d e f
+del6  5->7*: a b c d e f
+5->7* del6 : a b c d e f
+5->7  del6*: a b c d e f
+del0* 6->0 : g b c d e f
+del0  6->0*: g b c d e f
+6->0* del0 : g b c d e f
+6->0  del0*: g b c d e f
+del1* 6->0 : g a c d e f
+del1  6->0*: g a c d e f
+6->0* del1 : g a c d e f
+6->0  del1*: g a c d e f
+del2* 6->0 : g a b d e f
+del2  6->0*: g a b d e f
+6->0* del2 : g a b d e f
+6->0  del2*: g a b d e f
+del3* 6->0 : g a b c e f
+del3  6->0*: g a b c e f
+6->0* del3 : g a b c e f
+6->0  del3*: g a b c e f
+del4* 6->0 : g a b c d f
+del4  6->0*: g a b c d f
+6->0* del4 : g a b c d f
+6->0  del4*: g a b c d f
+del5* 6->0 : g a b c d e
+del5  6->0*: g a b c d e
+6->0* del5 : g a b c d e
+6->0  del5*: g a b c d e
+del6* 6->0 : a b c d e f
+del6  6->0*: a b c d e f
+6->0* del6 : a b c d e f
+6->0  del6*: a b c d e f
+del0* 6->1 : g b c d e f
+del0  6->1*: g b c d e f
+6->1* del0 : g b c d e f
+6->1  del0*: g b c d e f
+del1* 6->1 : a g c d e f
+del1  6->1*: a g c d e f
+6->1* del1 : a g c d e f
+6->1  del1*: a g c d e f
+del2* 6->1 : a g b d e f
+del2  6->1*: a g b d e f
+6->1* del2 : a g b d e f
+6->1  del2*: a g b d e f
+del3* 6->1 : a g b c e f
+del3  6->1*: a g b c e f
+6->1* del3 : a g b c e f
+6->1  del3*: a g b c e f
+del4* 6->1 : a g b c d f
+del4  6->1*: a g b c d f
+6->1* del4 : a g b c d f
+6->1  del4*: a g b c d f
+del5* 6->1 : a g b c d e
+del5  6->1*: a g b c d e
+6->1* del5 : a g b c d e
+6->1  del5*: a g b c d e
+del6* 6->1 : a b c d e f
+del6  6->1*: a b c d e f
+6->1* del6 : a b c d e f
+6->1  del6*: a b c d e f
+del0* 6->2 : b g c d e f
+del0  6->2*: b g c d e f
+6->2* del0 : b g c d e f
+6->2  del0*: b g c d e f
+del1* 6->2 : a g c d e f
+del1  6->2*: a g c d e f
+6->2* del1 : a g c d e f
+6->2  del1*: a g c d e f
+del2* 6->2 : a b g d e f
+del2  6->2*: a b g d e f
+6->2* del2 : a b g d e f
+6->2  del2*: a b g d e f
+del3* 6->2 : a b g c e f
+del3  6->2*: a b g c e f
+6->2* del3 : a b g c e f
+6->2  del3*: a b g c e f
+del4* 6->2 : a b g c d f
+del4  6->2*: a b g c d f
+6->2* del4 : a b g c d f
+6->2  del4*: a b g c d f
+del5* 6->2 : a b g c d e
+del5  6->2*: a b g c d e
+6->2* del5 : a b g c d e
+6->2  del5*: a b g c d e
+del6* 6->2 : a b c d e f
+del6  6->2*: a b c d e f
+6->2* del6 : a b c d e f
+6->2  del6*: a b c d e f
+del0* 6->3 : b c g d e f
+del0  6->3*: b c g d e f
+6->3* del0 : b c g d e f
+6->3  del0*: b c g d e f
+del1* 6->3 : a c g d e f
+del1  6->3*: a c g d e f
+6->3* del1 : a c g d e f
+6->3  del1*: a c g d e f
+del2* 6->3 : a b g d e f
+del2  6->3*: a b g d e f
+6->3* del2 : a b g d e f
+6->3  del2*: a b g d e f
+del3* 6->3 : a b c g e f
+del3  6->3*: a b c g e f
+6->3* del3 : a b c g e f
+6->3  del3*: a b c g e f
+del4* 6->3 : a b c g d f
+del4  6->3*: a b c g d f
+6->3* del4 : a b c g d f
+6->3  del4*: a b c g d f
+del5* 6->3 : a b c g d e
+del5  6->3*: a b c g d e
+6->3* del5 : a b c g d e
+6->3  del5*: a b c g d e
+del6* 6->3 : a b c d e f
+del6  6->3*: a b c d e f
+6->3* del6 : a b c d e f
+6->3  del6*: a b c d e f
+del0* 6->4 : b c d g e f
+del0  6->4*: b c d g e f
+6->4* del0 : b c d g e f
+6->4  del0*: b c d g e f
+del1* 6->4 : a c d g e f
+del1  6->4*: a c d g e f
+6->4* del1 : a c d g e f
+6->4  del1*: a c d g e f
+del2* 6->4 : a b d g e f
+del2  6->4*: a b d g e f
+6->4* del2 : a b d g e f
+6->4  del2*: a b d g e f
+del3* 6->4 : a b c g e f
+del3  6->4*: a b c g e f
+6->4* del3 : a b c g e f
+6->4  del3*: a b c g e f
+del4* 6->4 : a b c d g f
+del4  6->4*: a b c d g f
+6->4* del4 : a b c d g f
+6->4  del4*: a b c d g f
+del5* 6->4 : a b c d g e
+del5  6->4*: a b c d g e
+6->4* del5 : a b c d g e
+6->4  del5*: a b c d g e
+del6* 6->4 : a b c d e f
+del6  6->4*: a b c d e f
+6->4* del6 : a b c d e f
+6->4  del6*: a b c d e f
+del0* 6->5 : b c d e g f
+del0  6->5*: b c d e g f
+6->5* del0 : b c d e g f
+6->5  del0*: b c d e g f
+del1* 6->5 : a c d e g f
+del1  6->5*: a c d e g f
+6->5* del1 : a c d e g f
+6->5  del1*: a c d e g f
+del2* 6->5 : a b d e g f
+del2  6->5*: a b d e g f
+6->5* del2 : a b d e g f
+6->5  del2*: a b d e g f
+del3* 6->5 : a b c e g f
+del3  6->5*: a b c e g f
+6->5* del3 : a b c e g f
+6->5  del3*: a b c e g f
+del4* 6->5 : a b c d g f
+del4  6->5*: a b c d g f
+6->5* del4 : a b c d g f
+6->5  del4*: a b c d g f
+del5* 6->5 : a b c d e g
+del5  6->5*: a b c d e g
+6->5* del5 : a b c d e g
+6->5  del5*: a b c d e g
+del6* 6->5 : a b c d e f
+del6  6->5*: a b c d e f
+6->5* del6 : a b c d e f
+6->5  del6*: a b c d e f
+del0* 6->6 : b c d e f g
+del0  6->6*: b c d e f g
+6->6* del0 : b c d e f g
+6->6  del0*: b c d e f g
+del1* 6->6 : a c d e f g
+del1  6->6*: a c d e f g
+6->6* del1 : a c d e f g
+6->6  del1*: a c d e f g
+del2* 6->6 : a b d e f g
+del2  6->6*: a b d e f g
+6->6* del2 : a b d e f g
+6->6  del2*: a b d e f g
+del3* 6->6 : a b c e f g
+del3  6->6*: a b c e f g
+6->6* del3 : a b c e f g
+6->6  del3*: a b c e f g
+del4* 6->6 : a b c d f g
+del4  6->6*: a b c d f g
+6->6* del4 : a b c d f g
+6->6  del4*: a b c d f g
+del5* 6->6 : a b c d e g
+del5  6->6*: a b c d e g
+6->6* del5 : a b c d e g
+6->6  del5*: a b c d e g
+del6* 6->6 : a b c d e f
+del6  6->6*: a b c d e f
+6->6* del6 : a b c d e f
+6->6  del6*: a b c d e f
+del0* 6->7 : b c d e f g
+del0  6->7*: b c d e f g
+6->7* del0 : b c d e f g
+6->7  del0*: b c d e f g
+del1* 6->7 : a c d e f g
+del1  6->7*: a c d e f g
+6->7* del1 : a c d e f g
+6->7  del1*: a c d e f g
+del2* 6->7 : a b d e f g
+del2  6->7*: a b d e f g
+6->7* del2 : a b d e f g
+6->7  del2*: a b d e f g
+del3* 6->7 : a b c e f g
+del3  6->7*: a b c e f g
+6->7* del3 : a b c e f g
+6->7  del3*: a b c e f g
+del4* 6->7 : a b c d f g
+del4  6->7*: a b c d f g
+6->7* del4 : a b c d f g
+6->7  del4*: a b c d f g
+del5* 6->7 : a b c d e g
+del5  6->7*: a b c d e g
+6->7* del5 : a b c d e g
+6->7  del5*: a b c d e g
+del6* 6->7 : a b c d e f
+del6  6->7*: a b c d e f
+6->7* del6 : a b c d e f
+6->7  del6*: a b c d e f

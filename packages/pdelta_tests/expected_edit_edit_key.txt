@@ -1,0 +1,32 @@
+edit0* edit0 : 0:XY 1:b 2:c 3:d
+edit0  edit0*: 0:YX 1:b 2:c 3:d
+edit0* edit1 : 0:X 1:Y 2:c 3:d
+edit0  edit1*: 0:X 1:Y 2:c 3:d
+edit0* edit2 : 0:X 1:b 2:Y 3:d
+edit0  edit2*: 0:X 1:b 2:Y 3:d
+edit0* edit3 : 0:X 1:b 2:c 3:Y
+edit0  edit3*: 0:X 1:b 2:c 3:Y
+edit1* edit0 : 0:Y 1:X 2:c 3:d
+edit1  edit0*: 0:Y 1:X 2:c 3:d
+edit1* edit1 : 0:a 1:XY 2:c 3:d
+edit1  edit1*: 0:a 1:YX 2:c 3:d
+edit1* edit2 : 0:a 1:X 2:Y 3:d
+edit1  edit2*: 0:a 1:X 2:Y 3:d
+edit1* edit3 : 0:a 1:X 2:c 3:Y
+edit1  edit3*: 0:a 1:X 2:c 3:Y
+edit2* edit0 : 0:Y 1:b 2:X 3:d
+edit2  edit0*: 0:Y 1:b 2:X 3:d
+edit2* edit1 : 0:a 1:Y 2:X 3:d
+edit2  edit1*: 0:a 1:Y 2:X 3:d
+edit2* edit2 : 0:a 1:b 2:XY 3:d
+edit2  edit2*: 0:a 1:b 2:YX 3:d
+edit2* edit3 : 0:a 1:b 2:X 3:Y
+edit2  edit3*: 0:a 1:b 2:X 3:Y
+edit3* edit0 : 0:Y 1:b 2:c 3:X
+edit3  edit0*: 0:Y 1:b 2:c 3:X
+edit3* edit1 : 0:a 1:Y 2:c 3:X
+edit3  edit1*: 0:a 1:Y 2:c 3:X
+edit3* edit2 : 0:a 1:b 2:Y 3:X
+edit3  edit2*: 0:a 1:b 2:Y 3:X
+edit3* edit3 : 0:a 1:b 2:c 3:XY
+edit3  edit3*: 0:a 1:b 2:c 3:YX

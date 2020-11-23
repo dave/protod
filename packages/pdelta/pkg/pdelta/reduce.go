@@ -87,7 +87,7 @@ func rIndependent(op1, op2 *Op) []*Op {
 			msgProtoReflect := protoreflect.ValueOfMessage(msg.ProtoReflect()).Message()
 			field := getField(value.Fragment.Field, msgProtoReflect)
 			out := proto.Clone(op1).(*Op)
-			out.Value = &Op_Fragment{Fragment: newFragmentFromProto(msgProtoReflect.Get(field), value.Fragment.Field)}
+			out.Value = &Op_Fragment{Fragment: newFragmentFromProto(msgProtoReflect.Mutable(field), value.Fragment.Field)}
 			return []*Op{out}
 
 		case *Op_Message:

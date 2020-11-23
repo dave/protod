@@ -3,6 +3,7 @@ package pdelta_tests
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	reflect "reflect"
 	"sort"
 	"strings"
@@ -15,7 +16,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-const OUTPUT_CASES = false
+const OUTPUT_CASES = true
 
 func mustUnmarshalAny(a *any.Any) proto.Message {
 	if a == nil {
@@ -28,15 +29,17 @@ func mustUnmarshalAny(a *any.Any) proto.Message {
 	return proto1.MessageV2(da.Message)
 }
 
-func compareResults(t *testing.T, result, expected string) {
-	expected = strings.TrimSpace(expected)
+func compareResults(t *testing.T, result, name string) {
+	expectedBytes, err := ioutil.ReadFile(fmt.Sprintf("../../expected_%v.txt", name))
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected := string(expectedBytes)
 	expected = strings.ReplaceAll(expected, "\t", "")
 	result = strings.TrimSpace(result)
 	result = strings.ReplaceAll(result, "\t", "")
 	if expected != result {
-		//fmt.Println(result)
-		//t.Fatalf("")
-		t.Fatalf("Unexpected result. Expected:\n%s\n\nResult:\n%s\n", expected, result)
+		t.Fatalf("Unexpected result in %v expected test. Expected:\n%s\n\nResult:\n%s\n", name, expected, result)
 	}
 }
 
@@ -73,7 +76,7 @@ func printFlags(m proto.Message) string {
 	return out
 }
 
-func mustJson(message proto.Message) string {
+func mustJsonPretty(message proto.Message) string {
 	if message == nil {
 		return "[nil]"
 	}

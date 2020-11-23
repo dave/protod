@@ -1,0 +1,64 @@
+set0* del0 : b c d
+set0  del0*: b c d
+del0* set0 : b c d
+del0  set0*: b c d
+set0* del1 : X c d
+set0  del1*: X c d
+del1* set0 : X c d
+del1  set0*: X c d
+set0* del2 : X b d
+set0  del2*: X b d
+del2* set0 : X b d
+del2  set0*: X b d
+set0* del3 : X b c
+set0  del3*: X b c
+del3* set0 : X b c
+del3  set0*: X b c
+set1* del0 : X c d
+set1  del0*: X c d
+del0* set1 : X c d
+del0  set1*: X c d
+set1* del1 : a c d
+set1  del1*: a c d
+del1* set1 : a c d
+del1  set1*: a c d
+set1* del2 : a X d
+set1  del2*: a X d
+del2* set1 : a X d
+del2  set1*: a X d
+set1* del3 : a X c
+set1  del3*: a X c
+del3* set1 : a X c
+del3  set1*: a X c
+set2* del0 : b X d
+set2  del0*: b X d
+del0* set2 : b X d
+del0  set2*: b X d
+set2* del1 : a X d
+set2  del1*: a X d
+del1* set2 : a X d
+del1  set2*: a X d
+set2* del2 : a b d
+set2  del2*: a b d
+del2* set2 : a b d
+del2  set2*: a b d
+set2* del3 : a b X
+set2  del3*: a b X
+del3* set2 : a b X
+del3  set2*: a b X
+set3* del0 : b c X
+set3  del0*: b c X
+del0* set3 : b c X
+del0  set3*: b c X
+set3* del1 : a c X
+set3  del1*: a c X
+del1* set3 : a c X
+del1  set3*: a c X
+set3* del2 : a b X
+set3  del2*: a b X
+del2* set3 : a b X
+del2  set3*: a b X
+set3* del3 : a b c
+set3  del3*: a b c
+del3* set3 : a b c
+del3  set3*: a b c

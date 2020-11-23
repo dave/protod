@@ -1,0 +1,64 @@
+edit0* del0 : b c d
+edit0  del0*: b c d
+del0* edit0 : b c d
+del0  edit0*: b c d
+edit0* del1 : X c d
+edit0  del1*: X c d
+del1* edit0 : X c d
+del1  edit0*: X c d
+edit0* del2 : X b d
+edit0  del2*: X b d
+del2* edit0 : X b d
+del2  edit0*: X b d
+edit0* del3 : X b c
+edit0  del3*: X b c
+del3* edit0 : X b c
+del3  edit0*: X b c
+edit1* del0 : X c d
+edit1  del0*: X c d
+del0* edit1 : X c d
+del0  edit1*: X c d
+edit1* del1 : a c d
+edit1  del1*: a c d
+del1* edit1 : a c d
+del1  edit1*: a c d
+edit1* del2 : a X d
+edit1  del2*: a X d
+del2* edit1 : a X d
+del2  edit1*: a X d
+edit1* del3 : a X c
+edit1  del3*: a X c
+del3* edit1 : a X c
+del3  edit1*: a X c
+edit2* del0 : b X d
+edit2  del0*: b X d
+del0* edit2 : b X d
+del0  edit2*: b X d
+edit2* del1 : a X d
+edit2  del1*: a X d
+del1* edit2 : a X d
+del1  edit2*: a X d
+edit2* del2 : a b d
+edit2  del2*: a b d
+del2* edit2 : a b d
+del2  edit2*: a b d
+edit2* del3 : a b X
+edit2  del3*: a b X
+del3* edit2 : a b X
+del3  edit2*: a b X
+edit3* del0 : b c X
+edit3  del0*: b c X
+del0* edit3 : b c X
+del0  edit3*: b c X
+edit3* del1 : a c X
+edit3  del1*: a c X
+del1* edit3 : a c X
+del1  edit3*: a c X
+edit3* del2 : a b X
+edit3  del2*: a b X
+del2* edit3 : a b X
+del2  edit3*: a b X
+edit3* del3 : a b c
+edit3  del3*: a b c
+del3* edit3 : a b c
+del3  edit3*: a b c

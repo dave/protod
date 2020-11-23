@@ -1,0 +1,32 @@
+edit0* edit0 : XY b c d
+edit0  edit0*: YX b c d
+edit0* edit1 : X Y c d
+edit0  edit1*: X Y c d
+edit0* edit2 : X b Y d
+edit0  edit2*: X b Y d
+edit0* edit3 : X b c Y
+edit0  edit3*: X b c Y
+edit1* edit0 : Y X c d
+edit1  edit0*: Y X c d
+edit1* edit1 : a XY c d
+edit1  edit1*: a YX c d
+edit1* edit2 : a X Y d
+edit1  edit2*: a X Y d
+edit1* edit3 : a X c Y
+edit1  edit3*: a X c Y
+edit2* edit0 : Y b X d
+edit2  edit0*: Y b X d
+edit2* edit1 : a Y X d
+edit2  edit1*: a Y X d
+edit2* edit2 : a b XY d
+edit2  edit2*: a b YX d
+edit2* edit3 : a b X Y
+edit2  edit3*: a b X Y
+edit3* edit0 : Y b c X
+edit3  edit0*: Y b c X
+edit3* edit1 : a Y c X
+edit3  edit1*: a Y c X
+edit3* edit2 : a b Y X
+edit3  edit2*: a b Y X
+edit3* edit3 : a b c XY
+edit3  edit3*: a b c YX

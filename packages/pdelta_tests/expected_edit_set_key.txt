@@ -1,0 +1,64 @@
+edit0* set0 : 0:Y 1:b 2:c 3:d
+edit0  set0*: 0:Y 1:b 2:c 3:d
+set0* edit0 : 0:Y 1:b 2:c 3:d
+set0  edit0*: 0:Y 1:b 2:c 3:d
+edit0* set1 : 0:X 1:Y 2:c 3:d
+edit0  set1*: 0:X 1:Y 2:c 3:d
+set1* edit0 : 0:X 1:Y 2:c 3:d
+set1  edit0*: 0:X 1:Y 2:c 3:d
+edit0* set2 : 0:X 1:b 2:Y 3:d
+edit0  set2*: 0:X 1:b 2:Y 3:d
+set2* edit0 : 0:X 1:b 2:Y 3:d
+set2  edit0*: 0:X 1:b 2:Y 3:d
+edit0* set3 : 0:X 1:b 2:c 3:Y
+edit0  set3*: 0:X 1:b 2:c 3:Y
+set3* edit0 : 0:X 1:b 2:c 3:Y
+set3  edit0*: 0:X 1:b 2:c 3:Y
+edit1* set0 : 0:Y 1:X 2:c 3:d
+edit1  set0*: 0:Y 1:X 2:c 3:d
+set0* edit1 : 0:Y 1:X 2:c 3:d
+set0  edit1*: 0:Y 1:X 2:c 3:d
+edit1* set1 : 0:a 1:Y 2:c 3:d
+edit1  set1*: 0:a 1:Y 2:c 3:d
+set1* edit1 : 0:a 1:Y 2:c 3:d
+set1  edit1*: 0:a 1:Y 2:c 3:d
+edit1* set2 : 0:a 1:X 2:Y 3:d
+edit1  set2*: 0:a 1:X 2:Y 3:d
+set2* edit1 : 0:a 1:X 2:Y 3:d
+set2  edit1*: 0:a 1:X 2:Y 3:d
+edit1* set3 : 0:a 1:X 2:c 3:Y
+edit1  set3*: 0:a 1:X 2:c 3:Y
+set3* edit1 : 0:a 1:X 2:c 3:Y
+set3  edit1*: 0:a 1:X 2:c 3:Y
+edit2* set0 : 0:Y 1:b 2:X 3:d
+edit2  set0*: 0:Y 1:b 2:X 3:d
+set0* edit2 : 0:Y 1:b 2:X 3:d
+set0  edit2*: 0:Y 1:b 2:X 3:d
+edit2* set1 : 0:a 1:Y 2:X 3:d
+edit2  set1*: 0:a 1:Y 2:X 3:d
+set1* edit2 : 0:a 1:Y 2:X 3:d
+set1  edit2*: 0:a 1:Y 2:X 3:d
+edit2* set2 : 0:a 1:b 2:Y 3:d
+edit2  set2*: 0:a 1:b 2:Y 3:d
+set2* edit2 : 0:a 1:b 2:Y 3:d
+set2  edit2*: 0:a 1:b 2:Y 3:d
+edit2* set3 : 0:a 1:b 2:X 3:Y
+edit2  set3*: 0:a 1:b 2:X 3:Y
+set3* edit2 : 0:a 1:b 2:X 3:Y
+set3  edit2*: 0:a 1:b 2:X 3:Y
+edit3* set0 : 0:Y 1:b 2:c 3:X
+edit3  set0*: 0:Y 1:b 2:c 3:X
+set0* edit3 : 0:Y 1:b 2:c 3:X
+set0  edit3*: 0:Y 1:b 2:c 3:X
+edit3* set1 : 0:a 1:Y 2:c 3:X
+edit3  set1*: 0:a 1:Y 2:c 3:X
+set1* edit3 : 0:a 1:Y 2:c 3:X
+set1  edit3*: 0:a 1:Y 2:c 3:X
+edit3* set2 : 0:a 1:b 2:Y 3:X
+edit3  set2*: 0:a 1:b 2:Y 3:X
+set2* edit3 : 0:a 1:b 2:Y 3:X
+set2  edit3*: 0:a 1:b 2:Y 3:X
+edit3* set3 : 0:a 1:b 2:c 3:Y
+edit3  set3*: 0:a 1:b 2:c 3:Y
+set3* edit3 : 0:a 1:b 2:c 3:Y
+set3  edit3*: 0:a 1:b 2:c 3:Y

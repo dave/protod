@@ -1,0 +1,32 @@
+set0* set0 : 0:X 1:b 2:c 3:d
+set0  set0*: 0:Y 1:b 2:c 3:d
+set0* set1 : 0:X 1:Y 2:c 3:d
+set0  set1*: 0:X 1:Y 2:c 3:d
+set0* set2 : 0:X 1:b 2:Y 3:d
+set0  set2*: 0:X 1:b 2:Y 3:d
+set0* set3 : 0:X 1:b 2:c 3:Y
+set0  set3*: 0:X 1:b 2:c 3:Y
+set1* set0 : 0:Y 1:X 2:c 3:d
+set1  set0*: 0:Y 1:X 2:c 3:d
+set1* set1 : 0:a 1:X 2:c 3:d
+set1  set1*: 0:a 1:Y 2:c 3:d
+set1* set2 : 0:a 1:X 2:Y 3:d
+set1  set2*: 0:a 1:X 2:Y 3:d
+set1* set3 : 0:a 1:X 2:c 3:Y
+set1  set3*: 0:a 1:X 2:c 3:Y
+set2* set0 : 0:Y 1:b 2:X 3:d
+set2  set0*: 0:Y 1:b 2:X 3:d
+set2* set1 : 0:a 1:Y 2:X 3:d
+set2  set1*: 0:a 1:Y 2:X 3:d
+set2* set2 : 0:a 1:b 2:X 3:d
+set2  set2*: 0:a 1:b 2:Y 3:d
+set2* set3 : 0:a 1:b 2:X 3:Y
+set2  set3*: 0:a 1:b 2:X 3:Y
+set3* set0 : 0:Y 1:b 2:c 3:X
+set3  set0*: 0:Y 1:b 2:c 3:X
+set3* set1 : 0:a 1:Y 2:c 3:X
+set3  set1*: 0:a 1:Y 2:c 3:X
+set3* set2 : 0:a 1:b 2:Y 3:X
+set3  set2*: 0:a 1:b 2:Y 3:X
+set3* set3 : 0:a 1:b 2:c 3:X
+set3  set3*: 0:a 1:b 2:c 3:Y

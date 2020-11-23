@@ -1,0 +1,64 @@
+edit0* set0 : Y b c d
+edit0  set0*: Y b c d
+set0* edit0 : Y b c d
+set0  edit0*: Y b c d
+edit0* set1 : X Y c d
+edit0  set1*: X Y c d
+set1* edit0 : X Y c d
+set1  edit0*: X Y c d
+edit0* set2 : X b Y d
+edit0  set2*: X b Y d
+set2* edit0 : X b Y d
+set2  edit0*: X b Y d
+edit0* set3 : X b c Y
+edit0  set3*: X b c Y
+set3* edit0 : X b c Y
+set3  edit0*: X b c Y
+edit1* set0 : Y X c d
+edit1  set0*: Y X c d
+set0* edit1 : Y X c d
+set0  edit1*: Y X c d
+edit1* set1 : a Y c d
+edit1  set1*: a Y c d
+set1* edit1 : a Y c d
+set1  edit1*: a Y c d
+edit1* set2 : a X Y d
+edit1  set2*: a X Y d
+set2* edit1 : a X Y d
+set2  edit1*: a X Y d
+edit1* set3 : a X c Y
+edit1  set3*: a X c Y
+set3* edit1 : a X c Y
+set3  edit1*: a X c Y
+edit2* set0 : Y b X d
+edit2  set0*: Y b X d
+set0* edit2 : Y b X d
+set0  edit2*: Y b X d
+edit2* set1 : a Y X d
+edit2  set1*: a Y X d
+set1* edit2 : a Y X d
+set1  edit2*: a Y X d
+edit2* set2 : a b Y d
+edit2  set2*: a b Y d
+set2* edit2 : a b Y d
+set2  edit2*: a b Y d
+edit2* set3 : a b X Y
+edit2  set3*: a b X Y
+set3* edit2 : a b X Y
+set3  edit2*: a b X Y
+edit3* set0 : Y b c X
+edit3  set0*: Y b c X
+set0* edit3 : Y b c X
+set0  edit3*: Y b c X
+edit3* set1 : a Y c X
+edit3  set1*: a Y c X
+set1* edit3 : a Y c X
+set1  edit3*: a Y c X
+edit3* set2 : a b Y X
+edit3  set2*: a b Y X
+set2* edit3 : a b Y X
+set2  edit3*: a b Y X
+edit3* set3 : a b c Y
+edit3  set3*: a b c Y
+set3* edit3 : a b c Y
+set3  edit3*: a b c Y

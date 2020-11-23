@@ -20,7 +20,7 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
-const DEBUG = false
+const DEBUG = true
 
 func (o *Op) Flatten() []*Op {
 	if o == nil {
@@ -523,7 +523,7 @@ func fromFragment(fragment *Fragment) protoreflect.Value {
 	}
 	protoMessage := da.ProtoReflect()
 	protoField := getField(fragment.Field, protoMessage)
-	return protoMessage.Get(protoField)
+	return protoMessage.Mutable(protoField)
 }
 
 func getField(locatorField *Field, message protoreflect.Message) protoreflect.FieldDescriptor {
@@ -1307,11 +1307,34 @@ func debugValue(v isOp_Value) string {
 			return fmt.Sprintf("enum[%d]", v.Enum)
 		}
 	case *Op_Message:
-		return fmt.Sprintf("message[%v]", v.Message.TypeUrl[20:])
+		//return fmt.Sprintf("message[%v]", v.Message.TypeUrl[20:])
+		message := MustUnmarshalAny(v.Message)
+		return fmt.Sprintf("message:%v%v", v.Message.TypeUrl[20:], mustJsonCompact(message))
 	case *Op_Fragment:
-		return fmt.Sprintf("%v", v.Fragment)
+		message := MustUnmarshalAny(v.Fragment.Message)
+		protoField := getField(v.Fragment.Field, message.ProtoReflect())
+		var unpackedJson map[string]interface{}
+		if err := json.Unmarshal([]byte(mustJson(message)), &unpackedJson); err != nil {
+			panic(err)
+		}
+		var fieldJsonString string
+		unpackadJsonField := unpackedJson[protoField.JSONName()]
+		if unpackadJsonField == nil {
+			if protoField.IsMap() {
+				fieldJsonString = "{}"
+			} else {
+				fieldJsonString = "[]"
+			}
+		} else {
+			fieldJson, err := json.Marshal(unpackedJson[protoField.JSONName()])
+			if err != nil {
+				panic(err)
+			}
+			fieldJsonString = string(fieldJson)
+		}
+		return fmt.Sprintf("fragment:%v:%v%v", v.Fragment.Field.MessageFullName, v.Fragment.Field.Name, fieldJsonString)
 	case *Op_Delta:
-		return fmt.Sprintf("%v", func() string { b, _ := json.Marshal(v.Delta.GetQuill().Quill()); return string(b) }())
+		return fmt.Sprintf("quill%v", func() string { b, _ := json.Marshal(v.Delta.GetQuill().Quill()); return string(b) }())
 	case *Op_Index:
 		return fmt.Sprintf("index[%d]", v.Index)
 	case *Op_Key:
@@ -1349,6 +1372,20 @@ func mustJson(message proto.Message) string {
 		return "[invalid]"
 	}
 	b, err := protojson.MarshalOptions{Indent: "\t"}.Marshal(message)
+	if err != nil {
+		panic(err)
+	}
+	return string(b)
+}
+
+func mustJsonCompact(message proto.Message) string {
+	if message == nil {
+		return "[nil]"
+	}
+	if !message.ProtoReflect().IsValid() {
+		return "[invalid]"
+	}
+	b, err := protojson.Marshal(message)
 	if err != nil {
 		panic(err)
 	}

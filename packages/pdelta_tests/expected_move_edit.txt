@@ -1,0 +1,1568 @@
+edit0* 0->0 : X b c d e f g
+edit0  0->0*: X b c d e f g
+0->0* edit0 : X b c d e f g
+0->0  edit0*: X b c d e f g
+edit1* 0->0 : a X c d e f g
+edit1  0->0*: a X c d e f g
+0->0* edit1 : a X c d e f g
+0->0  edit1*: a X c d e f g
+edit2* 0->0 : a b X d e f g
+edit2  0->0*: a b X d e f g
+0->0* edit2 : a b X d e f g
+0->0  edit2*: a b X d e f g
+edit3* 0->0 : a b c X e f g
+edit3  0->0*: a b c X e f g
+0->0* edit3 : a b c X e f g
+0->0  edit3*: a b c X e f g
+edit4* 0->0 : a b c d X f g
+edit4  0->0*: a b c d X f g
+0->0* edit4 : a b c d X f g
+0->0  edit4*: a b c d X f g
+edit5* 0->0 : a b c d e X g
+edit5  0->0*: a b c d e X g
+0->0* edit5 : a b c d e X g
+0->0  edit5*: a b c d e X g
+edit6* 0->0 : a b c d e f X
+edit6  0->0*: a b c d e f X
+0->0* edit6 : a b c d e f X
+0->0  edit6*: a b c d e f X
+edit0* 0->1 : X b c d e f g
+edit0  0->1*: X b c d e f g
+0->1* edit0 : X b c d e f g
+0->1  edit0*: X b c d e f g
+edit1* 0->1 : a X c d e f g
+edit1  0->1*: a X c d e f g
+0->1* edit1 : a X c d e f g
+0->1  edit1*: a X c d e f g
+edit2* 0->1 : a b X d e f g
+edit2  0->1*: a b X d e f g
+0->1* edit2 : a b X d e f g
+0->1  edit2*: a b X d e f g
+edit3* 0->1 : a b c X e f g
+edit3  0->1*: a b c X e f g
+0->1* edit3 : a b c X e f g
+0->1  edit3*: a b c X e f g
+edit4* 0->1 : a b c d X f g
+edit4  0->1*: a b c d X f g
+0->1* edit4 : a b c d X f g
+0->1  edit4*: a b c d X f g
+edit5* 0->1 : a b c d e X g
+edit5  0->1*: a b c d e X g
+0->1* edit5 : a b c d e X g
+0->1  edit5*: a b c d e X g
+edit6* 0->1 : a b c d e f X
+edit6  0->1*: a b c d e f X
+0->1* edit6 : a b c d e f X
+0->1  edit6*: a b c d e f X
+edit0* 0->2 : b X c d e f g
+edit0  0->2*: b X c d e f g
+0->2* edit0 : b X c d e f g
+0->2  edit0*: b X c d e f g
+edit1* 0->2 : X a c d e f g
+edit1  0->2*: X a c d e f g
+0->2* edit1 : X a c d e f g
+0->2  edit1*: X a c d e f g
+edit2* 0->2 : b a X d e f g
+edit2  0->2*: b a X d e f g
+0->2* edit2 : b a X d e f g
+0->2  edit2*: b a X d e f g
+edit3* 0->2 : b a c X e f g
+edit3  0->2*: b a c X e f g
+0->2* edit3 : b a c X e f g
+0->2  edit3*: b a c X e f g
+edit4* 0->2 : b a c d X f g
+edit4  0->2*: b a c d X f g
+0->2* edit4 : b a c d X f g
+0->2  edit4*: b a c d X f g
+edit5* 0->2 : b a c d e X g
+edit5  0->2*: b a c d e X g
+0->2* edit5 : b a c d e X g
+0->2  edit5*: b a c d e X g
+edit6* 0->2 : b a c d e f X
+edit6  0->2*: b a c d e f X
+0->2* edit6 : b a c d e f X
+0->2  edit6*: b a c d e f X
+edit0* 0->3 : b c X d e f g
+edit0  0->3*: b c X d e f g
+0->3* edit0 : b c X d e f g
+0->3  edit0*: b c X d e f g
+edit1* 0->3 : X c a d e f g
+edit1  0->3*: X c a d e f g
+0->3* edit1 : X c a d e f g
+0->3  edit1*: X c a d e f g
+edit2* 0->3 : b X a d e f g
+edit2  0->3*: b X a d e f g
+0->3* edit2 : b X a d e f g
+0->3  edit2*: b X a d e f g
+edit3* 0->3 : b c a X e f g
+edit3  0->3*: b c a X e f g
+0->3* edit3 : b c a X e f g
+0->3  edit3*: b c a X e f g
+edit4* 0->3 : b c a d X f g
+edit4  0->3*: b c a d X f g
+0->3* edit4 : b c a d X f g
+0->3  edit4*: b c a d X f g
+edit5* 0->3 : b c a d e X g
+edit5  0->3*: b c a d e X g
+0->3* edit5 : b c a d e X g
+0->3  edit5*: b c a d e X g
+edit6* 0->3 : b c a d e f X
+edit6  0->3*: b c a d e f X
+0->3* edit6 : b c a d e f X
+0->3  edit6*: b c a d e f X
+edit0* 0->4 : b c d X e f g
+edit0  0->4*: b c d X e f g
+0->4* edit0 : b c d X e f g
+0->4  edit0*: b c d X e f g
+edit1* 0->4 : X c d a e f g
+edit1  0->4*: X c d a e f g
+0->4* edit1 : X c d a e f g
+0->4  edit1*: X c d a e f g
+edit2* 0->4 : b X d a e f g
+edit2  0->4*: b X d a e f g
+0->4* edit2 : b X d a e f g
+0->4  edit2*: b X d a e f g
+edit3* 0->4 : b c X a e f g
+edit3  0->4*: b c X a e f g
+0->4* edit3 : b c X a e f g
+0->4  edit3*: b c X a e f g
+edit4* 0->4 : b c d a X f g
+edit4  0->4*: b c d a X f g
+0->4* edit4 : b c d a X f g
+0->4  edit4*: b c d a X f g
+edit5* 0->4 : b c d a e X g
+edit5  0->4*: b c d a e X g
+0->4* edit5 : b c d a e X g
+0->4  edit5*: b c d a e X g
+edit6* 0->4 : b c d a e f X
+edit6  0->4*: b c d a e f X
+0->4* edit6 : b c d a e f X
+0->4  edit6*: b c d a e f X
+edit0* 0->5 : b c d e X f g
+edit0  0->5*: b c d e X f g
+0->5* edit0 : b c d e X f g
+0->5  edit0*: b c d e X f g
+edit1* 0->5 : X c d e a f g
+edit1  0->5*: X c d e a f g
+0->5* edit1 : X c d e a f g
+0->5  edit1*: X c d e a f g
+edit2* 0->5 : b X d e a f g
+edit2  0->5*: b X d e a f g
+0->5* edit2 : b X d e a f g
+0->5  edit2*: b X d e a f g
+edit3* 0->5 : b c X e a f g
+edit3  0->5*: b c X e a f g
+0->5* edit3 : b c X e a f g
+0->5  edit3*: b c X e a f g
+edit4* 0->5 : b c d X a f g
+edit4  0->5*: b c d X a f g
+0->5* edit4 : b c d X a f g
+0->5  edit4*: b c d X a f g
+edit5* 0->5 : b c d e a X g
+edit5  0->5*: b c d e a X g
+0->5* edit5 : b c d e a X g
+0->5  edit5*: b c d e a X g
+edit6* 0->5 : b c d e a f X
+edit6  0->5*: b c d e a f X
+0->5* edit6 : b c d e a f X
+0->5  edit6*: b c d e a f X
+edit0* 0->6 : b c d e f X g
+edit0  0->6*: b c d e f X g
+0->6* edit0 : b c d e f X g
+0->6  edit0*: b c d e f X g
+edit1* 0->6 : X c d e f a g
+edit1  0->6*: X c d e f a g
+0->6* edit1 : X c d e f a g
+0->6  edit1*: X c d e f a g
+edit2* 0->6 : b X d e f a g
+edit2  0->6*: b X d e f a g
+0->6* edit2 : b X d e f a g
+0->6  edit2*: b X d e f a g
+edit3* 0->6 : b c X e f a g
+edit3  0->6*: b c X e f a g
+0->6* edit3 : b c X e f a g
+0->6  edit3*: b c X e f a g
+edit4* 0->6 : b c d X f a g
+edit4  0->6*: b c d X f a g
+0->6* edit4 : b c d X f a g
+0->6  edit4*: b c d X f a g
+edit5* 0->6 : b c d e X a g
+edit5  0->6*: b c d e X a g
+0->6* edit5 : b c d e X a g
+0->6  edit5*: b c d e X a g
+edit6* 0->6 : b c d e f a X
+edit6  0->6*: b c d e f a X
+0->6* edit6 : b c d e f a X
+0->6  edit6*: b c d e f a X
+edit0* 0->7 : b c d e f g X
+edit0  0->7*: b c d e f g X
+0->7* edit0 : b c d e f g X
+0->7  edit0*: b c d e f g X
+edit1* 0->7 : X c d e f g a
+edit1  0->7*: X c d e f g a
+0->7* edit1 : X c d e f g a
+0->7  edit1*: X c d e f g a
+edit2* 0->7 : b X d e f g a
+edit2  0->7*: b X d e f g a
+0->7* edit2 : b X d e f g a
+0->7  edit2*: b X d e f g a
+edit3* 0->7 : b c X e f g a
+edit3  0->7*: b c X e f g a
+0->7* edit3 : b c X e f g a
+0->7  edit3*: b c X e f g a
+edit4* 0->7 : b c d X f g a
+edit4  0->7*: b c d X f g a
+0->7* edit4 : b c d X f g a
+0->7  edit4*: b c d X f g a
+edit5* 0->7 : b c d e X g a
+edit5  0->7*: b c d e X g a
+0->7* edit5 : b c d e X g a
+0->7  edit5*: b c d e X g a
+edit6* 0->7 : b c d e f X a
+edit6  0->7*: b c d e f X a
+0->7* edit6 : b c d e f X a
+0->7  edit6*: b c d e f X a
+edit0* 1->0 : b X c d e f g
+edit0  1->0*: b X c d e f g
+1->0* edit0 : b X c d e f g
+1->0  edit0*: b X c d e f g
+edit1* 1->0 : X a c d e f g
+edit1  1->0*: X a c d e f g
+1->0* edit1 : X a c d e f g
+1->0  edit1*: X a c d e f g
+edit2* 1->0 : b a X d e f g
+edit2  1->0*: b a X d e f g
+1->0* edit2 : b a X d e f g
+1->0  edit2*: b a X d e f g
+edit3* 1->0 : b a c X e f g
+edit3  1->0*: b a c X e f g
+1->0* edit3 : b a c X e f g
+1->0  edit3*: b a c X e f g
+edit4* 1->0 : b a c d X f g
+edit4  1->0*: b a c d X f g
+1->0* edit4 : b a c d X f g
+1->0  edit4*: b a c d X f g
+edit5* 1->0 : b a c d e X g
+edit5  1->0*: b a c d e X g
+1->0* edit5 : b a c d e X g
+1->0  edit5*: b a c d e X g
+edit6* 1->0 : b a c d e f X
+edit6  1->0*: b a c d e f X
+1->0* edit6 : b a c d e f X
+1->0  edit6*: b a c d e f X
+edit0* 1->1 : X b c d e f g
+edit0  1->1*: X b c d e f g
+1->1* edit0 : X b c d e f g
+1->1  edit0*: X b c d e f g
+edit1* 1->1 : a X c d e f g
+edit1  1->1*: a X c d e f g
+1->1* edit1 : a X c d e f g
+1->1  edit1*: a X c d e f g
+edit2* 1->1 : a b X d e f g
+edit2  1->1*: a b X d e f g
+1->1* edit2 : a b X d e f g
+1->1  edit2*: a b X d e f g
+edit3* 1->1 : a b c X e f g
+edit3  1->1*: a b c X e f g
+1->1* edit3 : a b c X e f g
+1->1  edit3*: a b c X e f g
+edit4* 1->1 : a b c d X f g
+edit4  1->1*: a b c d X f g
+1->1* edit4 : a b c d X f g
+1->1  edit4*: a b c d X f g
+edit5* 1->1 : a b c d e X g
+edit5  1->1*: a b c d e X g
+1->1* edit5 : a b c d e X g
+1->1  edit5*: a b c d e X g
+edit6* 1->1 : a b c d e f X
+edit6  1->1*: a b c d e f X
+1->1* edit6 : a b c d e f X
+1->1  edit6*: a b c d e f X
+edit0* 1->2 : X b c d e f g
+edit0  1->2*: X b c d e f g
+1->2* edit0 : X b c d e f g
+1->2  edit0*: X b c d e f g
+edit1* 1->2 : a X c d e f g
+edit1  1->2*: a X c d e f g
+1->2* edit1 : a X c d e f g
+1->2  edit1*: a X c d e f g
+edit2* 1->2 : a b X d e f g
+edit2  1->2*: a b X d e f g
+1->2* edit2 : a b X d e f g
+1->2  edit2*: a b X d e f g
+edit3* 1->2 : a b c X e f g
+edit3  1->2*: a b c X e f g
+1->2* edit3 : a b c X e f g
+1->2  edit3*: a b c X e f g
+edit4* 1->2 : a b c d X f g
+edit4  1->2*: a b c d X f g
+1->2* edit4 : a b c d X f g
+1->2  edit4*: a b c d X f g
+edit5* 1->2 : a b c d e X g
+edit5  1->2*: a b c d e X g
+1->2* edit5 : a b c d e X g
+1->2  edit5*: a b c d e X g
+edit6* 1->2 : a b c d e f X
+edit6  1->2*: a b c d e f X
+1->2* edit6 : a b c d e f X
+1->2  edit6*: a b c d e f X
+edit0* 1->3 : X c b d e f g
+edit0  1->3*: X c b d e f g
+1->3* edit0 : X c b d e f g
+1->3  edit0*: X c b d e f g
+edit1* 1->3 : a c X d e f g
+edit1  1->3*: a c X d e f g
+1->3* edit1 : a c X d e f g
+1->3  edit1*: a c X d e f g
+edit2* 1->3 : a X b d e f g
+edit2  1->3*: a X b d e f g
+1->3* edit2 : a X b d e f g
+1->3  edit2*: a X b d e f g
+edit3* 1->3 : a c b X e f g
+edit3  1->3*: a c b X e f g
+1->3* edit3 : a c b X e f g
+1->3  edit3*: a c b X e f g
+edit4* 1->3 : a c b d X f g
+edit4  1->3*: a c b d X f g
+1->3* edit4 : a c b d X f g
+1->3  edit4*: a c b d X f g
+edit5* 1->3 : a c b d e X g
+edit5  1->3*: a c b d e X g
+1->3* edit5 : a c b d e X g
+1->3  edit5*: a c b d e X g
+edit6* 1->3 : a c b d e f X
+edit6  1->3*: a c b d e f X
+1->3* edit6 : a c b d e f X
+1->3  edit6*: a c b d e f X
+edit0* 1->4 : X c d b e f g
+edit0  1->4*: X c d b e f g
+1->4* edit0 : X c d b e f g
+1->4  edit0*: X c d b e f g
+edit1* 1->4 : a c d X e f g
+edit1  1->4*: a c d X e f g
+1->4* edit1 : a c d X e f g
+1->4  edit1*: a c d X e f g
+edit2* 1->4 : a X d b e f g
+edit2  1->4*: a X d b e f g
+1->4* edit2 : a X d b e f g
+1->4  edit2*: a X d b e f g
+edit3* 1->4 : a c X b e f g
+edit3  1->4*: a c X b e f g
+1->4* edit3 : a c X b e f g
+1->4  edit3*: a c X b e f g
+edit4* 1->4 : a c d b X f g
+edit4  1->4*: a c d b X f g
+1->4* edit4 : a c d b X f g
+1->4  edit4*: a c d b X f g
+edit5* 1->4 : a c d b e X g
+edit5  1->4*: a c d b e X g
+1->4* edit5 : a c d b e X g
+1->4  edit5*: a c d b e X g
+edit6* 1->4 : a c d b e f X
+edit6  1->4*: a c d b e f X
+1->4* edit6 : a c d b e f X
+1->4  edit6*: a c d b e f X
+edit0* 1->5 : X c d e b f g
+edit0  1->5*: X c d e b f g
+1->5* edit0 : X c d e b f g
+1->5  edit0*: X c d e b f g
+edit1* 1->5 : a c d e X f g
+edit1  1->5*: a c d e X f g
+1->5* edit1 : a c d e X f g
+1->5  edit1*: a c d e X f g
+edit2* 1->5 : a X d e b f g
+edit2  1->5*: a X d e b f g
+1->5* edit2 : a X d e b f g
+1->5  edit2*: a X d e b f g
+edit3* 1->5 : a c X e b f g
+edit3  1->5*: a c X e b f g
+1->5* edit3 : a c X e b f g
+1->5  edit3*: a c X e b f g
+edit4* 1->5 : a c d X b f g
+edit4  1->5*: a c d X b f g
+1->5* edit4 : a c d X b f g
+1->5  edit4*: a c d X b f g
+edit5* 1->5 : a c d e b X g
+edit5  1->5*: a c d e b X g
+1->5* edit5 : a c d e b X g
+1->5  edit5*: a c d e b X g
+edit6* 1->5 : a c d e b f X
+edit6  1->5*: a c d e b f X
+1->5* edit6 : a c d e b f X
+1->5  edit6*: a c d e b f X
+edit0* 1->6 : X c d e f b g
+edit0  1->6*: X c d e f b g
+1->6* edit0 : X c d e f b g
+1->6  edit0*: X c d e f b g
+edit1* 1->6 : a c d e f X g
+edit1  1->6*: a c d e f X g
+1->6* edit1 : a c d e f X g
+1->6  edit1*: a c d e f X g
+edit2* 1->6 : a X d e f b g
+edit2  1->6*: a X d e f b g
+1->6* edit2 : a X d e f b g
+1->6  edit2*: a X d e f b g
+edit3* 1->6 : a c X e f b g
+edit3  1->6*: a c X e f b g
+1->6* edit3 : a c X e f b g
+1->6  edit3*: a c X e f b g
+edit4* 1->6 : a c d X f b g
+edit4  1->6*: a c d X f b g
+1->6* edit4 : a c d X f b g
+1->6  edit4*: a c d X f b g
+edit5* 1->6 : a c d e X b g
+edit5  1->6*: a c d e X b g
+1->6* edit5 : a c d e X b g
+1->6  edit5*: a c d e X b g
+edit6* 1->6 : a c d e f b X
+edit6  1->6*: a c d e f b X
+1->6* edit6 : a c d e f b X
+1->6  edit6*: a c d e f b X
+edit0* 1->7 : X c d e f g b
+edit0  1->7*: X c d e f g b
+1->7* edit0 : X c d e f g b
+1->7  edit0*: X c d e f g b
+edit1* 1->7 : a c d e f g X
+edit1  1->7*: a c d e f g X
+1->7* edit1 : a c d e f g X
+1->7  edit1*: a c d e f g X
+edit2* 1->7 : a X d e f g b
+edit2  1->7*: a X d e f g b
+1->7* edit2 : a X d e f g b
+1->7  edit2*: a X d e f g b
+edit3* 1->7 : a c X e f g b
+edit3  1->7*: a c X e f g b
+1->7* edit3 : a c X e f g b
+1->7  edit3*: a c X e f g b
+edit4* 1->7 : a c d X f g b
+edit4  1->7*: a c d X f g b
+1->7* edit4 : a c d X f g b
+1->7  edit4*: a c d X f g b
+edit5* 1->7 : a c d e X g b
+edit5  1->7*: a c d e X g b
+1->7* edit5 : a c d e X g b
+1->7  edit5*: a c d e X g b
+edit6* 1->7 : a c d e f X b
+edit6  1->7*: a c d e f X b
+1->7* edit6 : a c d e f X b
+1->7  edit6*: a c d e f X b
+edit0* 2->0 : c X b d e f g
+edit0  2->0*: c X b d e f g
+2->0* edit0 : c X b d e f g
+2->0  edit0*: c X b d e f g
+edit1* 2->0 : c a X d e f g
+edit1  2->0*: c a X d e f g
+2->0* edit1 : c a X d e f g
+2->0  edit1*: c a X d e f g
+edit2* 2->0 : X a b d e f g
+edit2  2->0*: X a b d e f g
+2->0* edit2 : X a b d e f g
+2->0  edit2*: X a b d e f g
+edit3* 2->0 : c a b X e f g
+edit3  2->0*: c a b X e f g
+2->0* edit3 : c a b X e f g
+2->0  edit3*: c a b X e f g
+edit4* 2->0 : c a b d X f g
+edit4  2->0*: c a b d X f g
+2->0* edit4 : c a b d X f g
+2->0  edit4*: c a b d X f g
+edit5* 2->0 : c a b d e X g
+edit5  2->0*: c a b d e X g
+2->0* edit5 : c a b d e X g
+2->0  edit5*: c a b d e X g
+edit6* 2->0 : c a b d e f X
+edit6  2->0*: c a b d e f X
+2->0* edit6 : c a b d e f X
+2->0  edit6*: c a b d e f X
+edit0* 2->1 : X c b d e f g
+edit0  2->1*: X c b d e f g
+2->1* edit0 : X c b d e f g
+2->1  edit0*: X c b d e f g
+edit1* 2->1 : a c X d e f g
+edit1  2->1*: a c X d e f g
+2->1* edit1 : a c X d e f g
+2->1  edit1*: a c X d e f g
+edit2* 2->1 : a X b d e f g
+edit2  2->1*: a X b d e f g
+2->1* edit2 : a X b d e f g
+2->1  edit2*: a X b d e f g
+edit3* 2->1 : a c b X e f g
+edit3  2->1*: a c b X e f g
+2->1* edit3 : a c b X e f g
+2->1  edit3*: a c b X e f g
+edit4* 2->1 : a c b d X f g
+edit4  2->1*: a c b d X f g
+2->1* edit4 : a c b d X f g
+2->1  edit4*: a c b d X f g
+edit5* 2->1 : a c b d e X g
+edit5  2->1*: a c b d e X g
+2->1* edit5 : a c b d e X g
+2->1  edit5*: a c b d e X g
+edit6* 2->1 : a c b d e f X
+edit6  2->1*: a c b d e f X
+2->1* edit6 : a c b d e f X
+2->1  edit6*: a c b d e f X
+edit0* 2->2 : X b c d e f g
+edit0  2->2*: X b c d e f g
+2->2* edit0 : X b c d e f g
+2->2  edit0*: X b c d e f g
+edit1* 2->2 : a X c d e f g
+edit1  2->2*: a X c d e f g
+2->2* edit1 : a X c d e f g
+2->2  edit1*: a X c d e f g
+edit2* 2->2 : a b X d e f g
+edit2  2->2*: a b X d e f g
+2->2* edit2 : a b X d e f g
+2->2  edit2*: a b X d e f g
+edit3* 2->2 : a b c X e f g
+edit3  2->2*: a b c X e f g
+2->2* edit3 : a b c X e f g
+2->2  edit3*: a b c X e f g
+edit4* 2->2 : a b c d X f g
+edit4  2->2*: a b c d X f g
+2->2* edit4 : a b c d X f g
+2->2  edit4*: a b c d X f g
+edit5* 2->2 : a b c d e X g
+edit5  2->2*: a b c d e X g
+2->2* edit5 : a b c d e X g
+2->2  edit5*: a b c d e X g
+edit6* 2->2 : a b c d e f X
+edit6  2->2*: a b c d e f X
+2->2* edit6 : a b c d e f X
+2->2  edit6*: a b c d e f X
+edit0* 2->3 : X b c d e f g
+edit0  2->3*: X b c d e f g
+2->3* edit0 : X b c d e f g
+2->3  edit0*: X b c d e f g
+edit1* 2->3 : a X c d e f g
+edit1  2->3*: a X c d e f g
+2->3* edit1 : a X c d e f g
+2->3  edit1*: a X c d e f g
+edit2* 2->3 : a b X d e f g
+edit2  2->3*: a b X d e f g
+2->3* edit2 : a b X d e f g
+2->3  edit2*: a b X d e f g
+edit3* 2->3 : a b c X e f g
+edit3  2->3*: a b c X e f g
+2->3* edit3 : a b c X e f g
+2->3  edit3*: a b c X e f g
+edit4* 2->3 : a b c d X f g
+edit4  2->3*: a b c d X f g
+2->3* edit4 : a b c d X f g
+2->3  edit4*: a b c d X f g
+edit5* 2->3 : a b c d e X g
+edit5  2->3*: a b c d e X g
+2->3* edit5 : a b c d e X g
+2->3  edit5*: a b c d e X g
+edit6* 2->3 : a b c d e f X
+edit6  2->3*: a b c d e f X
+2->3* edit6 : a b c d e f X
+2->3  edit6*: a b c d e f X
+edit0* 2->4 : X b d c e f g
+edit0  2->4*: X b d c e f g
+2->4* edit0 : X b d c e f g
+2->4  edit0*: X b d c e f g
+edit1* 2->4 : a X d c e f g
+edit1  2->4*: a X d c e f g
+2->4* edit1 : a X d c e f g
+2->4  edit1*: a X d c e f g
+edit2* 2->4 : a b d X e f g
+edit2  2->4*: a b d X e f g
+2->4* edit2 : a b d X e f g
+2->4  edit2*: a b d X e f g
+edit3* 2->4 : a b X c e f g
+edit3  2->4*: a b X c e f g
+2->4* edit3 : a b X c e f g
+2->4  edit3*: a b X c e f g
+edit4* 2->4 : a b d c X f g
+edit4  2->4*: a b d c X f g
+2->4* edit4 : a b d c X f g
+2->4  edit4*: a b d c X f g
+edit5* 2->4 : a b d c e X g
+edit5  2->4*: a b d c e X g
+2->4* edit5 : a b d c e X g
+2->4  edit5*: a b d c e X g
+edit6* 2->4 : a b d c e f X
+edit6  2->4*: a b d c e f X
+2->4* edit6 : a b d c e f X
+2->4  edit6*: a b d c e f X
+edit0* 2->5 : X b d e c f g
+edit0  2->5*: X b d e c f g
+2->5* edit0 : X b d e c f g
+2->5  edit0*: X b d e c f g
+edit1* 2->5 : a X d e c f g
+edit1  2->5*: a X d e c f g
+2->5* edit1 : a X d e c f g
+2->5  edit1*: a X d e c f g
+edit2* 2->5 : a b d e X f g
+edit2  2->5*: a b d e X f g
+2->5* edit2 : a b d e X f g
+2->5  edit2*: a b d e X f g
+edit3* 2->5 : a b X e c f g
+edit3  2->5*: a b X e c f g
+2->5* edit3 : a b X e c f g
+2->5  edit3*: a b X e c f g
+edit4* 2->5 : a b d X c f g
+edit4  2->5*: a b d X c f g
+2->5* edit4 : a b d X c f g
+2->5  edit4*: a b d X c f g
+edit5* 2->5 : a b d e c X g
+edit5  2->5*: a b d e c X g
+2->5* edit5 : a b d e c X g
+2->5  edit5*: a b d e c X g
+edit6* 2->5 : a b d e c f X
+edit6  2->5*: a b d e c f X
+2->5* edit6 : a b d e c f X
+2->5  edit6*: a b d e c f X
+edit0* 2->6 : X b d e f c g
+edit0  2->6*: X b d e f c g
+2->6* edit0 : X b d e f c g
+2->6  edit0*: X b d e f c g
+edit1* 2->6 : a X d e f c g
+edit1  2->6*: a X d e f c g
+2->6* edit1 : a X d e f c g
+2->6  edit1*: a X d e f c g
+edit2* 2->6 : a b d e f X g
+edit2  2->6*: a b d e f X g
+2->6* edit2 : a b d e f X g
+2->6  edit2*: a b d e f X g
+edit3* 2->6 : a b X e f c g
+edit3  2->6*: a b X e f c g
+2->6* edit3 : a b X e f c g
+2->6  edit3*: a b X e f c g
+edit4* 2->6 : a b d X f c g
+edit4  2->6*: a b d X f c g
+2->6* edit4 : a b d X f c g
+2->6  edit4*: a b d X f c g
+edit5* 2->6 : a b d e X c g
+edit5  2->6*: a b d e X c g
+2->6* edit5 : a b d e X c g
+2->6  edit5*: a b d e X c g
+edit6* 2->6 : a b d e f c X
+edit6  2->6*: a b d e f c X
+2->6* edit6 : a b d e f c X
+2->6  edit6*: a b d e f c X
+edit0* 2->7 : X b d e f g c
+edit0  2->7*: X b d e f g c
+2->7* edit0 : X b d e f g c
+2->7  edit0*: X b d e f g c
+edit1* 2->7 : a X d e f g c
+edit1  2->7*: a X d e f g c
+2->7* edit1 : a X d e f g c
+2->7  edit1*: a X d e f g c
+edit2* 2->7 : a b d e f g X
+edit2  2->7*: a b d e f g X
+2->7* edit2 : a b d e f g X
+2->7  edit2*: a b d e f g X
+edit3* 2->7 : a b X e f g c
+edit3  2->7*: a b X e f g c
+2->7* edit3 : a b X e f g c
+2->7  edit3*: a b X e f g c
+edit4* 2->7 : a b d X f g c
+edit4  2->7*: a b d X f g c
+2->7* edit4 : a b d X f g c
+2->7  edit4*: a b d X f g c
+edit5* 2->7 : a b d e X g c
+edit5  2->7*: a b d e X g c
+2->7* edit5 : a b d e X g c
+2->7  edit5*: a b d e X g c
+edit6* 2->7 : a b d e f X c
+edit6  2->7*: a b d e f X c
+2->7* edit6 : a b d e f X c
+2->7  edit6*: a b d e f X c
+edit0* 3->0 : d X b c e f g
+edit0  3->0*: d X b c e f g
+3->0* edit0 : d X b c e f g
+3->0  edit0*: d X b c e f g
+edit1* 3->0 : d a X c e f g
+edit1  3->0*: d a X c e f g
+3->0* edit1 : d a X c e f g
+3->0  edit1*: d a X c e f g
+edit2* 3->0 : d a b X e f g
+edit2  3->0*: d a b X e f g
+3->0* edit2 : d a b X e f g
+3->0  edit2*: d a b X e f g
+edit3* 3->0 : X a b c e f g
+edit3  3->0*: X a b c e f g
+3->0* edit3 : X a b c e f g
+3->0  edit3*: X a b c e f g
+edit4* 3->0 : d a b c X f g
+edit4  3->0*: d a b c X f g
+3->0* edit4 : d a b c X f g
+3->0  edit4*: d a b c X f g
+edit5* 3->0 : d a b c e X g
+edit5  3->0*: d a b c e X g
+3->0* edit5 : d a b c e X g
+3->0  edit5*: d a b c e X g
+edit6* 3->0 : d a b c e f X
+edit6  3->0*: d a b c e f X
+3->0* edit6 : d a b c e f X
+3->0  edit6*: d a b c e f X
+edit0* 3->1 : X d b c e f g
+edit0  3->1*: X d b c e f g
+3->1* edit0 : X d b c e f g
+3->1  edit0*: X d b c e f g
+edit1* 3->1 : a d X c e f g
+edit1  3->1*: a d X c e f g
+3->1* edit1 : a d X c e f g
+3->1  edit1*: a d X c e f g
+edit2* 3->1 : a d b X e f g
+edit2  3->1*: a d b X e f g
+3->1* edit2 : a d b X e f g
+3->1  edit2*: a d b X e f g
+edit3* 3->1 : a X b c e f g
+edit3  3->1*: a X b c e f g
+3->1* edit3 : a X b c e f g
+3->1  edit3*: a X b c e f g
+edit4* 3->1 : a d b c X f g
+edit4  3->1*: a d b c X f g
+3->1* edit4 : a d b c X f g
+3->1  edit4*: a d b c X f g
+edit5* 3->1 : a d b c e X g
+edit5  3->1*: a d b c e X g
+3->1* edit5 : a d b c e X g
+3->1  edit5*: a d b c e X g
+edit6* 3->1 : a d b c e f X
+edit6  3->1*: a d b c e f X
+3->1* edit6 : a d b c e f X
+3->1  edit6*: a d b c e f X
+edit0* 3->2 : X b d c e f g
+edit0  3->2*: X b d c e f g
+3->2* edit0 : X b d c e f g
+3->2  edit0*: X b d c e f g
+edit1* 3->2 : a X d c e f g
+edit1  3->2*: a X d c e f g
+3->2* edit1 : a X d c e f g
+3->2  edit1*: a X d c e f g
+edit2* 3->2 : a b d X e f g
+edit2  3->2*: a b d X e f g
+3->2* edit2 : a b d X e f g
+3->2  edit2*: a b d X e f g
+edit3* 3->2 : a b X c e f g
+edit3  3->2*: a b X c e f g
+3->2* edit3 : a b X c e f g
+3->2  edit3*: a b X c e f g
+edit4* 3->2 : a b d c X f g
+edit4  3->2*: a b d c X f g
+3->2* edit4 : a b d c X f g
+3->2  edit4*: a b d c X f g
+edit5* 3->2 : a b d c e X g
+edit5  3->2*: a b d c e X g
+3->2* edit5 : a b d c e X g
+3->2  edit5*: a b d c e X g
+edit6* 3->2 : a b d c e f X
+edit6  3->2*: a b d c e f X
+3->2* edit6 : a b d c e f X
+3->2  edit6*: a b d c e f X
+edit0* 3->3 : X b c d e f g
+edit0  3->3*: X b c d e f g
+3->3* edit0 : X b c d e f g
+3->3  edit0*: X b c d e f g
+edit1* 3->3 : a X c d e f g
+edit1  3->3*: a X c d e f g
+3->3* edit1 : a X c d e f g
+3->3  edit1*: a X c d e f g
+edit2* 3->3 : a b X d e f g
+edit2  3->3*: a b X d e f g
+3->3* edit2 : a b X d e f g
+3->3  edit2*: a b X d e f g
+edit3* 3->3 : a b c X e f g
+edit3  3->3*: a b c X e f g
+3->3* edit3 : a b c X e f g
+3->3  edit3*: a b c X e f g
+edit4* 3->3 : a b c d X f g
+edit4  3->3*: a b c d X f g
+3->3* edit4 : a b c d X f g
+3->3  edit4*: a b c d X f g
+edit5* 3->3 : a b c d e X g
+edit5  3->3*: a b c d e X g
+3->3* edit5 : a b c d e X g
+3->3  edit5*: a b c d e X g
+edit6* 3->3 : a b c d e f X
+edit6  3->3*: a b c d e f X
+3->3* edit6 : a b c d e f X
+3->3  edit6*: a b c d e f X
+edit0* 3->4 : X b c d e f g
+edit0  3->4*: X b c d e f g
+3->4* edit0 : X b c d e f g
+3->4  edit0*: X b c d e f g
+edit1* 3->4 : a X c d e f g
+edit1  3->4*: a X c d e f g
+3->4* edit1 : a X c d e f g
+3->4  edit1*: a X c d e f g
+edit2* 3->4 : a b X d e f g
+edit2  3->4*: a b X d e f g
+3->4* edit2 : a b X d e f g
+3->4  edit2*: a b X d e f g
+edit3* 3->4 : a b c X e f g
+edit3  3->4*: a b c X e f g
+3->4* edit3 : a b c X e f g
+3->4  edit3*: a b c X e f g
+edit4* 3->4 : a b c d X f g
+edit4  3->4*: a b c d X f g
+3->4* edit4 : a b c d X f g
+3->4  edit4*: a b c d X f g
+edit5* 3->4 : a b c d e X g
+edit5  3->4*: a b c d e X g
+3->4* edit5 : a b c d e X g
+3->4  edit5*: a b c d e X g
+edit6* 3->4 : a b c d e f X
+edit6  3->4*: a b c d e f X
+3->4* edit6 : a b c d e f X
+3->4  edit6*: a b c d e f X
+edit0* 3->5 : X b c e d f g
+edit0  3->5*: X b c e d f g
+3->5* edit0 : X b c e d f g
+3->5  edit0*: X b c e d f g
+edit1* 3->5 : a X c e d f g
+edit1  3->5*: a X c e d f g
+3->5* edit1 : a X c e d f g
+3->5  edit1*: a X c e d f g
+edit2* 3->5 : a b X e d f g
+edit2  3->5*: a b X e d f g
+3->5* edit2 : a b X e d f g
+3->5  edit2*: a b X e d f g
+edit3* 3->5 : a b c e X f g
+edit3  3->5*: a b c e X f g
+3->5* edit3 : a b c e X f g
+3->5  edit3*: a b c e X f g
+edit4* 3->5 : a b c X d f g
+edit4  3->5*: a b c X d f g
+3->5* edit4 : a b c X d f g
+3->5  edit4*: a b c X d f g
+edit5* 3->5 : a b c e d X g
+edit5  3->5*: a b c e d X g
+3->5* edit5 : a b c e d X g
+3->5  edit5*: a b c e d X g
+edit6* 3->5 : a b c e d f X
+edit6  3->5*: a b c e d f X
+3->5* edit6 : a b c e d f X
+3->5  edit6*: a b c e d f X
+edit0* 3->6 : X b c e f d g
+edit0  3->6*: X b c e f d g
+3->6* edit0 : X b c e f d g
+3->6  edit0*: X b c e f d g
+edit1* 3->6 : a X c e f d g
+edit1  3->6*: a X c e f d g
+3->6* edit1 : a X c e f d g
+3->6  edit1*: a X c e f d g
+edit2* 3->6 : a b X e f d g
+edit2  3->6*: a b X e f d g
+3->6* edit2 : a b X e f d g
+3->6  edit2*: a b X e f d g
+edit3* 3->6 : a b c e f X g
+edit3  3->6*: a b c e f X g
+3->6* edit3 : a b c e f X g
+3->6  edit3*: a b c e f X g
+edit4* 3->6 : a b c X f d g
+edit4  3->6*: a b c X f d g
+3->6* edit4 : a b c X f d g
+3->6  edit4*: a b c X f d g
+edit5* 3->6 : a b c e X d g
+edit5  3->6*: a b c e X d g
+3->6* edit5 : a b c e X d g
+3->6  edit5*: a b c e X d g
+edit6* 3->6 : a b c e f d X
+edit6  3->6*: a b c e f d X
+3->6* edit6 : a b c e f d X
+3->6  edit6*: a b c e f d X
+edit0* 3->7 : X b c e f g d
+edit0  3->7*: X b c e f g d
+3->7* edit0 : X b c e f g d
+3->7  edit0*: X b c e f g d
+edit1* 3->7 : a X c e f g d
+edit1  3->7*: a X c e f g d
+3->7* edit1 : a X c e f g d
+3->7  edit1*: a X c e f g d
+edit2* 3->7 : a b X e f g d
+edit2  3->7*: a b X e f g d
+3->7* edit2 : a b X e f g d
+3->7  edit2*: a b X e f g d
+edit3* 3->7 : a b c e f g X
+edit3  3->7*: a b c e f g X
+3->7* edit3 : a b c e f g X
+3->7  edit3*: a b c e f g X
+edit4* 3->7 : a b c X f g d
+edit4  3->7*: a b c X f g d
+3->7* edit4 : a b c X f g d
+3->7  edit4*: a b c X f g d
+edit5* 3->7 : a b c e X g d
+edit5  3->7*: a b c e X g d
+3->7* edit5 : a b c e X g d
+3->7  edit5*: a b c e X g d
+edit6* 3->7 : a b c e f X d
+edit6  3->7*: a b c e f X d
+3->7* edit6 : a b c e f X d
+3->7  edit6*: a b c e f X d
+edit0* 4->0 : e X b c d f g
+edit0  4->0*: e X b c d f g
+4->0* edit0 : e X b c d f g
+4->0  edit0*: e X b c d f g
+edit1* 4->0 : e a X c d f g
+edit1  4->0*: e a X c d f g
+4->0* edit1 : e a X c d f g
+4->0  edit1*: e a X c d f g
+edit2* 4->0 : e a b X d f g
+edit2  4->0*: e a b X d f g
+4->0* edit2 : e a b X d f g
+4->0  edit2*: e a b X d f g
+edit3* 4->0 : e a b c X f g
+edit3  4->0*: e a b c X f g
+4->0* edit3 : e a b c X f g
+4->0  edit3*: e a b c X f g
+edit4* 4->0 : X a b c d f g
+edit4  4->0*: X a b c d f g
+4->0* edit4 : X a b c d f g
+4->0  edit4*: X a b c d f g
+edit5* 4->0 : e a b c d X g
+edit5  4->0*: e a b c d X g
+4->0* edit5 : e a b c d X g
+4->0  edit5*: e a b c d X g
+edit6* 4->0 : e a b c d f X
+edit6  4->0*: e a b c d f X
+4->0* edit6 : e a b c d f X
+4->0  edit6*: e a b c d f X
+edit0* 4->1 : X e b c d f g
+edit0  4->1*: X e b c d f g
+4->1* edit0 : X e b c d f g
+4->1  edit0*: X e b c d f g
+edit1* 4->1 : a e X c d f g
+edit1  4->1*: a e X c d f g
+4->1* edit1 : a e X c d f g
+4->1  edit1*: a e X c d f g
+edit2* 4->1 : a e b X d f g
+edit2  4->1*: a e b X d f g
+4->1* edit2 : a e b X d f g
+4->1  edit2*: a e b X d f g
+edit3* 4->1 : a e b c X f g
+edit3  4->1*: a e b c X f g
+4->1* edit3 : a e b c X f g
+4->1  edit3*: a e b c X f g
+edit4* 4->1 : a X b c d f g
+edit4  4->1*: a X b c d f g
+4->1* edit4 : a X b c d f g
+4->1  edit4*: a X b c d f g
+edit5* 4->1 : a e b c d X g
+edit5  4->1*: a e b c d X g
+4->1* edit5 : a e b c d X g
+4->1  edit5*: a e b c d X g
+edit6* 4->1 : a e b c d f X
+edit6  4->1*: a e b c d f X
+4->1* edit6 : a e b c d f X
+4->1  edit6*: a e b c d f X
+edit0* 4->2 : X b e c d f g
+edit0  4->2*: X b e c d f g
+4->2* edit0 : X b e c d f g
+4->2  edit0*: X b e c d f g
+edit1* 4->2 : a X e c d f g
+edit1  4->2*: a X e c d f g
+4->2* edit1 : a X e c d f g
+4->2  edit1*: a X e c d f g
+edit2* 4->2 : a b e X d f g
+edit2  4->2*: a b e X d f g
+4->2* edit2 : a b e X d f g
+4->2  edit2*: a b e X d f g
+edit3* 4->2 : a b e c X f g
+edit3  4->2*: a b e c X f g
+4->2* edit3 : a b e c X f g
+4->2  edit3*: a b e c X f g
+edit4* 4->2 : a b X c d f g
+edit4  4->2*: a b X c d f g
+4->2* edit4 : a b X c d f g
+4->2  edit4*: a b X c d f g
+edit5* 4->2 : a b e c d X g
+edit5  4->2*: a b e c d X g
+4->2* edit5 : a b e c d X g
+4->2  edit5*: a b e c d X g
+edit6* 4->2 : a b e c d f X
+edit6  4->2*: a b e c d f X
+4->2* edit6 : a b e c d f X
+4->2  edit6*: a b e c d f X
+edit0* 4->3 : X b c e d f g
+edit0  4->3*: X b c e d f g
+4->3* edit0 : X b c e d f g
+4->3  edit0*: X b c e d f g
+edit1* 4->3 : a X c e d f g
+edit1  4->3*: a X c e d f g
+4->3* edit1 : a X c e d f g
+4->3  edit1*: a X c e d f g
+edit2* 4->3 : a b X e d f g
+edit2  4->3*: a b X e d f g
+4->3* edit2 : a b X e d f g
+4->3  edit2*: a b X e d f g
+edit3* 4->3 : a b c e X f g
+edit3  4->3*: a b c e X f g
+4->3* edit3 : a b c e X f g
+4->3  edit3*: a b c e X f g
+edit4* 4->3 : a b c X d f g
+edit4  4->3*: a b c X d f g
+4->3* edit4 : a b c X d f g
+4->3  edit4*: a b c X d f g
+edit5* 4->3 : a b c e d X g
+edit5  4->3*: a b c e d X g
+4->3* edit5 : a b c e d X g
+4->3  edit5*: a b c e d X g
+edit6* 4->3 : a b c e d f X
+edit6  4->3*: a b c e d f X
+4->3* edit6 : a b c e d f X
+4->3  edit6*: a b c e d f X
+edit0* 4->4 : X b c d e f g
+edit0  4->4*: X b c d e f g
+4->4* edit0 : X b c d e f g
+4->4  edit0*: X b c d e f g
+edit1* 4->4 : a X c d e f g
+edit1  4->4*: a X c d e f g
+4->4* edit1 : a X c d e f g
+4->4  edit1*: a X c d e f g
+edit2* 4->4 : a b X d e f g
+edit2  4->4*: a b X d e f g
+4->4* edit2 : a b X d e f g
+4->4  edit2*: a b X d e f g
+edit3* 4->4 : a b c X e f g
+edit3  4->4*: a b c X e f g
+4->4* edit3 : a b c X e f g
+4->4  edit3*: a b c X e f g
+edit4* 4->4 : a b c d X f g
+edit4  4->4*: a b c d X f g
+4->4* edit4 : a b c d X f g
+4->4  edit4*: a b c d X f g
+edit5* 4->4 : a b c d e X g
+edit5  4->4*: a b c d e X g
+4->4* edit5 : a b c d e X g
+4->4  edit5*: a b c d e X g
+edit6* 4->4 : a b c d e f X
+edit6  4->4*: a b c d e f X
+4->4* edit6 : a b c d e f X
+4->4  edit6*: a b c d e f X
+edit0* 4->5 : X b c d e f g
+edit0  4->5*: X b c d e f g
+4->5* edit0 : X b c d e f g
+4->5  edit0*: X b c d e f g
+edit1* 4->5 : a X c d e f g
+edit1  4->5*: a X c d e f g
+4->5* edit1 : a X c d e f g
+4->5  edit1*: a X c d e f g
+edit2* 4->5 : a b X d e f g
+edit2  4->5*: a b X d e f g
+4->5* edit2 : a b X d e f g
+4->5  edit2*: a b X d e f g
+edit3* 4->5 : a b c X e f g
+edit3  4->5*: a b c X e f g
+4->5* edit3 : a b c X e f g
+4->5  edit3*: a b c X e f g
+edit4* 4->5 : a b c d X f g
+edit4  4->5*: a b c d X f g
+4->5* edit4 : a b c d X f g
+4->5  edit4*: a b c d X f g
+edit5* 4->5 : a b c d e X g
+edit5  4->5*: a b c d e X g
+4->5* edit5 : a b c d e X g
+4->5  edit5*: a b c d e X g
+edit6* 4->5 : a b c d e f X
+edit6  4->5*: a b c d e f X
+4->5* edit6 : a b c d e f X
+4->5  edit6*: a b c d e f X
+edit0* 4->6 : X b c d f e g
+edit0  4->6*: X b c d f e g
+4->6* edit0 : X b c d f e g
+4->6  edit0*: X b c d f e g
+edit1* 4->6 : a X c d f e g
+edit1  4->6*: a X c d f e g
+4->6* edit1 : a X c d f e g
+4->6  edit1*: a X c d f e g
+edit2* 4->6 : a b X d f e g
+edit2  4->6*: a b X d f e g
+4->6* edit2 : a b X d f e g
+4->6  edit2*: a b X d f e g
+edit3* 4->6 : a b c X f e g
+edit3  4->6*: a b c X f e g
+4->6* edit3 : a b c X f e g
+4->6  edit3*: a b c X f e g
+edit4* 4->6 : a b c d f X g
+edit4  4->6*: a b c d f X g
+4->6* edit4 : a b c d f X g
+4->6  edit4*: a b c d f X g
+edit5* 4->6 : a b c d X e g
+edit5  4->6*: a b c d X e g
+4->6* edit5 : a b c d X e g
+4->6  edit5*: a b c d X e g
+edit6* 4->6 : a b c d f e X
+edit6  4->6*: a b c d f e X
+4->6* edit6 : a b c d f e X
+4->6  edit6*: a b c d f e X
+edit0* 4->7 : X b c d f g e
+edit0  4->7*: X b c d f g e
+4->7* edit0 : X b c d f g e
+4->7  edit0*: X b c d f g e
+edit1* 4->7 : a X c d f g e
+edit1  4->7*: a X c d f g e
+4->7* edit1 : a X c d f g e
+4->7  edit1*: a X c d f g e
+edit2* 4->7 : a b X d f g e
+edit2  4->7*: a b X d f g e
+4->7* edit2 : a b X d f g e
+4->7  edit2*: a b X d f g e
+edit3* 4->7 : a b c X f g e
+edit3  4->7*: a b c X f g e
+4->7* edit3 : a b c X f g e
+4->7  edit3*: a b c X f g e
+edit4* 4->7 : a b c d f g X
+edit4  4->7*: a b c d f g X
+4->7* edit4 : a b c d f g X
+4->7  edit4*: a b c d f g X
+edit5* 4->7 : a b c d X g e
+edit5  4->7*: a b c d X g e
+4->7* edit5 : a b c d X g e
+4->7  edit5*: a b c d X g e
+edit6* 4->7 : a b c d f X e
+edit6  4->7*: a b c d f X e
+4->7* edit6 : a b c d f X e
+4->7  edit6*: a b c d f X e
+edit0* 5->0 : f X b c d e g
+edit0  5->0*: f X b c d e g
+5->0* edit0 : f X b c d e g
+5->0  edit0*: f X b c d e g
+edit1* 5->0 : f a X c d e g
+edit1  5->0*: f a X c d e g
+5->0* edit1 : f a X c d e g
+5->0  edit1*: f a X c d e g
+edit2* 5->0 : f a b X d e g
+edit2  5->0*: f a b X d e g
+5->0* edit2 : f a b X d e g
+5->0  edit2*: f a b X d e g
+edit3* 5->0 : f a b c X e g
+edit3  5->0*: f a b c X e g
+5->0* edit3 : f a b c X e g
+5->0  edit3*: f a b c X e g
+edit4* 5->0 : f a b c d X g
+edit4  5->0*: f a b c d X g
+5->0* edit4 : f a b c d X g
+5->0  edit4*: f a b c d X g
+edit5* 5->0 : X a b c d e g
+edit5  5->0*: X a b c d e g
+5->0* edit5 : X a b c d e g
+5->0  edit5*: X a b c d e g
+edit6* 5->0 : f a b c d e X
+edit6  5->0*: f a b c d e X
+5->0* edit6 : f a b c d e X
+5->0  edit6*: f a b c d e X
+edit0* 5->1 : X f b c d e g
+edit0  5->1*: X f b c d e g
+5->1* edit0 : X f b c d e g
+5->1  edit0*: X f b c d e g
+edit1* 5->1 : a f X c d e g
+edit1  5->1*: a f X c d e g
+5->1* edit1 : a f X c d e g
+5->1  edit1*: a f X c d e g
+edit2* 5->1 : a f b X d e g
+edit2  5->1*: a f b X d e g
+5->1* edit2 : a f b X d e g
+5->1  edit2*: a f b X d e g
+edit3* 5->1 : a f b c X e g
+edit3  5->1*: a f b c X e g
+5->1* edit3 : a f b c X e g
+5->1  edit3*: a f b c X e g
+edit4* 5->1 : a f b c d X g
+edit4  5->1*: a f b c d X g
+5->1* edit4 : a f b c d X g
+5->1  edit4*: a f b c d X g
+edit5* 5->1 : a X b c d e g
+edit5  5->1*: a X b c d e g
+5->1* edit5 : a X b c d e g
+5->1  edit5*: a X b c d e g
+edit6* 5->1 : a f b c d e X
+edit6  5->1*: a f b c d e X
+5->1* edit6 : a f b c d e X
+5->1  edit6*: a f b c d e X
+edit0* 5->2 : X b f c d e g
+edit0  5->2*: X b f c d e g
+5->2* edit0 : X b f c d e g
+5->2  edit0*: X b f c d e g
+edit1* 5->2 : a X f c d e g
+edit1  5->2*: a X f c d e g
+5->2* edit1 : a X f c d e g
+5->2  edit1*: a X f c d e g
+edit2* 5->2 : a b f X d e g
+edit2  5->2*: a b f X d e g
+5->2* edit2 : a b f X d e g
+5->2  edit2*: a b f X d e g
+edit3* 5->2 : a b f c X e g
+edit3  5->2*: a b f c X e g
+5->2* edit3 : a b f c X e g
+5->2  edit3*: a b f c X e g
+edit4* 5->2 : a b f c d X g
+edit4  5->2*: a b f c d X g
+5->2* edit4 : a b f c d X g
+5->2  edit4*: a b f c d X g
+edit5* 5->2 : a b X c d e g
+edit5  5->2*: a b X c d e g
+5->2* edit5 : a b X c d e g
+5->2  edit5*: a b X c d e g
+edit6* 5->2 : a b f c d e X
+edit6  5->2*: a b f c d e X
+5->2* edit6 : a b f c d e X
+5->2  edit6*: a b f c d e X
+edit0* 5->3 : X b c f d e g
+edit0  5->3*: X b c f d e g
+5->3* edit0 : X b c f d e g
+5->3  edit0*: X b c f d e g
+edit1* 5->3 : a X c f d e g
+edit1  5->3*: a X c f d e g
+5->3* edit1 : a X c f d e g
+5->3  edit1*: a X c f d e g
+edit2* 5->3 : a b X f d e g
+edit2  5->3*: a b X f d e g
+5->3* edit2 : a b X f d e g
+5->3  edit2*: a b X f d e g
+edit3* 5->3 : a b c f X e g
+edit3  5->3*: a b c f X e g
+5->3* edit3 : a b c f X e g
+5->3  edit3*: a b c f X e g
+edit4* 5->3 : a b c f d X g
+edit4  5->3*: a b c f d X g
+5->3* edit4 : a b c f d X g
+5->3  edit4*: a b c f d X g
+edit5* 5->3 : a b c X d e g
+edit5  5->3*: a b c X d e g
+5->3* edit5 : a b c X d e g
+5->3  edit5*: a b c X d e g
+edit6* 5->3 : a b c f d e X
+edit6  5->3*: a b c f d e X
+5->3* edit6 : a b c f d e X
+5->3  edit6*: a b c f d e X
+edit0* 5->4 : X b c d f e g
+edit0  5->4*: X b c d f e g
+5->4* edit0 : X b c d f e g
+5->4  edit0*: X b c d f e g
+edit1* 5->4 : a X c d f e g
+edit1  5->4*: a X c d f e g
+5->4* edit1 : a X c d f e g
+5->4  edit1*: a X c d f e g
+edit2* 5->4 : a b X d f e g
+edit2  5->4*: a b X d f e g
+5->4* edit2 : a b X d f e g
+5->4  edit2*: a b X d f e g
+edit3* 5->4 : a b c X f e g
+edit3  5->4*: a b c X f e g
+5->4* edit3 : a b c X f e g
+5->4  edit3*: a b c X f e g
+edit4* 5->4 : a b c d f X g
+edit4  5->4*: a b c d f X g
+5->4* edit4 : a b c d f X g
+5->4  edit4*: a b c d f X g
+edit5* 5->4 : a b c d X e g
+edit5  5->4*: a b c d X e g
+5->4* edit5 : a b c d X e g
+5->4  edit5*: a b c d X e g
+edit6* 5->4 : a b c d f e X
+edit6  5->4*: a b c d f e X
+5->4* edit6 : a b c d f e X
+5->4  edit6*: a b c d f e X
+edit0* 5->5 : X b c d e f g
+edit0  5->5*: X b c d e f g
+5->5* edit0 : X b c d e f g
+5->5  edit0*: X b c d e f g
+edit1* 5->5 : a X c d e f g
+edit1  5->5*: a X c d e f g
+5->5* edit1 : a X c d e f g
+5->5  edit1*: a X c d e f g
+edit2* 5->5 : a b X d e f g
+edit2  5->5*: a b X d e f g
+5->5* edit2 : a b X d e f g
+5->5  edit2*: a b X d e f g
+edit3* 5->5 : a b c X e f g
+edit3  5->5*: a b c X e f g
+5->5* edit3 : a b c X e f g
+5->5  edit3*: a b c X e f g
+edit4* 5->5 : a b c d X f g
+edit4  5->5*: a b c d X f g
+5->5* edit4 : a b c d X f g
+5->5  edit4*: a b c d X f g
+edit5* 5->5 : a b c d e X g
+edit5  5->5*: a b c d e X g
+5->5* edit5 : a b c d e X g
+5->5  edit5*: a b c d e X g
+edit6* 5->5 : a b c d e f X
+edit6  5->5*: a b c d e f X
+5->5* edit6 : a b c d e f X
+5->5  edit6*: a b c d e f X
+edit0* 5->6 : X b c d e f g
+edit0  5->6*: X b c d e f g
+5->6* edit0 : X b c d e f g
+5->6  edit0*: X b c d e f g
+edit1* 5->6 : a X c d e f g
+edit1  5->6*: a X c d e f g
+5->6* edit1 : a X c d e f g
+5->6  edit1*: a X c d e f g
+edit2* 5->6 : a b X d e f g
+edit2  5->6*: a b X d e f g
+5->6* edit2 : a b X d e f g
+5->6  edit2*: a b X d e f g
+edit3* 5->6 : a b c X e f g
+edit3  5->6*: a b c X e f g
+5->6* edit3 : a b c X e f g
+5->6  edit3*: a b c X e f g
+edit4* 5->6 : a b c d X f g
+edit4  5->6*: a b c d X f g
+5->6* edit4 : a b c d X f g
+5->6  edit4*: a b c d X f g
+edit5* 5->6 : a b c d e X g
+edit5  5->6*: a b c d e X g
+5->6* edit5 : a b c d e X g
+5->6  edit5*: a b c d e X g
+edit6* 5->6 : a b c d e f X
+edit6  5->6*: a b c d e f X
+5->6* edit6 : a b c d e f X
+5->6  edit6*: a b c d e f X
+edit0* 5->7 : X b c d e g f
+edit0  5->7*: X b c d e g f
+5->7* edit0 : X b c d e g f
+5->7  edit0*: X b c d e g f
+edit1* 5->7 : a X c d e g f
+edit1  5->7*: a X c d e g f
+5->7* edit1 : a X c d e g f
+5->7  edit1*: a X c d e g f
+edit2* 5->7 : a b X d e g f
+edit2  5->7*: a b X d e g f
+5->7* edit2 : a b X d e g f
+5->7  edit2*: a b X d e g f
+edit3* 5->7 : a b c X e g f
+edit3  5->7*: a b c X e g f
+5->7* edit3 : a b c X e g f
+5->7  edit3*: a b c X e g f
+edit4* 5->7 : a b c d X g f
+edit4  5->7*: a b c d X g f
+5->7* edit4 : a b c d X g f
+5->7  edit4*: a b c d X g f
+edit5* 5->7 : a b c d e g X
+edit5  5->7*: a b c d e g X
+5->7* edit5 : a b c d e g X
+5->7  edit5*: a b c d e g X
+edit6* 5->7 : a b c d e X f
+edit6  5->7*: a b c d e X f
+5->7* edit6 : a b c d e X f
+5->7  edit6*: a b c d e X f
+edit0* 6->0 : g X b c d e f
+edit0  6->0*: g X b c d e f
+6->0* edit0 : g X b c d e f
+6->0  edit0*: g X b c d e f
+edit1* 6->0 : g a X c d e f
+edit1  6->0*: g a X c d e f
+6->0* edit1 : g a X c d e f
+6->0  edit1*: g a X c d e f
+edit2* 6->0 : g a b X d e f
+edit2  6->0*: g a b X d e f
+6->0* edit2 : g a b X d e f
+6->0  edit2*: g a b X d e f
+edit3* 6->0 : g a b c X e f
+edit3  6->0*: g a b c X e f
+6->0* edit3 : g a b c X e f
+6->0  edit3*: g a b c X e f
+edit4* 6->0 : g a b c d X f
+edit4  6->0*: g a b c d X f
+6->0* edit4 : g a b c d X f
+6->0  edit4*: g a b c d X f
+edit5* 6->0 : g a b c d e X
+edit5  6->0*: g a b c d e X
+6->0* edit5 : g a b c d e X
+6->0  edit5*: g a b c d e X
+edit6* 6->0 : X a b c d e f
+edit6  6->0*: X a b c d e f
+6->0* edit6 : X a b c d e f
+6->0  edit6*: X a b c d e f
+edit0* 6->1 : X g b c d e f
+edit0  6->1*: X g b c d e f
+6->1* edit0 : X g b c d e f
+6->1  edit0*: X g b c d e f
+edit1* 6->1 : a g X c d e f
+edit1  6->1*: a g X c d e f
+6->1* edit1 : a g X c d e f
+6->1  edit1*: a g X c d e f
+edit2* 6->1 : a g b X d e f
+edit2  6->1*: a g b X d e f
+6->1* edit2 : a g b X d e f
+6->1  edit2*: a g b X d e f
+edit3* 6->1 : a g b c X e f
+edit3  6->1*: a g b c X e f
+6->1* edit3 : a g b c X e f
+6->1  edit3*: a g b c X e f
+edit4* 6->1 : a g b c d X f
+edit4  6->1*: a g b c d X f
+6->1* edit4 : a g b c d X f
+6->1  edit4*: a g b c d X f
+edit5* 6->1 : a g b c d e X
+edit5  6->1*: a g b c d e X
+6->1* edit5 : a g b c d e X
+6->1  edit5*: a g b c d e X
+edit6* 6->1 : a X b c d e f
+edit6  6->1*: a X b c d e f
+6->1* edit6 : a X b c d e f
+6->1  edit6*: a X b c d e f
+edit0* 6->2 : X b g c d e f
+edit0  6->2*: X b g c d e f
+6->2* edit0 : X b g c d e f
+6->2  edit0*: X b g c d e f
+edit1* 6->2 : a X g c d e f
+edit1  6->2*: a X g c d e f
+6->2* edit1 : a X g c d e f
+6->2  edit1*: a X g c d e f
+edit2* 6->2 : a b g X d e f
+edit2  6->2*: a b g X d e f
+6->2* edit2 : a b g X d e f
+6->2  edit2*: a b g X d e f
+edit3* 6->2 : a b g c X e f
+edit3  6->2*: a b g c X e f
+6->2* edit3 : a b g c X e f
+6->2  edit3*: a b g c X e f
+edit4* 6->2 : a b g c d X f
+edit4  6->2*: a b g c d X f
+6->2* edit4 : a b g c d X f
+6->2  edit4*: a b g c d X f
+edit5* 6->2 : a b g c d e X
+edit5  6->2*: a b g c d e X
+6->2* edit5 : a b g c d e X
+6->2  edit5*: a b g c d e X
+edit6* 6->2 : a b X c d e f
+edit6  6->2*: a b X c d e f
+6->2* edit6 : a b X c d e f
+6->2  edit6*: a b X c d e f
+edit0* 6->3 : X b c g d e f
+edit0  6->3*: X b c g d e f
+6->3* edit0 : X b c g d e f
+6->3  edit0*: X b c g d e f
+edit1* 6->3 : a X c g d e f
+edit1  6->3*: a X c g d e f
+6->3* edit1 : a X c g d e f
+6->3  edit1*: a X c g d e f
+edit2* 6->3 : a b X g d e f
+edit2  6->3*: a b X g d e f
+6->3* edit2 : a b X g d e f
+6->3  edit2*: a b X g d e f
+edit3* 6->3 : a b c g X e f
+edit3  6->3*: a b c g X e f
+6->3* edit3 : a b c g X e f
+6->3  edit3*: a b c g X e f
+edit4* 6->3 : a b c g d X f
+edit4  6->3*: a b c g d X f
+6->3* edit4 : a b c g d X f
+6->3  edit4*: a b c g d X f
+edit5* 6->3 : a b c g d e X
+edit5  6->3*: a b c g d e X
+6->3* edit5 : a b c g d e X
+6->3  edit5*: a b c g d e X
+edit6* 6->3 : a b c X d e f
+edit6  6->3*: a b c X d e f
+6->3* edit6 : a b c X d e f
+6->3  edit6*: a b c X d e f
+edit0* 6->4 : X b c d g e f
+edit0  6->4*: X b c d g e f
+6->4* edit0 : X b c d g e f
+6->4  edit0*: X b c d g e f
+edit1* 6->4 : a X c d g e f
+edit1  6->4*: a X c d g e f
+6->4* edit1 : a X c d g e f
+6->4  edit1*: a X c d g e f
+edit2* 6->4 : a b X d g e f
+edit2  6->4*: a b X d g e f
+6->4* edit2 : a b X d g e f
+6->4  edit2*: a b X d g e f
+edit3* 6->4 : a b c X g e f
+edit3  6->4*: a b c X g e f
+6->4* edit3 : a b c X g e f
+6->4  edit3*: a b c X g e f
+edit4* 6->4 : a b c d g X f
+edit4  6->4*: a b c d g X f
+6->4* edit4 : a b c d g X f
+6->4  edit4*: a b c d g X f
+edit5* 6->4 : a b c d g e X
+edit5  6->4*: a b c d g e X
+6->4* edit5 : a b c d g e X
+6->4  edit5*: a b c d g e X
+edit6* 6->4 : a b c d X e f
+edit6  6->4*: a b c d X e f
+6->4* edit6 : a b c d X e f
+6->4  edit6*: a b c d X e f
+edit0* 6->5 : X b c d e g f
+edit0  6->5*: X b c d e g f
+6->5* edit0 : X b c d e g f
+6->5  edit0*: X b c d e g f
+edit1* 6->5 : a X c d e g f
+edit1  6->5*: a X c d e g f
+6->5* edit1 : a X c d e g f
+6->5  edit1*: a X c d e g f
+edit2* 6->5 : a b X d e g f
+edit2  6->5*: a b X d e g f
+6->5* edit2 : a b X d e g f
+6->5  edit2*: a b X d e g f
+edit3* 6->5 : a b c X e g f
+edit3  6->5*: a b c X e g f
+6->5* edit3 : a b c X e g f
+6->5  edit3*: a b c X e g f
+edit4* 6->5 : a b c d X g f
+edit4  6->5*: a b c d X g f
+6->5* edit4 : a b c d X g f
+6->5  edit4*: a b c d X g f
+edit5* 6->5 : a b c d e g X
+edit5  6->5*: a b c d e g X
+6->5* edit5 : a b c d e g X
+6->5  edit5*: a b c d e g X
+edit6* 6->5 : a b c d e X f
+edit6  6->5*: a b c d e X f
+6->5* edit6 : a b c d e X f
+6->5  edit6*: a b c d e X f
+edit0* 6->6 : X b c d e f g
+edit0  6->6*: X b c d e f g
+6->6* edit0 : X b c d e f g
+6->6  edit0*: X b c d e f g
+edit1* 6->6 : a X c d e f g
+edit1  6->6*: a X c d e f g
+6->6* edit1 : a X c d e f g
+6->6  edit1*: a X c d e f g
+edit2* 6->6 : a b X d e f g
+edit2  6->6*: a b X d e f g
+6->6* edit2 : a b X d e f g
+6->6  edit2*: a b X d e f g
+edit3* 6->6 : a b c X e f g
+edit3  6->6*: a b c X e f g
+6->6* edit3 : a b c X e f g
+6->6  edit3*: a b c X e f g
+edit4* 6->6 : a b c d X f g
+edit4  6->6*: a b c d X f g
+6->6* edit4 : a b c d X f g
+6->6  edit4*: a b c d X f g
+edit5* 6->6 : a b c d e X g
+edit5  6->6*: a b c d e X g
+6->6* edit5 : a b c d e X g
+6->6  edit5*: a b c d e X g
+edit6* 6->6 : a b c d e f X
+edit6  6->6*: a b c d e f X
+6->6* edit6 : a b c d e f X
+6->6  edit6*: a b c d e f X
+edit0* 6->7 : X b c d e f g
+edit0  6->7*: X b c d e f g
+6->7* edit0 : X b c d e f g
+6->7  edit0*: X b c d e f g
+edit1* 6->7 : a X c d e f g
+edit1  6->7*: a X c d e f g
+6->7* edit1 : a X c d e f g
+6->7  edit1*: a X c d e f g
+edit2* 6->7 : a b X d e f g
+edit2  6->7*: a b X d e f g
+6->7* edit2 : a b X d e f g
+6->7  edit2*: a b X d e f g
+edit3* 6->7 : a b c X e f g
+edit3  6->7*: a b c X e f g
+6->7* edit3 : a b c X e f g
+6->7  edit3*: a b c X e f g
+edit4* 6->7 : a b c d X f g
+edit4  6->7*: a b c d X f g
+6->7* edit4 : a b c d X f g
+6->7  edit4*: a b c d X f g
+edit5* 6->7 : a b c d e X g
+edit5  6->7*: a b c d e X g
+6->7* edit5 : a b c d e X g
+6->7  edit5*: a b c d e X g
+edit6* 6->7 : a b c d e f X
+edit6  6->7*: a b c d e f X
+6->7* edit6 : a b c d e f X
+6->7  edit6*: a b c d e f X

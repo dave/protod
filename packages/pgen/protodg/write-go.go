@@ -258,7 +258,7 @@ func (m *Main) writeGoFields(f *File, locatable Locatable, fields []*MessageFiel
 	default:
 		panic(fmt.Sprintf("invalid locatable %T in writeGoFields", locatable))
 	}
-	messageFullName := fmt.Sprintf("%s.%s", parent.Scope.Package().Name, parent.Name)
+	messageFullName := parent.Scope.Full() // fmt.Sprintf("%s.%s", parent.Scope.Package().Name, parent.Name)
 
 	for _, field := range fields {
 		//func (b Person_type) Name() pdelta.String_scalar {

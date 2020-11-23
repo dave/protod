@@ -1,0 +1,32 @@
+del0* del0 : 1:b 2:c 3:d
+del0  del0*: 1:b 2:c 3:d
+del0* del1 : 2:c 3:d
+del0  del1*: 2:c 3:d
+del0* del2 : 1:b 3:d
+del0  del2*: 1:b 3:d
+del0* del3 : 1:b 2:c
+del0  del3*: 1:b 2:c
+del1* del0 : 2:c 3:d
+del1  del0*: 2:c 3:d
+del1* del1 : 0:a 2:c 3:d
+del1  del1*: 0:a 2:c 3:d
+del1* del2 : 0:a 3:d
+del1  del2*: 0:a 3:d
+del1* del3 : 0:a 2:c
+del1  del3*: 0:a 2:c
+del2* del0 : 1:b 3:d
+del2  del0*: 1:b 3:d
+del2* del1 : 0:a 3:d
+del2  del1*: 0:a 3:d
+del2* del2 : 0:a 1:b 3:d
+del2  del2*: 0:a 1:b 3:d
+del2* del3 : 0:a 1:b
+del2  del3*: 0:a 1:b
+del3* del0 : 1:b 2:c
+del3  del0*: 1:b 2:c
+del3* del1 : 0:a 2:c
+del3  del1*: 0:a 2:c
+del3* del2 : 0:a 1:b
+del3  del2*: 0:a 1:b
+del3* del3 : 0:a 1:b 2:c
+del3  del3*: 0:a 1:b 2:c
