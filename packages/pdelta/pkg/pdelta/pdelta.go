@@ -20,7 +20,7 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
-const DEBUG = true
+const DEBUG = false
 
 func (o *Op) Flatten() []*Op {
 	if o == nil {

@@ -16,7 +16,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-const OUTPUT_CASES = true
+const OUTPUT_CASES = false
 
 func mustUnmarshalAny(a *any.Any) proto.Message {
 	if a == nil {
