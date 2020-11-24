@@ -44,10 +44,8 @@ void main() {
       delta.apply(info.op2, data2p2);
       delta.apply(op1xp2, data2p2);
 
-      expect(toObject(data1p1), toObject(data2p1),
-          reason: "data1p1 != data2p1");
-      expect(toObject(data1p2), toObject(data2p2),
-          reason: "data1p2 != data2p2");
+      expect(toObject(data1p1), toObject(data2p1), reason: "data1p1 != data2p1");
+      expect(toObject(data1p2), toObject(data2p2), reason: "data1p2 != data2p2");
 
       if (info.hasExpected()) {
         var expected = delta.unpack(info.expected);

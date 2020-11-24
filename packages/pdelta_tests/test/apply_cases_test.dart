@@ -11,9 +11,15 @@ import 'cases_transform_test.dart';
 void main() async {
   delta.setDefaultRegistry(registry.types);
   final cases = (await File("../cases_apply.json").readAsLines()).map((String str) {
-    if (str.startsWith("[")) { str = str.substring(1); }
-    if (str.endsWith("]")) { str = str.substring(0, str.length-1); }
-    if (str.endsWith(",")) { str = str.substring(0, str.length-1); }
+    if (str.startsWith("[")) {
+      str = str.substring(1);
+    }
+    if (str.endsWith("]")) {
+      str = str.substring(0, str.length - 1);
+    }
+    if (str.endsWith(",")) {
+      str = str.substring(0, str.length - 1);
+    }
     var a = ApplyTestCase();
     a.mergeFromProto3Json(jsonDecode(str), typeRegistry: registry.types);
     return a;
@@ -32,4 +38,3 @@ void main() async {
     });
   });
 }
-

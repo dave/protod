@@ -41,6 +41,7 @@ class OpBehaviour {
   final int Function(int) Function(pb.Op, pb.Op) indexValueShifter;
   final int Function(int) Function(pb.Op, pb.Op) indexLocationShifter;
   final pb.Key Function(pb.Key) Function(pb.Op, pb.Op) keyShifter;
+
   OpBehaviour({
     this.itemIsDeleted,
     this.valueIsDeleted,
@@ -127,8 +128,7 @@ final Map<OpType, Map<LocatorType, OpBehaviour>> Behaviours = {
         return moveValueShifter(item(t).index.toInt(), t.index.toInt());
       },
       indexLocationShifter: (pb.Op t, pb.Op op) {
-        return moveLocationShifter(
-            item(t).index.toInt(), t.index.toInt(), false, false);
+        return moveLocationShifter(item(t).index.toInt(), t.index.toInt(), false, false);
       },
       keyShifter: null,
     ),

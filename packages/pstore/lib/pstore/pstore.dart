@@ -9,8 +9,7 @@ import 'package:pstore/pstore/pstore.pb.dart';
 // Q: request message type
 
 class Adapter<T extends GeneratedMessage> extends StoreAdapter<T> {
-  final Future<R>
-      Function<R extends GeneratedMessage, Q extends GeneratedMessage>(
+  final Future<R> Function<R extends GeneratedMessage, Q extends GeneratedMessage>(
     R response,
     Q request,
   ) _send;

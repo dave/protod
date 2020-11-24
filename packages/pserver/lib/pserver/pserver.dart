@@ -518,8 +518,7 @@ class Response<T extends GeneratedMessage> {
   Response(this.item, this.future);
 }
 
-class ItemAdapter<T extends GeneratedMessage>
-    extends hive.TypeAdapter<Item<T>> {
+class ItemAdapter<T extends GeneratedMessage> extends hive.TypeAdapter<Item<T>> {
   @override
   final int typeId;
 
@@ -549,14 +548,10 @@ class ItemAdapter<T extends GeneratedMessage>
     }
 
     // unmarshal buffer
-    final buffer = bufferBytesList
-        .map((e) => e == null ? null : (Op()..mergeFromBuffer(e)))
-        .toList();
+    final buffer = bufferBytesList.map((e) => e == null ? null : (Op()..mergeFromBuffer(e))).toList();
 
     // unmarshal overflow
-    final overflow = overflowBytesList
-        .map((e) => e == null ? null : (Op()..mergeFromBuffer(e)))
-        .toList();
+    final overflow = overflowBytesList.map((e) => e == null ? null : (Op()..mergeFromBuffer(e))).toList();
 
     return Item<T>(_store, "", value, state, request, buffer, overflow);
   }
@@ -567,10 +562,8 @@ class ItemAdapter<T extends GeneratedMessage>
     final valueBytes = item.value?.writeToBuffer() ?? List<int>();
     final state = item.state?.toInt() ?? 0;
     final request = item.requestId ?? '';
-    final buffer = item.buffer?.map((e) => e?.writeToBuffer())?.toList() ??
-        List<List<int>>();
-    final overflow = item.overflow?.map((e) => e?.writeToBuffer())?.toList() ??
-        List<List<int>>();
+    final buffer = item.buffer?.map((e) => e?.writeToBuffer())?.toList() ?? List<List<int>>();
+    final overflow = item.overflow?.map((e) => e?.writeToBuffer())?.toList() ?? List<List<int>>();
 
     writer.writeString(documentType); // 0
     writer.writeByteList(valueBytes); // 1

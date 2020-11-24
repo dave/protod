@@ -52,10 +52,8 @@ pb.Op transform(pb.Op t, pb.Op op, bool priority) {
       // Since any operation on a descendant of a oneof deletes all the other oneof root values, in most
       // situations we must delete the entire oneof tree in order to converge. The exception is when an operation
       // sets the whole oneof root value:
-      return (o.type == pb.Op_Type.Delete &&
-              o.location.length == oneofLocation.length) ||
-          (o.type == pb.Op_Type.Set &&
-              o.location.length == oneofLocation.length + 1);
+      return (o.type == pb.Op_Type.Delete && o.location.length == oneofLocation.length) ||
+          (o.type == pb.Op_Type.Set && o.location.length == oneofLocation.length + 1);
     }
 
     if (valid(t) && valid(op)) {
@@ -88,24 +86,20 @@ pb.Op tIndependent(pb.Op t, pb.Op op) {
   var behaviour = getBehaviour(t);
   var opBehaviour = getBehaviour(op);
 
-  if (behaviour.itemIsDeleted &&
-      treeRelationship(t.location, op.location) ==
-          TreeRelationshipType.ANCESTOR) {
+  if (behaviour.itemIsDeleted && treeRelationship(t.location, op.location) == TreeRelationshipType.ANCESTOR) {
     // Op is acting on a value that is a descendent of a value that t deleted. We should delete op.
     return nullOp;
   }
 
   if (behaviour.valueIsLocation &&
       behaviour.valueIsDeleted &&
-      treeRelationship(toLoc(t), op.location) ==
-          TreeRelationshipType.ANCESTOR) {
+      treeRelationship(toLoc(t), op.location) == TreeRelationshipType.ANCESTOR) {
     // Op is acting on a value that is a descendent of a value that t deleted. We should delete op.
     return nullOp;
   }
 
   if (behaviour.indexValueShifter != null &&
-      treeRelationship(parent(t), op.location) ==
-          TreeRelationshipType.ANCESTOR) {
+      treeRelationship(parent(t), op.location) == TreeRelationshipType.ANCESTOR) {
     // Op is acting on a value that is a descendent of a value that may have had it's list index shifted by t.
     // We should update the list index of the locator using the index shifter function.
     final shifter = behaviour.indexValueShifter(t, op);
@@ -113,8 +107,7 @@ pb.Op tIndependent(pb.Op t, pb.Op op) {
     final value = getIndexAt(op, index);
     var out = op.clone();
     setIndexAt(out, index, shifter(value));
-    if (opBehaviour.valueIsLocation &&
-        treeRelationship(parent(t), parent(op)) == TreeRelationshipType.EQUAL) {
+    if (opBehaviour.valueIsLocation && treeRelationship(parent(t), parent(op)) == TreeRelationshipType.EQUAL) {
       // If t and op both act on values within the same list (have the same parent), AND op has a location at
       // it's value, then we update the location using the location shifter. Example is two moves which are
       // acting on different values within a list.
@@ -124,9 +117,7 @@ pb.Op tIndependent(pb.Op t, pb.Op op) {
     return out;
   }
 
-  if (behaviour.keyShifter != null &&
-      treeRelationship(parent(t), op.location) ==
-          TreeRelationshipType.ANCESTOR) {
+  if (behaviour.keyShifter != null && treeRelationship(parent(t), op.location) == TreeRelationshipType.ANCESTOR) {
     // Op is acting on a value that is a descendent of a value that may have had it's map key shifted by t. We
     // should update the map key of the locator using the index shifter function.
     final shifter = behaviour.keyShifter(t, op);
@@ -528,8 +519,7 @@ pb.Op tMoveIndexInsertIndex(pb.Op t, pb.Op op, bool priority) {
   } else if (to == TreeRelationshipType.EQUAL) {
     // op is inserting a new value at the same location that t moved to. We can priority to determine which
     // operation is shifted.
-    final shifter =
-        moveLocationShifter(itemIndex(t), toIndex(t), priority, true);
+    final shifter = moveLocationShifter(itemIndex(t), toIndex(t), priority, true);
     var out = op.clone();
     setItemIndex(out, shifter(itemIndex(op)));
     return out;
@@ -554,8 +544,7 @@ pb.Op tMoveIndexMoveIndex(pb.Op t, pb.Op op, bool priority) {
   final fromTo = treeRelationship(t.location, toLoc(op));
   final toFrom = treeRelationship(toLoc(t), op.location);
   final toTo = treeRelationship(toLoc(t), toLoc(op));
-  if (fromFrom == TreeRelationshipType.EQUAL &&
-      toTo == TreeRelationshipType.EQUAL) {
+  if (fromFrom == TreeRelationshipType.EQUAL && toTo == TreeRelationshipType.EQUAL) {
     // Op is trying to move the value that t already moved, and the "to" locations are the same. Operations are
     // identical so we can simply delete op.
     return nullOp;
@@ -569,8 +558,7 @@ pb.Op tMoveIndexMoveIndex(pb.Op t, pb.Op op, bool priority) {
     }
     // Here all we need to do is modify the from location of op so that is uses the value at the to location of t.
     // We don't need to use the shifter.
-    final locationShifter =
-        moveLocationShifter(itemIndex(t), toIndex(t), priority, true);
+    final locationShifter = moveLocationShifter(itemIndex(t), toIndex(t), priority, true);
     var out = op.clone();
     // must use location locationShifter here because that was used to shift t.To
     setItemIndex(out, locationShifter(toIndex(t)));
@@ -579,15 +567,13 @@ pb.Op tMoveIndexMoveIndex(pb.Op t, pb.Op op, bool priority) {
   } else if (toTo == TreeRelationshipType.EQUAL) {
     // Op is trying to move another value to the same index that t just moved a value to. We can use priority to
     // determine which value is shifted.
-    final locationShifter =
-        moveLocationShifter(itemIndex(t), toIndex(t), priority, true);
+    final locationShifter = moveLocationShifter(itemIndex(t), toIndex(t), priority, true);
     final valueShifter = moveValueShifter(itemIndex(t), toIndex(t));
     var out = op.clone();
     setItemIndex(out, valueShifter(itemIndex(op)));
     setToIndex(out, locationShifter(toIndex(op)));
     return out;
-  } else if (fromTo == TreeRelationshipType.EQUAL &&
-      toFrom == TreeRelationshipType.EQUAL) {
+  } else if (fromTo == TreeRelationshipType.EQUAL && toFrom == TreeRelationshipType.EQUAL) {
     // Op is trying to move the value at the to index of the move that t has just done, and move to the from index.
     // Since both moves are non destructive and shift the other values around these operations are independent and
     // can be handled by tIndependent.
@@ -613,8 +599,7 @@ pb.Op tRenameKeyRenameKey(pb.Op t, pb.Op op, bool priority) {
   final toTo = treeRelationship(toLoc(t), toLoc(op));
   final fromFrom = treeRelationship(t.location, op.location);
   final fromTo = treeRelationship(t.location, toLoc(op));
-  if (fromFrom == TreeRelationshipType.EQUAL &&
-      toTo == TreeRelationshipType.EQUAL) {
+  if (fromFrom == TreeRelationshipType.EQUAL && toTo == TreeRelationshipType.EQUAL) {
     // Op is trying to move the value that t already moved, and the "to" locations are the same. We can simply
     // remove op.
     return nullOp;
@@ -642,8 +627,7 @@ pb.Op tRenameKeyRenameKey(pb.Op t, pb.Op op, bool priority) {
         ..location.addAll(op.clone().location);
     }
     return op.clone();
-  } else if (fromTo == TreeRelationshipType.EQUAL &&
-      toFrom == TreeRelationshipType.EQUAL) {
+  } else if (fromTo == TreeRelationshipType.EQUAL && toFrom == TreeRelationshipType.EQUAL) {
     // Op is trying to move the value that t has already overwritten, and the "to" location is the value that
     // t moved. In order to converge, we must delete both values, so we replace op with a delete that removes at
     // the From location.

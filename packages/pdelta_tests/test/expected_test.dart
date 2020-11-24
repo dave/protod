@@ -320,9 +320,7 @@ void main() {
   test("TestTransformRenameRename", () {
     final mapD = {0: "a", 1: "b", 2: "c", 3: "d", 4: "e", 5: "f"};
     final values = ["0", "1", "2", "3", "4", "5"];
-    var data = Company()
-      ..flags.addAll(
-          mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
+    var data = Company()..flags.addAll(mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
     var result = "";
     for (var fromA = 0; fromA < values.length; fromA++) {
       for (var toA = 0; toA < values.length; toA++) {
@@ -344,9 +342,7 @@ void main() {
   test("TestTransformEditEditKey", () {
     final mapD = {0: "a", 1: "b", 2: "c", 3: "d"};
     final values = ["0", "1", "2", "3"];
-    var data = Company()
-      ..flags.addAll(
-          mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
+    var data = Company()..flags.addAll(mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
     var result = "";
     for (var editA = 0; editA < values.length; editA++) {
       for (var editB = 0; editB < values.length; editB++) {
@@ -364,9 +360,7 @@ void main() {
   test("TestTransformEditSetKey", () {
     final mapD = {0: "a", 1: "b", 2: "c", 3: "d"};
     final values = ["0", "1", "2", "3"];
-    var data = Company()
-      ..flags.addAll(
-          mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
+    var data = Company()..flags.addAll(mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
     var result = "";
     for (var edit = 0; edit < values.length; edit++) {
       for (var set = 0; set < values.length; set++) {
@@ -385,9 +379,7 @@ void main() {
   test("TestTransformEditDeleteKey", () {
     final mapD = {0: "a", 1: "b", 2: "c", 3: "d"};
     final values = ["0", "1", "2", "3"];
-    var data = Company()
-      ..flags.addAll(
-          mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
+    var data = Company()..flags.addAll(mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
     var result = "";
     for (var edit = 0; edit < values.length; edit++) {
       for (var del = 0; del < values.length; del++) {
@@ -408,9 +400,7 @@ void main() {
     final editV = ["0", "1", "2", "3"];
     final renameF = ["0", "1", "2", "3"];
     final renameT = ["0", "1", "2", "3", "4", "5"];
-    var data = Company()
-      ..flags.addAll(
-          mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
+    var data = Company()..flags.addAll(mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
     var result = "";
     for (var edit = 0; edit < editV.length; edit++) {
       for (var from = 0; from < renameF.length; from++) {
@@ -433,9 +423,7 @@ void main() {
     final setV = ["0", "1", "2", "3"];
     final renameF = ["0", "1", "2", "3"];
     final renameT = ["0", "1", "2", "3", "4", "5"];
-    var data = Company()
-      ..flags.addAll(
-          mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
+    var data = Company()..flags.addAll(mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
     var result = "";
     for (var set = 0; set < setV.length; set++) {
       for (var from = 0; from < renameF.length; from++) {
@@ -458,9 +446,7 @@ void main() {
     final delV = ["0", "1", "2", "3"];
     final renameF = ["0", "1", "2", "3"];
     final renameT = ["0", "1", "2", "3", "4", "5"];
-    var data = Company()
-      ..flags.addAll(
-          mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
+    var data = Company()..flags.addAll(mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
     var result = "";
     for (var del = 0; del < delV.length; del++) {
       for (var from = 0; from < renameF.length; from++) {
@@ -481,9 +467,7 @@ void main() {
   test("TestTransformSetSetKey", () {
     final mapD = {0: "a", 1: "b", 2: "c", 3: "d"};
     final setV = ["0", "1", "2", "3"];
-    var data = Company()
-      ..flags.addAll(
-          mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
+    var data = Company()..flags.addAll(mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
     var result = "";
     for (var setA = 0; setA < setV.length; setA++) {
       for (var setB = 0; setB < setV.length; setB++) {
@@ -501,9 +485,7 @@ void main() {
   test("TestTransformSetDeleteKey", () {
     final mapD = {0: "a", 1: "b", 2: "c", 3: "d"};
     final values = ["0", "1", "2", "3"];
-    var data = Company()
-      ..flags.addAll(
-          mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
+    var data = Company()..flags.addAll(mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
     var result = "";
     for (var set = 0; set < values.length; set++) {
       for (var del = 0; del < values.length; del++) {
@@ -522,9 +504,7 @@ void main() {
   test("TestTransformDeleteDeleteKey", () {
     final mapD = {0: "a", 1: "b", 2: "c", 3: "d"};
     final values = ["0", "1", "2", "3"];
-    var data = Company()
-      ..flags.addAll(
-          mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
+    var data = Company()..flags.addAll(mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
     var result = "";
     for (var delA = 0; delA < values.length; delA++) {
       for (var delB = 0; delB < values.length; delB++) {
@@ -539,8 +519,7 @@ void main() {
   });
 }
 
-String testTwoOpsConverge(
-    pb.Op opA, pb.Op opB, String descA, String descB, GeneratedMessage data) {
+String testTwoOpsConverge(pb.Op opA, pb.Op opB, String descA, String descB, GeneratedMessage data) {
   // opA has priority
   final opAxpA = delta.transform(opB, opA, false);
   final opBxpA = delta.transform(opA, opB, true);

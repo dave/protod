@@ -85,17 +85,14 @@ void main() {
     testInfo(
       name: "edit bug",
       op: op.company.flags.key(2).edit("b", "c"),
-      data: Company()
-        ..flags.addAll({fixnum.Int64(1): "a", fixnum.Int64(2): "b"}),
-      expected: Company()
-        ..flags.addAll({fixnum.Int64(1): "a", fixnum.Int64(2): "c"}),
+      data: Company()..flags.addAll({fixnum.Int64(1): "a", fixnum.Int64(2): "b"}),
+      expected: Company()..flags.addAll({fixnum.Int64(1): "a", fixnum.Int64(2): "c"}),
     ),
     testInfo(
       name: "key set unset parent",
       op: op.person.company.flags.key(1).set("a"),
       data: Person(),
-      expected: Person()
-        ..company = (Company()..flags.addAll({fixnum.Int64(1): "a"})),
+      expected: Person()..company = (Company()..flags.addAll({fixnum.Int64(1): "a"})),
     ),
     testInfo(
       name: "delete root",
@@ -249,9 +246,7 @@ void main() {
       name: "insert: list message",
       op: op.case_.items.insert(0, Item()..title = "x"),
       data: Case()..items.addAll([Item()..title = "a", Item()..title = "b"]),
-      expected: Case()
-        ..items.addAll(
-            [Item()..title = "x", Item()..title = "a", Item()..title = "b"]),
+      expected: Case()..items.addAll([Item()..title = "x", Item()..title = "a", Item()..title = "b"]),
     ),
     testInfo(
       name: "insert: map scalar",
@@ -314,14 +309,8 @@ void main() {
     testInfo(
       name: "delete: list message",
       op: op.case_.items.index(0).delete(),
-      data: Case()
-        ..items.addAll([
-          (Item()..title = "a"),
-          (Item()..title = "b"),
-          (Item()..title = "c")
-        ]),
-      expected: Case()
-        ..items.addAll([(Item()..title = "b"), (Item()..title = "c")]),
+      data: Case()..items.addAll([(Item()..title = "a"), (Item()..title = "b"), (Item()..title = "c")]),
+      expected: Case()..items.addAll([(Item()..title = "b"), (Item()..title = "c")]),
     ),
     testInfo(
       name: "delete: map scalar",
@@ -403,12 +392,8 @@ void main() {
     testInfo(
       name: "move: list message",
       op: op.case_.items.move(0, 3),
-      data: Case()
-        ..items.addAll(
-            [Item()..title = "a", Item()..title = "b", Item()..title = "c"]),
-      expected: Case()
-        ..items.addAll(
-            [Item()..title = "b", Item()..title = "c", Item()..title = "a"]),
+      data: Case()..items.addAll([Item()..title = "a", Item()..title = "b", Item()..title = "c"]),
+      expected: Case()..items.addAll([Item()..title = "b", Item()..title = "c", Item()..title = "a"]),
     ),
     testInfo(
       name: "move: map scalar",
@@ -457,18 +442,14 @@ void main() {
     testInfo(
       name: "replace: index field",
       op: op.case_.items.index(1).set(Item()..title = "baz"),
-      data: Case()
-        ..items.addAll([Item()..title = "foo", Item()..title = "bar"]),
-      expected: Case()
-        ..items.addAll([Item()..title = "foo", Item()..title = "baz"]),
+      data: Case()..items.addAll([Item()..title = "foo", Item()..title = "bar"]),
+      expected: Case()..items.addAll([Item()..title = "foo", Item()..title = "baz"]),
     ),
     testInfo(
       name: "replace: index field scalar",
       op: op.case_.items.index(0).title.set("baz"),
-      data: Case()
-        ..items.addAll([Item()..title = "foo", Item()..title = "bar"]),
-      expected: Case()
-        ..items.addAll([Item()..title = "baz", Item()..title = "bar"]),
+      data: Case()..items.addAll([Item()..title = "foo", Item()..title = "bar"]),
+      expected: Case()..items.addAll([Item()..title = "baz", Item()..title = "bar"]),
     ),
     testInfo(
       name: "replace: map scalar",
@@ -512,20 +493,13 @@ void main() {
     ),
     testInfo(
       name: "replace: replace list message",
-      op: op.case_.items
-          .set([Item()..title = "x", Item()..title = "y", Item()..title = "z"]),
+      op: op.case_.items.set([Item()..title = "x", Item()..title = "y", Item()..title = "z"]),
       data: Case()..items.addAll([Item()..title = "a", Item()..title = "b"]),
-      expected: Case()
-        ..items.addAll(
-            [Item()..title = "x", Item()..title = "y", Item()..title = "z"]),
+      expected: Case()..items.addAll([Item()..title = "x", Item()..title = "y", Item()..title = "z"]),
     ),
     testInfo(
       name: "replace: replace map message",
-      op: op.person.cases.set({
-        "x": Case()..name = "x",
-        "y": Case()..name = "y",
-        "z": Case()..name = "z"
-      }),
+      op: op.person.cases.set({"x": Case()..name = "x", "y": Case()..name = "y", "z": Case()..name = "z"}),
       data: Person()
         ..cases["a"] = (Case()..name = "a")
         ..cases["b"] = (Case()..name = "b"),
@@ -547,15 +521,13 @@ void main() {
     testInfo(
       name: "edit: lorem ipsum",
       op: op.person.name.edit("Lorem ipsum dolor.", "Lorem dolor sit amet."),
-      diff:
-          '{"ops":[{"retain":"6"},{"delete":"11"},{"insert":"dolor sit amet"},{"retain":"1"}]}',
+      diff: '{"ops":[{"retain":"6"},{"delete":"11"},{"insert":"dolor sit amet"},{"retain":"1"}]}',
       data: Person()..name = "Lorem ipsum dolor.",
       expected: Person()..name = "Lorem dolor sit amet.",
     ),
     testInfo(
       name: "edit: quick brown fox",
-      op: op.person.name.edit("the quick brown fox jumped over the lazy dog.",
-          "the quick orange fox jumped over me."),
+      op: op.person.name.edit("the quick brown fox jumped over the lazy dog.", "the quick orange fox jumped over me."),
       diff:
           '{"ops":[{"retain":"10"},{"delete":"5"},{"insert":"orange"},{"retain":"17"},{"delete":"12"},{"insert":"me"},{"retain":"1"}]}',
       data: Person()..name = "the quick brown fox jumped over the lazy dog.",
