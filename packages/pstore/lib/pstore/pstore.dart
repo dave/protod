@@ -1,5 +1,6 @@
 import 'package:fixnum/fixnum.dart';
 import 'package:protobuf/protobuf.dart';
+import 'package:pdelta/pdelta/pdelta.dart';
 import 'package:pdelta/pdelta/pdelta.pb.dart';
 import 'package:pserver/pserver/pserver.dart';
 import 'package:pstore/pstore/pstore.pb.dart';
@@ -21,14 +22,13 @@ class Adapter<T extends GeneratedMessage> extends StoreAdapter<T> {
     String documentType,
     String documentId,
     bool create,
-    TypeRegistry r,
   ) async {
     final request = Payload_Get_Request()
       ..documentType = documentType
       ..documentId = documentId
       ..create_3 = create;
     final response = await _send(Payload_Get_Response(), request);
-    var value = r.lookup(documentType).createEmptyInstance() as T;
+    var value = lookup(documentType).createEmptyInstance() as T;
     response.value.unpackInto(value);
     return StoreAdapterGetResponse<T>(response.state, value);
   }

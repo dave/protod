@@ -10,19 +10,22 @@ import 'package:tuple/tuple.dart';
 export 'pdelta.op.dart';
 export 'pdelta_transform.dart';
 
-final _defaultTypeRegistry = TypeRegistry();
+final _typeRegistry = TypeRegistry();
 
 void registerTypes(Iterable<protobuf.GeneratedMessage> types) {
-  _defaultTypeRegistry.add(types);
+  _typeRegistry.add(types);
 }
 
-protobuf.GeneratedMessage unpack(any.Any packed, [TypeRegistry reg]) {
-  final registry = reg ?? _defaultTypeRegistry;
+protobuf.BuilderInfo lookup(String messageFullName) {
+  return _typeRegistry.lookup(messageFullName);
+}
+
+protobuf.GeneratedMessage unpack(any.Any packed) {
   if (packed == null || packed.typeUrl == "") {
     throw Exception("typeUrl is empty");
   }
   final name = packed.typeUrl.substring(20);
-  final info = registry.lookup(name);
+  final info = lookup(name);
   if (info == null) {
     throw Exception("can't find ${packed.typeUrl} in registry");
   }
@@ -45,24 +48,24 @@ pb.Op compound(List<pb.Op> ops) {
 
 pb.Op get nullOp => pb.Op()..type = pb.Op_Type.Null;
 
-apply(pb.Op op, protobuf.GeneratedMessage m, [TypeRegistry reg]) {
+apply(pb.Op op, protobuf.GeneratedMessage m) {
   if (isNull(op)) {
     return;
   }
   switch (op.type) {
     case pb.Op_Type.Compound:
       op.ops.forEach((o) {
-        apply(o, m, reg);
+        apply(o, m);
       });
       break;
     case pb.Op_Type.Edit:
-      applySetEdit(op, m, reg);
+      applySetEdit(op, m);
       break;
     case pb.Op_Type.Set:
-      applySetEdit(op, m, reg);
+      applySetEdit(op, m);
       break;
     case pb.Op_Type.Insert:
-      applyInsert(op, m, reg);
+      applyInsert(op, m);
       break;
     case pb.Op_Type.Move:
       applyMove(op, m);
@@ -175,7 +178,7 @@ String applyDeltaToString(String value, quill.Delta dlt) {
   return outString;
 }
 
-dynamic getValue(dynamic previous, pb.Op op, TypeRegistry r, protobuf.ValueOfFunc valueOf) {
+dynamic getValue(dynamic previous, pb.Op op, protobuf.ValueOfFunc valueOf) {
   if (op.hasScalar()) {
     final scalar = op.scalar;
     if (scalar.hasFloat()) {
@@ -210,13 +213,13 @@ dynamic getValue(dynamic previous, pb.Op op, TypeRegistry r, protobuf.ValueOfFun
     final newString = applyDeltaToString(prevString, dlt);
     return newString;
   } else if (op.hasMessage()) {
-    final info = r.lookup(op.message.typeUrl.substring(20));
+    final info = lookup(op.message.typeUrl.substring(20));
     if (info == null) {
       throw Exception('no type registered for ${op.message.typeUrl}');
     }
     return op.message.unpackInto(info.createEmptyInstance());
   } else if (op.hasFragment()) {
-    return fromFragment(op.fragment, r);
+    return fromFragment(op.fragment);
   } else {
     //	*Op_Index
     //	*Op_Key
@@ -224,21 +227,19 @@ dynamic getValue(dynamic previous, pb.Op op, TypeRegistry r, protobuf.ValueOfFun
   }
 }
 
-dynamic fromFragment(pb.Fragment fragment, TypeRegistry r) {
-  final message = unpack(fragment.message, r);
+dynamic fromFragment(pb.Fragment fragment) {
+  final message = unpack(fragment.message);
   final fieldNumber = getFieldNumber(message, fragment.field_1);
   return message.getField(fieldNumber);
 }
 
-applySetEdit(pb.Op o, protobuf.GeneratedMessage input, [TypeRegistry reg]) {
-  final registry = reg ?? _defaultTypeRegistry;
+applySetEdit(pb.Op o, protobuf.GeneratedMessage input) {
   var op = o.clone();
   if (op.location.length == 0) {
     input.clear();
     final value = getValue(
       input,
       op,
-      registry,
       null,
     );
     input.mergeFromMessage(value);
@@ -255,7 +256,6 @@ applySetEdit(pb.Op o, protobuf.GeneratedMessage input, [TypeRegistry reg]) {
       final value = getValue(
         parent.getField(field),
         op,
-        registry,
         parent.info_.valueOfFunc(field),
       );
       final fi = parent.info_.fieldInfo[field];
@@ -298,7 +298,6 @@ applySetEdit(pb.Op o, protobuf.GeneratedMessage input, [TypeRegistry reg]) {
       final value = getValue(
         parent[index],
         op,
-        registry,
         valueOf,
       );
       parent[index] = value;
@@ -311,7 +310,6 @@ applySetEdit(pb.Op o, protobuf.GeneratedMessage input, [TypeRegistry reg]) {
       final value = getValue(
         parent[key],
         op,
-        registry,
         valueOf,
       );
       parent[key] = value;
@@ -323,8 +321,7 @@ applySetEdit(pb.Op o, protobuf.GeneratedMessage input, [TypeRegistry reg]) {
   }
 }
 
-applyInsert(pb.Op o, protobuf.GeneratedMessage input, [TypeRegistry reg]) {
-  final registry = reg ?? _defaultTypeRegistry;
+applyInsert(pb.Op o, protobuf.GeneratedMessage input) {
   var op = o.clone();
   final itemLocator = op.location.removeLast();
   final parentLocator = op.location;
@@ -340,7 +337,6 @@ applyInsert(pb.Op o, protobuf.GeneratedMessage input, [TypeRegistry reg]) {
       final value = getValue(
         previous,
         op,
-        registry,
         valueOf,
       );
       if (index < parent.length) {
@@ -525,7 +521,7 @@ pb.Op root(dynamic value) {
   return set([], value);
 }
 
-pb.Op set(List<pb.Locator> location, dynamic value, [TypeRegistry reg]) {
+pb.Op set(List<pb.Locator> location, dynamic value) {
   if (value == null) {
     throw Exception("null value used in set operation");
   }
@@ -547,7 +543,7 @@ pb.Op set(List<pb.Locator> location, dynamic value, [TypeRegistry reg]) {
     if (location != null && location.length > 0 && location[location.length - 1].hasField_1()) {
       field = location[location.length - 1].field_1;
     }
-    op.fragment = getFragment(value, field, reg);
+    op.fragment = getFragment(value, field);
   }
 
   return op;
@@ -821,9 +817,8 @@ dynamic valueFromScalar(pb.Scalar s) {
   }
 }
 
-pb.Fragment getFragment(dynamic value, pb.Field field, [TypeRegistry reg]) {
-  final registry = reg ?? _defaultTypeRegistry;
-  final info = registry.lookup(field.messageFullName);
+pb.Fragment getFragment(dynamic value, pb.Field field) {
+  final info = lookup(field.messageFullName);
   if (info == null) {
     throw Exception("can't find ${field.messageFullName} in registry");
   }

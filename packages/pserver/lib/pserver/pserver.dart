@@ -19,10 +19,9 @@ class StoreMeta<T extends GeneratedMessage, M> extends Store<T> {
     T empty,
     StoreAdapter<T> adapter,
     bool Function() offline,
-    TypeRegistry registry,
     M Function(T) meta,
   )   : this._meta = meta,
-        super(typeId, empty, adapter, offline, registry);
+        super(typeId, empty, adapter, offline);
 
   M meta(String id) {
     return _metaBox.get(id);
@@ -66,7 +65,6 @@ class Store<T extends GeneratedMessage> {
   final StoreAdapter<T> _adapter;
   final bool Function() _offline;
   final String _type;
-  final TypeRegistry _registry;
 
   Map<String, Item<T>> _items = {};
   Map<String, StreamSubscription> _subscriptions = {};
@@ -78,12 +76,10 @@ class Store<T extends GeneratedMessage> {
     T empty,
     StoreAdapter<T> adapter,
     bool Function() offline,
-    TypeRegistry registry,
   )   : this._type = empty.info_.qualifiedMessageName,
         this._adapter = adapter,
-        this._offline = offline,
-        this._registry = registry {
-    hive.Hive.registerAdapter(ItemAdapter<T>(typeId, registry, this));
+        this._offline = offline {
+    hive.Hive.registerAdapter(ItemAdapter<T>(typeId, this));
   }
 
   Iterable<String> ids() {
@@ -239,7 +235,7 @@ class Store<T extends GeneratedMessage> {
       try {
         _getting[id] = true;
         _broadcast(DataEvent.getting(id));
-        final response = await _adapter.get(_type, id, create, _registry);
+        final response = await _adapter.get(_type, id, create);
 
         item = Item<T>(this, id, response.value, response.state, "", [], []);
 
@@ -522,10 +518,9 @@ class ItemAdapter<T extends GeneratedMessage> extends hive.TypeAdapter<Item<T>> 
   @override
   final int typeId;
 
-  final TypeRegistry _types;
   final Store<T> _store;
 
-  ItemAdapter(this.typeId, this._types, Store<T> this._store);
+  ItemAdapter(this.typeId, Store<T> this._store);
 
   @override
   Item<T> read(hive.BinaryReader reader) {
@@ -539,7 +534,7 @@ class ItemAdapter<T extends GeneratedMessage> extends hive.TypeAdapter<Item<T>> 
     // unmarshal value
     T value;
     if (documentType != '') {
-      final builderInfo = _types.lookup(documentType);
+      final builderInfo = lookup(documentType);
       if (builderInfo == null) {
         throw Exception("can't find type $documentType");
       }
@@ -579,7 +574,6 @@ abstract class StoreAdapter<T extends GeneratedMessage> {
     String documentType,
     String documentId,
     bool create,
-    TypeRegistry r,
   );
 
   Future<StoreAdapterEditResponse> edit(
