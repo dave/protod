@@ -1,8 +1,8 @@
 import 'package:diff_match_patch/diff_match_patch.dart' as diff_match_patch;
 import 'package:fixnum/fixnum.dart' as fixnum;
-import 'package:protobuf/protobuf.dart' as protobuf;
 import 'package:pdelta/pdelta/pdelta.pb.dart' as pb;
-import 'package:protobuf/protobuf.dart';
+import 'package:pdelta/pdelta/pdelta_registry.dart';
+import 'package:protobuf/protobuf.dart' as protobuf;
 import 'package:ptypes/google/protobuf/any.pb.dart' as any;
 import 'package:quill_delta/quill_delta.dart' as quill;
 import 'package:tuple/tuple.dart';
@@ -10,16 +10,13 @@ import 'package:tuple/tuple.dart';
 export 'pdelta.op.dart';
 export 'pdelta_transform.dart';
 
-protobuf.TypeRegistry _defaultTypeRegistry;
+final _defaultTypeRegistry = TypeRegistry();
 
-setDefaultRegistry(protobuf.TypeRegistry r) {
-  _defaultTypeRegistry = r;
+void registerTypes(Iterable<protobuf.GeneratedMessage> types) {
+  _defaultTypeRegistry.add(types);
 }
 
-protobuf.GeneratedMessage unpack(
-  any.Any packed, [
-  protobuf.TypeRegistry reg,
-]) {
+protobuf.GeneratedMessage unpack(any.Any packed, [TypeRegistry reg]) {
   final registry = reg ?? _defaultTypeRegistry;
   if (packed == null || packed.typeUrl == "") {
     throw Exception("typeUrl is empty");
@@ -48,11 +45,7 @@ pb.Op compound(List<pb.Op> ops) {
 
 pb.Op get nullOp => pb.Op()..type = pb.Op_Type.Null;
 
-apply(
-  pb.Op op,
-  protobuf.GeneratedMessage m, [
-  protobuf.TypeRegistry reg,
-]) {
+apply(pb.Op op, protobuf.GeneratedMessage m, [TypeRegistry reg]) {
   if (isNull(op)) {
     return;
   }
@@ -178,12 +171,7 @@ String applyDeltaToString(String value, quill.Delta dlt) {
   return outString;
 }
 
-dynamic getValue(
-  dynamic previous,
-  pb.Op op,
-  protobuf.TypeRegistry r,
-  protobuf.ValueOfFunc valueOf,
-) {
+dynamic getValue(dynamic previous, pb.Op op, TypeRegistry r, protobuf.ValueOfFunc valueOf) {
   if (op.hasScalar()) {
     final scalar = op.scalar;
     if (scalar.hasFloat()) {
@@ -223,8 +211,8 @@ dynamic getValue(
       throw Exception('no type registered for ${op.message.typeUrl}');
     }
     return op.message.unpackInto(info.createEmptyInstance());
-  } else if (op.hasObject()) {
-    return fromObject(op.object, r);
+  } else if (op.hasFragment()) {
+    return fromFragment(op.fragment, r);
   } else {
     //	*Op_Index
     //	*Op_Key
@@ -232,67 +220,13 @@ dynamic getValue(
   }
 }
 
-dynamic fromObject(pb.Object value, protobuf.TypeRegistry r) {
-  if (value.hasScalar()) {
-    return valueFromScalar(value.scalar);
-  } else if (value.hasMessage()) {
-    final info = r.lookup(value.message.typeUrl.substring(20));
-    if (info == null) {
-      throw Exception('no type registered for ${value.message.typeUrl}');
-    }
-    return value.message.unpackInto(info.createEmptyInstance());
-  } else if (value.hasList()) {
-    var list = [];
-    value.list.list.forEach((element) {
-      list.add(fromObject(element, r));
-    });
-    return list;
-  } else if (value.hasMapBool()) {
-    var map = Map();
-    value.mapBool.map.forEach((key, value) {
-      map[key] = fromObject(value, r);
-    });
-    return map;
-  } else if (value.hasMapInt32()) {
-    var map = Map();
-    value.mapInt32.map.forEach((key, value) {
-      map[key] = fromObject(value, r);
-    });
-    return map;
-  } else if (value.hasMapInt64()) {
-    var map = Map();
-    value.mapInt64.map.forEach((key, value) {
-      map[key] = fromObject(value, r);
-    });
-    return map;
-  } else if (value.hasMapUint32()) {
-    var map = Map();
-    value.mapUint32.map.forEach((key, value) {
-      map[key] = fromObject(value, r);
-    });
-    return map;
-  } else if (value.hasMapUint64()) {
-    var map = Map();
-    value.mapUint64.map.forEach((key, value) {
-      map[key] = fromObject(value, r);
-    });
-    return map;
-  } else if (value.hasMapString()) {
-    var map = Map();
-    value.mapString.map.forEach((key, value) {
-      map[key] = fromObject(value, r);
-    });
-    return map;
-  } else {
-    throw Exception("no value in fromObject");
-  }
+dynamic fromFragment(pb.Fragment fragment, TypeRegistry r) {
+  final message = unpack(fragment.message, r);
+  final fieldNumber = getFieldNumber(message, fragment.field_1);
+  return message.getField(fieldNumber);
 }
 
-applySetEdit(
-  pb.Op o,
-  protobuf.GeneratedMessage input, [
-  protobuf.TypeRegistry reg,
-]) {
+applySetEdit(pb.Op o, protobuf.GeneratedMessage input, [TypeRegistry reg]) {
   final registry = reg ?? _defaultTypeRegistry;
   var op = o.clone();
   if (op.location.length == 0) {
@@ -385,11 +319,7 @@ applySetEdit(
   }
 }
 
-applyInsert(
-  pb.Op o,
-  protobuf.GeneratedMessage input, [
-  protobuf.TypeRegistry reg,
-]) {
+applyInsert(pb.Op o, protobuf.GeneratedMessage input, [TypeRegistry reg]) {
   final registry = reg ?? _defaultTypeRegistry;
   var op = o.clone();
   final itemLocator = op.location.removeLast();
@@ -591,7 +521,7 @@ pb.Op root(dynamic value) {
   return set([], value);
 }
 
-pb.Op set(List<pb.Locator> location, dynamic value) {
+pb.Op set(List<pb.Locator> location, dynamic value, [TypeRegistry reg]) {
   if (value == null) {
     throw Exception("null value used in set operation");
   }
@@ -602,11 +532,6 @@ pb.Op set(List<pb.Locator> location, dynamic value) {
     op.location.addAll(location);
   }
 
-  pb.Field field = null;
-  if (location != null && location.length > 0 && location[location.length - 1].hasField_1()) {
-    field = location[location.length - 1].field_1;
-  }
-
   if (value is pb.Scalar) {
     op.scalar = value;
   } else if (value is protobuf.GeneratedMessage) {
@@ -614,7 +539,11 @@ pb.Op set(List<pb.Locator> location, dynamic value) {
   } else if (value is protobuf.ProtobufEnum) {
     op.scalar = pb.Scalar()..enum_16 = value.value;
   } else {
-    op.fragment = getFragment(value, field);
+    pb.Field field = null;
+    if (location != null && location.length > 0 && location[location.length - 1].hasField_1()) {
+      field = location[location.length - 1].field_1;
+    }
+    op.fragment = getFragment(value, field, reg);
   }
 
   return op;
@@ -642,7 +571,9 @@ pb.Op insert(List<pb.Locator> location, dynamic value) {
   } else if (value is protobuf.ProtobufEnum) {
     op.scalar = pb.Scalar()..enum_16 = value.value;
   } else {
-    op.object = getObject(value);
+    // this is impossible - insert operation only happens at list child,
+    // where type is always scalar, enum or message.
+    throw Exception("insert operation called with invalid value");
   }
 
   return op;
@@ -769,8 +700,8 @@ List<pb.Locator> copyAndAppendOneof(
   return [...location]..add(newLocatorOneof(name, fields));
 }
 
-List<pb.Locator> copyAndAppendField(List<pb.Locator> location, String name, int number) {
-  return [...location]..add(newLocatorField(name, number));
+List<pb.Locator> copyAndAppendField(List<pb.Locator> location, String messageFullName, String name, int number) {
+  return [...location]..add(newLocatorField(messageFullName, name, number));
 }
 
 List<pb.Locator> copyAndAppendIndex(List<pb.Locator> location, fixnum.Int64 index) {
@@ -808,9 +739,10 @@ pb.Locator newLocatorOneof(String name, List<pb.Field> fields) {
       ..fields.addAll(fields));
 }
 
-pb.Locator newLocatorField(String name, int number) {
+pb.Locator newLocatorField(String messageFullName, String name, int number) {
   return pb.Locator()
     ..field_1 = (pb.Field()
+      ..messageFullName = messageFullName
       ..name = name
       ..number = number);
 }
@@ -885,46 +817,26 @@ dynamic valueFromScalar(pb.Scalar s) {
   }
 }
 
-pb.Object getObject(dynamic value) {
-  if (value is List) {
-    var ob = pb.Object();
-    ob.list = pb.List_();
-    value.forEach((element) {
-      ob.list.list.add(getObject(element));
-    });
-    return ob;
-  } else if (value is Map) {
-    final key = value.keys.first;
-    var ob = pb.Object();
-    Map map;
-    if (key is bool) {
-      ob.mapBool = pb.MapBool();
-      map = ob.mapBool.map;
-    } else if (key is int) {
-      ob.mapInt64 = pb.MapInt64();
-      map = ob.mapInt64.map;
-    } else if (key is fixnum.Int32) {
-      ob.mapInt32 = pb.MapInt32();
-      map = ob.mapInt32.map;
-    } else if (key is fixnum.Int64) {
-      ob.mapInt64 = pb.MapInt64();
-      map = ob.mapInt64.map;
-    } else if (key is String) {
-      ob.mapString = pb.MapString();
-      map = ob.mapString.map;
-    } else {
-      throw Exception("invalid map key ${key.runtimeType} in getObject");
-    }
-    value.forEach((key, value) {
-      map[key] = getObject(value);
-    });
-    return ob;
-  } else if (value is protobuf.GeneratedMessage) {
-    return pb.Object()..message = any.Any.pack(value);
-  } else if (isScalar(value)) {
-    return pb.Object()..scalar = getScalar(value);
+pb.Fragment getFragment(dynamic value, pb.Field field, [TypeRegistry reg]) {
+  final registry = reg ?? _defaultTypeRegistry;
+  final info = registry.lookup(field.messageFullName);
+  if (info == null) {
+    throw Exception("can't find ${field.messageFullName} in registry");
   }
-  throw Exception("invalid type ${value.runtimeType} in getObject");
+  final message = info.createEmptyInstance();
+  final fieldNumber = getFieldNumber(message, field);
+
+  if (value is List) {
+    (message.getField(fieldNumber) as protobuf.PbList).addAll(value);
+  } else if (value is Map) {
+    (message.getField(fieldNumber) as protobuf.PbMap).addAll(value);
+  } else {
+    message.setField(fieldNumber, value);
+  }
+
+  return pb.Fragment()
+    ..field_1 = field
+    ..message = any.Any.pack(message);
 }
 
 pb.Scalar getScalar(dynamic value) {

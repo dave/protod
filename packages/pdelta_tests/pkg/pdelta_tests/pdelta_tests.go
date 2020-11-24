@@ -30,7 +30,7 @@ func mustUnmarshalAny(a *any.Any) proto.Message {
 }
 
 func compareResults(t *testing.T, result, name string) {
-	expectedBytes, err := ioutil.ReadFile(fmt.Sprintf("../../expected_%v.txt", name))
+	expectedBytes, err := ioutil.ReadFile(fmt.Sprintf("../../assets/expected_%v.txt", name))
 	if err != nil {
 		t.Fatal(err)
 	}

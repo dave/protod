@@ -58,12 +58,12 @@ func run() error {
 
 	for _, pkgFlag := range packages {
 		if pkgFlag.GoPath != "" {
-			if err := m.writeGo(protoRoot, pkgFlag.ProtoPath, pkgFlag.GoPath); err != nil {
+			if err := m.writeGo(protoRoot, filepath.Join(protoRoot, pkgFlag.ProtoPath), pkgFlag.GoPath); err != nil {
 				return perr.Wrap(err).Debug("writing go")
 			}
 		}
 		if pkgFlag.DartPath != "" {
-			if err := m.writeDart(protoRoot, pkgFlag.ProtoPath, pkgFlag.DartPath); err != nil {
+			if err := m.writeDart(protoRoot, filepath.Join(protoRoot, pkgFlag.ProtoPath), pkgFlag.DartPath); err != nil {
 				return perr.Wrap(err).Debug("writing dart")
 			}
 		}

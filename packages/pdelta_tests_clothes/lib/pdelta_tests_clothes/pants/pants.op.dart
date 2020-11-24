@@ -1,10 +1,13 @@
 import 'package:pdelta/pdelta/pdelta.dart' as pdelta;
 import 'package:pdelta/pdelta/pdelta.pb.dart' as pdelta;
 import 'package:fixnum/fixnum.dart' as fixnum;
+import 'package:protobuf/protobuf.dart' as protobuf;
 import 'package:pdelta/pdelta/pdelta.op.dart' as pkg_pdelta_pdelta_pdelta;
 import 'package:pdelta_tests_clothes/pdelta_tests_clothes/pants/pants.pb.dart' as pb;
+import 'package:pdelta_tests_clothes/pdelta_tests_clothes/pants/pants.pb.dart' as pkg_pdelta_tests_clothes_pdelta_tests_clothes_pants_pants;
 
 Op_root_type get op {
+  _init();
   return Op_root_type();
 }
 
@@ -18,13 +21,13 @@ class Op_root_type {
 class Pants_type extends pdelta.Location {
   Pants_type(List<pdelta.Locator> location) : super(location);
   pkg_pdelta_pdelta_pdelta.String_scalar get style {
-    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "style", 1));
+    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "pants.Pants", "style", 1));
   }
   pkg_pdelta_pdelta_pdelta.Uint32_scalar get length {
-    return pkg_pdelta_pdelta_pdelta.Uint32_scalar(pdelta.copyAndAppendField(location, "length", 2));
+    return pkg_pdelta_pdelta_pdelta.Uint32_scalar(pdelta.copyAndAppendField(location, "pants.Pants", "length", 2));
   }
   pkg_pdelta_pdelta_pdelta.Uint32_scalar get waist {
-    return pkg_pdelta_pdelta_pdelta.Uint32_scalar(pdelta.copyAndAppendField(location, "waist", 3));
+    return pkg_pdelta_pdelta_pdelta.Uint32_scalar(pdelta.copyAndAppendField(location, "pants.Pants", "waist", 3));
   }
   pdelta.Op delete() {
     return pdelta.delete(location);
@@ -172,4 +175,19 @@ class Pants_string_map extends pdelta.Location {
   }
 
 }
+
+var _initialised = false;
+void _init() {
+  if (_initialised) {
+    return;
+  }
+  _initialised = true;
+  pdelta.registerTypes([
+    pkg_pdelta_tests_clothes_pdelta_tests_clothes_pants_pants.Pants(),
+  ]);
+}
+
+final typeRegistry = protobuf.TypeRegistry([
+  pkg_pdelta_tests_clothes_pdelta_tests_clothes_pants_pants.Pants(),
+]);
 

@@ -757,15 +757,19 @@ func opValue(value interface{}, field *Field) isOp_Value {
 	case proto.Message:
 		return &Op_Message{Message: MustMarshalAny(value)}
 	default:
-		return &Op_Fragment{Fragment: NewFragment(value, field)}
+		// field will never be nil - only nil for:
+		// * set operation at root location (always type = message)
+		// * insert operation (always a list child so either type = scalar or type = message)
+		return &Op_Fragment{Fragment: getFragment(value, field)}
 	}
 }
 
-func NewFragment(value interface{}, field *Field) *Fragment {
-	return newFragment(reflect.ValueOf(value), field)
-}
+func getFragment(valueIface interface{}, field *Field) *Fragment {
+	value := reflect.ValueOf(valueIface)
 
-func newFragment(value reflect.Value, field *Field) *Fragment {
+	if field == nil {
+		panic("getFragment called with nil field")
+	}
 
 	mt, err := protoregistry.GlobalTypes.FindMessageByName(protoreflect.FullName(field.MessageFullName))
 	if err != nil {
@@ -785,7 +789,7 @@ func newFragment(value reflect.Value, field *Field) *Fragment {
 	}
 }
 
-func newFragmentFromProto(value protoreflect.Value, field *Field) *Fragment {
+func getFragmentFromProto(value protoreflect.Value, field *Field) *Fragment {
 
 	mt, err := protoregistry.GlobalTypes.FindMessageByName(protoreflect.FullName(field.MessageFullName))
 	if err != nil {

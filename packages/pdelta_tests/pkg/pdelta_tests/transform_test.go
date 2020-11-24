@@ -954,7 +954,7 @@ func TestTransform(t *testing.T) {
 		})
 	}
 	if OUTPUT_CASES {
-		if err := ioutil.WriteFile("../../cases_transform.json", []byte("["+cases+"]"), 0666); err != nil {
+		if err := ioutil.WriteFile("../../assets/cases_transform.json", []byte("["+cases+"]"), 0666); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -964,7 +964,7 @@ func TestTransform(t *testing.T) {
 }
 
 func TestTransformCases(t *testing.T) {
-	casesBytes, err := ioutil.ReadFile("../../cases_transform.json")
+	casesBytes, err := ioutil.ReadFile("../../assets/cases_transform.json")
 	if err != nil {
 		t.Fatal(err)
 	}

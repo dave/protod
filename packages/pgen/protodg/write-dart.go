@@ -27,6 +27,7 @@ func (m *Main) writeDart(protoRoot, protoPackageRoot, dartPackageRoot string) er
 		sb.WriteString("import 'package:pdelta/pdelta/pdelta.dart' as pdelta;\n")
 		sb.WriteString("import 'package:pdelta/pdelta/pdelta.pb.dart' as pdelta;\n")
 		sb.WriteString("import 'package:fixnum/fixnum.dart' as fixnum;\n")
+		sb.WriteString("import 'package:protobuf/protobuf.dart' as protobuf;\n")
 
 		for _, importedPackage := range pkg.Imports() {
 			importPath, err := dartImportPath(pkg.DartPath, importedPackage.DartPath)
@@ -45,15 +46,36 @@ func (m *Main) writeDart(protoRoot, protoPackageRoot, dartPackageRoot string) er
 				sb.WriteString(fmt.Sprintf("import '%s' as pb;\n", path.Join(importPath, fmt.Sprintf("%s.pb.dart", file.Name))))
 			}
 		}
+
+		// imports for registry
+		for _, pkg := range pkg.AllImports() {
+			if pkg.Scalars {
+				continue
+			}
+			if len(pkg.Scope.Locatables()) == 0 {
+				continue
+			}
+
+			importPath, err := dartImportPath(dartPackageRoot, pkg.DartPath)
+			if err != nil {
+				return err
+			}
+			for _, file := range pkg.Files {
+				sb.WriteString(fmt.Sprintf("import '%s' as %s;\n", path.Join(importPath, fmt.Sprintf("%s.pb.dart", file.Name)), pkg.DartImportAlias()))
+			}
+		}
+
 		sb.WriteString("\n")
 
 		if !m.IsScalars {
 			/*
 				Op_root_type get op {
+				  _init();
 				  return Op_root_type();
 				}
 			*/
 			sb.WriteString("Op_root_type get op {\n")
+			sb.WriteString("  _init();\n")
 			sb.WriteString("  return Op_root_type();\n")
 			sb.WriteString("}\n")
 			sb.WriteString("\n")
@@ -95,6 +117,10 @@ func (m *Main) writeDart(protoRoot, protoPackageRoot, dartPackageRoot string) er
 			}
 		}
 
+		if !m.IsScalars {
+			m.writeDartRegistry(sb, pkg)
+		}
+
 		outDir := filepath.Join(dartPackageRoot, pkg.RelativeDir)
 		outPath := filepath.Join(outDir, fmt.Sprintf("%s.op.dart", pkg.Name))
 
@@ -107,64 +133,52 @@ func (m *Main) writeDart(protoRoot, protoPackageRoot, dartPackageRoot string) er
 		}
 	}
 
-	if !m.IsScalars {
-
-		for _, pkg := range m.Packages {
-
-			if !IsSubdirectory(protoPackageRoot, filepath.Join(protoRoot, pkg.RelativeDir)) {
-				continue
-			}
-
-			if len(pkg.Scope.Locatables()) == 0 {
-				continue
-			}
-
-			registryFpath := filepath.Join(dartPackageRoot, pkg.RelativeDir, "registry.dart")
-			var sb strings.Builder
-
-			//import 'package:protobuf/protobuf.dart';
-			sb.WriteString(fmt.Sprintf("import 'package:protobuf/protobuf.dart' as protobuf;\n"))
-			for _, pkg := range pkg.AllImports() {
-				if pkg.Scalars {
-					continue
-				}
-				if len(pkg.Scope.Locatables()) == 0 {
-					continue
-				}
-
-				importPath, err := dartImportPath(dartPackageRoot, pkg.DartPath)
-				if err != nil {
-					return err
-				}
-				for _, file := range pkg.Files {
-					sb.WriteString(fmt.Sprintf("import '%s' as %s;\n", path.Join(importPath, fmt.Sprintf("%s.pb.dart", file.Name)), pkg.DartImportAlias()))
-				}
-			}
-			sb.WriteString("\n")
-
-			/*
-				final types = TypeRegistry([
-				  storepb_foopb_foo.Foo(),
-				  storepb_share.Share(),
-				]);
-			*/
-			sb.WriteString(fmt.Sprintf("final types = protobuf.TypeRegistry([\n"))
-			for _, pkg := range pkg.AllImports() {
-				for _, msg := range pkg.Scope.Messages() {
-					sb.WriteString(fmt.Sprintf("  %s.%s(),\n", pkg.DartImportAlias(), msg.DartTypeName()))
-				}
-			}
-			sb.WriteString(fmt.Sprintf("]);\n\n"))
-
-			if err := ioutil.WriteFile(registryFpath, []byte(sb.String()), 0666); err != nil {
-				return err
-			}
-
-		}
-
-	}
-
 	return nil
+}
+
+func (m *Main) writeDartRegistry(sb *strings.Builder, pkg *PackageData) {
+	/*
+		var _initialised = false;
+		void _init() {
+		  if (_initialised) {
+			return;
+		  }
+		  _initialised = true;
+		  pdelta.registerTypes([
+			storepb_foopb_foo.Foo(),
+			storepb_share.Share(),
+		  ]);
+		}
+	*/
+	sb.WriteString(fmt.Sprintf("var _initialised = false;\n"))
+	sb.WriteString(fmt.Sprintf("void _init() {\n"))
+	sb.WriteString(fmt.Sprintf("  if (_initialised) {\n"))
+	sb.WriteString(fmt.Sprintf("    return;\n"))
+	sb.WriteString(fmt.Sprintf("  }\n"))
+	sb.WriteString(fmt.Sprintf("  _initialised = true;\n"))
+	sb.WriteString(fmt.Sprintf("  pdelta.registerTypes([\n"))
+	for _, pkg := range pkg.AllImports() {
+		for _, msg := range pkg.Scope.Messages() {
+			sb.WriteString(fmt.Sprintf("    %s.%s(),\n", pkg.DartImportAlias(), msg.DartTypeName()))
+		}
+	}
+	sb.WriteString(fmt.Sprintf("  ]);\n"))
+	sb.WriteString(fmt.Sprintf("}\n\n"))
+
+	/*
+		final typeRegistry = TypeRegistry([
+		  storepb_foopb_foo.Foo(),
+		  storepb_share.Share(),
+		]);
+	*/
+	sb.WriteString(fmt.Sprintf("final typeRegistry = protobuf.TypeRegistry([\n"))
+	for _, pkg := range pkg.AllImports() {
+		for _, msg := range pkg.Scope.Messages() {
+			sb.WriteString(fmt.Sprintf("  %s.%s(),\n", pkg.DartImportAlias(), msg.DartTypeName()))
+		}
+	}
+	sb.WriteString(fmt.Sprintf("]);\n\n"))
+
 }
 
 func (m *Main) writeDartLocatable(sb *strings.Builder, locatable Locatable, isRepeated, isMap bool, key string) {
@@ -234,10 +248,21 @@ func (m *Main) writeDartLocatable(sb *strings.Builder, locatable Locatable, isRe
 }
 
 func (m *Main) writeDartFields(sb *strings.Builder, locatable Locatable, fields []*MessageField) {
+
+	var parent *MessageData
+	switch locatable := locatable.(type) {
+	case *MessageData:
+		parent = locatable
+	case *OneofData:
+		parent = locatable.Scope.Parent.Data.(*MessageData)
+	default:
+		panic(fmt.Sprintf("invalid locatable %T in writeDartFields", locatable))
+	}
+
 	for _, field := range fields {
 		/*
 			pdelta.String_scalar get id {
-			  return pdelta.String_scalar(pdelta.copyAndAppendField(location, "id", 1));
+			  return pdelta.String_scalar(pdelta.copyAndAppendField(location, "parent.Full.Name", "id", 1));
 			}
 		*/
 		sb.WriteString(fmt.Sprintf("  %s get %s {\n", field.DartTypeQualifiedName(field.Repeated, field.Map, field.Key), field.DartName()))
@@ -248,11 +273,11 @@ func (m *Main) writeDartFields(sb *strings.Builder, locatable Locatable, fields 
 				if i > 0 {
 					fields += ", "
 				}
-				fields += fmt.Sprintf("pdelta.Field()..name=%q..number=%d", oneofField.Name, oneofField.Number)
+				fields += fmt.Sprintf("pdelta.Field()..messageFullName=%q..name=%q..number=%d", parent.Scope.Full(), oneofField.Name, oneofField.Number)
 			}
 			sb.WriteString(fmt.Sprintf("    return %s(pdelta.copyAndAppendOneof(location, %q, [%s]));\n", field.DartTypeQualifiedName(field.Repeated, field.Map, field.Key), field.Name, fields))
 		default:
-			sb.WriteString(fmt.Sprintf("    return %s(pdelta.copyAndAppendField(location, %q, %d));\n", field.DartTypeQualifiedName(field.Repeated, field.Map, field.Key), field.Name, field.Number))
+			sb.WriteString(fmt.Sprintf("    return %s(pdelta.copyAndAppendField(location, %q, %q, %d));\n", field.DartTypeQualifiedName(field.Repeated, field.Map, field.Key), parent.Scope.Full(), field.Name, field.Number))
 		}
 		sb.WriteString("  }\n")
 	}

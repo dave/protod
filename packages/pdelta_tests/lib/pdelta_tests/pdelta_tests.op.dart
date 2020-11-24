@@ -1,13 +1,19 @@
 import 'package:pdelta/pdelta/pdelta.dart' as pdelta;
 import 'package:pdelta/pdelta/pdelta.pb.dart' as pdelta;
 import 'package:fixnum/fixnum.dart' as fixnum;
+import 'package:protobuf/protobuf.dart' as protobuf;
 import 'package:pdelta/pdelta/pdelta.op.dart' as pkg_pdelta_pdelta_pdelta;
 import 'package:pdelta_tests_clothes/pdelta_tests_clothes/pdelta_tests_clothes.op.dart' as pkg_pdelta_tests_clothes_pdelta_tests_clothes_pdelta_tests_clothes;
 import 'package:pdelta_tests_clothes/pdelta_tests_clothes/pants/pants.op.dart' as pkg_pdelta_tests_clothes_pdelta_tests_clothes_pants_pants;
 import 'package:pdelta_tests/pdelta_tests/house.pb.dart' as pb;
 import 'package:pdelta_tests/pdelta_tests/tests.pb.dart' as pb;
+import 'package:pdelta_tests/pdelta_tests/tests.pb.dart' as pkg_pdelta_tests_pdelta_tests_pdelta_tests;
+import 'package:pdelta_tests/pdelta_tests/house.pb.dart' as pkg_pdelta_tests_pdelta_tests_pdelta_tests;
+import 'package:pdelta_tests_clothes/pdelta_tests_clothes/shirt.pb.dart' as pkg_pdelta_tests_clothes_pdelta_tests_clothes_pdelta_tests_clothes;
+import 'package:pdelta_tests_clothes/pdelta_tests_clothes/pants/pants.pb.dart' as pkg_pdelta_tests_clothes_pdelta_tests_clothes_pants_pants;
 
 Op_root_type get op {
+  _init();
   return Op_root_type();
 }
 
@@ -51,13 +57,13 @@ class Op_root_type {
 class Case_type extends pdelta.Location {
   Case_type(List<pdelta.Locator> location) : super(location);
   pkg_pdelta_pdelta_pdelta.String_scalar get name {
-    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "name", 21));
+    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.Case", "name", 21));
   }
   Item_list get items {
-    return Item_list(pdelta.copyAndAppendField(location, "items", 22));
+    return Item_list(pdelta.copyAndAppendField(location, "pdelta_tests.Case", "items", 22));
   }
   pkg_pdelta_pdelta_pdelta.String_int64_map get flags {
-    return pkg_pdelta_pdelta_pdelta.String_int64_map(pdelta.copyAndAppendField(location, "flags", 23));
+    return pkg_pdelta_pdelta_pdelta.String_int64_map(pdelta.copyAndAppendField(location, "pdelta_tests.Case", "flags", 23));
   }
   pdelta.Op delete() {
     return pdelta.delete(location);
@@ -209,7 +215,7 @@ class Case_string_map extends pdelta.Location {
 class Chooser_type extends pdelta.Location {
   Chooser_type(List<pdelta.Locator> location) : super(location);
   Chooser_Choice_oneof get choice {
-    return Chooser_Choice_oneof(pdelta.copyAndAppendOneof(location, "choice", [pdelta.Field()..name="str"..number=1, pdelta.Field()..name="dbl"..number=2, pdelta.Field()..name="itm"..number=3]));
+    return Chooser_Choice_oneof(pdelta.copyAndAppendOneof(location, "choice", [pdelta.Field()..messageFullName="pdelta_tests.Chooser"..name="str"..number=1, pdelta.Field()..messageFullName="pdelta_tests.Chooser"..name="dbl"..number=2, pdelta.Field()..messageFullName="pdelta_tests.Chooser"..name="itm"..number=3]));
   }
   pdelta.Op delete() {
     return pdelta.delete(location);
@@ -361,13 +367,13 @@ class Chooser_string_map extends pdelta.Location {
 class Chooser_Choice_oneof extends pdelta.Location {
   Chooser_Choice_oneof(List<pdelta.Locator> location) : super(location);
   pkg_pdelta_pdelta_pdelta.String_scalar get str {
-    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "str", 1));
+    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.Chooser", "str", 1));
   }
   pkg_pdelta_pdelta_pdelta.Double_scalar get dbl {
-    return pkg_pdelta_pdelta_pdelta.Double_scalar(pdelta.copyAndAppendField(location, "dbl", 2));
+    return pkg_pdelta_pdelta_pdelta.Double_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.Chooser", "dbl", 2));
   }
   Item_type get itm {
-    return Item_type(pdelta.copyAndAppendField(location, "itm", 3));
+    return Item_type(pdelta.copyAndAppendField(location, "pdelta_tests.Chooser", "itm", 3));
   }
   pdelta.Op delete() {
     return pdelta.delete(location);
@@ -378,16 +384,16 @@ class Chooser_Choice_oneof extends pdelta.Location {
 class Company_type extends pdelta.Location {
   Company_type(List<pdelta.Locator> location) : super(location);
   pkg_pdelta_pdelta_pdelta.String_scalar get name {
-    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "name", 11));
+    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.Company", "name", 11));
   }
   pkg_pdelta_pdelta_pdelta.Float_scalar get revenue {
-    return pkg_pdelta_pdelta_pdelta.Float_scalar(pdelta.copyAndAppendField(location, "revenue", 12));
+    return pkg_pdelta_pdelta_pdelta.Float_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.Company", "revenue", 12));
   }
   pkg_pdelta_pdelta_pdelta.String_int64_map get flags {
-    return pkg_pdelta_pdelta_pdelta.String_int64_map(pdelta.copyAndAppendField(location, "flags", 13));
+    return pkg_pdelta_pdelta_pdelta.String_int64_map(pdelta.copyAndAppendField(location, "pdelta_tests.Company", "flags", 13));
   }
   Person_type get ceo {
-    return Person_type(pdelta.copyAndAppendField(location, "ceo", 14));
+    return Person_type(pdelta.copyAndAppendField(location, "pdelta_tests.Company", "ceo", 14));
   }
   pdelta.Op delete() {
     return pdelta.delete(location);
@@ -539,10 +545,10 @@ class Company_string_map extends pdelta.Location {
 class House_type extends pdelta.Location {
   House_type(List<pdelta.Locator> location) : super(location);
   pkg_pdelta_pdelta_pdelta.String_scalar get name {
-    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "name", 1));
+    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.House", "name", 1));
   }
   pkg_pdelta_pdelta_pdelta.Uint32_scalar get number {
-    return pkg_pdelta_pdelta_pdelta.Uint32_scalar(pdelta.copyAndAppendField(location, "number", 2));
+    return pkg_pdelta_pdelta_pdelta.Uint32_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.House", "number", 2));
   }
   pdelta.Op delete() {
     return pdelta.delete(location);
@@ -694,13 +700,13 @@ class House_string_map extends pdelta.Location {
 class Item_type extends pdelta.Location {
   Item_type(List<pdelta.Locator> location) : super(location);
   pkg_pdelta_pdelta_pdelta.String_scalar get title {
-    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "title", 31));
+    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.Item", "title", 31));
   }
   pkg_pdelta_pdelta_pdelta.Bool_scalar get done {
-    return pkg_pdelta_pdelta_pdelta.Bool_scalar(pdelta.copyAndAppendField(location, "done", 34));
+    return pkg_pdelta_pdelta_pdelta.Bool_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.Item", "done", 34));
   }
   pkg_pdelta_pdelta_pdelta.String_list get flags {
-    return pkg_pdelta_pdelta_pdelta.String_list(pdelta.copyAndAppendField(location, "flags", 35));
+    return pkg_pdelta_pdelta_pdelta.String_list(pdelta.copyAndAppendField(location, "pdelta_tests.Item", "flags", 35));
   }
   pdelta.Op delete() {
     return pdelta.delete(location);
@@ -852,46 +858,46 @@ class Item_string_map extends pdelta.Location {
 class Person_type extends pdelta.Location {
   Person_type(List<pdelta.Locator> location) : super(location);
   pkg_pdelta_pdelta_pdelta.String_scalar get name {
-    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "name", 1));
+    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.Person", "name", 1));
   }
   pkg_pdelta_pdelta_pdelta.Uint32_scalar get age {
-    return pkg_pdelta_pdelta_pdelta.Uint32_scalar(pdelta.copyAndAppendField(location, "age", 2));
+    return pkg_pdelta_pdelta_pdelta.Uint32_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.Person", "age", 2));
   }
   Case_string_map get cases {
-    return Case_string_map(pdelta.copyAndAppendField(location, "cases", 4));
+    return Case_string_map(pdelta.copyAndAppendField(location, "pdelta_tests.Person", "cases", 4));
   }
   Company_type get company {
-    return Company_type(pdelta.copyAndAppendField(location, "company", 5));
+    return Company_type(pdelta.copyAndAppendField(location, "pdelta_tests.Person", "company", 5));
   }
   pkg_pdelta_pdelta_pdelta.String_list get alias {
-    return pkg_pdelta_pdelta_pdelta.String_list(pdelta.copyAndAppendField(location, "alias", 6));
+    return pkg_pdelta_pdelta_pdelta.String_list(pdelta.copyAndAppendField(location, "pdelta_tests.Person", "alias", 6));
   }
   Person_Type_enum get type {
-    return Person_Type_enum(pdelta.copyAndAppendField(location, "type", 7));
+    return Person_Type_enum(pdelta.copyAndAppendField(location, "pdelta_tests.Person", "type", 7));
   }
   Person_Type_list get typeList {
-    return Person_Type_list(pdelta.copyAndAppendField(location, "typeList", 8));
+    return Person_Type_list(pdelta.copyAndAppendField(location, "pdelta_tests.Person", "typeList", 8));
   }
   Person_Type_string_map get typeMap {
-    return Person_Type_string_map(pdelta.copyAndAppendField(location, "typeMap", 9));
+    return Person_Type_string_map(pdelta.copyAndAppendField(location, "pdelta_tests.Person", "typeMap", 9));
   }
   Person_Embed_type get embedded {
-    return Person_Embed_type(pdelta.copyAndAppendField(location, "embedded", 10));
+    return Person_Embed_type(pdelta.copyAndAppendField(location, "pdelta_tests.Person", "embedded", 10));
   }
   Person_Choice_oneof get choice {
-    return Person_Choice_oneof(pdelta.copyAndAppendOneof(location, "choice", [pdelta.Field()..name="str"..number=11, pdelta.Field()..name="dbl"..number=12, pdelta.Field()..name="itm"..number=13, pdelta.Field()..name="cas"..number=14, pdelta.Field()..name="cho"..number=15]));
+    return Person_Choice_oneof(pdelta.copyAndAppendOneof(location, "choice", [pdelta.Field()..messageFullName="pdelta_tests.Person"..name="str"..number=11, pdelta.Field()..messageFullName="pdelta_tests.Person"..name="dbl"..number=12, pdelta.Field()..messageFullName="pdelta_tests.Person"..name="itm"..number=13, pdelta.Field()..messageFullName="pdelta_tests.Person"..name="cas"..number=14, pdelta.Field()..messageFullName="pdelta_tests.Person"..name="cho"..number=15]));
   }
   House_type get house {
-    return House_type(pdelta.copyAndAppendField(location, "house", 16));
+    return House_type(pdelta.copyAndAppendField(location, "pdelta_tests.Person", "house", 16));
   }
   pkg_pdelta_tests_clothes_pdelta_tests_clothes_pdelta_tests_clothes.Shirt_type get shirt {
-    return pkg_pdelta_tests_clothes_pdelta_tests_clothes_pdelta_tests_clothes.Shirt_type(pdelta.copyAndAppendField(location, "shirt", 17));
+    return pkg_pdelta_tests_clothes_pdelta_tests_clothes_pdelta_tests_clothes.Shirt_type(pdelta.copyAndAppendField(location, "pdelta_tests.Person", "shirt", 17));
   }
   pkg_pdelta_tests_clothes_pdelta_tests_clothes_pants_pants.Pants_type get pants {
-    return pkg_pdelta_tests_clothes_pdelta_tests_clothes_pants_pants.Pants_type(pdelta.copyAndAppendField(location, "pants", 18));
+    return pkg_pdelta_tests_clothes_pdelta_tests_clothes_pants_pants.Pants_type(pdelta.copyAndAppendField(location, "pdelta_tests.Person", "pants", 18));
   }
   Person_Embed_Double_type get double {
-    return Person_Embed_Double_type(pdelta.copyAndAppendField(location, "double", 19));
+    return Person_Embed_Double_type(pdelta.copyAndAppendField(location, "pdelta_tests.Person", "double", 19));
   }
   pdelta.Op delete() {
     return pdelta.delete(location);
@@ -1043,19 +1049,19 @@ class Person_string_map extends pdelta.Location {
 class Person_Choice_oneof extends pdelta.Location {
   Person_Choice_oneof(List<pdelta.Locator> location) : super(location);
   pkg_pdelta_pdelta_pdelta.String_scalar get str {
-    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "str", 11));
+    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.Person", "str", 11));
   }
   pkg_pdelta_pdelta_pdelta.Double_scalar get dbl {
-    return pkg_pdelta_pdelta_pdelta.Double_scalar(pdelta.copyAndAppendField(location, "dbl", 12));
+    return pkg_pdelta_pdelta_pdelta.Double_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.Person", "dbl", 12));
   }
   Item_type get itm {
-    return Item_type(pdelta.copyAndAppendField(location, "itm", 13));
+    return Item_type(pdelta.copyAndAppendField(location, "pdelta_tests.Person", "itm", 13));
   }
   Case_type get cas {
-    return Case_type(pdelta.copyAndAppendField(location, "cas", 14));
+    return Case_type(pdelta.copyAndAppendField(location, "pdelta_tests.Person", "cas", 14));
   }
   Chooser_type get cho {
-    return Chooser_type(pdelta.copyAndAppendField(location, "cho", 15));
+    return Chooser_type(pdelta.copyAndAppendField(location, "pdelta_tests.Person", "cho", 15));
   }
   pdelta.Op delete() {
     return pdelta.delete(location);
@@ -1066,7 +1072,7 @@ class Person_Choice_oneof extends pdelta.Location {
 class Person_Embed_type extends pdelta.Location {
   Person_Embed_type(List<pdelta.Locator> location) : super(location);
   pkg_pdelta_pdelta_pdelta.String_scalar get name {
-    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "name", 1));
+    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.Person.Embed", "name", 1));
   }
   pdelta.Op delete() {
     return pdelta.delete(location);
@@ -1218,10 +1224,10 @@ class Person_Embed_string_map extends pdelta.Location {
 class Person_Embed_Double_type extends pdelta.Location {
   Person_Embed_Double_type(List<pdelta.Locator> location) : super(location);
   pkg_pdelta_pdelta_pdelta.String_scalar get name {
-    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "name", 1));
+    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.Person.Embed.Double", "name", 1));
   }
   Person_Embed_Double_Foo_oneof get foo {
-    return Person_Embed_Double_Foo_oneof(pdelta.copyAndAppendOneof(location, "foo", [pdelta.Field()..name="bar"..number=2, pdelta.Field()..name="baz"..number=3]));
+    return Person_Embed_Double_Foo_oneof(pdelta.copyAndAppendOneof(location, "foo", [pdelta.Field()..messageFullName="pdelta_tests.Person.Embed.Double"..name="bar"..number=2, pdelta.Field()..messageFullName="pdelta_tests.Person.Embed.Double"..name="baz"..number=3]));
   }
   pdelta.Op delete() {
     return pdelta.delete(location);
@@ -1373,10 +1379,10 @@ class Person_Embed_Double_string_map extends pdelta.Location {
 class Person_Embed_Double_Foo_oneof extends pdelta.Location {
   Person_Embed_Double_Foo_oneof(List<pdelta.Locator> location) : super(location);
   pkg_pdelta_pdelta_pdelta.String_scalar get bar {
-    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "bar", 2));
+    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.Person.Embed.Double", "bar", 2));
   }
   pkg_pdelta_pdelta_pdelta.Int64_scalar get baz {
-    return pkg_pdelta_pdelta_pdelta.Int64_scalar(pdelta.copyAndAppendField(location, "baz", 3));
+    return pkg_pdelta_pdelta_pdelta.Int64_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.Person.Embed.Double", "baz", 3));
   }
   pdelta.Op delete() {
     return pdelta.delete(location);
@@ -1532,4 +1538,37 @@ class Person_Type_string_map extends pdelta.Location {
   }
 
 }
+
+var _initialised = false;
+void _init() {
+  if (_initialised) {
+    return;
+  }
+  _initialised = true;
+  pdelta.registerTypes([
+    pkg_pdelta_tests_pdelta_tests_pdelta_tests.Case(),
+    pkg_pdelta_tests_pdelta_tests_pdelta_tests.Chooser(),
+    pkg_pdelta_tests_pdelta_tests_pdelta_tests.Company(),
+    pkg_pdelta_tests_pdelta_tests_pdelta_tests.House(),
+    pkg_pdelta_tests_pdelta_tests_pdelta_tests.Item(),
+    pkg_pdelta_tests_pdelta_tests_pdelta_tests.Person(),
+    pkg_pdelta_tests_pdelta_tests_pdelta_tests.Person_Embed(),
+    pkg_pdelta_tests_pdelta_tests_pdelta_tests.Person_Embed_Double(),
+    pkg_pdelta_tests_clothes_pdelta_tests_clothes_pdelta_tests_clothes.Shirt(),
+    pkg_pdelta_tests_clothes_pdelta_tests_clothes_pants_pants.Pants(),
+  ]);
+}
+
+final typeRegistry = protobuf.TypeRegistry([
+  pkg_pdelta_tests_pdelta_tests_pdelta_tests.Case(),
+  pkg_pdelta_tests_pdelta_tests_pdelta_tests.Chooser(),
+  pkg_pdelta_tests_pdelta_tests_pdelta_tests.Company(),
+  pkg_pdelta_tests_pdelta_tests_pdelta_tests.House(),
+  pkg_pdelta_tests_pdelta_tests_pdelta_tests.Item(),
+  pkg_pdelta_tests_pdelta_tests_pdelta_tests.Person(),
+  pkg_pdelta_tests_pdelta_tests_pdelta_tests.Person_Embed(),
+  pkg_pdelta_tests_pdelta_tests_pdelta_tests.Person_Embed_Double(),
+  pkg_pdelta_tests_clothes_pdelta_tests_clothes_pdelta_tests_clothes.Shirt(),
+  pkg_pdelta_tests_clothes_pdelta_tests_clothes_pants_pants.Pants(),
+]);
 

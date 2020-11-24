@@ -1,17 +1,28 @@
 import 'dart:convert';
+import 'dart:io';
 
-import 'package:protobuf/protobuf.dart';
 import 'package:pdelta/pdelta/pdelta.dart' as delta;
 import 'package:pdelta/pdelta/pdelta_transform.dart';
-import 'package:test/test.dart';
-import 'package:pdelta_tests/pdelta_tests/registry.dart' as registry;
+import 'package:pdelta_tests/pdelta_tests/pdelta_tests.op.dart';
 import 'package:pdelta_tests/pdelta_tests/tests.pb.dart';
+import 'package:protobuf/protobuf.dart';
+import 'package:test/test.dart';
 
-void main() {
-  delta.setDefaultRegistry(registry.types);
-  final cases = CASES.split("\n").map((str) {
+import 'pdelta_test.dart';
+
+void main() async {
+  final cases = (await File(assetPath("cases_transform.json")).readAsLines()).map((String str) {
+    if (str.startsWith("[")) {
+      str = str.substring(1);
+    }
+    if (str.endsWith("]")) {
+      str = str.substring(0, str.length - 1);
+    }
+    if (str.endsWith(",")) {
+      str = str.substring(0, str.length - 1);
+    }
     var a = TransformTestCase();
-    a.mergeFromProto3Json(jsonDecode(str), typeRegistry: registry.types);
+    a.mergeFromProto3Json(jsonDecode(str), typeRegistry: typeRegistry);
     return a;
   });
   final solo = cases.any((info) => info.solo ?? false);
@@ -78,7 +89,7 @@ void main() {
 }
 
 Object toObject(GeneratedMessage msg) {
-  var ob = msg.toProto3Json(typeRegistry: registry.types);
+  var ob = msg.toProto3Json(typeRegistry: typeRegistry);
   return process(ob);
 }
 

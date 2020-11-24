@@ -1,6 +1,7 @@
 import 'package:pdelta/pdelta/pdelta.dart' as pdelta;
 import 'package:pdelta/pdelta/pdelta.pb.dart' as pdelta;
 import 'package:fixnum/fixnum.dart' as fixnum;
+import 'package:protobuf/protobuf.dart' as protobuf;
 
 class Bool_scalar extends pdelta.Location {
   Bool_scalar(List<pdelta.Locator> location) : super(location);

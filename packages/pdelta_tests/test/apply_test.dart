@@ -1,32 +1,12 @@
 import 'dart:convert';
 
 import 'package:fixnum/fixnum.dart' as fixnum;
-import 'package:protobuf/protobuf.dart' as protobuf;
 import 'package:pdelta/pdelta/pdelta.dart' as delta;
 import 'package:pdelta/pdelta/pdelta.pb.dart' as pb;
-import 'package:test/test.dart';
-
-import 'package:pdelta_tests/pdelta_tests/registry.dart' as registry;
 import 'package:pdelta_tests/pdelta_tests/pdelta_tests.op.dart';
 import 'package:pdelta_tests/pdelta_tests/tests.pb.dart';
-
-class testInfo {
-  final String name;
-  final String diff;
-  final pb.Op op;
-  final protobuf.GeneratedMessage data;
-  final protobuf.GeneratedMessage expected;
-  final bool solo;
-
-  testInfo({
-    this.solo = false,
-    this.name,
-    this.op,
-    this.data,
-    this.expected,
-    this.diff,
-  });
-}
+import 'package:protobuf/protobuf.dart' as protobuf;
+import 'package:test/test.dart';
 
 void main() {
   List<testInfo> tests = [
@@ -534,7 +514,6 @@ void main() {
       expected: Person()..name = "the quick orange fox jumped over me.",
     ),
   ];
-  delta.setDefaultRegistry(registry.types);
   final solo = tests.any((info) => info.solo ?? false);
   tests.forEach((info) {
     if (solo && !(info.solo ?? false)) {
@@ -547,5 +526,23 @@ void main() {
       delta.apply(info.op, info.data);
       expect(info.data, info.expected);
     });
+  });
+}
+
+class testInfo {
+  final String name;
+  final String diff;
+  final pb.Op op;
+  final protobuf.GeneratedMessage data;
+  final protobuf.GeneratedMessage expected;
+  final bool solo;
+
+  testInfo({
+    this.solo = false,
+    this.name,
+    this.op,
+    this.data,
+    this.expected,
+    this.diff,
   });
 }

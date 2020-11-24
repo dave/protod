@@ -1,17 +1,18 @@
+import 'dart:io';
+
 import 'package:fixnum/fixnum.dart';
-import 'package:protobuf/protobuf.dart';
 import 'package:pdelta/pdelta/pdelta.dart' as delta;
 import 'package:pdelta/pdelta/pdelta.pb.dart' as pb;
+import 'package:pdelta_tests/pdelta_tests/pdelta_tests.op.dart';
+import 'package:pdelta_tests/pdelta_tests/tests.pb.dart';
+import 'package:protobuf/protobuf.dart';
 import 'package:test/test.dart';
 
 import 'cases_transform_test.dart';
-import 'package:pdelta_tests/pdelta_tests/registry.dart' as registry;
-import 'package:pdelta_tests/pdelta_tests/pdelta_tests.op.dart';
-import 'package:pdelta_tests/pdelta_tests/tests.pb.dart';
+import 'pdelta_test.dart';
 
 void main() {
-  test("TestTransformEditEditIndex", () {
-    delta.setDefaultRegistry(registry.types);
+  test("TestTransformEditEditIndex", () async {
     final listD = ["a", "b", "c", "d"];
     final listI = ["0", "1", "2", "3"];
     var data = Person()..alias.addAll(listD);
@@ -26,12 +27,11 @@ void main() {
         ;
       }
     }
-    compareResults(result, "edit_edit_index");
-    ;
+    await compareResults(result, "edit_edit_index");
   });
 
   // EditSetIndex
-  test("TestTransformEditSetIndex", () {
+  test("TestTransformEditSetIndex", () async {
     final listD = ["a", "b", "c", "d"];
     final listI = ["0", "1", "2", "3"];
     var data = Person()..alias.addAll(listD);
@@ -46,11 +46,11 @@ void main() {
         result += testTwoOpsConverge(opB, opA, descB, descA, data);
       }
     }
-    compareResults(result, "edit_set_index");
+    await compareResults(result, "edit_set_index");
   });
 
   // EditDeleteIndex
-  test("TestTransformEditDeleteIndex", () {
+  test("TestTransformEditDeleteIndex", () async {
     final listD = ["a", "b", "c", "d"];
     final listX = ["0", "1", "2", "3"];
     var data = Person()..alias.addAll(listD);
@@ -65,11 +65,11 @@ void main() {
         result += testTwoOpsConverge(opB, opA, descB, descA, data);
       }
     }
-    compareResults(result, "edit_delete_index");
+    await compareResults(result, "edit_delete_index");
   });
 
   // SetSetIndex
-  test("TestTransformSetSetIndex", () {
+  test("TestTransformSetSetIndex", () async {
     final listD = ["a", "b", "c", "d"];
     final listX = ["0", "1", "2", "3"];
     var data = Person()..alias.addAll(listD);
@@ -83,11 +83,11 @@ void main() {
         result += testTwoOpsConverge(opA, opB, descA, descB, data);
       }
     }
-    compareResults(result, "set_set_index");
+    await compareResults(result, "set_set_index");
   });
 
   // EditInsert
-  test("TestTransformEditInsert", () {
+  test("TestTransformEditInsert", () async {
     final listD = ["a", "b", "c", "d"];
     final listE = ["0", "1", "2", "3"];
     final listI = ["0", "1", "2", "3", "4"];
@@ -103,11 +103,11 @@ void main() {
         result += testTwoOpsConverge(opB, opA, descB, descA, data);
       }
     }
-    compareResults(result, "edit_insert");
+    await compareResults(result, "edit_insert");
   });
 
   // SetInsert
-  test("TestTransformSetInsert", () {
+  test("TestTransformSetInsert", () async {
     final listD = ["a", "b", "c", "d"];
     final listX = ["0", "1", "2", "3"];
     final listI = ["0", "1", "2", "3", "4"];
@@ -123,11 +123,11 @@ void main() {
         result += testTwoOpsConverge(opB, opA, descB, descA, data);
       }
     }
-    compareResults(result, "set_insert");
+    await compareResults(result, "set_insert");
   });
 
   // SetDeleteIndex
-  test("TestTransformSetDeleteIndex", () {
+  test("TestTransformSetDeleteIndex", () async {
     final listD = ["a", "b", "c", "d"];
     final listX = ["0", "1", "2", "3"];
     var data = Person()..alias.addAll(listD);
@@ -142,11 +142,11 @@ void main() {
         result += testTwoOpsConverge(opB, opA, descB, descA, data);
       }
     }
-    compareResults(result, "set_delete_index");
+    await compareResults(result, "set_delete_index");
   });
 
   // InsertDelete
-  test("TestTransformInsertDelete", () {
+  test("TestTransformInsertDelete", () async {
     final listD = ["a", "b", "c", "d"];
     final listX = ["0", "1", "2", "3"];
     final listI = ["0", "1", "2", "3", "4"];
@@ -162,11 +162,11 @@ void main() {
         result += testTwoOpsConverge(opB, opA, descB, descA, data);
       }
     }
-    compareResults(result, "insert_delete");
+    await compareResults(result, "insert_delete");
   });
 
   // DeleteDeleteIndex
-  test("TestTransformDeleteDeleteIndex", () {
+  test("TestTransformDeleteDeleteIndex", () async {
     final listD = ["a", "b", "c", "d"];
     final listX = ["0", "1", "2", "3"];
     var data = Person()..alias.addAll(listD);
@@ -180,11 +180,11 @@ void main() {
         result += testTwoOpsConverge(opA, opB, descA, descB, data);
       }
     }
-    compareResults(result, "delete_delete_index");
+    await compareResults(result, "delete_delete_index");
   });
 
   // MoveMove
-  test("TestTransformMoveMove", () {
+  test("TestTransformMoveMove", () async {
     final listD = ["a", "b", "c", "d", "e", "f", "g"];
     final listT = ["0", "1", "2", "3", "4", "5", "6", "7"];
     final listF = ["0", "1", "2", "3", "4", "5", "6"];
@@ -203,11 +203,11 @@ void main() {
         }
       }
     }
-    compareResults(result, "move_move");
+    await compareResults(result, "move_move");
   });
 
   // MoveInsert
-  test("TestTransformMoveInsert", () {
+  test("TestTransformMoveInsert", () async {
     final listD = ["a", "b", "c", "d", "e"];
     final listT = ["0", "1", "2", "3", "4", "5"];
     final listF = ["0", "1", "2", "3", "4"];
@@ -226,11 +226,11 @@ void main() {
         }
       }
     }
-    compareResults(result, "move_insert");
+    await compareResults(result, "move_insert");
   });
 
   // InsertInsert
-  test("TestTransformInsertInsert", () {
+  test("TestTransformInsertInsert", () async {
     final listD = ["a", "b", "c", "d"];
     final listI = ["0", "1", "2", "3", "4"];
     var data = Person()..alias.addAll(listD);
@@ -244,11 +244,11 @@ void main() {
         result += testTwoOpsConverge(opA, opB, descA, descB, data);
       }
     }
-    compareResults(result, "insert_insert");
+    await compareResults(result, "insert_insert");
   });
 
   // MoveDelete
-  test("TestTransformMoveDelete", () {
+  test("TestTransformMoveDelete", () async {
     final listD = ["a", "b", "c", "d", "e", "f", "g"];
     final listT = ["0", "1", "2", "3", "4", "5", "6", "7"];
     final listF = ["0", "1", "2", "3", "4", "5", "6"];
@@ -267,11 +267,11 @@ void main() {
         }
       }
     }
-    compareResults(result, "move_delete");
+    await compareResults(result, "move_delete");
   });
 
   // SetMove
-  test("TestTransformMoveSet", () {
+  test("TestTransformMoveSet", () async {
     final listD = ["a", "b", "c", "d", "e", "f", "g"];
     final listT = ["0", "1", "2", "3", "4", "5", "6", "7"];
     final listF = ["0", "1", "2", "3", "4", "5", "6"];
@@ -290,11 +290,11 @@ void main() {
         }
       }
     }
-    compareResults(result, "move_set");
+    await compareResults(result, "move_set");
   });
 
   // EditMove
-  test("TestTransformMoveEdit", () {
+  test("TestTransformMoveEdit", () async {
     final listD = ["a", "b", "c", "d", "e", "f", "g"];
     final listT = ["0", "1", "2", "3", "4", "5", "6", "7"];
     final listF = ["0", "1", "2", "3", "4", "5", "6"];
@@ -313,11 +313,11 @@ void main() {
         }
       }
     }
-    compareResults(result, "move_edit");
+    await compareResults(result, "move_edit");
   });
 
   // RenameRename
-  test("TestTransformRenameRename", () {
+  test("TestTransformRenameRename", () async {
     final mapD = {0: "a", 1: "b", 2: "c", 3: "d", 4: "e", 5: "f"};
     final values = ["0", "1", "2", "3", "4", "5"];
     var data = Company()..flags.addAll(mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
@@ -335,11 +335,11 @@ void main() {
         }
       }
     }
-    compareResults(result, "rename_rename");
+    await compareResults(result, "rename_rename");
   });
 
   // EditEditKey
-  test("TestTransformEditEditKey", () {
+  test("TestTransformEditEditKey", () async {
     final mapD = {0: "a", 1: "b", 2: "c", 3: "d"};
     final values = ["0", "1", "2", "3"];
     var data = Company()..flags.addAll(mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
@@ -353,11 +353,11 @@ void main() {
         result += testTwoOpsConverge(opA, opB, descA, descB, data);
       }
     }
-    compareResults(result, "edit_edit_key");
+    await compareResults(result, "edit_edit_key");
   });
 
   // EditSetKey
-  test("TestTransformEditSetKey", () {
+  test("TestTransformEditSetKey", () async {
     final mapD = {0: "a", 1: "b", 2: "c", 3: "d"};
     final values = ["0", "1", "2", "3"];
     var data = Company()..flags.addAll(mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
@@ -372,11 +372,11 @@ void main() {
         result += testTwoOpsConverge(opB, opA, descB, descA, data);
       }
     }
-    compareResults(result, "edit_set_key");
+    await compareResults(result, "edit_set_key");
   });
 
   // EditDeleteKey
-  test("TestTransformEditDeleteKey", () {
+  test("TestTransformEditDeleteKey", () async {
     final mapD = {0: "a", 1: "b", 2: "c", 3: "d"};
     final values = ["0", "1", "2", "3"];
     var data = Company()..flags.addAll(mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
@@ -391,11 +391,11 @@ void main() {
         result += testTwoOpsConverge(opB, opA, descB, descA, data);
       }
     }
-    compareResults(result, "edit_delete_key");
+    await compareResults(result, "edit_delete_key");
   });
 
   // EditRename
-  test("TestTransformEditRenameKey", () {
+  test("TestTransformEditRenameKey", () async {
     final mapD = {0: "a", 1: "b", 2: "c", 3: "d"};
     final editV = ["0", "1", "2", "3"];
     final renameF = ["0", "1", "2", "3"];
@@ -414,11 +414,11 @@ void main() {
         }
       }
     }
-    compareResults(result, "edit_rename_key");
+    await compareResults(result, "edit_rename_key");
   });
 
   // SetRename
-  test("TestTransformSetRenameKey", () {
+  test("TestTransformSetRenameKey", () async {
     final mapD = {0: "a", 1: "b", 2: "c", 3: "d"};
     final setV = ["0", "1", "2", "3"];
     final renameF = ["0", "1", "2", "3"];
@@ -437,11 +437,11 @@ void main() {
         }
       }
     }
-    compareResults(result, "set_rename_key");
+    await compareResults(result, "set_rename_key");
   });
 
   // RenameDelete
-  test("TestTransformRenameDelete", () {
+  test("TestTransformRenameDelete", () async {
     final mapD = {0: "a", 1: "b", 2: "c", 3: "d"};
     final delV = ["0", "1", "2", "3"];
     final renameF = ["0", "1", "2", "3"];
@@ -460,11 +460,11 @@ void main() {
         }
       }
     }
-    compareResults(result, "rename_delete");
+    await compareResults(result, "rename_delete");
   });
 
   // SetSetKey
-  test("TestTransformSetSetKey", () {
+  test("TestTransformSetSetKey", () async {
     final mapD = {0: "a", 1: "b", 2: "c", 3: "d"};
     final setV = ["0", "1", "2", "3"];
     var data = Company()..flags.addAll(mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
@@ -478,11 +478,11 @@ void main() {
         result += testTwoOpsConverge(opA, opB, descA, descB, data);
       }
     }
-    compareResults(result, "set_set_key");
+    await compareResults(result, "set_set_key");
   });
 
   // SetDeleteKey
-  test("TestTransformSetDeleteKey", () {
+  test("TestTransformSetDeleteKey", () async {
     final mapD = {0: "a", 1: "b", 2: "c", 3: "d"};
     final values = ["0", "1", "2", "3"];
     var data = Company()..flags.addAll(mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
@@ -497,11 +497,11 @@ void main() {
         result += testTwoOpsConverge(opB, opA, descB, descA, data);
       }
     }
-    compareResults(result, "set_delete_key");
+    await compareResults(result, "set_delete_key");
   });
 
   // DeleteDeleteKey
-  test("TestTransformDeleteDeleteKey", () {
+  test("TestTransformDeleteDeleteKey", () async {
     final mapD = {0: "a", 1: "b", 2: "c", 3: "d"};
     final values = ["0", "1", "2", "3"];
     var data = Company()..flags.addAll(mapD.map<Int64, String>((key, value) => MapEntry(Int64(key), value)));
@@ -515,7 +515,7 @@ void main() {
         result += testTwoOpsConverge(opA, opB, descA, descB, data);
       }
     }
-    compareResults(result, "delete_delete_key");
+    await compareResults(result, "delete_delete_key");
   });
 }
 
@@ -578,7 +578,8 @@ String printFlags(GeneratedMessage m) {
   return s;
 }
 
-compareResults(String result, String name) {
+compareResults(String result, String name) async {
+  String expected = await File(assetPath("expected_$name.json")).readAsString();
   expected = expected.trim();
   expected = expected.replaceAll("\t", "");
   result = result.trim();

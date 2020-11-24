@@ -258,14 +258,13 @@ func (m *Main) writeGoFields(f *File, locatable Locatable, fields []*MessageFiel
 	default:
 		panic(fmt.Sprintf("invalid locatable %T in writeGoFields", locatable))
 	}
-	messageFullName := parent.Scope.Full() // fmt.Sprintf("%s.%s", parent.Scope.Package().Name, parent.Name)
 
 	for _, field := range fields {
 		//func (b Person_type) Name() pdelta.String_scalar {
 		//	return pdelta.NewString_scalar(
 		//		pdelta.CopyAndAppendField(
 		//			b.location,
-		//			"type_url",
+		//			"message.Full.Name",
 		//			"name",
 		//			number,
 		//		),
@@ -281,7 +280,7 @@ func (m *Main) writeGoFields(f *File, locatable Locatable, fields []*MessageFiel
 							g.Lit(field.Name)
 							for _, oneofField := range field.OneofFields {
 								g.Op("&").Qual(deltaPath, "Field").Values(jen.Dict{
-									jen.Id("MessageFullName"): jen.Lit(messageFullName),
+									jen.Id("MessageFullName"): jen.Lit(parent.Scope.Full()),
 									jen.Id("Name"):            jen.Lit(oneofField.Name),
 									jen.Id("Number"):          jen.Lit(oneofField.Number),
 								})
@@ -290,7 +289,7 @@ func (m *Main) writeGoFields(f *File, locatable Locatable, fields []*MessageFiel
 					} else {
 						g.Qual(deltaPath, "CopyAndAppendField").Call(
 							jen.Id("b").Dot("location"),
-							jen.Lit(messageFullName),
+							jen.Lit(parent.Scope.Full()),
 							jen.Lit(field.Name),
 							jen.Lit(field.Number),
 						)

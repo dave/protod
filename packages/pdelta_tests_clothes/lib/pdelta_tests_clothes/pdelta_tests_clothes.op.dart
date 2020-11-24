@@ -1,10 +1,13 @@
 import 'package:pdelta/pdelta/pdelta.dart' as pdelta;
 import 'package:pdelta/pdelta/pdelta.pb.dart' as pdelta;
 import 'package:fixnum/fixnum.dart' as fixnum;
+import 'package:protobuf/protobuf.dart' as protobuf;
 import 'package:pdelta/pdelta/pdelta.op.dart' as pkg_pdelta_pdelta_pdelta;
 import 'package:pdelta_tests_clothes/pdelta_tests_clothes/shirt.pb.dart' as pb;
+import 'package:pdelta_tests_clothes/pdelta_tests_clothes/shirt.pb.dart' as pkg_pdelta_tests_clothes_pdelta_tests_clothes_pdelta_tests_clothes;
 
 Op_root_type get op {
+  _init();
   return Op_root_type();
 }
 
@@ -18,10 +21,10 @@ class Op_root_type {
 class Shirt_type extends pdelta.Location {
   Shirt_type(List<pdelta.Locator> location) : super(location);
   pkg_pdelta_pdelta_pdelta.String_scalar get designer {
-    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "designer", 1));
+    return pkg_pdelta_pdelta_pdelta.String_scalar(pdelta.copyAndAppendField(location, "pdelta_tests_clothes.Shirt", "designer", 1));
   }
   pkg_pdelta_pdelta_pdelta.Uint32_scalar get size {
-    return pkg_pdelta_pdelta_pdelta.Uint32_scalar(pdelta.copyAndAppendField(location, "size", 2));
+    return pkg_pdelta_pdelta_pdelta.Uint32_scalar(pdelta.copyAndAppendField(location, "pdelta_tests_clothes.Shirt", "size", 2));
   }
   pdelta.Op delete() {
     return pdelta.delete(location);
@@ -169,4 +172,19 @@ class Shirt_string_map extends pdelta.Location {
   }
 
 }
+
+var _initialised = false;
+void _init() {
+  if (_initialised) {
+    return;
+  }
+  _initialised = true;
+  pdelta.registerTypes([
+    pkg_pdelta_tests_clothes_pdelta_tests_clothes_pdelta_tests_clothes.Shirt(),
+  ]);
+}
+
+final typeRegistry = protobuf.TypeRegistry([
+  pkg_pdelta_tests_clothes_pdelta_tests_clothes_pdelta_tests_clothes.Shirt(),
+]);
 

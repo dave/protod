@@ -515,7 +515,7 @@ func TestApply(t *testing.T) {
 		})
 	}
 	if OUTPUT_CASES {
-		if err := ioutil.WriteFile("../../cases_apply.json", []byte("["+cases+"]"), 0666); err != nil {
+		if err := ioutil.WriteFile("../../assets/cases_apply.json", []byte("["+cases+"]"), 0666); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -525,7 +525,7 @@ func TestApply(t *testing.T) {
 }
 
 func TestApplyCases(t *testing.T) {
-	casesBytes, err := ioutil.ReadFile("../../cases_apply.json")
+	casesBytes, err := ioutil.ReadFile("../../assets/cases_apply.json")
 	if err != nil {
 		t.Fatal(err)
 	}
