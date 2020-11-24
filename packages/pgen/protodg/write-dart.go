@@ -75,7 +75,7 @@ func (m *Main) writeDart(protoRoot, protoPackageRoot, dartPackageRoot string) er
 				}
 			*/
 			sb.WriteString("Op_root_type get op {\n")
-			sb.WriteString("  _init();\n")
+			sb.WriteString("  init();\n")
 			sb.WriteString("  return Op_root_type();\n")
 			sb.WriteString("}\n")
 			sb.WriteString("\n")
@@ -139,7 +139,7 @@ func (m *Main) writeDart(protoRoot, protoPackageRoot, dartPackageRoot string) er
 func (m *Main) writeDartRegistry(sb *strings.Builder, pkg *PackageData) {
 	/*
 		var _initialised = false;
-		void _init() {
+		void init() {
 		  if (_initialised) {
 			return;
 		  }
@@ -151,7 +151,7 @@ func (m *Main) writeDartRegistry(sb *strings.Builder, pkg *PackageData) {
 		}
 	*/
 	sb.WriteString(fmt.Sprintf("var _initialised = false;\n"))
-	sb.WriteString(fmt.Sprintf("void _init() {\n"))
+	sb.WriteString(fmt.Sprintf("void init() {\n"))
 	sb.WriteString(fmt.Sprintf("  if (_initialised) {\n"))
 	sb.WriteString(fmt.Sprintf("    return;\n"))
 	sb.WriteString(fmt.Sprintf("  }\n"))

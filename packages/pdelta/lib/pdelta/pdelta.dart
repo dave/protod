@@ -84,6 +84,17 @@ int getFieldNumber(protobuf.GeneratedMessage message, pb.Field field) {
   return number;
 }
 
+void initialiseField(protobuf.GeneratedMessage msg, protobuf.FieldInfo field) {
+  if (!msg.hasField(field.tagNumber)) {
+    if (!field.isRepeated && field.subBuilder != null) {
+      msg.setField(field.tagNumber, field.subBuilder());
+    } else if (field is protobuf.MapFieldInfo) {
+      // TODO: work-around for: https://github.com/dart-lang/protobuf/issues/373
+      msg.$_getMap(field.index);
+    }
+  }
+}
+
 Tuple2<dynamic, protobuf.ValueOfFunc> getLocation(
   protobuf.GeneratedMessage m,
   List<pb.Locator> location,
@@ -99,14 +110,7 @@ Tuple2<dynamic, protobuf.ValueOfFunc> getLocation(
         final fieldNumber = getFieldNumber(msg, locator.field_1);
         final field = msg.info_.fieldInfo[fieldNumber];
         previousField = field;
-        if (!msg.hasField(fieldNumber)) {
-          if (!field.isRepeated && field.subBuilder != null) {
-            msg.setField(fieldNumber, field.subBuilder());
-          } else if (field is protobuf.MapFieldInfo) {
-            // TODO: work-around for: https://github.com/dart-lang/protobuf/issues/373
-            msg.$_getMap(field.index);
-          }
-        }
+        initialiseField(msg, field);
         current = msg.getField(fieldNumber);
         if (field is protobuf.MapFieldInfo) {
           currentValueOf = field.mapEntryBuilderInfo.byIndex[1].valueOf;
@@ -825,7 +829,7 @@ pb.Fragment getFragment(dynamic value, pb.Field field, [TypeRegistry reg]) {
   }
   final message = info.createEmptyInstance();
   final fieldNumber = getFieldNumber(message, field);
-
+  initialiseField(message, message.info_.fieldInfo[fieldNumber]);
   if (value is List) {
     (message.getField(fieldNumber) as protobuf.PbList).addAll(value);
   } else if (value is Map) {

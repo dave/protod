@@ -24,6 +24,13 @@ func TestApply(t *testing.T) {
 	}
 	items := []itemType{
 		{
+			solo:     true,
+			name:     "zero_value",
+			op:       Op().Person().Company().Revenue().Set(0.0),
+			data:     &Person{},
+			expected: &Person{Company: &Company{Revenue: 0.0}},
+		},
+		{
 			name:     "oneof_deep_delete_4",
 			op:       Op().Person().Choice().Cas().Flags().Delete(),
 			data:     &Person{Choice: &Person_Str{Str: "a"}},

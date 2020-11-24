@@ -8,8 +8,22 @@ import 'package:pdelta_tests/pdelta_tests/tests.pb.dart';
 import 'package:protobuf/protobuf.dart' as protobuf;
 import 'package:test/test.dart';
 
+import 'cases_transform_test.dart';
+
 void main() {
   List<testInfo> tests = [
+    testInfo(
+      name: "unset_value",
+      op: op.person.company.revenue.set(0.0),
+      data: Person(),
+      expected: Person()..company = Company(),
+    ),
+    testInfo(
+      name: "zero_value",
+      op: op.person.company.revenue.set(0.0),
+      data: Person(),
+      expected: Person()..company = (Company()..revenue = 0.0),
+    ),
     testInfo(
       name: "oneof_deep_delete_4",
       op: op.person.choice.cas.flags.delete(),
@@ -523,8 +537,9 @@ void main() {
       if (info.diff != null) {
         expect(info.op.delta.quill.toProto3Json(), jsonDecode(info.diff));
       }
+
       delta.apply(info.op, info.data);
-      expect(info.data, info.expected);
+      expect(toObject(info.data), toObject(info.expected));
     });
   });
 }

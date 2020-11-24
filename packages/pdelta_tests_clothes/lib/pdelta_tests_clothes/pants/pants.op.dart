@@ -7,7 +7,7 @@ import 'package:pdelta_tests_clothes/pdelta_tests_clothes/pants/pants.pb.dart' a
 import 'package:pdelta_tests_clothes/pdelta_tests_clothes/pants/pants.pb.dart' as pkg_pdelta_tests_clothes_pdelta_tests_clothes_pants_pants;
 
 Op_root_type get op {
-  _init();
+  init();
   return Op_root_type();
 }
 
@@ -177,7 +177,7 @@ class Pants_string_map extends pdelta.Location {
 }
 
 var _initialised = false;
-void _init() {
+void init() {
   if (_initialised) {
     return;
   }

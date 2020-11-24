@@ -12,6 +12,7 @@ import 'cases_transform_test.dart';
 import 'pdelta_test.dart';
 
 void main() {
+  init();
   test("TestTransformEditEditIndex", () async {
     final listD = ["a", "b", "c", "d"];
     final listI = ["0", "1", "2", "3"];
@@ -24,7 +25,6 @@ void main() {
         final descA = "edit$editA";
         final descB = "edit$editB";
         result += testTwoOpsConverge(opA, opB, descA, descB, data);
-        ;
       }
     }
     await compareResults(result, "edit_edit_index");
@@ -579,7 +579,7 @@ String printFlags(GeneratedMessage m) {
 }
 
 compareResults(String result, String name) async {
-  String expected = await File(assetPath("expected_$name.json")).readAsString();
+  String expected = await File(assetPath("expected_$name.txt")).readAsString();
   expected = expected.trim();
   expected = expected.replaceAll("\t", "");
   result = result.trim();

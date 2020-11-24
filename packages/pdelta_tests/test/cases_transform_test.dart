@@ -11,6 +11,7 @@ import 'package:test/test.dart';
 import 'pdelta_test.dart';
 
 void main() async {
+  init();
   final cases = (await File(assetPath("cases_transform.json")).readAsLines()).map((String str) {
     if (str.startsWith("[")) {
       str = str.substring(1);
@@ -118,6 +119,27 @@ Object process(Object o) {
       return null;
     }
     return out;
+  } else if (o is double) {
+    if (o == 0.0) {
+      return null;
+    }
+    return o;
+  } else if (o is int) {
+    if (o == 0) {
+      return null;
+    }
+    return o;
+  } else if (o is bool) {
+    if (o == false) {
+      return null;
+    }
+    return o;
+  } else if (o is String) {
+    if (o == "") {
+      return null;
+    }
+    return o;
   }
-  return o;
+  throw Exception("unknown type ${o.runtimeType} in process - need to add case to return null instead of empty value");
+  //return o;
 }

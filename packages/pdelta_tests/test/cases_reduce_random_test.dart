@@ -8,6 +8,8 @@ import 'package:test/test.dart';
 import 'pdelta_test.dart';
 
 void main() async {
+  init();
+  throw Exception("not implemented");
   final cases = (await File(assetPath("cases_reduce_random.json")).readAsLines()).map((String str) {
     if (str.startsWith("[")) {
       str = str.substring(1);

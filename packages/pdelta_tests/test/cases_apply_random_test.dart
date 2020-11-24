@@ -10,6 +10,7 @@ import 'cases_transform_test.dart';
 import 'pdelta_test.dart';
 
 void main() {
+  init();
   test("random test", () async {
     final cases = (await File(assetPath("cases_apply_random.json")).readAsLines()).map((String str) {
       if (str.startsWith("[")) {
@@ -28,7 +29,7 @@ void main() {
     var p = Person()..name = "a";
     cases.forEach((ApplyTestItem info) {
       delta.apply(info.op, p);
-      expect(toObject(p), toObject(info.expected));
+      expect(toObject(p), toObject(info.expected), reason: info.name);
     });
   });
 }
