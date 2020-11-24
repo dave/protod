@@ -86,8 +86,7 @@ apply(
 int getFieldNumber(protobuf.GeneratedMessage message, pb.Field field) {
   final number = message.getTagNumber(field.name);
   if (number != field.number) {
-    throw Exception(
-        'field name / number mismatch for ${field.name}: expect ${field.number}, found ${number}');
+    throw Exception('field name / number mismatch for ${field.name}: expect ${field.number}, found ${number}');
   }
   return number;
 }
@@ -124,9 +123,7 @@ Tuple2<dynamic, protobuf.ValueOfFunc> getLocation(
 
         if (current is protobuf.GeneratedMessage) {
           final currentMessage = current as protobuf.GeneratedMessage;
-          if (currentMessage.isFrozen &&
-              previousLocator != null &&
-              previousLocator.hasOneof()) {
+          if (currentMessage.isFrozen && previousLocator != null && previousLocator.hasOneof()) {
             previousLocator.oneof.fields.forEach((field) {
               // clear other oneof items
               final fieldNumber = getFieldNumber(msg, field);
@@ -139,15 +136,13 @@ Tuple2<dynamic, protobuf.ValueOfFunc> getLocation(
           }
         }
       } else {
-        throw Exception(
-            'field locator expected to find message, got ${current.runtimeType}');
+        throw Exception('field locator expected to find message, got ${current.runtimeType}');
       }
     } else if (locator.hasIndex()) {
       if (current is protobuf.PbList) {
         current = current[locator.index.toInt()];
       } else {
-        throw Exception(
-            'index locator expected to find list, got ${current.runtimeType}');
+        throw Exception('index locator expected to find list, got ${current.runtimeType}');
       }
     } else if (locator.hasKey()) {
       if (current is protobuf.PbMap) {
@@ -157,8 +152,7 @@ Tuple2<dynamic, protobuf.ValueOfFunc> getLocation(
         }
         current = current[k];
       } else {
-        throw Exception(
-            'key locator expected to find map, got ${current.runtimeType}');
+        throw Exception('key locator expected to find map, got ${current.runtimeType}');
       }
     } else if (locator.hasOneof()) {
       // ignore
@@ -349,8 +343,7 @@ applySetEdit(
         fieldMap.clear();
         valueMap.forEach((key, value) {
           if (value is protobuf.ProtobufEnum) {
-            fieldMap[key] =
-                mfi.mapEntryBuilderInfo.fieldInfo[2].valueOf(value.value);
+            fieldMap[key] = mfi.mapEntryBuilderInfo.fieldInfo[2].valueOf(value.value);
           } else {
             fieldMap[key] = value;
           }
@@ -422,8 +415,7 @@ applyInsert(
         parent.add(value);
       }
     } else {
-      throw Exception(
-          "can't insert with list locator in ${parent.runtimeType}");
+      throw Exception("can't insert with list locator in ${parent.runtimeType}");
     }
   } else if (itemLocator.hasKey()) {
     throw Exception("can't insert with a key locator");
@@ -462,8 +454,7 @@ applyMove(pb.Op o, protobuf.GeneratedMessage input) {
         parent.insert(to, item);
       }
     } else {
-      throw Exception(
-          "can't insert with list locator in ${parent.runtimeType}");
+      throw Exception("can't insert with list locator in ${parent.runtimeType}");
     }
   } else if (itemLocator.hasKey()) {
     throw Exception("can't move with a key locator");
@@ -527,7 +518,6 @@ applyDelete(pb.Op o, protobuf.GeneratedMessage input) {
 
       // finally clear the field
       parent.clearField(field);
-
     } else {
       throw Exception("can't delete field locator from ${parent.runtimeType}");
     }
@@ -612,6 +602,11 @@ pb.Op set(List<pb.Locator> location, dynamic value) {
     op.location.addAll(location);
   }
 
+  pb.Field field = null;
+  if (location != null && location.length > 0 && location[location.length - 1].hasField_1()) {
+    field = location[location.length - 1].field_1;
+  }
+
   if (value is pb.Scalar) {
     op.scalar = value;
   } else if (value is protobuf.GeneratedMessage) {
@@ -619,7 +614,7 @@ pb.Op set(List<pb.Locator> location, dynamic value) {
   } else if (value is protobuf.ProtobufEnum) {
     op.scalar = pb.Scalar()..enum_16 = value.value;
   } else {
-    op.object = getObject(value);
+    op.fragment = getFragment(value, field);
   }
 
   return op;
@@ -774,13 +769,11 @@ List<pb.Locator> copyAndAppendOneof(
   return [...location]..add(newLocatorOneof(name, fields));
 }
 
-List<pb.Locator> copyAndAppendField(
-    List<pb.Locator> location, String name, int number) {
+List<pb.Locator> copyAndAppendField(List<pb.Locator> location, String name, int number) {
   return [...location]..add(newLocatorField(name, number));
 }
 
-List<pb.Locator> copyAndAppendIndex(
-    List<pb.Locator> location, fixnum.Int64 index) {
+List<pb.Locator> copyAndAppendIndex(List<pb.Locator> location, fixnum.Int64 index) {
   return [...location]..add(newLocatorIndex(index));
 }
 
@@ -796,8 +789,7 @@ List<pb.Locator> copyAndAppendKeyInt32(List<pb.Locator> location, int key) {
   return [...location]..add(newLocatorKeyInt32(key));
 }
 
-List<pb.Locator> copyAndAppendKeyInt64(
-    List<pb.Locator> location, fixnum.Int64 key) {
+List<pb.Locator> copyAndAppendKeyInt64(List<pb.Locator> location, fixnum.Int64 key) {
   return [...location]..add(newLocatorKeyInt64(key));
 }
 
@@ -805,8 +797,7 @@ List<pb.Locator> copyAndAppendKeyUint32(List<pb.Locator> location, int key) {
   return [...location]..add(newLocatorKeyUint32(key));
 }
 
-List<pb.Locator> copyAndAppendKeyUint64(
-    List<pb.Locator> location, fixnum.Int64 key) {
+List<pb.Locator> copyAndAppendKeyUint64(List<pb.Locator> location, fixnum.Int64 key) {
   return [...location]..add(newLocatorKeyUint64(key));
 }
 
