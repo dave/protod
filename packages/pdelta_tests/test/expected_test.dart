@@ -5,7 +5,6 @@ import 'package:pdelta/pdelta/pdelta.pb.dart' as pb;
 import 'package:test/test.dart';
 
 import 'cases_transform_test.dart';
-import 'expected_cases.dart';
 import 'package:pdelta_tests/pdelta_tests/registry.dart' as registry;
 import 'package:pdelta_tests/pdelta_tests/pdelta_tests.op.dart';
 import 'package:pdelta_tests/pdelta_tests/tests.pb.dart';
@@ -27,7 +26,7 @@ void main() {
         ;
       }
     }
-    compareResults(result, expectedTestTransformEditEditIndex);
+    compareResults(result, "edit_edit_index");
     ;
   });
 
@@ -47,7 +46,7 @@ void main() {
         result += testTwoOpsConverge(opB, opA, descB, descA, data);
       }
     }
-    compareResults(result, expectedTestTransformEditSetIndex);
+    compareResults(result, "edit_set_index");
   });
 
   // EditDeleteIndex
@@ -66,7 +65,7 @@ void main() {
         result += testTwoOpsConverge(opB, opA, descB, descA, data);
       }
     }
-    compareResults(result, expectedTestTransformEditDeleteIndex);
+    compareResults(result, "edit_delete_index");
   });
 
   // SetSetIndex
@@ -84,7 +83,7 @@ void main() {
         result += testTwoOpsConverge(opA, opB, descA, descB, data);
       }
     }
-    compareResults(result, expectedTestTransformSetSetIndex);
+    compareResults(result, "set_set_index");
   });
 
   // EditInsert
@@ -104,7 +103,7 @@ void main() {
         result += testTwoOpsConverge(opB, opA, descB, descA, data);
       }
     }
-    compareResults(result, expectedTestTransformEditInsert);
+    compareResults(result, "edit_insert");
   });
 
   // SetInsert
@@ -124,7 +123,7 @@ void main() {
         result += testTwoOpsConverge(opB, opA, descB, descA, data);
       }
     }
-    compareResults(result, expectedTestTransformSetInsert);
+    compareResults(result, "set_insert");
   });
 
   // SetDeleteIndex
@@ -143,7 +142,7 @@ void main() {
         result += testTwoOpsConverge(opB, opA, descB, descA, data);
       }
     }
-    compareResults(result, expectedTestTransformSetDeleteIndex);
+    compareResults(result, "set_delete_index");
   });
 
   // InsertDelete
@@ -163,7 +162,7 @@ void main() {
         result += testTwoOpsConverge(opB, opA, descB, descA, data);
       }
     }
-    compareResults(result, expectedTestTransformInsertDelete);
+    compareResults(result, "insert_delete");
   });
 
   // DeleteDeleteIndex
@@ -181,7 +180,7 @@ void main() {
         result += testTwoOpsConverge(opA, opB, descA, descB, data);
       }
     }
-    compareResults(result, expectedTestTransformDeleteDeleteIndex);
+    compareResults(result, "delete_delete_index");
   });
 
   // MoveMove
@@ -204,7 +203,7 @@ void main() {
         }
       }
     }
-    compareResults(result, expectedTestTransformMoveMove);
+    compareResults(result, "move_move");
   });
 
   // MoveInsert
@@ -227,7 +226,7 @@ void main() {
         }
       }
     }
-    compareResults(result, expectedTestTransformMoveInsert);
+    compareResults(result, "move_insert");
   });
 
   // InsertInsert
@@ -245,7 +244,7 @@ void main() {
         result += testTwoOpsConverge(opA, opB, descA, descB, data);
       }
     }
-    compareResults(result, expectedTestTransformInsertInsert);
+    compareResults(result, "insert_insert");
   });
 
   // MoveDelete
@@ -268,7 +267,7 @@ void main() {
         }
       }
     }
-    compareResults(result, expectedTestTransformMoveDelete);
+    compareResults(result, "move_delete");
   });
 
   // SetMove
@@ -291,7 +290,7 @@ void main() {
         }
       }
     }
-    compareResults(result, expectedTestTransformMoveSet);
+    compareResults(result, "move_set");
   });
 
   // EditMove
@@ -314,7 +313,7 @@ void main() {
         }
       }
     }
-    compareResults(result, expectedTestTransformMoveEdit);
+    compareResults(result, "move_edit");
   });
 
   // RenameRename
@@ -338,7 +337,7 @@ void main() {
         }
       }
     }
-    compareResults(result, expectedTestTransformRenameRename);
+    compareResults(result, "rename_rename");
   });
 
   // EditEditKey
@@ -358,7 +357,7 @@ void main() {
         result += testTwoOpsConverge(opA, opB, descA, descB, data);
       }
     }
-    compareResults(result, expectedTestTransformEditEditKey);
+    compareResults(result, "edit_edit_key");
   });
 
   // EditSetKey
@@ -379,7 +378,7 @@ void main() {
         result += testTwoOpsConverge(opB, opA, descB, descA, data);
       }
     }
-    compareResults(result, expectedTestTransformEditSetKey);
+    compareResults(result, "edit_set_key");
   });
 
   // EditDeleteKey
@@ -400,7 +399,7 @@ void main() {
         result += testTwoOpsConverge(opB, opA, descB, descA, data);
       }
     }
-    compareResults(result, expectedTestTransformEditDeleteKey);
+    compareResults(result, "edit_delete_key");
   });
 
   // EditRename
@@ -425,7 +424,7 @@ void main() {
         }
       }
     }
-    compareResults(result, expectedTestTransformEditRenameKey);
+    compareResults(result, "edit_rename_key");
   });
 
   // SetRename
@@ -450,7 +449,7 @@ void main() {
         }
       }
     }
-    compareResults(result, expectedTestTransformSetRenameKey);
+    compareResults(result, "set_rename_key");
   });
 
   // RenameDelete
@@ -475,7 +474,7 @@ void main() {
         }
       }
     }
-    compareResults(result, expectedTestTransformRenameDelete);
+    compareResults(result, "rename_delete");
   });
 
   // SetSetKey
@@ -495,7 +494,7 @@ void main() {
         result += testTwoOpsConverge(opA, opB, descA, descB, data);
       }
     }
-    compareResults(result, expectedTestTransformSetSetKey);
+    compareResults(result, "set_set_key");
   });
 
   // SetDeleteKey
@@ -516,7 +515,7 @@ void main() {
         result += testTwoOpsConverge(opB, opA, descB, descA, data);
       }
     }
-    compareResults(result, expectedTestTransformSetDeleteKey);
+    compareResults(result, "set_delete_key");
   });
 
   // DeleteDeleteKey
@@ -536,7 +535,7 @@ void main() {
         result += testTwoOpsConverge(opA, opB, descA, descB, data);
       }
     }
-    compareResults(result, expectedTestTransformDeleteDeleteKey);
+    compareResults(result, "delete_delete_key");
   });
 }
 
@@ -600,7 +599,7 @@ String printFlags(GeneratedMessage m) {
   return s;
 }
 
-compareResults(String result, String expected) {
+compareResults(String result, String name) {
   expected = expected.trim();
   expected = expected.replaceAll("\t", "");
   result = result.trim();
