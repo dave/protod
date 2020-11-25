@@ -33,24 +33,24 @@ func genDart(root string) {
 	sb.WriteString("import 'package:pdelta/pdelta/pdelta_reduce.dart';\n")
 	sb.WriteString("\n")
 
-	sb.WriteString("pb.Op reduceGenerated(pb.Op r, pb.Op op) {\n")
-	sb.WriteString("  switch (r.type) {\n")
+	sb.WriteString("List<pb.Op> reduceGenerated(pb.Op op1, pb.Op op2) {\n")
+	sb.WriteString("  switch (op1.type) {\n")
 	for _, rOpType := range behaviour.OpTypes {
 		rData := behaviour.Behaviours[rOpType]
 		sb.WriteString(fmt.Sprintf("  case pb.Op_Type.%s:\n", rData.Name))
-		sb.WriteString("    final rItem = item(r);\n")
+		sb.WriteString("    final op1Item = item(op1);\n")
 		for i, rLocType := range rData.Locators {
 			rLoc := behaviour.Locators[rLocType]
 			var elseString = ""
 			if i > 0 {
 				elseString = "} else "
 			}
-			sb.WriteString(fmt.Sprintf("    %sif (rItem.%s()) {\n", elseString, rLoc.Dart))
-			sb.WriteString("      switch (op.type) {\n")
+			sb.WriteString(fmt.Sprintf("    %sif (op1Item.%s()) {\n", elseString, rLoc.Dart))
+			sb.WriteString("      switch (op2.type) {\n")
 			for _, opOpType := range behaviour.OpTypes {
 				opData := behaviour.Behaviours[opOpType]
 				sb.WriteString(fmt.Sprintf("      case pb.Op_Type.%s:\n", opData.Name))
-				sb.WriteString("        final opItem = item(op);\n")
+				sb.WriteString("        final op2Item = item(op2);\n")
 				for i, opLocType := range opData.Locators {
 					opLoc := behaviour.Locators[opLocType]
 					//opLoc.Type
@@ -58,11 +58,11 @@ func genDart(root string) {
 					if i > 0 {
 						elseString = "} else "
 					}
-					sb.WriteString(fmt.Sprintf("        %sif (opItem.%s()) {\n", elseString, opLoc.Dart))
+					sb.WriteString(fmt.Sprintf("        %sif (op2Item.%s()) {\n", elseString, opLoc.Dart))
 					if rLocType == opLocType && needsSpecialCase(rOpType, opOpType) {
-						sb.WriteString(fmt.Sprintf("          return r%s%s%s%s(t, op);\n", rData.Name, rLoc.Name, opData.Name, opLoc.Name))
+						sb.WriteString(fmt.Sprintf("          return r%s%s%s%s(op1, op2);\n", rData.Name, rLoc.Name, opData.Name, opLoc.Name))
 					} else {
-						sb.WriteString("          return rIndependent(t, op);\n")
+						sb.WriteString("          return rIndependent(op1, op2);\n")
 					}
 				}
 				sb.WriteString("        } else {\n")

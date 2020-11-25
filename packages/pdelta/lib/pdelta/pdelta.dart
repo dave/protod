@@ -6,9 +6,8 @@ import 'package:protobuf/protobuf.dart' as protobuf;
 import 'package:ptypes/google/protobuf/any.pb.dart' as any;
 import 'package:quill_delta/quill_delta.dart' as quill;
 import 'package:tuple/tuple.dart';
-
-export 'pdelta.op.dart';
-export 'pdelta_transform.dart';
+export 'package:pdelta/pdelta/pdelta.op.dart';
+export 'package:pdelta/pdelta/pdelta_transform.dart';
 
 final _typeRegistry = TypeRegistry();
 
@@ -34,6 +33,18 @@ protobuf.GeneratedMessage unpack(any.Any packed) {
   return message;
 }
 
+List<pb.Op> flatten(pb.Op op) {
+  if (op == null) {
+    return [];
+  }
+  if (op.type != pb.Op_Type.Compound) {
+    return [op];
+  }
+  final ops = List<pb.Op>();
+  op.ops.forEach((pb.Op child) => ops.add(child));
+  return ops;
+}
+
 pb.Op compound(List<pb.Op> ops) {
   if (ops.length == 0) {
     return nullOp;
@@ -46,7 +57,7 @@ pb.Op compound(List<pb.Op> ops) {
   }
 }
 
-pb.Op get nullOp => pb.Op()..type = pb.Op_Type.Null;
+pb.Op get nullOp => null; // pb.Op()..type = pb.Op_Type.Null;
 
 apply(pb.Op op, protobuf.GeneratedMessage m) {
   if (isNull(op)) {
@@ -1033,6 +1044,24 @@ int getIndexAt(pb.Op op, int locationIndex) {
 
 setKeyAt(pb.Op op, int index, pb.Key key) {
   op.location[index] = (pb.Locator()..key = key);
+}
+
+copyValue(pb.Op from, pb.Op to) {
+  if (from.hasScalar()) {
+    to.scalar = from.scalar;
+  } else if (from.hasMessage()) {
+    to.message = from.message;
+  } else if (from.hasFragment()) {
+    to.fragment = from.fragment;
+  } else if (from.hasDelta()) {
+    to.delta = from.delta;
+  } else if (from.hasIndex()) {
+    to.index = from.index;
+  } else if (from.hasKey()) {
+    to.key = from.key;
+  } else {
+    throw Exception("invalid value in op");
+  }
 }
 
 pb.Key getKeyAt(pb.Op op, int index) {

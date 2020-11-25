@@ -9,7 +9,7 @@ import 'package:protobuf/protobuf.dart';
 import 'package:test/test.dart';
 
 import 'cases_transform_test.dart';
-import 'pdelta_test.dart';
+import 'helpers.dart';
 
 void main() {
   init();

@@ -199,7 +199,7 @@ func rMoveIndexMoveIndex(op1, op2 *Op) []*Op {
 
 	// e.g. MOVE A to B, MOVE B to C => MOVE A to C
 	out := proto.Clone(op1).(*Op)
-	out.Value = &Op_Index{Index: op2ToIndexInOp1Context}
+	out.SetToIndex(op2ToIndexInOp1Context)
 	return []*Op{out}
 
 }
@@ -410,7 +410,7 @@ func rMoveIndexDeleteIndex(op1, op2 *Op) []*Op {
 
 	if moveToIndexInOp2Context == op2.ItemIndex() {
 		out := proto.Clone(op2).(*Op)
-		out.SetItemIndex(op1.ItemIndex())
+		out.SetItemIndex(moveFromIndex)
 		return []*Op{out}
 	}
 

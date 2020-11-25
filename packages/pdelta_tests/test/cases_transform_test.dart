@@ -8,30 +8,31 @@ import 'package:pdelta_tests/pdelta_tests/tests.pb.dart';
 import 'package:protobuf/protobuf.dart';
 import 'package:test/test.dart';
 
-import 'pdelta_test.dart';
+import 'helpers.dart';
 
-void main() async {
+void main() {
   init();
-  final cases = (await File(assetPath("cases_transform.json")).readAsLines()).map((String str) {
-    if (str.startsWith("[")) {
-      str = str.substring(1);
-    }
-    if (str.endsWith("]")) {
-      str = str.substring(0, str.length - 1);
-    }
-    if (str.endsWith(",")) {
-      str = str.substring(0, str.length - 1);
-    }
-    var a = TransformTestCase();
-    a.mergeFromProto3Json(jsonDecode(str), typeRegistry: typeRegistry);
-    return a;
-  });
-  final solo = cases.any((info) => info.solo ?? false);
-  cases.forEach((TransformTestCase info) {
-    if (solo && !(info.solo ?? false)) {
-      return;
-    }
-    test(info.name, () {
+  test("cases_transform", () async {
+    final cases = (await File(assetPath("cases_transform.json")).readAsLines()).map((String str) {
+      if (str.startsWith("[")) {
+        str = str.substring(1);
+      }
+      if (str.endsWith("]")) {
+        str = str.substring(0, str.length - 1);
+      }
+      if (str.endsWith(",")) {
+        str = str.substring(0, str.length - 1);
+      }
+      var a = TransformTestCase();
+      a.mergeFromProto3Json(jsonDecode(str), typeRegistry: typeRegistry);
+      return a;
+    });
+    final solo = cases.any((info) => info.solo ?? false);
+    cases.forEach((TransformTestCase info) {
+      if (solo && !(info.solo ?? false)) {
+        return;
+      }
+
       var data = delta.unpack(info.data);
 
       final op2xp1 = transform(info.op1, info.op2, true);
@@ -90,6 +91,9 @@ void main() async {
 }
 
 Object toObject(GeneratedMessage msg) {
+  if (msg == null) {
+    return null;
+  }
   var ob = msg.toProto3Json(typeRegistry: typeRegistry);
   return process(ob);
 }
