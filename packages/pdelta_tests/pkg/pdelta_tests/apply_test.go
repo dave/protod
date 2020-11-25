@@ -24,7 +24,6 @@ func TestApply(t *testing.T) {
 	}
 	items := []itemType{
 		{
-			solo:     true,
 			name:     "zero_value",
 			op:       Op().Person().Company().Revenue().Set(0.0),
 			data:     &Person{},
