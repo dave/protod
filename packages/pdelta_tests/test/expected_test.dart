@@ -8,7 +8,6 @@ import 'package:pdelta_tests/pdelta_tests/tests.pb.dart';
 import 'package:protobuf/protobuf.dart';
 import 'package:test/test.dart';
 
-import 'cases_transform_test.dart';
 import 'helpers.dart';
 
 void main() {

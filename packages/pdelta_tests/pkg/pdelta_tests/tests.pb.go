@@ -786,18 +786,21 @@ func (x *TransformTestCase) GetExpected2() *any.Any {
 	return nil
 }
 
-type ApplyTestItem struct {
+type ReduceTestCase struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Name     string     `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Op       *pdelta.Op `protobuf:"bytes,2,opt,name=op,proto3" json:"op,omitempty"`
-	Expected *Person    `protobuf:"bytes,3,opt,name=expected,proto3" json:"expected,omitempty"`
+	Solo    bool       `protobuf:"varint,1,opt,name=solo,proto3" json:"solo,omitempty"`
+	Name    string     `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Data    *Person    `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
+	Op1     *pdelta.Op `protobuf:"bytes,4,opt,name=op1,proto3" json:"op1,omitempty"`
+	Op2     *pdelta.Op `protobuf:"bytes,5,opt,name=op2,proto3" json:"op2,omitempty"`
+	Reduced *pdelta.Op `protobuf:"bytes,6,opt,name=reduced,proto3" json:"reduced,omitempty"`
 }
 
-func (x *ApplyTestItem) Reset() {
-	*x = ApplyTestItem{}
+func (x *ReduceTestCase) Reset() {
+	*x = ReduceTestCase{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_pdelta_tests_tests_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -805,13 +808,13 @@ func (x *ApplyTestItem) Reset() {
 	}
 }
 
-func (x *ApplyTestItem) String() string {
+func (x *ReduceTestCase) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ApplyTestItem) ProtoMessage() {}
+func (*ReduceTestCase) ProtoMessage() {}
 
-func (x *ApplyTestItem) ProtoReflect() protoreflect.Message {
+func (x *ReduceTestCase) ProtoReflect() protoreflect.Message {
 	mi := &file_pdelta_tests_tests_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -823,105 +826,47 @@ func (x *ApplyTestItem) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ApplyTestItem.ProtoReflect.Descriptor instead.
-func (*ApplyTestItem) Descriptor() ([]byte, []int) {
+// Deprecated: Use ReduceTestCase.ProtoReflect.Descriptor instead.
+func (*ReduceTestCase) Descriptor() ([]byte, []int) {
 	return file_pdelta_tests_tests_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *ApplyTestItem) GetName() string {
+func (x *ReduceTestCase) GetSolo() bool {
+	if x != nil {
+		return x.Solo
+	}
+	return false
+}
+
+func (x *ReduceTestCase) GetName() string {
 	if x != nil {
 		return x.Name
 	}
 	return ""
 }
 
-func (x *ApplyTestItem) GetOp() *pdelta.Op {
-	if x != nil {
-		return x.Op
-	}
-	return nil
-}
-
-func (x *ApplyTestItem) GetExpected() *Person {
-	if x != nil {
-		return x.Expected
-	}
-	return nil
-}
-
-type ReduceTestItem struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Name    string     `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Data    *Person    `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
-	Op1     *pdelta.Op `protobuf:"bytes,3,opt,name=op1,proto3" json:"op1,omitempty"`
-	Op2     *pdelta.Op `protobuf:"bytes,4,opt,name=op2,proto3" json:"op2,omitempty"`
-	Reduced *pdelta.Op `protobuf:"bytes,5,opt,name=reduced,proto3" json:"reduced,omitempty"`
-}
-
-func (x *ReduceTestItem) Reset() {
-	*x = ReduceTestItem{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_pdelta_tests_tests_proto_msgTypes[8]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ReduceTestItem) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ReduceTestItem) ProtoMessage() {}
-
-func (x *ReduceTestItem) ProtoReflect() protoreflect.Message {
-	mi := &file_pdelta_tests_tests_proto_msgTypes[8]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ReduceTestItem.ProtoReflect.Descriptor instead.
-func (*ReduceTestItem) Descriptor() ([]byte, []int) {
-	return file_pdelta_tests_tests_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *ReduceTestItem) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *ReduceTestItem) GetData() *Person {
+func (x *ReduceTestCase) GetData() *Person {
 	if x != nil {
 		return x.Data
 	}
 	return nil
 }
 
-func (x *ReduceTestItem) GetOp1() *pdelta.Op {
+func (x *ReduceTestCase) GetOp1() *pdelta.Op {
 	if x != nil {
 		return x.Op1
 	}
 	return nil
 }
 
-func (x *ReduceTestItem) GetOp2() *pdelta.Op {
+func (x *ReduceTestCase) GetOp2() *pdelta.Op {
 	if x != nil {
 		return x.Op2
 	}
 	return nil
 }
 
-func (x *ReduceTestItem) GetReduced() *pdelta.Op {
+func (x *ReduceTestCase) GetReduced() *pdelta.Op {
 	if x != nil {
 		return x.Reduced
 	}
@@ -939,7 +884,7 @@ type Person_Embed struct {
 func (x *Person_Embed) Reset() {
 	*x = Person_Embed{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pdelta_tests_tests_proto_msgTypes[9]
+		mi := &file_pdelta_tests_tests_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -952,7 +897,7 @@ func (x *Person_Embed) String() string {
 func (*Person_Embed) ProtoMessage() {}
 
 func (x *Person_Embed) ProtoReflect() protoreflect.Message {
-	mi := &file_pdelta_tests_tests_proto_msgTypes[9]
+	mi := &file_pdelta_tests_tests_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -990,7 +935,7 @@ type Person_Embed_Double struct {
 func (x *Person_Embed_Double) Reset() {
 	*x = Person_Embed_Double{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pdelta_tests_tests_proto_msgTypes[12]
+		mi := &file_pdelta_tests_tests_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1003,7 +948,7 @@ func (x *Person_Embed_Double) String() string {
 func (*Person_Embed_Double) ProtoMessage() {}
 
 func (x *Person_Embed_Double) ProtoReflect() protoreflect.Message {
-	mi := &file_pdelta_tests_tests_proto_msgTypes[12]
+	mi := &file_pdelta_tests_tests_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1214,31 +1159,25 @@ var file_pdelta_tests_tests_proto_rawDesc = []byte{
 	0x78, 0x70, 0x65, 0x63, 0x74, 0x65, 0x64, 0x32, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14,
 	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
 	0x2e, 0x41, 0x6e, 0x79, 0x52, 0x09, 0x65, 0x78, 0x70, 0x65, 0x63, 0x74, 0x65, 0x64, 0x32, 0x22,
-	0x71, 0x0a, 0x0d, 0x41, 0x70, 0x70, 0x6c, 0x79, 0x54, 0x65, 0x73, 0x74, 0x49, 0x74, 0x65, 0x6d,
-	0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04,
-	0x6e, 0x61, 0x6d, 0x65, 0x12, 0x1a, 0x0a, 0x02, 0x6f, 0x70, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x0a, 0x2e, 0x70, 0x64, 0x65, 0x6c, 0x74, 0x61, 0x2e, 0x4f, 0x70, 0x52, 0x02, 0x6f, 0x70,
-	0x12, 0x30, 0x0a, 0x08, 0x65, 0x78, 0x70, 0x65, 0x63, 0x74, 0x65, 0x64, 0x18, 0x03, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x14, 0x2e, 0x70, 0x64, 0x65, 0x6c, 0x74, 0x61, 0x5f, 0x74, 0x65, 0x73, 0x74,
-	0x73, 0x2e, 0x50, 0x65, 0x72, 0x73, 0x6f, 0x6e, 0x52, 0x08, 0x65, 0x78, 0x70, 0x65, 0x63, 0x74,
-	0x65, 0x64, 0x22, 0xb0, 0x01, 0x0a, 0x0e, 0x52, 0x65, 0x64, 0x75, 0x63, 0x65, 0x54, 0x65, 0x73,
-	0x74, 0x49, 0x74, 0x65, 0x6d, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x28, 0x0a, 0x04, 0x64, 0x61, 0x74,
-	0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x70, 0x64, 0x65, 0x6c, 0x74, 0x61,
-	0x5f, 0x74, 0x65, 0x73, 0x74, 0x73, 0x2e, 0x50, 0x65, 0x72, 0x73, 0x6f, 0x6e, 0x52, 0x04, 0x64,
-	0x61, 0x74, 0x61, 0x12, 0x1c, 0x0a, 0x03, 0x6f, 0x70, 0x31, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x0a, 0x2e, 0x70, 0x64, 0x65, 0x6c, 0x74, 0x61, 0x2e, 0x4f, 0x70, 0x52, 0x03, 0x6f, 0x70,
-	0x31, 0x12, 0x1c, 0x0a, 0x03, 0x6f, 0x70, 0x32, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0a,
-	0x2e, 0x70, 0x64, 0x65, 0x6c, 0x74, 0x61, 0x2e, 0x4f, 0x70, 0x52, 0x03, 0x6f, 0x70, 0x32, 0x12,
-	0x24, 0x0a, 0x07, 0x72, 0x65, 0x64, 0x75, 0x63, 0x65, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x0a, 0x2e, 0x70, 0x64, 0x65, 0x6c, 0x74, 0x61, 0x2e, 0x4f, 0x70, 0x52, 0x07, 0x72, 0x65,
-	0x64, 0x75, 0x63, 0x65, 0x64, 0x42, 0x5b, 0x5a, 0x4a, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e,
-	0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x61, 0x76, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x64, 0x2f,
-	0x70, 0x61, 0x63, 0x6b, 0x61, 0x67, 0x65, 0x73, 0x2f, 0x70, 0x64, 0x65, 0x6c, 0x74, 0x61, 0x5f,
-	0x74, 0x65, 0x73, 0x74, 0x73, 0x2f, 0x70, 0x6b, 0x67, 0x2f, 0x70, 0x64, 0x65, 0x6c, 0x74, 0x61,
-	0x5f, 0x74, 0x65, 0x73, 0x74, 0x73, 0x3b, 0x70, 0x64, 0x65, 0x6c, 0x74, 0x61, 0x5f, 0x74, 0x65,
-	0x73, 0x74, 0x73, 0x8a, 0x43, 0x0c, 0x70, 0x64, 0x65, 0x6c, 0x74, 0x61, 0x5f, 0x74, 0x65, 0x73,
-	0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0xc4, 0x01, 0x0a, 0x0e, 0x52, 0x65, 0x64, 0x75, 0x63, 0x65, 0x54, 0x65, 0x73, 0x74, 0x43, 0x61,
+	0x73, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x73, 0x6f, 0x6c, 0x6f, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08,
+	0x52, 0x04, 0x73, 0x6f, 0x6c, 0x6f, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x28, 0x0a, 0x04, 0x64, 0x61,
+	0x74, 0x61, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x70, 0x64, 0x65, 0x6c, 0x74,
+	0x61, 0x5f, 0x74, 0x65, 0x73, 0x74, 0x73, 0x2e, 0x50, 0x65, 0x72, 0x73, 0x6f, 0x6e, 0x52, 0x04,
+	0x64, 0x61, 0x74, 0x61, 0x12, 0x1c, 0x0a, 0x03, 0x6f, 0x70, 0x31, 0x18, 0x04, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x0a, 0x2e, 0x70, 0x64, 0x65, 0x6c, 0x74, 0x61, 0x2e, 0x4f, 0x70, 0x52, 0x03, 0x6f,
+	0x70, 0x31, 0x12, 0x1c, 0x0a, 0x03, 0x6f, 0x70, 0x32, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x0a, 0x2e, 0x70, 0x64, 0x65, 0x6c, 0x74, 0x61, 0x2e, 0x4f, 0x70, 0x52, 0x03, 0x6f, 0x70, 0x32,
+	0x12, 0x24, 0x0a, 0x07, 0x72, 0x65, 0x64, 0x75, 0x63, 0x65, 0x64, 0x18, 0x06, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x0a, 0x2e, 0x70, 0x64, 0x65, 0x6c, 0x74, 0x61, 0x2e, 0x4f, 0x70, 0x52, 0x07, 0x72,
+	0x65, 0x64, 0x75, 0x63, 0x65, 0x64, 0x42, 0x5b, 0x5a, 0x4a, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
+	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x61, 0x76, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x64,
+	0x2f, 0x70, 0x61, 0x63, 0x6b, 0x61, 0x67, 0x65, 0x73, 0x2f, 0x70, 0x64, 0x65, 0x6c, 0x74, 0x61,
+	0x5f, 0x74, 0x65, 0x73, 0x74, 0x73, 0x2f, 0x70, 0x6b, 0x67, 0x2f, 0x70, 0x64, 0x65, 0x6c, 0x74,
+	0x61, 0x5f, 0x74, 0x65, 0x73, 0x74, 0x73, 0x3b, 0x70, 0x64, 0x65, 0x6c, 0x74, 0x61, 0x5f, 0x74,
+	0x65, 0x73, 0x74, 0x73, 0x8a, 0x43, 0x0c, 0x70, 0x64, 0x65, 0x6c, 0x74, 0x61, 0x5f, 0x74, 0x65,
+	0x73, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1254,7 +1193,7 @@ func file_pdelta_tests_tests_proto_rawDescGZIP() []byte {
 }
 
 var file_pdelta_tests_tests_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_pdelta_tests_tests_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_pdelta_tests_tests_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_pdelta_tests_tests_proto_goTypes = []interface{}{
 	(Person_Type)(0),                   // 0: pdelta_tests.Person.Type
 	(*Person)(nil),                     // 1: pdelta_tests.Person
@@ -1264,61 +1203,58 @@ var file_pdelta_tests_tests_proto_goTypes = []interface{}{
 	(*Chooser)(nil),                    // 5: pdelta_tests.Chooser
 	(*ApplyTestCase)(nil),              // 6: pdelta_tests.ApplyTestCase
 	(*TransformTestCase)(nil),          // 7: pdelta_tests.TransformTestCase
-	(*ApplyTestItem)(nil),              // 8: pdelta_tests.ApplyTestItem
-	(*ReduceTestItem)(nil),             // 9: pdelta_tests.ReduceTestItem
-	(*Person_Embed)(nil),               // 10: pdelta_tests.Person.Embed
-	nil,                                // 11: pdelta_tests.Person.CasesEntry
-	nil,                                // 12: pdelta_tests.Person.TypeMapEntry
-	(*Person_Embed_Double)(nil),        // 13: pdelta_tests.Person.Embed.Double
-	nil,                                // 14: pdelta_tests.Company.FlagsEntry
-	nil,                                // 15: pdelta_tests.Case.FlagsEntry
-	(*House)(nil),                      // 16: pdelta_tests.House
-	(*pdelta_tests_clothes.Shirt)(nil), // 17: pdelta_tests_clothes.Shirt
-	(*pants.Pants)(nil),                // 18: pants.Pants
-	(*pdelta.Op)(nil),                  // 19: pdelta.Op
-	(*any.Any)(nil),                    // 20: google.protobuf.Any
+	(*ReduceTestCase)(nil),             // 8: pdelta_tests.ReduceTestCase
+	(*Person_Embed)(nil),               // 9: pdelta_tests.Person.Embed
+	nil,                                // 10: pdelta_tests.Person.CasesEntry
+	nil,                                // 11: pdelta_tests.Person.TypeMapEntry
+	(*Person_Embed_Double)(nil),        // 12: pdelta_tests.Person.Embed.Double
+	nil,                                // 13: pdelta_tests.Company.FlagsEntry
+	nil,                                // 14: pdelta_tests.Case.FlagsEntry
+	(*House)(nil),                      // 15: pdelta_tests.House
+	(*pdelta_tests_clothes.Shirt)(nil), // 16: pdelta_tests_clothes.Shirt
+	(*pants.Pants)(nil),                // 17: pants.Pants
+	(*pdelta.Op)(nil),                  // 18: pdelta.Op
+	(*any.Any)(nil),                    // 19: google.protobuf.Any
 }
 var file_pdelta_tests_tests_proto_depIdxs = []int32{
-	11, // 0: pdelta_tests.Person.cases:type_name -> pdelta_tests.Person.CasesEntry
+	10, // 0: pdelta_tests.Person.cases:type_name -> pdelta_tests.Person.CasesEntry
 	2,  // 1: pdelta_tests.Person.company:type_name -> pdelta_tests.Company
 	0,  // 2: pdelta_tests.Person.type:type_name -> pdelta_tests.Person.Type
 	0,  // 3: pdelta_tests.Person.typeList:type_name -> pdelta_tests.Person.Type
-	12, // 4: pdelta_tests.Person.typeMap:type_name -> pdelta_tests.Person.TypeMapEntry
-	10, // 5: pdelta_tests.Person.embedded:type_name -> pdelta_tests.Person.Embed
+	11, // 4: pdelta_tests.Person.typeMap:type_name -> pdelta_tests.Person.TypeMapEntry
+	9,  // 5: pdelta_tests.Person.embedded:type_name -> pdelta_tests.Person.Embed
 	4,  // 6: pdelta_tests.Person.itm:type_name -> pdelta_tests.Item
 	3,  // 7: pdelta_tests.Person.cas:type_name -> pdelta_tests.Case
 	5,  // 8: pdelta_tests.Person.cho:type_name -> pdelta_tests.Chooser
-	16, // 9: pdelta_tests.Person.house:type_name -> pdelta_tests.House
-	17, // 10: pdelta_tests.Person.shirt:type_name -> pdelta_tests_clothes.Shirt
-	18, // 11: pdelta_tests.Person.pants:type_name -> pants.Pants
-	13, // 12: pdelta_tests.Person.double:type_name -> pdelta_tests.Person.Embed.Double
-	14, // 13: pdelta_tests.Company.flags:type_name -> pdelta_tests.Company.FlagsEntry
+	15, // 9: pdelta_tests.Person.house:type_name -> pdelta_tests.House
+	16, // 10: pdelta_tests.Person.shirt:type_name -> pdelta_tests_clothes.Shirt
+	17, // 11: pdelta_tests.Person.pants:type_name -> pants.Pants
+	12, // 12: pdelta_tests.Person.double:type_name -> pdelta_tests.Person.Embed.Double
+	13, // 13: pdelta_tests.Company.flags:type_name -> pdelta_tests.Company.FlagsEntry
 	1,  // 14: pdelta_tests.Company.ceo:type_name -> pdelta_tests.Person
 	4,  // 15: pdelta_tests.Case.items:type_name -> pdelta_tests.Item
-	15, // 16: pdelta_tests.Case.flags:type_name -> pdelta_tests.Case.FlagsEntry
+	14, // 16: pdelta_tests.Case.flags:type_name -> pdelta_tests.Case.FlagsEntry
 	4,  // 17: pdelta_tests.Chooser.itm:type_name -> pdelta_tests.Item
-	19, // 18: pdelta_tests.ApplyTestCase.op:type_name -> pdelta.Op
-	20, // 19: pdelta_tests.ApplyTestCase.data:type_name -> google.protobuf.Any
-	20, // 20: pdelta_tests.ApplyTestCase.expected:type_name -> google.protobuf.Any
-	19, // 21: pdelta_tests.TransformTestCase.op1:type_name -> pdelta.Op
-	19, // 22: pdelta_tests.TransformTestCase.op2:type_name -> pdelta.Op
-	20, // 23: pdelta_tests.TransformTestCase.data:type_name -> google.protobuf.Any
-	20, // 24: pdelta_tests.TransformTestCase.expected:type_name -> google.protobuf.Any
-	20, // 25: pdelta_tests.TransformTestCase.expected1:type_name -> google.protobuf.Any
-	20, // 26: pdelta_tests.TransformTestCase.expected2:type_name -> google.protobuf.Any
-	19, // 27: pdelta_tests.ApplyTestItem.op:type_name -> pdelta.Op
-	1,  // 28: pdelta_tests.ApplyTestItem.expected:type_name -> pdelta_tests.Person
-	1,  // 29: pdelta_tests.ReduceTestItem.data:type_name -> pdelta_tests.Person
-	19, // 30: pdelta_tests.ReduceTestItem.op1:type_name -> pdelta.Op
-	19, // 31: pdelta_tests.ReduceTestItem.op2:type_name -> pdelta.Op
-	19, // 32: pdelta_tests.ReduceTestItem.reduced:type_name -> pdelta.Op
-	3,  // 33: pdelta_tests.Person.CasesEntry.value:type_name -> pdelta_tests.Case
-	0,  // 34: pdelta_tests.Person.TypeMapEntry.value:type_name -> pdelta_tests.Person.Type
-	35, // [35:35] is the sub-list for method output_type
-	35, // [35:35] is the sub-list for method input_type
-	35, // [35:35] is the sub-list for extension type_name
-	35, // [35:35] is the sub-list for extension extendee
-	0,  // [0:35] is the sub-list for field type_name
+	18, // 18: pdelta_tests.ApplyTestCase.op:type_name -> pdelta.Op
+	19, // 19: pdelta_tests.ApplyTestCase.data:type_name -> google.protobuf.Any
+	19, // 20: pdelta_tests.ApplyTestCase.expected:type_name -> google.protobuf.Any
+	18, // 21: pdelta_tests.TransformTestCase.op1:type_name -> pdelta.Op
+	18, // 22: pdelta_tests.TransformTestCase.op2:type_name -> pdelta.Op
+	19, // 23: pdelta_tests.TransformTestCase.data:type_name -> google.protobuf.Any
+	19, // 24: pdelta_tests.TransformTestCase.expected:type_name -> google.protobuf.Any
+	19, // 25: pdelta_tests.TransformTestCase.expected1:type_name -> google.protobuf.Any
+	19, // 26: pdelta_tests.TransformTestCase.expected2:type_name -> google.protobuf.Any
+	1,  // 27: pdelta_tests.ReduceTestCase.data:type_name -> pdelta_tests.Person
+	18, // 28: pdelta_tests.ReduceTestCase.op1:type_name -> pdelta.Op
+	18, // 29: pdelta_tests.ReduceTestCase.op2:type_name -> pdelta.Op
+	18, // 30: pdelta_tests.ReduceTestCase.reduced:type_name -> pdelta.Op
+	3,  // 31: pdelta_tests.Person.CasesEntry.value:type_name -> pdelta_tests.Case
+	0,  // 32: pdelta_tests.Person.TypeMapEntry.value:type_name -> pdelta_tests.Person.Type
+	33, // [33:33] is the sub-list for method output_type
+	33, // [33:33] is the sub-list for method input_type
+	33, // [33:33] is the sub-list for extension type_name
+	33, // [33:33] is the sub-list for extension extendee
+	0,  // [0:33] is the sub-list for field type_name
 }
 
 func init() { file_pdelta_tests_tests_proto_init() }
@@ -1413,7 +1349,7 @@ func file_pdelta_tests_tests_proto_init() {
 			}
 		}
 		file_pdelta_tests_tests_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ApplyTestItem); i {
+			switch v := v.(*ReduceTestCase); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1425,18 +1361,6 @@ func file_pdelta_tests_tests_proto_init() {
 			}
 		}
 		file_pdelta_tests_tests_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ReduceTestItem); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_pdelta_tests_tests_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Person_Embed); i {
 			case 0:
 				return &v.state
@@ -1448,7 +1372,7 @@ func file_pdelta_tests_tests_proto_init() {
 				return nil
 			}
 		}
-		file_pdelta_tests_tests_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+		file_pdelta_tests_tests_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Person_Embed_Double); i {
 			case 0:
 				return &v.state
@@ -1473,7 +1397,7 @@ func file_pdelta_tests_tests_proto_init() {
 		(*Chooser_Dbl)(nil),
 		(*Chooser_Itm)(nil),
 	}
-	file_pdelta_tests_tests_proto_msgTypes[12].OneofWrappers = []interface{}{
+	file_pdelta_tests_tests_proto_msgTypes[11].OneofWrappers = []interface{}{
 		(*Person_Embed_Double_Bar)(nil),
 		(*Person_Embed_Double_Baz)(nil),
 	}
@@ -1483,7 +1407,7 @@ func file_pdelta_tests_tests_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_pdelta_tests_tests_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   15,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

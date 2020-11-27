@@ -25,7 +25,7 @@ func TestRandomReduceCases(t *testing.T) {
 		caseJson = strings.TrimPrefix(caseJson, "[")
 		caseJson = strings.TrimSuffix(caseJson, "]")
 		caseJson = strings.TrimSuffix(caseJson, ",")
-		item := &ReduceTestItem{}
+		item := &ReduceTestCase{}
 		if err := protojson.Unmarshal([]byte(caseJson), item); err != nil {
 			t.Fatalf("unmarshaling %q: %+v", caseJson, err)
 		}
@@ -108,7 +108,7 @@ func TestRandomReduce(t *testing.T) {
 			}
 		}
 
-		item := &ReduceTestItem{
+		item := &ReduceTestCase{
 			Name:    petname.Generate(3, "-"),
 			Data:    pBefore,
 			Op1:     op1,

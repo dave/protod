@@ -19,27 +19,16 @@ func TestRandomApplyCases(t *testing.T) {
 		t.Fatal(err)
 	}
 	cases := strings.Split(string(casesBytes), "\n")
-	p := &Person{Name: "a"}
 	for _, caseJson := range cases {
 		caseJson = strings.TrimPrefix(caseJson, "[")
 		caseJson = strings.TrimSuffix(caseJson, "]")
 		caseJson = strings.TrimSuffix(caseJson, ",")
-		item := &ApplyTestItem{}
-		before := proto.Clone(p).(*Person)
-		err := protojson.Unmarshal([]byte(caseJson), item)
+		testCase := &ApplyTestCase{}
+		err := protojson.Unmarshal([]byte(caseJson), testCase)
 		if err != nil {
 			t.Fatalf("unmarshaling %q: %+v", caseJson, err)
 		}
-		if err := pdelta.Apply(item.Op, p); err != nil {
-			t.Fatalf("apply case %v: %v", item.Name, err)
-		}
-		if !compareProto(item.Expected, p) {
-			input, err := protojson.Marshal(before)
-			if err != nil {
-				t.Fatal(err)
-			}
-			t.Fatalf("apply case %v: input: %s\nop: %s\nexpected: %s\nresult:%s", item.Name, string(input), item.Op.Debug(), mustJsonPretty(item.Expected), mustJsonPretty(p))
-		}
+		runApplyTest(t, testCase)
 	}
 }
 
@@ -58,6 +47,7 @@ func TestRandomApply(t *testing.T) {
 	var sbj strings.Builder
 	sbj.WriteString("[")
 	for i := 0; i < 15000; i++ {
+		before := proto.Clone(p).(*Person)
 		op := fuzzer.Get(p)
 		if err := pdelta.Apply(op, p); err != nil {
 			t.Fatal(err)
@@ -66,10 +56,11 @@ func TestRandomApply(t *testing.T) {
 			s := mustJson(p)
 			fmt.Println(len(s), s)
 		}
-		item := &ApplyTestItem{
+		item := &ApplyTestCase{
 			Name:     petname.Generate(3, "-"),
 			Op:       op,
-			Expected: proto.Clone(p).(*Person),
+			Data:     pdelta.MustMarshalAny(before),
+			Expected: pdelta.MustMarshalAny(proto.Clone(p).(*Person)),
 		}
 		b, err := protojson.Marshal(item)
 		if err != nil {
