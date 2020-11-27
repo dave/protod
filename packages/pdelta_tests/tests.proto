@@ -105,7 +105,6 @@ message ReduceTestCase {
   bool solo = 1;
   string name = 2;
   Person data = 3;
-  pdelta.Op op1 = 4;
-  pdelta.Op op2 = 5;
-  pdelta.Op reduced = 6;
+  pdelta.Op op = 4;
+  pdelta.Op reduced = 5;
 }

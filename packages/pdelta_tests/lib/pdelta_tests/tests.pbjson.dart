@@ -173,9 +173,8 @@ const ReduceTestCase$json = const {
     const {'1': 'solo', '3': 1, '4': 1, '5': 8, '10': 'solo'},
     const {'1': 'name', '3': 2, '4': 1, '5': 9, '10': 'name'},
     const {'1': 'data', '3': 3, '4': 1, '5': 11, '6': '.pdelta_tests.Person', '10': 'data'},
-    const {'1': 'op1', '3': 4, '4': 1, '5': 11, '6': '.pdelta.Op', '10': 'op1'},
-    const {'1': 'op2', '3': 5, '4': 1, '5': 11, '6': '.pdelta.Op', '10': 'op2'},
-    const {'1': 'reduced', '3': 6, '4': 1, '5': 11, '6': '.pdelta.Op', '10': 'reduced'},
+    const {'1': 'op', '3': 4, '4': 1, '5': 11, '6': '.pdelta.Op', '10': 'op'},
+    const {'1': 'reduced', '3': 5, '4': 1, '5': 11, '6': '.pdelta.Op', '10': 'reduced'},
   ],
 };
 

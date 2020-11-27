@@ -31,21 +31,18 @@ func TestRandomReduceCases(t *testing.T) {
 		}
 		data1 := proto.Clone(item.Data).(*Person)
 		data2 := proto.Clone(item.Data).(*Person)
-		opMerged := pdelta.Reduce(pdelta.Compound(item.Op1, item.Op2))
+		opMerged := pdelta.Reduce(item.Op)
 		if !compareProto(item.Reduced, opMerged) {
 			t.Fatalf("reduce case %v: expected: %v (%v)\nfound: %v (%v)\n", item.Name, item.Reduced.Debug(), mustJsonPretty(item.Reduced), opMerged.Debug(), mustJsonPretty(opMerged))
 		}
-		if err := pdelta.Apply(item.Op1, data1); err != nil {
-			t.Fatalf("reduce case %v: %v", item.Name, err)
-		}
-		if err := pdelta.Apply(item.Op2, data1); err != nil {
+		if err := pdelta.Apply(item.Op, data1); err != nil {
 			t.Fatalf("reduce case %v: %v", item.Name, err)
 		}
 		if err := pdelta.Apply(opMerged, data2); err != nil {
 			t.Fatalf("reduce case %v: %v", item.Name, err)
 		}
 		if !compareProto(data1, data2) {
-			t.Fatalf("reduce case %v: op1: %v\nop2: %v\nreduced: %v\ndata: %v\nexpected: %v\nfound: %v\n", item.Name, item.Op1.Debug(), item.Op2.Debug(), opMerged.Debug(), mustJsonPretty(item.Data), mustJsonPretty(data1), mustJsonPretty(data2))
+			t.Fatalf("reduce case %v: op: %v\nreduced: %v\ndata: %v\nexpected: %v\nfound: %v\n", item.Name, item.Op.Debug(), opMerged.Debug(), mustJsonPretty(item.Data), mustJsonPretty(data1), mustJsonPretty(data2))
 		}
 	}
 }
@@ -111,8 +108,7 @@ func TestRandomReduce(t *testing.T) {
 		item := &ReduceTestCase{
 			Name:    petname.Generate(3, "-"),
 			Data:    pBefore,
-			Op1:     op1,
-			Op2:     op2,
+			Op:      pdelta.Compound(op1, op2),
 			Reduced: opMerged,
 		}
 		b, err := protojson.Marshal(item)

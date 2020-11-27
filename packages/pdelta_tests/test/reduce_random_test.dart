@@ -29,11 +29,10 @@ void main() {
       try {
         final data1 = info.data.clone();
         final data2 = info.data.clone();
-        final compoundOp = compound([info.op1, info.op2]);
+        final compoundOp = info.op;
         final opMerged = reduce(compoundOp);
         expect(toObject(opMerged), toObject(info.reduced), reason: info.name);
-        apply(info.op1, data1);
-        apply(info.op2, data1);
+        apply(info.op, data1);
         apply(opMerged, data2);
         expect(toObject(data1), toObject(data2), reason: info.name);
       } catch (ex) {

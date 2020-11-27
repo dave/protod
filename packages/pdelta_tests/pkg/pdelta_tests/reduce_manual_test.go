@@ -33,84 +33,106 @@ func TestReduce(t *testing.T) {
 
 	items := []*ReduceTestCase{
 		{
-			Name:    "SET_EDIT_CHILD_OBJECT",
-			Op1:     Op().Person().Cases().Set(map[string]*Case{"a": {}}),
-			Op2:     Op().Person().Cases().Key("a").Name().Set("b"),
+			Name: "SET_EDIT_CHILD_OBJECT",
+			Op: pdelta.Compound(
+				Op().Person().Cases().Set(map[string]*Case{"a": {}}),
+				Op().Person().Cases().Key("a").Name().Set("b"),
+			),
 			Reduced: Op().Person().Cases().Set(map[string]*Case{"a": {Name: "b"}}),
 		},
 		{
-			Name:    "SET_EDIT_CHILD_MESSAGE",
-			Op1:     Op().Person().Company().Set(&Company{Name: "a"}),
-			Op2:     Op().Person().Company().Name().Set("b"),
+			Name: "SET_EDIT_CHILD_MESSAGE",
+			Op: pdelta.Compound(
+				Op().Person().Company().Set(&Company{Name: "a"}),
+				Op().Person().Company().Name().Set("b"),
+			),
 			Reduced: Op().Person().Company().Set(&Company{Name: "b"}),
 		},
 		{
 			// EDIT A d1, EDIT A d2 => EDIT A d3 (use quill to merge d1 and d2)
-			Name:    "EDIT_EDIT",
-			Op1:     Op().Person().Name().Edit("a", "a b"),
-			Op2:     Op().Person().Name().Edit("a b", "a b c"),
+			Name: "EDIT_EDIT",
+			Op: pdelta.Compound(
+				Op().Person().Name().Edit("a", "a b"),
+				Op().Person().Name().Edit("a b", "a b c"),
+			),
 			Reduced: Op().Person().Name().Edit("a", "a b c"),
 		},
 		{
 			// EDIT A, SET A => SET A
-			Name:    "EDIT_SET",
-			Op1:     Op().Person().Name().Edit("a", "a b"),
-			Op2:     Op().Person().Name().Set("c"),
+			Name: "EDIT_SET",
+			Op: pdelta.Compound(
+				Op().Person().Name().Edit("a", "a b"),
+				Op().Person().Name().Set("c"),
+			),
 			Reduced: Op().Person().Name().Set("c"),
 		},
 		{
 			// EDIT A, DELETE A => DELETE A
-			Name:    "EDIT_DELETE",
-			Op1:     Op().Person().Name().Edit("a", "a b"),
-			Op2:     Op().Person().Name().Delete(),
+			Name: "EDIT_DELETE",
+			Op: pdelta.Compound(
+				Op().Person().Name().Edit("a", "a b"),
+				Op().Person().Name().Delete(),
+			),
 			Reduced: Op().Person().Name().Delete(),
 		},
 
 		{
 			// EDIT A, RENAME B to A => RENAME B to A
-			Name:    "EDIT_RENAME",
-			Op1:     Op().Company().Flags().Key(1).Edit("a", "a b"),
-			Op2:     Op().Company().Flags().Rename(2, 1),
+			Name: "EDIT_RENAME",
+			Op: pdelta.Compound(
+				Op().Company().Flags().Key(1).Edit("a", "a b"),
+				Op().Company().Flags().Rename(2, 1),
+			),
 			Reduced: Op().Company().Flags().Rename(2, 1),
 		},
 
 		{
 			// SET A v1, EDIT A d1 => SET A v2 (use quill to calculate v2)
-			Name:    "SET_EDIT",
-			Op1:     Op().Person().Name().Set("a"),
-			Op2:     Op().Person().Name().Edit("a", "a b"),
+			Name: "SET_EDIT",
+			Op: pdelta.Compound(
+				Op().Person().Name().Set("a"),
+				Op().Person().Name().Edit("a", "a b"),
+			),
 			Reduced: Op().Person().Name().Set("a b"),
 		},
 
 		{
 			// SET A v1, SET A v2 => SET A v2
-			Name:    "SET_SET",
-			Op1:     Op().Person().Name().Set("a"),
-			Op2:     Op().Person().Name().Set("b"),
+			Name: "SET_SET",
+			Op: pdelta.Compound(
+				Op().Person().Name().Set("a"),
+				Op().Person().Name().Set("b"),
+			),
 			Reduced: Op().Person().Name().Set("b"),
 		},
 
 		{
 			// SET A, DELETE A => DELETE A
-			Name:    "SET_DELETE",
-			Op1:     Op().Person().Name().Set("a"),
-			Op2:     Op().Person().Name().Delete(),
+			Name: "SET_DELETE",
+			Op: pdelta.Compound(
+				Op().Person().Name().Set("a"),
+				Op().Person().Name().Delete(),
+			),
 			Reduced: Op().Person().Name().Delete(),
 		},
 
 		{
 			// SET A, RENAME B to A => RENAME B to A
-			Name:    "SET_RENAME",
-			Op1:     Op().Company().Flags().Key(1).Set("a"),
-			Op2:     Op().Company().Flags().Rename(2, 1),
+			Name: "SET_RENAME",
+			Op: pdelta.Compound(
+				Op().Company().Flags().Key(1).Set("a"),
+				Op().Company().Flags().Rename(2, 1),
+			),
 			Reduced: Op().Company().Flags().Rename(2, 1),
 		},
 
 		{
 			// INSERT A v1, SET A v2 => INSERT A v2
-			Name:    "INSERT_SET",
-			Op1:     Op().Person().Alias().Insert(0, "a"),
-			Op2:     Op().Person().Alias().Index(0).Set("b"),
+			Name: "INSERT_SET",
+			Op: pdelta.Compound(
+				Op().Person().Alias().Insert(0, "a"),
+				Op().Person().Alias().Index(0).Set("b"),
+			),
 			Reduced: Op().Person().Alias().Insert(0, "b"),
 		},
 
@@ -131,9 +153,11 @@ func TestReduce(t *testing.T) {
 			// insert(2, "x")
 			// A B x C D
 
-			Name:    "INSERT_MOVE_FORWARD",
-			Op1:     Op().Person().Alias().Insert(0, "a"),
-			Op2:     Op().Person().Alias().Move(0, 3),
+			Name: "INSERT_MOVE_FORWARD",
+			Op: pdelta.Compound(
+				Op().Person().Alias().Insert(0, "a"),
+				Op().Person().Alias().Move(0, 3),
+			),
 			Reduced: Op().Person().Alias().Insert(2, "a"),
 		},
 
@@ -154,9 +178,11 @@ func TestReduce(t *testing.T) {
 			// insert(0, "x")
 			// x A B C
 
-			Name:    "INSERT_MOVE_BACK",
-			Op1:     Op().Person().Alias().Insert(3, "a"),
-			Op2:     Op().Person().Alias().Move(3, 0),
+			Name: "INSERT_MOVE_BACK",
+			Op: pdelta.Compound(
+				Op().Person().Alias().Insert(3, "a"),
+				Op().Person().Alias().Move(3, 0),
+			),
 			Reduced: Op().Person().Alias().Insert(0, "a"),
 		},
 
@@ -164,8 +190,8 @@ func TestReduce(t *testing.T) {
 		// operation will reverse the insert but not the creation of the parent.
 		//{
 		//	// INSERT A, DELETE A => null
-		//	name: "INSERT_DELETE",
-		//
+		//	Name: "INSERT_DELETE",
+		//  Op: pdelta.Compound(
 		//		Op().Person().Alias().Insert(0, "a"),
 		//		Op().Person().Alias().Index(0).Delete(),
 		//	),
@@ -183,9 +209,11 @@ func TestReduce(t *testing.T) {
 			// move(2, 0)
 			// x B C D
 
-			Name:    "MOVE_MOVE_FORWARD_BACK_NULL",
-			Op1:     Op().Person().Alias().Move(0, 3),
-			Op2:     Op().Person().Alias().Move(2, 0),
+			Name: "MOVE_MOVE_FORWARD_BACK_NULL",
+			Op: pdelta.Compound(
+				Op().Person().Alias().Move(0, 3),
+				Op().Person().Alias().Move(2, 0),
+			),
 			Reduced: nil,
 		},
 
@@ -200,9 +228,11 @@ func TestReduce(t *testing.T) {
 			// move(0, 3)
 			// A B x D
 
-			Name:    "MOVE_MOVE_BACK_FORWARD_NULL",
-			Op1:     Op().Person().Alias().Move(2, 0),
-			Op2:     Op().Person().Alias().Move(0, 3),
+			Name: "MOVE_MOVE_BACK_FORWARD_NULL",
+			Op: pdelta.Compound(
+				Op().Person().Alias().Move(2, 0),
+				Op().Person().Alias().Move(0, 3),
+			),
 			Reduced: nil,
 		},
 
@@ -223,9 +253,11 @@ func TestReduce(t *testing.T) {
 			// move(2, 1)
 			// A x B D E F G H
 
-			Name:    "MOVE_MOVE_FORWARD_A",
-			Op1:     Op().Person().Alias().Move(2, 5),
-			Op2:     Op().Person().Alias().Move(4, 1),
+			Name: "MOVE_MOVE_FORWARD_A",
+			Op: pdelta.Compound(
+				Op().Person().Alias().Move(2, 5),
+				Op().Person().Alias().Move(4, 1),
+			),
 			Reduced: Op().Person().Alias().Move(2, 1),
 		},
 
@@ -246,9 +278,11 @@ func TestReduce(t *testing.T) {
 			// move(2, 4)
 			// A B D x E F G
 
-			Name:    "MOVE_MOVE_FORWARD_B",
-			Op1:     Op().Person().Alias().Move(2, 5),
-			Op2:     Op().Person().Alias().Move(4, 3),
+			Name: "MOVE_MOVE_FORWARD_B",
+			Op: pdelta.Compound(
+				Op().Person().Alias().Move(2, 5),
+				Op().Person().Alias().Move(4, 3),
+			),
 			Reduced: Op().Person().Alias().Move(2, 4),
 		},
 
@@ -269,9 +303,11 @@ func TestReduce(t *testing.T) {
 			// move(2, 6)
 			// A B D E F x G
 
-			Name:    "MOVE_MOVE_FORWARD_C",
-			Op1:     Op().Person().Alias().Move(2, 5),
-			Op2:     Op().Person().Alias().Move(4, 6),
+			Name: "MOVE_MOVE_FORWARD_C",
+			Op: pdelta.Compound(
+				Op().Person().Alias().Move(2, 5),
+				Op().Person().Alias().Move(4, 6),
+			),
 			Reduced: Op().Person().Alias().Move(2, 6),
 		},
 
@@ -292,9 +328,11 @@ func TestReduce(t *testing.T) {
 			// move(4, 1)
 			// A x B C D F G
 
-			Name:    "MOVE_MOVE_BACK_A",
-			Op1:     Op().Person().Alias().Move(4, 2),
-			Op2:     Op().Person().Alias().Move(2, 1),
+			Name: "MOVE_MOVE_BACK_A",
+			Op: pdelta.Compound(
+				Op().Person().Alias().Move(4, 2),
+				Op().Person().Alias().Move(2, 1),
+			),
 			Reduced: Op().Person().Alias().Move(4, 1),
 		},
 
@@ -315,9 +353,11 @@ func TestReduce(t *testing.T) {
 			// move(4, 3)
 			// A B C x D F G
 
-			Name:    "MOVE_MOVE_BACK_B",
-			Op1:     Op().Person().Alias().Move(4, 2),
-			Op2:     Op().Person().Alias().Move(2, 4),
+			Name: "MOVE_MOVE_BACK_B",
+			Op: pdelta.Compound(
+				Op().Person().Alias().Move(4, 2),
+				Op().Person().Alias().Move(2, 4),
+			),
 			Reduced: Op().Person().Alias().Move(4, 3),
 		},
 
@@ -338,9 +378,11 @@ func TestReduce(t *testing.T) {
 			// move(4, 6)
 			// A B C x D F G
 
-			Name:    "MOVE_MOVE_BACK_C",
-			Op1:     Op().Person().Alias().Move(4, 2),
-			Op2:     Op().Person().Alias().Move(2, 6),
+			Name: "MOVE_MOVE_BACK_C",
+			Op: pdelta.Compound(
+				Op().Person().Alias().Move(4, 2),
+				Op().Person().Alias().Move(2, 6),
+			),
 			Reduced: Op().Person().Alias().Move(4, 6),
 		},
 
@@ -361,9 +403,11 @@ func TestReduce(t *testing.T) {
 			// delete(0)
 			// B C D
 
-			Name:    "MOVE_FORWARD_DELETE",
-			Op1:     Op().Person().Alias().Move(0, 3),
-			Op2:     Op().Person().Alias().Index(2).Delete(),
+			Name: "MOVE_FORWARD_DELETE",
+			Op: pdelta.Compound(
+				Op().Person().Alias().Move(0, 3),
+				Op().Person().Alias().Index(2).Delete(),
+			),
 			Reduced: Op().Person().Alias().Index(0).Delete(),
 		},
 
@@ -384,9 +428,11 @@ func TestReduce(t *testing.T) {
 			// delete(3)
 			// A B C
 
-			Name:    "MOVE_BACK_DELETE",
-			Op1:     Op().Person().Alias().Move(3, 1),
-			Op2:     Op().Person().Alias().Index(1).Delete(),
+			Name: "MOVE_BACK_DELETE",
+			Op: pdelta.Compound(
+				Op().Person().Alias().Move(3, 1),
+				Op().Person().Alias().Index(1).Delete(),
+			),
 			Reduced: Op().Person().Alias().Index(3).Delete(),
 		},
 	}
@@ -428,11 +474,11 @@ func TestReduce(t *testing.T) {
 }
 
 func runReduceCase(t *testing.T, item *ReduceTestCase) {
-	result := pdelta.Reduce(pdelta.Compound(item.Op1, item.Op2))
+	result := pdelta.Reduce(item.Op)
 	if result == nil && item.Reduced == nil {
 		return // ok
 	}
 	if !compareJson(mustJson(result), mustJson(item.Reduced)) {
-		t.Fatalf("%s:\nop1:\n%s\nop2:\n%s\nresult:\n%s\nexpect:\n%s\n", item.Name, item.Op1.Debug(), item.Op2.Debug(), result.Debug(), item.Reduced.Debug())
+		t.Fatalf("%s:\nop:\n%s\nresult:\n%s\nexpect:\n%s\n", item.Name, item.Op.Debug(), result.Debug(), item.Reduced.Debug())
 	}
 }

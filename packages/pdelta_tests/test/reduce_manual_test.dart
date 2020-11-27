@@ -26,7 +26,7 @@ void main() {
       var info = ReduceTestCase();
       info.mergeFromProto3Json(jsonDecode(str), typeRegistry: typeRegistry);
       try {
-        final compoundOp = compound([info.op1, info.op2]);
+        final compoundOp = info.op;
         final opMerged = reduce(compoundOp);
         expect(toObject(opMerged), toObject(info.reduced), reason: info.name);
       } catch (ex) {

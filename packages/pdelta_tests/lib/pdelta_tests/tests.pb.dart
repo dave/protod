@@ -811,9 +811,8 @@ class ReduceTestCase extends $pb.GeneratedMessage {
     ..aOB(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'solo')
     ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'name')
     ..aOM<Person>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'data', subBuilder: Person.create)
-    ..aOM<$3.Op>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'op1', subBuilder: $3.Op.create)
-    ..aOM<$3.Op>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'op2', subBuilder: $3.Op.create)
-    ..aOM<$3.Op>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'reduced', subBuilder: $3.Op.create)
+    ..aOM<$3.Op>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'op', subBuilder: $3.Op.create)
+    ..aOM<$3.Op>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'reduced', subBuilder: $3.Op.create)
     ..hasRequiredFields = false
   ;
 
@@ -870,36 +869,25 @@ class ReduceTestCase extends $pb.GeneratedMessage {
   Person ensureData() => $_ensure(2);
 
   @$pb.TagNumber(4)
-  $3.Op get op1 => $_getN(3);
+  $3.Op get op => $_getN(3);
   @$pb.TagNumber(4)
-  set op1($3.Op v) { setField(4, v); }
+  set op($3.Op v) { setField(4, v); }
   @$pb.TagNumber(4)
-  $core.bool hasOp1() => $_has(3);
+  $core.bool hasOp() => $_has(3);
   @$pb.TagNumber(4)
-  void clearOp1() => clearField(4);
+  void clearOp() => clearField(4);
   @$pb.TagNumber(4)
-  $3.Op ensureOp1() => $_ensure(3);
+  $3.Op ensureOp() => $_ensure(3);
 
   @$pb.TagNumber(5)
-  $3.Op get op2 => $_getN(4);
+  $3.Op get reduced => $_getN(4);
   @$pb.TagNumber(5)
-  set op2($3.Op v) { setField(5, v); }
+  set reduced($3.Op v) { setField(5, v); }
   @$pb.TagNumber(5)
-  $core.bool hasOp2() => $_has(4);
+  $core.bool hasReduced() => $_has(4);
   @$pb.TagNumber(5)
-  void clearOp2() => clearField(5);
+  void clearReduced() => clearField(5);
   @$pb.TagNumber(5)
-  $3.Op ensureOp2() => $_ensure(4);
-
-  @$pb.TagNumber(6)
-  $3.Op get reduced => $_getN(5);
-  @$pb.TagNumber(6)
-  set reduced($3.Op v) { setField(6, v); }
-  @$pb.TagNumber(6)
-  $core.bool hasReduced() => $_has(5);
-  @$pb.TagNumber(6)
-  void clearReduced() => clearField(6);
-  @$pb.TagNumber(6)
-  $3.Op ensureReduced() => $_ensure(5);
+  $3.Op ensureReduced() => $_ensure(4);
 }
 
