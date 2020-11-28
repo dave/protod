@@ -23,8 +23,14 @@ func Reduce(op *Op) *Op {
 		return ops[0]
 	}
 	if len(ops) == 2 {
-		return Compound(reduce(ops[0], ops[1])...)
+		//reduced, _, _ := reduce(ops[0], ops[1])
+		reduced := reduce(ops[0], ops[1])
+		return Compound(reduced...)
 	}
+
+	// We can only reduce operations that happen subsequently, so in the diagram below we can reduce op1 and op2 with
+	// no problems. However if they are independent, the result of the reduction is still two operations. This means
+	// we can't then reduce op1 and op3 (and later operations) because they are not subsequent:
 	//
 	//              A -> o
 	//                  / \
@@ -39,11 +45,105 @@ func Reduce(op *Op) *Op {
 	//                 \   /
 	//                  \ /
 	//              C -> o
+	//                    \
+	//                     \
+	//                      \ <- op3
+	//                       \
+	//                        \
+	//                         o
 	//
-	// TODO more that 2 operations -> more complicated...
+	// However, we can re-order op1 and op2 by transforming them into op2x and op1x [OR CAN WE?]. We can then reduce
+	// op1x and op3, because they are now subsequent. Using this method, we can iterate until all operations are
+	// reduced with each other.
+
 	panic("not implemented")
+	//	in := &oplist{ops: ops}
+	//	out := &oplist{}
+	//OuterLoop:
+	//	for {
+	//		current := in.shift()
+	//		if current == nil {
+	//			// if we've processed all the operations, we're done!
+	//			break OuterLoop
+	//		}
+	//		transformed := &oplist{}
+	//	ReduceLoop:
+	//		for {
+	//			next := in.shift()
+	//			if next == nil {
+	//				// if there's nothing left to reduce it with, we're done!
+	//				in = transformed
+	//				out.unshift(current)
+	//				break ReduceLoop
+	//			}
+	//			reduced, op1x, op2x := reduce(current, next)
+	//			switch len(reduced) {
+	//			case 0:
+	//				// operations reduced to nothing!
+	//				in.reset()
+	//				continue OuterLoop
+	//			case 1:
+	//				current = reduced[0]
+	//				continue ReduceLoop
+	//			case 2:
+	//				// we didn't manage to reduce the operations, so we invert them to swap the order, and add op2x to
+	//				// the transformed list.
+	//				transformed.push(op2x)
+	//				current = op1x
+	//				continue ReduceLoop
+	//			default:
+	//				panic(fmt.Sprintf("len(reduced) = %d", len(reduced)))
+	//			}
+	//		}
+	//	}
+	//	return Compound(out.ops...)
 }
 
+type oplist struct {
+	ops    []*Op
+	cursor int
+}
+
+func (o *oplist) pop() *Op {
+	return o.ops[len(o.ops)-1]
+}
+
+func (o *oplist) push(op *Op) {
+	o.ops = append(o.ops, op)
+}
+
+// removes an item from the start of the list and returns it
+func (o *oplist) shift() *Op {
+	if len(o.ops) == 0 {
+		return nil
+	}
+	item := o.ops[0]
+	o.ops = o.ops[1:]
+	if o.cursor > 0 {
+		o.cursor--
+	}
+	return item
+}
+
+// adds an item to sthe start of the list
+func (o *oplist) unshift(op *Op) {
+	o.ops = append([]*Op{op}, o.ops...)
+}
+
+func (o *oplist) next() *Op {
+	if o.cursor >= len(o.ops) {
+		return nil
+	}
+	item := o.ops[o.cursor]
+	o.cursor++
+	return item
+}
+
+func (o *oplist) reset() {
+	o.cursor = 0
+}
+
+//func reduceTranspose(op1, op2 *Op) (reduced []*Op, op1x, op2x *Op) {
 func reduce(op1, op2 *Op) []*Op {
 
 	op1IsNull, op2IsNull := IsNull(op1), IsNull(op2)
