@@ -1,5 +1,11 @@
 package packages
 
+// First install protobuf: https://grpc.io/docs/protoc-installation/
+// and the Go plugin: https://developers.google.com/protocol-buffers/docs/gotutorial
+// and Dart plugin: $ dart pub global activate protoc_plugin
+// and for GoLand support, add dart bin location to ~/.zshrc --> "export PATH=$PATH:/Users/dave/lib/flutter/bin/"
+// and get protoc_plugin dart deps: cd ~/src/protobuf/protoc_plugin && dart pub get
+
 //go:generate sh -c "protoc                                                                                     --go_opt=paths=source_relative --proto_path=../packages --go_out=pstore_tests/pkg                                             $(find ../packages/pstore_tests -iname '*.proto')"
 //go:generate sh -c "protoc --plugin=protoc-gen-dart=/Users/dave/src/protobuf/protoc_plugin/bin/protoc-gen-dart --go_opt=paths=source_relative --proto_path=../packages --go_out=pdelta/pkg               --dart_out=pdelta/lib               $(find ../packages/pdelta -iname '*.proto')"
 //go:generate sh -c "protoc --plugin=protoc-gen-dart=/Users/dave/src/protobuf/protoc_plugin/bin/protoc-gen-dart --go_opt=paths=source_relative --proto_path=../packages --go_out=pmsg/pkg                 --dart_out=pmsg/lib                 $(find ../packages/pmsg -iname '*.proto')"

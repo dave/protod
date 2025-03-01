@@ -36,6 +36,21 @@ func (o *Op) Flatten() []*Op {
 	return ops
 }
 
+// Transform
+//              A -> o
+//                  / \
+//                 /   \
+//         op1 -> /     \ <- op2
+//               /       \
+//              /         \
+//       Bx -> o           o <- B
+//              \         /
+//               \       /
+//        op2x -> \     / <- op1x
+//                 \   /
+//                  \ /
+//              C -> o
+//
 func Transform(op1, op2 *Op, op1priority bool) (op1x *Op, op2x *Op, err error) {
 	if DEBUG {
 		// in debug mode, recover from panic, print inputs, and re-panic to get stack trace
@@ -135,15 +150,21 @@ func Apply(op *Op, input proto.Message) (err error) {
 }
 
 func Compound(ops ...*Op) *Op {
-	switch len(ops) {
+	var opsNoNil []*Op
+	for _, op := range ops {
+		if !IsNull(op) {
+			opsNoNil = append(opsNoNil, op)
+		}
+	}
+	switch len(opsNoNil) {
 	case 0:
 		return nil
 	case 1:
-		return ops[0]
+		return opsNoNil[0]
 	default:
 		return &Op{
 			Type: Op_Compound,
-			Ops:  ops,
+			Ops:  opsNoNil,
 		}
 	}
 }
@@ -228,6 +249,13 @@ func (o *Op) SetItemIndex(i int64) {
 }
 
 func (o *Op) ToIndex() int64 {
+	return o.Value.(*Op_Index).Index
+}
+
+func (o *Op) ToIndexAfterMove() int64 {
+	if o.ItemIndex() < o.ToIndex() {
+		return o.Value.(*Op_Index).Index - 1
+	}
 	return o.Value.(*Op_Index).Index
 }
 

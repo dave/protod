@@ -49,6 +49,29 @@ func TestTransform(t *testing.T) {
 	}
 	items := []itemType{
 		{
+			name: "MOVE_SET_INDEX_SIBLINGS_2",
+			op1:  Op().Person().Cases().Key("a").Items().Index(1).Title().Set("e"),
+			op2:  Op().Person().Cases().Key("a").Items().Move(1, 4),
+			data: &Person{Name: "a", Cases: map[string]*Case{"a": {Items: []*Item{
+				{Flags: []string{"a"}},
+				{Flags: []string{"b"}},
+				{Flags: []string{"c"}},
+				{Flags: []string{"d"}},
+			}}}},
+			expected1: &Person{Name: "a", Cases: map[string]*Case{"a": {Items: []*Item{
+				{Flags: []string{"a"}},
+				{Flags: []string{"c"}},
+				{Flags: []string{"d"}},
+				{Flags: []string{"b"}, Title: "e"},
+			}}}},
+			expected2: &Person{Name: "a", Cases: map[string]*Case{"a": {Items: []*Item{
+				{Flags: []string{"a"}},
+				{Flags: []string{"c"}},
+				{Flags: []string{"d"}},
+				{Flags: []string{"b"}, Title: "e"},
+			}}}},
+		},
+		{
 			name:      "oneof_delete_set",
 			op1:       Op().Person().Choice().Delete(),
 			op2:       Op().Person().Choice().Str().Set("b"),

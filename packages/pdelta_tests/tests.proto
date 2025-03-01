@@ -108,3 +108,11 @@ message ReduceTestCase {
   pdelta.Op op = 4;
   pdelta.Op reduced = 5;
 }
+
+message ShifterTestCase {
+  bool solo = 1;
+  string name = 2;
+  pdelta.Op op = 3;
+  repeated int64 locations = 4;
+  repeated int64 values = 5;
+}

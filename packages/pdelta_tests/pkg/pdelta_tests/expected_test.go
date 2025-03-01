@@ -516,6 +516,8 @@ func TestTransformDeleteDeleteKey(t *testing.T) {
 }
 
 func testTwoOpsConverge(t *testing.T, opA, opB *pdelta.Op, descA, descB string, data proto.Message) string {
+	t.Helper()
+
 	// opA has priority
 	opAxpA, opBxpA, err := pdelta.Transform(opA, opB, true)
 	if err != nil {

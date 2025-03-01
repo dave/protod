@@ -571,7 +571,7 @@ List<pb.Op> reduceGenerated(pb.Op op1, pb.Op op2) {
       case pb.Op_Type.Edit:
         final op2Item = item(op2);
         if (op2Item.hasField_1()) {
-          return rIndependent(op1, op2);
+          return rDeleteFieldEditField(op1, op2);
         } else if (op2Item.hasIndex()) {
           return rIndependent(op1, op2);
         } else if (op2Item.hasKey()) {
@@ -583,7 +583,7 @@ List<pb.Op> reduceGenerated(pb.Op op1, pb.Op op2) {
       case pb.Op_Type.Set:
         final op2Item = item(op2);
         if (op2Item.hasField_1()) {
-          return rIndependent(op1, op2);
+          return rDeleteFieldSetField(op1, op2);
         } else if (op2Item.hasIndex()) {
           return rIndependent(op1, op2);
         } else if (op2Item.hasKey()) {
@@ -611,7 +611,7 @@ List<pb.Op> reduceGenerated(pb.Op op1, pb.Op op2) {
       case pb.Op_Type.Delete:
         final op2Item = item(op2);
         if (op2Item.hasField_1()) {
-          return rIndependent(op1, op2);
+          return rDeleteFieldDeleteField(op1, op2);
         } else if (op2Item.hasIndex()) {
           return rIndependent(op1, op2);
         } else if (op2Item.hasKey()) {
@@ -640,7 +640,7 @@ List<pb.Op> reduceGenerated(pb.Op op1, pb.Op op2) {
         if (op2Item.hasField_1()) {
           return rIndependent(op1, op2);
         } else if (op2Item.hasIndex()) {
-          return rIndependent(op1, op2);
+          return rDeleteIndexEditIndex(op1, op2);
         } else if (op2Item.hasKey()) {
           return rIndependent(op1, op2);
         } else {
@@ -652,7 +652,7 @@ List<pb.Op> reduceGenerated(pb.Op op1, pb.Op op2) {
         if (op2Item.hasField_1()) {
           return rIndependent(op1, op2);
         } else if (op2Item.hasIndex()) {
-          return rIndependent(op1, op2);
+          return rDeleteIndexSetIndex(op1, op2);
         } else if (op2Item.hasKey()) {
           return rIndependent(op1, op2);
         } else {
@@ -662,7 +662,7 @@ List<pb.Op> reduceGenerated(pb.Op op1, pb.Op op2) {
       case pb.Op_Type.Insert:
         final op2Item = item(op2);
         if (op2Item.hasIndex()) {
-          return rIndependent(op1, op2);
+          return rDeleteIndexInsertIndex(op1, op2);
         } else {
           throw Exception('invalid op');
         }
@@ -670,7 +670,7 @@ List<pb.Op> reduceGenerated(pb.Op op1, pb.Op op2) {
       case pb.Op_Type.Move:
         final op2Item = item(op2);
         if (op2Item.hasIndex()) {
-          return rIndependent(op1, op2);
+          return rDeleteIndexMoveIndex(op1, op2);
         } else {
           throw Exception('invalid op');
         }
@@ -680,7 +680,7 @@ List<pb.Op> reduceGenerated(pb.Op op1, pb.Op op2) {
         if (op2Item.hasField_1()) {
           return rIndependent(op1, op2);
         } else if (op2Item.hasIndex()) {
-          return rIndependent(op1, op2);
+          return rDeleteIndexDeleteIndex(op1, op2);
         } else if (op2Item.hasKey()) {
           return rIndependent(op1, op2);
         } else if (op2Item.hasOneof()) {
@@ -709,7 +709,7 @@ List<pb.Op> reduceGenerated(pb.Op op1, pb.Op op2) {
         } else if (op2Item.hasIndex()) {
           return rIndependent(op1, op2);
         } else if (op2Item.hasKey()) {
-          return rIndependent(op1, op2);
+          return rDeleteKeyEditKey(op1, op2);
         } else {
           throw Exception('invalid op');
         }
@@ -721,7 +721,7 @@ List<pb.Op> reduceGenerated(pb.Op op1, pb.Op op2) {
         } else if (op2Item.hasIndex()) {
           return rIndependent(op1, op2);
         } else if (op2Item.hasKey()) {
-          return rIndependent(op1, op2);
+          return rDeleteKeySetKey(op1, op2);
         } else {
           throw Exception('invalid op');
         }
@@ -749,7 +749,7 @@ List<pb.Op> reduceGenerated(pb.Op op1, pb.Op op2) {
         } else if (op2Item.hasIndex()) {
           return rIndependent(op1, op2);
         } else if (op2Item.hasKey()) {
-          return rIndependent(op1, op2);
+          return rDeleteKeyDeleteKey(op1, op2);
         } else if (op2Item.hasOneof()) {
           return rIndependent(op1, op2);
         } else {
@@ -759,7 +759,7 @@ List<pb.Op> reduceGenerated(pb.Op op1, pb.Op op2) {
       case pb.Op_Type.Rename:
         final op2Item = item(op2);
         if (op2Item.hasKey()) {
-          return rIndependent(op1, op2);
+          return rDeleteKeyRenameKey(op1, op2);
         } else {
           throw Exception('invalid op');
         }
@@ -818,7 +818,7 @@ List<pb.Op> reduceGenerated(pb.Op op1, pb.Op op2) {
         } else if (op2Item.hasKey()) {
           return rIndependent(op1, op2);
         } else if (op2Item.hasOneof()) {
-          return rIndependent(op1, op2);
+          return rDeleteOneofDeleteOneof(op1, op2);
         } else {
           throw Exception('invalid op');
         }
@@ -861,7 +861,7 @@ List<pb.Op> reduceGenerated(pb.Op op1, pb.Op op2) {
         } else if (op2Item.hasIndex()) {
           return rIndependent(op1, op2);
         } else if (op2Item.hasKey()) {
-          return rIndependent(op1, op2);
+          return rRenameKeySetKey(op1, op2);
         } else {
           throw Exception('invalid op');
         }
@@ -889,7 +889,7 @@ List<pb.Op> reduceGenerated(pb.Op op1, pb.Op op2) {
         } else if (op2Item.hasIndex()) {
           return rIndependent(op1, op2);
         } else if (op2Item.hasKey()) {
-          return rIndependent(op1, op2);
+          return rRenameKeyDeleteKey(op1, op2);
         } else if (op2Item.hasOneof()) {
           return rIndependent(op1, op2);
         } else {
@@ -899,7 +899,7 @@ List<pb.Op> reduceGenerated(pb.Op op1, pb.Op op2) {
       case pb.Op_Type.Rename:
         final op2Item = item(op2);
         if (op2Item.hasKey()) {
-          return rIndependent(op1, op2);
+          return rRenameKeyRenameKey(op1, op2);
         } else {
           throw Exception('invalid op');
         }

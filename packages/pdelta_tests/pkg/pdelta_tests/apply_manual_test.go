@@ -46,6 +46,56 @@ func TestApply(t *testing.T) {
 	}
 	items := []itemType{
 		{
+			name: "move_move_bug3",
+			op: pdelta.Compound(
+				Op().Person().Alias().Move(0, 2),
+			),
+			data:     &Person{Alias: []string{"0", "1", "2", "3", "4"}},
+			expected: &Person{Alias: []string{"1", "0", "2", "3", "4"}},
+		},
+		{
+			name: "move_move_bug2",
+			op: pdelta.Compound(
+				Op().Person().Alias().Move(2, 1),
+				Op().Person().Alias().Move(3, 1),
+			),
+			data:     &Person{Alias: []string{"A", "B", "C", "D"}},
+			expected: &Person{Alias: []string{"A", "D", "C", "B"}},
+		},
+		{
+			name: "move_move_bug2_step1",
+			op: pdelta.Compound(
+				Op().Person().Alias().Move(2, 1), // moves C
+			),
+			data:     &Person{Alias: []string{"A", "B", "C", "D"}},
+			expected: &Person{Alias: []string{"A", "C", "B", "D"}},
+		},
+		{
+			name: "move_move_bug2_step2",
+			op: pdelta.Compound(
+				Op().Person().Alias().Move(3, 1), // moves D
+			),
+			data:     &Person{Alias: []string{"A", "C", "B", "D"}},
+			expected: &Person{Alias: []string{"A", "D", "C", "B"}},
+		},
+		{
+			name: "move_move_bug",
+			op: pdelta.Compound(
+				Op().Person().Alias().Move(0, 3),
+				Op().Person().Alias().Move(1, 3),
+			),
+			data:     &Person{Alias: []string{"A", "B", "C"}},
+			expected: &Person{Alias: []string{"B", "A", "C"}},
+		},
+		{
+			name: "move_move_reduced",
+			op: pdelta.Compound(
+				Op().Person().Alias().Move(0, 2),
+			),
+			data:     &Person{Alias: []string{"B", "A", "C"}},
+			expected: &Person{Alias: []string{"A", "B", "C"}},
+		},
+		{
 			name:     "zero_value",
 			op:       Op().Person().Company().Revenue().Set(0.0),
 			data:     &Person{},

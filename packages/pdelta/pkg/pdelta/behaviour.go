@@ -25,65 +25,61 @@ const (
 var LocatorTypes = []LocatorType{FIELD, INDEX, KEY, ONEOF}
 
 type OpBehaviour struct {
-	ItemIsDeleted        bool
-	ValueIsDeleted       bool
-	ValueIsLocation      bool
-	IndexValueShifter    func(*Op, *Op) func(int64) int64
-	IndexLocationShifter func(*Op, *Op) func(int64) int64
-	KeyShifter           func(*Op, *Op) func(*Key) *Key
+	ItemIsDeleted   bool
+	ValueIsDeleted  bool
+	ValueIsLocation bool
+	ItemTarget      ShiftTarget
+	IndexShifter    func(op1 *Op, priority PriorityType, direction ShiftDirection, target ShiftTarget) func(int64) (int64, PriorityType)
+	OpType          OpType
+	LocatorType     LocatorType
+}
+
+func (o *OpBehaviour) ShiftTarget() ShiftTarget {
+	if o.OpType == INSERT {
+		return LOCATION
+	}
+	return VALUE
 }
 
 var Behaviours = map[OpType]map[LocatorType]OpBehaviour{
 	EDIT: {
 		FIELD: {
-			ValueIsLocation:      false,
-			ItemIsDeleted:        false,
-			ValueIsDeleted:       false,
-			IndexValueShifter:    nil,
-			IndexLocationShifter: nil,
-			KeyShifter:           nil,
+			ValueIsLocation: false,
+			ItemIsDeleted:   false,
+			ValueIsDeleted:  false,
+			IndexShifter:    nil,
 		},
 		INDEX: {
-			ValueIsLocation:      false,
-			ItemIsDeleted:        false,
-			ValueIsDeleted:       false,
-			IndexValueShifter:    nil,
-			IndexLocationShifter: nil,
-			KeyShifter:           nil,
+			ValueIsLocation: false,
+			ItemIsDeleted:   false,
+			ValueIsDeleted:  false,
+			IndexShifter:    nil,
 		},
 		KEY: {
-			ValueIsLocation:      false,
-			ItemIsDeleted:        false,
-			ValueIsDeleted:       false,
-			IndexValueShifter:    nil,
-			IndexLocationShifter: nil,
-			KeyShifter:           nil,
+			ValueIsLocation: false,
+			ItemIsDeleted:   false,
+			ValueIsDeleted:  false,
+			IndexShifter:    nil,
 		},
 	},
 	SET: {
 		FIELD: {
-			ValueIsLocation:      false,
-			ItemIsDeleted:        true,
-			ValueIsDeleted:       false,
-			IndexValueShifter:    nil,
-			IndexLocationShifter: nil,
-			KeyShifter:           nil,
+			ValueIsLocation: false,
+			ItemIsDeleted:   true,
+			ValueIsDeleted:  false,
+			IndexShifter:    nil,
 		},
 		INDEX: {
-			ValueIsLocation:      false,
-			ItemIsDeleted:        true,
-			ValueIsDeleted:       false,
-			IndexValueShifter:    nil,
-			IndexLocationShifter: nil,
-			KeyShifter:           nil,
+			ValueIsLocation: false,
+			ItemIsDeleted:   true,
+			ValueIsDeleted:  false,
+			IndexShifter:    nil,
 		},
 		KEY: {
-			ValueIsLocation:      false,
-			ItemIsDeleted:        true,
-			ValueIsDeleted:       false,
-			IndexValueShifter:    nil,
-			IndexLocationShifter: nil,
-			KeyShifter:           nil,
+			ValueIsLocation: false,
+			ItemIsDeleted:   true,
+			ValueIsDeleted:  false,
+			IndexShifter:    nil,
 		},
 	},
 	INSERT: {
@@ -91,13 +87,9 @@ var Behaviours = map[OpType]map[LocatorType]OpBehaviour{
 			ValueIsLocation: false,
 			ItemIsDeleted:   false,
 			ValueIsDeleted:  false,
-			IndexValueShifter: func(t, op *Op) func(int64) int64 {
-				return insertValueShifter(t.Item().V.(*Locator_Index).Index)
+			IndexShifter: func(t *Op, priority PriorityType, direction ShiftDirection, target ShiftTarget) func(int64) (int64, PriorityType) {
+				return insertShifter(t.Item().V.(*Locator_Index).Index, priority, direction, target)
 			},
-			IndexLocationShifter: func(t, op *Op) func(int64) int64 {
-				return insertLocationShifter(t.Item().V.(*Locator_Index).Index, false, false)
-			},
-			KeyShifter: nil,
 		},
 	},
 	MOVE: {
@@ -105,63 +97,45 @@ var Behaviours = map[OpType]map[LocatorType]OpBehaviour{
 			ValueIsLocation: true,
 			ItemIsDeleted:   false,
 			ValueIsDeleted:  false,
-			IndexValueShifter: func(t, op *Op) func(int64) int64 {
-				return moveValueShifter(t.Item().V.(*Locator_Index).Index, t.Value.(*Op_Index).Index)
+			IndexShifter: func(t *Op, priority PriorityType, direction ShiftDirection, target ShiftTarget) func(int64) (int64, PriorityType) {
+				return moveShifter(t.Item().V.(*Locator_Index).Index, t.Value.(*Op_Index).Index, priority, direction, target)
 			},
-			IndexLocationShifter: func(t, op *Op) func(int64) int64 {
-				return moveLocationShifter(t.Item().V.(*Locator_Index).Index, t.Value.(*Op_Index).Index, false, false)
-			},
-			KeyShifter: nil,
 		},
 	},
 	RENAME: {
 		KEY: {
-			ValueIsLocation:      true,
-			ItemIsDeleted:        false,
-			ValueIsDeleted:       true,
-			IndexValueShifter:    nil,
-			IndexLocationShifter: nil,
-			KeyShifter: func(t *Op, op *Op) func(*Key) *Key {
-				return renameShifter(t.Item().V.(*Locator_Key).Key, t.Value.(*Op_Key).Key)
-			},
+			ValueIsLocation: true,
+			ItemIsDeleted:   false,
+			ValueIsDeleted:  true,
+			IndexShifter:    nil,
 		},
 	},
 	DELETE: {
 		FIELD: {
-			ValueIsLocation:      false,
-			ItemIsDeleted:        true,
-			ValueIsDeleted:       false,
-			IndexValueShifter:    nil,
-			IndexLocationShifter: nil,
-			KeyShifter:           nil,
+			ValueIsLocation: false,
+			ItemIsDeleted:   true,
+			ValueIsDeleted:  false,
+			IndexShifter:    nil,
 		},
 		INDEX: {
 			ValueIsLocation: false,
 			ItemIsDeleted:   true,
 			ValueIsDeleted:  false,
-			IndexValueShifter: func(t, op *Op) func(int64) int64 {
-				return deleteShifter(t.Item().V.(*Locator_Index).Index)
+			IndexShifter: func(t *Op, priority PriorityType, direction ShiftDirection, target ShiftTarget) func(int64) (int64, PriorityType) {
+				return deleteShifter(t.Item().V.(*Locator_Index).Index, direction)
 			},
-			IndexLocationShifter: func(t, op *Op) func(int64) int64 {
-				return deleteShifter(t.Item().V.(*Locator_Index).Index)
-			},
-			KeyShifter: nil,
 		},
 		KEY: {
-			ValueIsLocation:      false,
-			ItemIsDeleted:        true,
-			ValueIsDeleted:       false,
-			IndexValueShifter:    nil,
-			IndexLocationShifter: nil,
-			KeyShifter:           nil,
+			ValueIsLocation: false,
+			ItemIsDeleted:   true,
+			ValueIsDeleted:  false,
+			IndexShifter:    nil,
 		},
 		ONEOF: {
-			ValueIsLocation:      false,
-			ItemIsDeleted:        true,
-			ValueIsDeleted:       false,
-			IndexValueShifter:    nil,
-			IndexLocationShifter: nil,
-			KeyShifter:           nil,
+			ValueIsLocation: false,
+			ItemIsDeleted:   true,
+			ValueIsDeleted:  false,
+			IndexShifter:    nil,
 		},
 	},
 }
@@ -197,5 +171,8 @@ func GetBehaviour(op *Op) OpBehaviour {
 	default:
 		panic("invalid op")
 	}
-	return Behaviours[opType][locatorType]
+	b := Behaviours[opType][locatorType]
+	b.OpType = opType
+	b.LocatorType = locatorType
+	return b
 }

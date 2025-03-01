@@ -3,72 +3,72 @@ package pdelta
 // reduce reduces two consecutive non-compound operations. If the operations are independent, the result will return
 // both inputs. If the operations can be reduced, the result will be a single operation. If the operations cancel each
 // other out, the result will be an empty slice.
-func (r *Op) reduce(op *Op) []*Op {
-	switch r.Type {
+func (op1 *Op) reduce(op2 *Op) (outcome ReduceOutcome, op1x, op2x *Op) {
+	switch op1.Type {
 	case Op_Edit:
-		_, tItem := r.Pop()
+		_, tItem := op1.Pop()
 		switch tItem.V.(type) {
 		case *Locator_Field:
-			switch op.Type {
+			switch op2.Type {
 			case Op_Edit:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rEditFieldEditField(r, op)
+					return rEditFieldEditField(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Set:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rEditFieldSetField(r, op)
+					return rEditFieldSetField(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Insert:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Move:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Delete:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rEditFieldDeleteField(r, op)
+					return rEditFieldDeleteField(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Oneof:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Rename:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
@@ -76,66 +76,66 @@ func (r *Op) reduce(op *Op) []*Op {
 				panic("invalid op")
 			}
 		case *Locator_Index:
-			switch op.Type {
+			switch op2.Type {
 			case Op_Edit:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rEditIndexEditIndex(r, op)
+					return rEditIndexEditIndex(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Set:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rEditIndexSetIndex(r, op)
+					return rEditIndexSetIndex(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Insert:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Move:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Delete:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rEditIndexDeleteIndex(r, op)
+					return rEditIndexDeleteIndex(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Oneof:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Rename:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
@@ -143,66 +143,66 @@ func (r *Op) reduce(op *Op) []*Op {
 				panic("invalid op")
 			}
 		case *Locator_Key:
-			switch op.Type {
+			switch op2.Type {
 			case Op_Edit:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rEditKeyEditKey(r, op)
+					return rEditKeyEditKey(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Set:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rEditKeySetKey(r, op)
+					return rEditKeySetKey(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Insert:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Move:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Delete:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rEditKeyDeleteKey(r, op)
+					return rEditKeyDeleteKey(op1, op2)
 				case *Locator_Oneof:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Rename:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Key:
-					return rEditKeyRenameKey(r, op)
+					return rEditKeyRenameKey(op1, op2)
 				default:
 					panic("invalid op")
 				}
@@ -213,69 +213,69 @@ func (r *Op) reduce(op *Op) []*Op {
 			panic("invalid op")
 		}
 	case Op_Set:
-		_, tItem := r.Pop()
+		_, tItem := op1.Pop()
 		switch tItem.V.(type) {
 		case *Locator_Field:
-			switch op.Type {
+			switch op2.Type {
 			case Op_Edit:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rSetFieldEditField(r, op)
+					return rSetFieldEditField(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Set:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rSetFieldSetField(r, op)
+					return rSetFieldSetField(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Insert:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Move:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Delete:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rSetFieldDeleteField(r, op)
+					return rSetFieldDeleteField(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Oneof:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Rename:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
@@ -283,66 +283,66 @@ func (r *Op) reduce(op *Op) []*Op {
 				panic("invalid op")
 			}
 		case *Locator_Index:
-			switch op.Type {
+			switch op2.Type {
 			case Op_Edit:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rSetIndexEditIndex(r, op)
+					return rSetIndexEditIndex(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Set:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rSetIndexSetIndex(r, op)
+					return rSetIndexSetIndex(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Insert:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Move:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Delete:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rSetIndexDeleteIndex(r, op)
+					return rSetIndexDeleteIndex(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Oneof:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Rename:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
@@ -350,66 +350,66 @@ func (r *Op) reduce(op *Op) []*Op {
 				panic("invalid op")
 			}
 		case *Locator_Key:
-			switch op.Type {
+			switch op2.Type {
 			case Op_Edit:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rSetKeyEditKey(r, op)
+					return rSetKeyEditKey(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Set:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rSetKeySetKey(r, op)
+					return rSetKeySetKey(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Insert:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Move:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Delete:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rSetKeyDeleteKey(r, op)
+					return rSetKeyDeleteKey(op1, op2)
 				case *Locator_Oneof:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Rename:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Key:
-					return rSetKeyRenameKey(r, op)
+					return rSetKeyRenameKey(op1, op2)
 				default:
 					panic("invalid op")
 				}
@@ -420,69 +420,69 @@ func (r *Op) reduce(op *Op) []*Op {
 			panic("invalid op")
 		}
 	case Op_Insert:
-		_, tItem := r.Pop()
+		_, tItem := op1.Pop()
 		switch tItem.V.(type) {
 		case *Locator_Index:
-			switch op.Type {
+			switch op2.Type {
 			case Op_Edit:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Set:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rInsertIndexSetIndex(r, op)
+					return rInsertIndexSetIndex(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Insert:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Move:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rInsertIndexMoveIndex(r, op)
+					return rInsertIndexMoveIndex(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Delete:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rInsertIndexDeleteIndex(r, op)
+					return rInsertIndexDeleteIndex(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Oneof:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Rename:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
@@ -493,69 +493,69 @@ func (r *Op) reduce(op *Op) []*Op {
 			panic("invalid op")
 		}
 	case Op_Move:
-		_, tItem := r.Pop()
+		_, tItem := op1.Pop()
 		switch tItem.V.(type) {
 		case *Locator_Index:
-			switch op.Type {
+			switch op2.Type {
 			case Op_Edit:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Set:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Insert:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Move:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rMoveIndexMoveIndex(r, op)
+					return rMoveIndexMoveIndex(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Delete:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rMoveIndexDeleteIndex(r, op)
+					return rMoveIndexDeleteIndex(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Oneof:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Rename:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
@@ -566,69 +566,69 @@ func (r *Op) reduce(op *Op) []*Op {
 			panic("invalid op")
 		}
 	case Op_Delete:
-		_, tItem := r.Pop()
+		_, tItem := op1.Pop()
 		switch tItem.V.(type) {
 		case *Locator_Field:
-			switch op.Type {
+			switch op2.Type {
 			case Op_Edit:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rDeleteFieldEditField(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Set:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rDeleteFieldSetField(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Insert:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Move:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Delete:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rDeleteFieldDeleteField(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Oneof:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Rename:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
@@ -636,66 +636,66 @@ func (r *Op) reduce(op *Op) []*Op {
 				panic("invalid op")
 			}
 		case *Locator_Index:
-			switch op.Type {
+			switch op2.Type {
 			case Op_Edit:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rDeleteIndexEditIndex(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Set:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rDeleteIndexSetIndex(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Insert:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rDeleteIndexInsertIndex(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Move:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rDeleteIndexMoveIndex(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Delete:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rDeleteIndexDeleteIndex(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Oneof:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Rename:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
@@ -703,66 +703,66 @@ func (r *Op) reduce(op *Op) []*Op {
 				panic("invalid op")
 			}
 		case *Locator_Key:
-			switch op.Type {
+			switch op2.Type {
 			case Op_Edit:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rDeleteKeyEditKey(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Set:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rDeleteKeySetKey(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Insert:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Move:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Delete:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rDeleteKeyDeleteKey(op1, op2)
 				case *Locator_Oneof:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Rename:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rDeleteKeyRenameKey(op1, op2)
 				default:
 					panic("invalid op")
 				}
@@ -770,66 +770,66 @@ func (r *Op) reduce(op *Op) []*Op {
 				panic("invalid op")
 			}
 		case *Locator_Oneof:
-			switch op.Type {
+			switch op2.Type {
 			case Op_Edit:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Set:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Insert:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Move:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Delete:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Oneof:
-					return rIndependent(r, op)
+					return rDeleteOneofDeleteOneof(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Rename:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
@@ -840,69 +840,69 @@ func (r *Op) reduce(op *Op) []*Op {
 			panic("invalid op")
 		}
 	case Op_Rename:
-		_, tItem := r.Pop()
+		_, tItem := op1.Pop()
 		switch tItem.V.(type) {
 		case *Locator_Key:
-			switch op.Type {
+			switch op2.Type {
 			case Op_Edit:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Set:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rRenameKeySetKey(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Insert:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Move:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Delete:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Field:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Index:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rRenameKeyDeleteKey(op1, op2)
 				case *Locator_Oneof:
-					return rIndependent(r, op)
+					return rIndependent(op1, op2)
 				default:
 					panic("invalid op")
 				}
 			case Op_Rename:
-				_, opItem := op.Pop()
+				_, opItem := op2.Pop()
 				switch opItem.V.(type) {
 				case *Locator_Key:
-					return rIndependent(r, op)
+					return rRenameKeyRenameKey(op1, op2)
 				default:
 					panic("invalid op")
 				}

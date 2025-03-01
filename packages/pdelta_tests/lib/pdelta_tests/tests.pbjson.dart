@@ -178,3 +178,14 @@ const ReduceTestCase$json = const {
   ],
 };
 
+const ShifterTestCase$json = const {
+  '1': 'ShifterTestCase',
+  '2': const [
+    const {'1': 'solo', '3': 1, '4': 1, '5': 8, '10': 'solo'},
+    const {'1': 'name', '3': 2, '4': 1, '5': 9, '10': 'name'},
+    const {'1': 'op', '3': 3, '4': 1, '5': 11, '6': '.pdelta.Op', '10': 'op'},
+    const {'1': 'locations', '3': 4, '4': 3, '5': 3, '10': 'locations'},
+    const {'1': 'values', '3': 5, '4': 3, '5': 3, '10': 'values'},
+  ],
+};
+
