@@ -515,7 +515,7 @@ func randomOpValueIgnoreCollection(location []*pdelta.Locator, set int, field pr
 	case protoreflect.StringKind:
 		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_String_{String_: randomString()}}}
 	case protoreflect.BytesKind:
-		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Bytes{Bytes: []byte(randomString())}}}
+		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Bytes{Bytes: randomBytes()}}}
 	case protoreflect.GroupKind:
 		// what is this?
 		panic("")
@@ -557,7 +557,7 @@ func randomProtoValueIgnoreCollection(location []*pdelta.Locator, set int, field
 	case protoreflect.StringKind:
 		return protoreflect.ValueOfString(randomString())
 	case protoreflect.BytesKind:
-		return protoreflect.ValueOfBytes([]byte(randomString()))
+		return protoreflect.ValueOfBytes(randomBytes())
 	case protoreflect.GroupKind:
 		// what is this?
 		panic("")
@@ -620,20 +620,18 @@ const alphanum = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
 
 // edgeStrings are returned occasionally instead of a plain random string: empty strings, long strings, and
 // multi-byte unicode (string indexes differ between UTF-8 runes, UTF-16 code units and bytes, so unicode is
-// where cross language divergence would hide).
-//
-// KNOWN BUG: astral-plane characters (e.g. emoji "🚀🎉") are excluded, because the Go quill integration counts
-// string positions in runes while the Dart one counts UTF-16 code units. The two agree for all BMP characters
-// (1 rune == 1 UTF-16 unit) but diverge for astral-plane characters (1 rune == 2 UTF-16 units), so a quill
-// edit touching an emoji produces different results in Go and Dart. To fix, standardize on UTF-16 code units
-// (the quill.js convention) in the Go Edit diff and applyDeltaToString, then add emoji here to cover it.
+// where cross language divergence would hide). Astral-plane characters (emoji) are included deliberately:
+// quill deltas count positions in UTF-16 code units (the quill.js convention, which Dart follows natively and
+// the Go side implements via utf16Expand / utf16Collapse), and emoji are where rune counting would diverge.
 var edgeStrings = []string{
 	"",
 	"a",
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
 	"héllo wörld",
 	"日本語テキスト",
-	"e\u0301clair", // combining acute accent (BMP, safe)
+	"🚀🎉",
+	"a🚀b",
+	"e\u0301clair", // combining acute accent
 }
 
 func randomString() string {
@@ -648,6 +646,17 @@ func randomString() string {
 		b[i] = alphanum[int(byt)%len(alphanum)]
 	}
 	return string(b)
+}
+
+// randomBytes is never empty: the protobuf-dart 1.x runtime drops the oneof case when decoding an empty
+// bytes value from JSON, so a scalar op with empty bytes arrives in Dart with no variant set. Allow empty
+// bytes after upgrading protobuf-dart.
+func randomBytes() []byte {
+	b := []byte(randomString())
+	if len(b) == 0 {
+		b = []byte{0}
+	}
+	return b
 }
 
 func randomInt32() int32 {

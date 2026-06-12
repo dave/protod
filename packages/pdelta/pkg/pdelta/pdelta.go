@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/dave/protod/packages/pdelta/pkg/pdelta/converter"
+	"unicode/utf16"
+
 	quill "github.com/fmpwizard/go-quilljs-delta/delta"
 	proto1 "github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
@@ -527,17 +529,58 @@ func getValue(current protoreflect.Value, value isOp_Value) protoreflect.Value {
 	return getValueField(current, value)
 }
 
+// quill.js (and the Dart quill library) index strings by UTF-16 code unit, but the Go quill library indexes
+// by rune - so astral-plane characters (e.g. emoji) count as one position in Go but two in Dart, and deltas
+// diverge between the platforms. To make the wire format cross-platform, every string entering the Go quill
+// pipeline is expanded so that each element is a single UTF-16 code unit (astral-plane characters become
+// their two surrogate values), which makes the library's position arithmetic match the UTF-16 convention.
+
+// utf16Expand converts a string to a rune slice with one rune per UTF-16 code unit.
+func utf16Expand(s string) []rune {
+	units := utf16.Encode([]rune(s))
+	out := make([]rune, len(units))
+	for i, u := range units {
+		out[i] = rune(u)
+	}
+	return out
+}
+
+// utf16Collapse reverses utf16Expand, recombining surrogate pairs into astral-plane characters.
+func utf16Collapse(rs []rune) string {
+	units := make([]uint16, len(rs))
+	for i, r := range rs {
+		units[i] = uint16(r)
+	}
+	return string(utf16.Decode(units))
+}
+
+// utf16Len returns the length of the string in UTF-16 code units.
+func utf16Len(s string) int {
+	n := 0
+	for _, r := range s {
+		n++
+		if r > 0xFFFF {
+			n++
+		}
+	}
+	return n
+}
+
 func applyDeltaToString(value string, dlt *quill.Delta) string {
 	// TODO: Is there a better way of applying the delta to prevString?
-	out := quill.New(nil).Insert(value, nil).Compose(*dlt)
-	var sb strings.Builder
+	base := quill.New(nil)
+	if len(value) > 0 {
+		base = quill.New([]quill.Op{{Insert: utf16Expand(value)}})
+	}
+	out := base.Compose(*dlt)
+	var units []rune
 	for _, o := range out.Ops {
 		if len(o.Insert) == 0 {
 			panic("non insert operation found after applying delta")
 		}
-		sb.WriteString(string(o.Insert))
+		units = append(units, o.Insert...)
 	}
-	return sb.String()
+	return utf16Collapse(units)
 }
 
 func getValueField(current protoreflect.Value, value isOp_Value) protoreflect.Value {
@@ -648,9 +691,9 @@ func Edit(location []*Locator, from, to string) *Op {
 	for _, diff := range diffs {
 		switch diff.Type {
 		case diffmatchpatch.DiffDelete:
-			d.Ops = append(d.Ops, &Quill{V: &Quill_Delete{Delete: int64(len([]rune(diff.Text)))}})
+			d.Ops = append(d.Ops, &Quill{V: &Quill_Delete{Delete: int64(utf16Len(diff.Text))}})
 		case diffmatchpatch.DiffEqual:
-			d.Ops = append(d.Ops, &Quill{V: &Quill_Retain{Retain: int64(len([]rune(diff.Text)))}})
+			d.Ops = append(d.Ops, &Quill{V: &Quill_Retain{Retain: int64(utf16Len(diff.Text))}})
 		case diffmatchpatch.DiffInsert:
 			d.Ops = append(d.Ops, &Quill{V: &Quill_Insert{Insert: diff.Text}})
 		}
@@ -1219,7 +1262,7 @@ func DeltaFromQuill(qd *quill.Delta) *QuillDelta {
 		var next *Quill
 		switch {
 		case len(op.Insert) > 0:
-			next = &Quill{V: &Quill_Insert{Insert: string(op.Insert)}}
+			next = &Quill{V: &Quill_Insert{Insert: utf16Collapse(op.Insert)}}
 		case op.Delete != nil:
 			next = &Quill{V: &Quill_Delete{Delete: int64(*op.Delete)}}
 		case op.Retain != nil:
@@ -1262,7 +1305,7 @@ func (d *QuillDelta) Quill() *quill.Delta {
 	for i, q := range d.Ops {
 		switch op := q.V.(type) {
 		case *Quill_Insert:
-			ops[i] = quill.Op{Insert: []rune(op.Insert)}
+			ops[i] = quill.Op{Insert: utf16Expand(op.Insert)}
 		case *Quill_Retain:
 			ops[i] = quill.Op{Retain: ptr(int(op.Retain))}
 		case *Quill_Delete:
