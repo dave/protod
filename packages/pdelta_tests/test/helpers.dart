@@ -1,7 +1,11 @@
 import 'dart:io';
 
+import 'package:pdelta/pdelta/pdelta.dart';
+import 'package:pdelta/pdelta/pdelta_reduce.dart';
 import 'package:pdelta_tests/pdelta_tests/pdelta_tests.op.dart';
+import 'package:pdelta_tests/pdelta_tests/tests.pb.dart';
 import 'package:protobuf/protobuf.dart';
+import 'package:test/test.dart' hide isNull;
 
 String assetPath(String name) {
   if (Directory.current.path.endsWith("/test")) {
@@ -11,6 +15,25 @@ String assetPath(String name) {
     // intellij tests run in the project root
     return "assets/$name";
   }
+}
+
+// runReduceCase mirrors the Go runReduceCase in reduce_manual_test.go: the reduced op is validated by applying it
+// to the data and comparing with the result of applying the original op, rather than by comparing the op
+// structures directly.
+void runReduceCase(ReduceTestCase info) {
+  final data1 = info.data.clone();
+  final data2 = info.data.clone();
+  final data3 = info.data.clone();
+  final opMerged = reduce(info.op);
+  apply(info.op, data1);
+  if (!isNull(opMerged)) {
+    apply(opMerged, data2);
+  }
+  if (info.hasReduced() && !isNull(info.reduced)) {
+    apply(info.reduced, data3);
+  }
+  expect(toObject(data3), toObject(data1), reason: "${info.name}: result of applying op does not match expected");
+  expect(toObject(data2), toObject(data1), reason: "${info.name}: result of applying reduced op does not match");
 }
 
 Object toObject(GeneratedMessage msg) {

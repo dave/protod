@@ -35,7 +35,7 @@ func TestRandomReduceCases(t *testing.T) {
 
 func TestRandomSingleCase(t *testing.T) {
 	cases := []string{
-		`{"name":"wildly-bursting-deer","data":{"cases":{"DCOnm":{"name":"5Q1gQ"},"eCrFK":{"name":"4l8xr","flags":{"244":"BaWEt"}}},"company":{"revenue":-448,"flags":{"-267":"18b1A"}},"alias":["MDbR4","Lrt6l","DC8Kt","91Kyg"],"typeList":["Alpha","Alpha"],"typeMap":{"dxCxu":"Charlie"},"embedded":{},"house":{},"shirt":{"designer":"t1BIC"},"pants":{"waist":197},"double":{"name":"qzFvT"}},"op":{"type":"Compound","ops":[{"type":"Insert","location":[{"field":{"name":"alias","number":6,"messageFullName":"pdelta_tests.Person"}},{"index":"0"}],"scalar":{"string":"JWm9u"}},{"type":"Move","location":[{"field":{"name":"alias","number":6,"messageFullName":"pdelta_tests.Person"}},{"index":"1"}],"index":"5"}]},"reduced":{"type":"Compound","ops":[{"type":"Move","location":[{"field":{"name":"alias","number":6,"messageFullName":"pdelta_tests.Person"}},{"index":"0"}],"index":"4"},{"type":"Insert","location":[{"field":{"name":"alias","number":6,"messageFullName":"pdelta_tests.Person"}},{"index":"3"}],"scalar":{"string":"JWm9u"}}]}}`,
+		`{"name":"wildly-bursting-deer","data":{"cases":{"DCOnm":{"name":"5Q1gQ"},"eCrFK":{"name":"4l8xr","flags":{"244":"BaWEt"}}},"company":{"revenue":-448,"flags":{"-267":"18b1A"}},"alias":["MDbR4","Lrt6l","DC8Kt","91Kyg"],"typeList":["Alpha","Alpha"],"typeMap":{"dxCxu":"Charlie"},"embedded":{},"house":{},"shirt":{"designer":"t1BIC"},"pants":{"waist":197},"double":{"name":"qzFvT"}},"op":{"type":"Compound","ops":[{"type":"Insert","location":[{"field":{"name":"alias","number":6,"messageFullName":"pdelta_tests.Person"}},{"index":"0"}],"scalar":{"string":"JWm9u"}},{"type":"Move","location":[{"field":{"name":"alias","number":6,"messageFullName":"pdelta_tests.Person"}},{"index":"1"}],"index":"5"}]},"reduced":{"type":"Compound","ops":[{"type":"Move","location":[{"field":{"name":"alias","number":6,"messageFullName":"pdelta_tests.Person"}},{"index":"0"}],"index":"4"},{"type":"Insert","location":[{"field":{"name":"alias","number":6,"messageFullName":"pdelta_tests.Person"}},{"index":"0"}],"scalar":{"string":"JWm9u"}}]}}`,
 		//`{"name":"sadly-moral-alien","data":{"name":"pJRxj","alias":["rQPFV","hyGCx","3vTMn"],"embedded":{},"cas":{},"pants":{"waist":859}},"op":{"type":"Compound","ops":[{"type":"Move","location":[{"field":{"name":"alias","number":6,"messageFullName":"pdelta_tests.Person"}},{"index":"0"}],"index":"3"},{"type":"Move","location":[{"field":{"name":"alias","number":6,"messageFullName":"pdelta_tests.Person"}},{"index":"1"}],"index":"3"}]},"reduced":{"type":"Move","location":[{"field":{"name":"alias","number":6,"messageFullName":"pdelta_tests.Person"}},{"index":"0"}],"index":"3"}}`,
 	}
 	for _, caseJson := range cases {
@@ -47,6 +47,31 @@ func TestRandomSingleCase(t *testing.T) {
 			t.Fatalf("unmarshaling %q: %+v", caseJson, err)
 		}
 		runReduceCase(t, item)
+	}
+}
+
+func TestRandomMultiReduce(t *testing.T) {
+	p := &Person{Name: "a"}
+	for i := 0; i < 20000; i++ {
+		pBefore := proto.Clone(p).(*Person)
+		pAfterMerged := proto.Clone(p).(*Person)
+		numOps := 3 + i%4
+		var ops []*pdelta.Op
+		for j := 0; j < numOps; j++ {
+			op := fuzzer.Get(p)
+			if err := pdelta.Apply(op, p); err != nil {
+				t.Fatal(err)
+			}
+			ops = append(ops, op)
+		}
+		compound := pdelta.Compound(ops...)
+		opMerged := pdelta.Reduce(compound)
+		if err := pdelta.Apply(opMerged, pAfterMerged); err != nil {
+			t.Fatalf("error applying merged operation: %v\n\nop: %v\nmerged: %v\ndata: %v", err, compound.Debug(), opMerged.Debug(), mustJson(pBefore))
+		}
+		if !compareProto(p, pAfterMerged) {
+			t.Fatalf("applying merged operation does not converge:\nop: %v\nmerged: %v\ndata: %v\nexpected: %v\nfound: %v", compound.Debug(), opMerged.Debug(), mustJson(pBefore), mustJson(p), mustJson(pAfterMerged))
+		}
 	}
 }
 

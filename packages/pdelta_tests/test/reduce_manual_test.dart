@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:pdelta/pdelta/pdelta.dart';
-import 'package:pdelta/pdelta/pdelta_reduce.dart';
 import 'package:pdelta_tests/pdelta_tests/pdelta_tests.op.dart';
 import 'package:pdelta_tests/pdelta_tests/tests.pb.dart';
 import 'package:test/test.dart';
@@ -26,14 +24,11 @@ void main() {
       var info = ReduceTestCase();
       info.mergeFromProto3Json(jsonDecode(str), typeRegistry: typeRegistry);
       try {
-        final compoundOp = info.op;
-        final opMerged = reduce(compoundOp);
-        expect(toObject(opMerged), toObject(info.reduced), reason: info.name);
+        runReduceCase(info);
       } catch (ex) {
         print(info.name);
         throw ex;
       }
     });
   });
-
 }

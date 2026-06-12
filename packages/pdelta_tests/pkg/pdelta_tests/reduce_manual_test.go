@@ -644,7 +644,6 @@ func TestReduce(t *testing.T) {
 			Data: &Person{Alias: []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}},
 		},
 		{
-			Solo: true,
 			Name: "MOVE_MOVE_3",
 			Op: pdelta.Compound(
 				Op().Person().Alias().Move(1, 5),

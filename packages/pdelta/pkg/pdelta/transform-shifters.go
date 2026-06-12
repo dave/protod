@@ -184,30 +184,36 @@ func moveShifter(fromIndex, toIndex int64, priority PriorityType, direction Shif
 		fromIndex, toIndex := fromIndex, toIndex // make copies so we can modify without affecting subsequent calls
 		switch {
 
-		// You might think that if fromIndex == toIndex or fromIndex == toIndex-1, the op is null, so we can just
-		// return i. However, this breaks reducing. TODO: explain why better!
-
-		case fromIndex+1 == toIndex:
+		case fromIndex == toIndex || fromIndex+1 == toIndex:
 			//
 			// ===================================================
-			//               value moves forward
+			//                     null move
 			// ---------------------------------------------------
-			//  special case: move operation is null, but we need
-			//          to shift index during reduce
+			//  the list is unchanged, so almost all indexes are
+			//  unchanged. However, during reduce a null move
+			//  produced by rebasing op2 backwards across op1 still
+			//  carries gap ordering information: a location (gap)
+			//  index at toIndex crossed the stationary value, so
+			//  with priority it must come out on the other side of
+			//  it. With priority DISABLED the shift is identity.
 			// ===================================================
-			// so, items in between to and from shift backward one
-			// ===================================================
-			if direction == NORMAL {
-				switch {
-				case i == fromIndex+1:
-					return i - 1, DISABLED
-					// case ???
+			if direction == NORMAL && target == LOCATION && i == toIndex {
+				if fromIndex == toIndex {
+					// backward crossing: with priority WINNER the gap comes out after the stationary value
+					if priority == WINNER {
+						return toIndex + 1, DISABLED
+					}
+					return toIndex, DISABLED
 				}
-			} else {
-				// ???
+				// forward crossing: with priority LOSER the gap comes out before the stationary value
+				if priority == LOSER {
+					return toIndex - 1, DISABLED
+				}
+				return toIndex, DISABLED
 			}
+			return i, DISABLED
 
-		case toIndex <= fromIndex:
+		case toIndex < fromIndex:
 			// ==================================================
 			//               value moves backwards
 			// ==================================================
@@ -337,11 +343,12 @@ func moveShifter(fromIndex, toIndex int64, priority PriorityType, direction Shif
 				case i > toIndex:
 					return i, DISABLED
 				case i == toIndex:
-					//if target == VALUE {
-					//	// the item is moved to toIndex+1, but because of the item removed from earlier in the list,
-					//	// the index is shifted back one
-					//	return toIndex, DISABLED
-					//}
+					if target == VALUE {
+						// the element at toIndex shifts back one when the value is removed from earlier in the
+						// list, then forward one when the value is inserted in front of it: net zero. Priority is
+						// a gap-ordering concept and only applies when tracking a location.
+						return toIndex, DISABLED
+					}
 					if priority == WINNER || priority == DISABLED {
 						return toIndex, DISABLED
 					} else {

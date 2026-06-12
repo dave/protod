@@ -98,21 +98,20 @@ pb.Op tIndependent(pb.Op t, pb.Op op) {
     return nullOp;
   }
 
-  if (behaviour.indexValueShifter != null &&
-      treeRelationship(parent(t), op.location) == TreeRelationshipType.ANCESTOR) {
+  if (behaviour.indexShifter != null && treeRelationship(parent(t), op.location) == TreeRelationshipType.ANCESTOR) {
     // Op is acting on a value that is a descendent of a value that may have had it's list index shifted by t.
     // We should update the list index of the locator using the index shifter function.
-    final shifter = behaviour.indexValueShifter(t, op);
+    final shifter = behaviour.indexShifter(t, PriorityType.DISABLED, ShiftDirection.NORMAL, ShiftTarget.VALUE);
     final index = t.location.length - 1;
     final value = getIndexAt(op, index);
     var out = op.clone();
-    setIndexAt(out, index, shifter(value));
+    setIndexAt(out, index, shifter(value).index);
     if (opBehaviour.valueIsLocation && treeRelationship(parent(t), parent(op)) == TreeRelationshipType.EQUAL) {
       // If t and op both act on values within the same list (have the same parent), AND op has a location at
       // it's value, then we update the location using the location shifter. Example is two moves which are
       // acting on different values within a list.
-      final locationShifter = behaviour.indexLocationShifter(t, op);
-      setToIndex(out, locationShifter(toIndex(op)));
+      final locationShifter = behaviour.indexShifter(t, PriorityType.DISABLED, ShiftDirection.NORMAL, ShiftTarget.LOCATION);
+      setToIndex(out, locationShifter(toIndex(op)).index);
     }
     return out;
   }
@@ -470,9 +469,9 @@ pb.Op tInsertIndexInsertIndex(pb.Op t, pb.Op op, bool priority) {
     return tIndependent(t, op);
   }
   // Both operations are inserting at the same index. We should use priority to determine which is shifted.
-  final shifter = insertLocationShifter(itemIndex(t), priority, true);
+  final shifter = insertShifter(itemIndex(t), priority ? PriorityType.WINNER : PriorityType.LOSER, ShiftDirection.NORMAL, ShiftTarget.LOCATION);
   var out = op.clone();
-  setItemIndex(out, shifter(itemIndex(op)));
+  setItemIndex(out, shifter(itemIndex(op)).index);
   return out;
 }
 
@@ -489,11 +488,11 @@ pb.Op tInsertIndexMoveIndex(pb.Op t, pb.Op op, bool priority) {
   } else if (to == TreeRelationshipType.EQUAL) {
     // op is trying to move a value to the same index that t inserted at. We can use priority to determine
     // which is shifted, but the destination index should be shifted without taking account of priority.
-    final locationShifter = insertLocationShifter(itemIndex(t), priority, true);
-    final valueShifter = insertValueShifter(itemIndex(t));
+    final locationShifter = insertShifter(itemIndex(t), priority ? PriorityType.WINNER : PriorityType.LOSER, ShiftDirection.NORMAL, ShiftTarget.LOCATION);
+    final valueShifter = insertShifter(itemIndex(t), PriorityType.DISABLED, ShiftDirection.NORMAL, ShiftTarget.VALUE);
     var out = op.clone();
-    setItemIndex(out, valueShifter(itemIndex(op)));
-    setToIndex(out, locationShifter(toIndex(op)));
+    setItemIndex(out, valueShifter(itemIndex(op)).index);
+    setToIndex(out, locationShifter(toIndex(op)).index);
     return out;
   } else {
     throw Exception("");
@@ -511,17 +510,17 @@ pb.Op tMoveIndexInsertIndex(pb.Op t, pb.Op op, bool priority) {
     // moveValueShifter shifter variant). We manually use moveLocationShifter to shift the location:
 
     // Note: priority doesn't matter here because it is only used when (i == to) || (from < to && i == to+1)
-    // Since we know i == from, it cannot be used. Set to false to demonstrate this:
-    final shifter = moveLocationShifter(itemIndex(t), toIndex(t), false, false);
+    // Since we know i == from, it cannot be used. Set to DISABLED to demonstrate this:
+    final shifter = moveShifter(itemIndex(t), toIndex(t), PriorityType.DISABLED, ShiftDirection.NORMAL, ShiftTarget.LOCATION);
     var out = op.clone();
-    setItemIndex(out, shifter(itemIndex(op)));
+    setItemIndex(out, shifter(itemIndex(op)).index);
     return out;
   } else if (to == TreeRelationshipType.EQUAL) {
     // op is inserting a new value at the same location that t moved to. We can priority to determine which
     // operation is shifted.
-    final shifter = moveLocationShifter(itemIndex(t), toIndex(t), priority, true);
+    final shifter = moveShifter(itemIndex(t), toIndex(t), priority ? PriorityType.WINNER : PriorityType.LOSER, ShiftDirection.NORMAL, ShiftTarget.LOCATION);
     var out = op.clone();
-    setItemIndex(out, shifter(itemIndex(op)));
+    setItemIndex(out, shifter(itemIndex(op)).index);
     return out;
   } else {
     throw Exception("");
@@ -558,20 +557,20 @@ pb.Op tMoveIndexMoveIndex(pb.Op t, pb.Op op, bool priority) {
     }
     // Here all we need to do is modify the from location of op so that is uses the value at the to location of t.
     // We don't need to use the shifter.
-    final locationShifter = moveLocationShifter(itemIndex(t), toIndex(t), priority, true);
+    final locationShifter = moveShifter(itemIndex(t), toIndex(t), priority ? PriorityType.WINNER : PriorityType.LOSER, ShiftDirection.NORMAL, ShiftTarget.LOCATION);
     var out = op.clone();
     // must use location locationShifter here because that was used to shift t.To
-    setItemIndex(out, locationShifter(toIndex(t)));
-    setToIndex(out, locationShifter(toIndex(op)));
+    setItemIndex(out, locationShifter(toIndex(t)).index);
+    setToIndex(out, locationShifter(toIndex(op)).index);
     return out;
   } else if (toTo == TreeRelationshipType.EQUAL) {
     // Op is trying to move another value to the same index that t just moved a value to. We can use priority to
     // determine which value is shifted.
-    final locationShifter = moveLocationShifter(itemIndex(t), toIndex(t), priority, true);
-    final valueShifter = moveValueShifter(itemIndex(t), toIndex(t));
+    final locationShifter = moveShifter(itemIndex(t), toIndex(t), priority ? PriorityType.WINNER : PriorityType.LOSER, ShiftDirection.NORMAL, ShiftTarget.LOCATION);
+    final valueShifter = moveShifter(itemIndex(t), toIndex(t), PriorityType.DISABLED, ShiftDirection.NORMAL, ShiftTarget.VALUE);
     var out = op.clone();
-    setItemIndex(out, valueShifter(itemIndex(op)));
-    setToIndex(out, locationShifter(toIndex(op)));
+    setItemIndex(out, valueShifter(itemIndex(op)).index);
+    setToIndex(out, locationShifter(toIndex(op)).index);
     return out;
   } else if (fromTo == TreeRelationshipType.EQUAL && toFrom == TreeRelationshipType.EQUAL) {
     // Op is trying to move the value at the to index of the move that t has just done, and move to the from index.

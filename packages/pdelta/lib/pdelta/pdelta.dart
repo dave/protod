@@ -46,14 +46,15 @@ List<pb.Op> flatten(pb.Op op) {
 }
 
 pb.Op compound(List<pb.Op> ops) {
-  if (ops.length == 0) {
+  final opsNoNull = ops.where((op) => !isNull(op)).toList();
+  if (opsNoNull.length == 0) {
     return nullOp;
-  } else if (ops.length == 1) {
-    return ops[0];
+  } else if (opsNoNull.length == 1) {
+    return opsNoNull[0];
   } else {
     return pb.Op()
       ..type = pb.Op_Type.Compound
-      ..ops.addAll(ops);
+      ..ops.addAll(opsNoNull);
   }
 }
 

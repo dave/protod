@@ -35,111 +35,120 @@ const LocatorTypes = [
 ];
 
 class OpBehaviour {
+  final OpType opType;
+  final LocatorType locatorType;
   final bool itemIsDeleted;
   final bool valueIsDeleted;
   final bool valueIsLocation;
-  final int Function(int) Function(pb.Op, pb.Op) indexValueShifter;
-  final int Function(int) Function(pb.Op, pb.Op) indexLocationShifter;
+  final Shift Function(int) Function(pb.Op, PriorityType, ShiftDirection, ShiftTarget) indexShifter;
   final pb.Key Function(pb.Key) Function(pb.Op, pb.Op) keyShifter;
 
   OpBehaviour({
+    this.opType,
+    this.locatorType,
     this.itemIsDeleted,
     this.valueIsDeleted,
     this.valueIsLocation,
-    this.indexValueShifter,
-    this.indexLocationShifter,
+    this.indexShifter,
     this.keyShifter,
   });
+
+  ShiftTarget get shiftTarget => opType == OpType.INSERT ? ShiftTarget.LOCATION : ShiftTarget.VALUE;
 }
 
 final Map<OpType, Map<LocatorType, OpBehaviour>> Behaviours = {
   OpType.EDIT: {
     LocatorType.FIELD: OpBehaviour(
+      opType: OpType.EDIT,
+      locatorType: LocatorType.FIELD,
       valueIsLocation: false,
       itemIsDeleted: false,
       valueIsDeleted: false,
-      indexValueShifter: null,
-      indexLocationShifter: null,
+      indexShifter: null,
       keyShifter: null,
     ),
     LocatorType.INDEX: OpBehaviour(
+      opType: OpType.EDIT,
+      locatorType: LocatorType.INDEX,
       valueIsLocation: false,
       itemIsDeleted: false,
       valueIsDeleted: false,
-      indexValueShifter: null,
-      indexLocationShifter: null,
+      indexShifter: null,
       keyShifter: null,
     ),
     LocatorType.KEY: OpBehaviour(
+      opType: OpType.EDIT,
+      locatorType: LocatorType.KEY,
       valueIsLocation: false,
       itemIsDeleted: false,
       valueIsDeleted: false,
-      indexValueShifter: null,
-      indexLocationShifter: null,
+      indexShifter: null,
       keyShifter: null,
     ),
   },
   OpType.SET: {
     LocatorType.FIELD: OpBehaviour(
+      opType: OpType.SET,
+      locatorType: LocatorType.FIELD,
       valueIsLocation: false,
       itemIsDeleted: true,
       valueIsDeleted: false,
-      indexValueShifter: null,
-      indexLocationShifter: null,
+      indexShifter: null,
       keyShifter: null,
     ),
     LocatorType.INDEX: OpBehaviour(
+      opType: OpType.SET,
+      locatorType: LocatorType.INDEX,
       valueIsLocation: false,
       itemIsDeleted: true,
       valueIsDeleted: false,
-      indexValueShifter: null,
-      indexLocationShifter: null,
+      indexShifter: null,
       keyShifter: null,
     ),
     LocatorType.KEY: OpBehaviour(
+      opType: OpType.SET,
+      locatorType: LocatorType.KEY,
       valueIsLocation: false,
       itemIsDeleted: true,
       valueIsDeleted: false,
-      indexValueShifter: null,
-      indexLocationShifter: null,
+      indexShifter: null,
       keyShifter: null,
     ),
   },
   OpType.INSERT: {
     LocatorType.INDEX: OpBehaviour(
+      opType: OpType.INSERT,
+      locatorType: LocatorType.INDEX,
       valueIsLocation: false,
       itemIsDeleted: false,
       valueIsDeleted: false,
-      indexValueShifter: (pb.Op t, pb.Op op) {
-        return insertValueShifter(item(t).index.toInt());
-      },
-      indexLocationShifter: (pb.Op t, pb.Op op) {
-        return insertLocationShifter(item(t).index.toInt(), false, false);
+      indexShifter: (pb.Op t, PriorityType priority, ShiftDirection direction, ShiftTarget target) {
+        return insertShifter(item(t).index.toInt(), priority, direction, target);
       },
       keyShifter: null,
     ),
   },
   OpType.MOVE: {
     LocatorType.INDEX: OpBehaviour(
+      opType: OpType.MOVE,
+      locatorType: LocatorType.INDEX,
       valueIsLocation: true,
       itemIsDeleted: false,
       valueIsDeleted: false,
-      indexValueShifter: (pb.Op t, pb.Op op) {
-        return moveValueShifter(item(t).index.toInt(), t.index.toInt());
-      },
-      indexLocationShifter: (pb.Op t, pb.Op op) {
-        return moveLocationShifter(item(t).index.toInt(), t.index.toInt(), false, false);
+      indexShifter: (pb.Op t, PriorityType priority, ShiftDirection direction, ShiftTarget target) {
+        return moveShifter(item(t).index.toInt(), t.index.toInt(), priority, direction, target);
       },
       keyShifter: null,
     ),
   },
   OpType.RENAME: {
     LocatorType.KEY: OpBehaviour(
+      opType: OpType.RENAME,
+      locatorType: LocatorType.KEY,
       valueIsLocation: true,
       itemIsDeleted: false,
       valueIsDeleted: true,
-      indexValueShifter: null,
-      indexLocationShifter: null,
+      indexShifter: null,
       keyShifter: (pb.Op t, pb.Op op) {
         return renameShifter(item(t).key, t.key);
       },
@@ -147,39 +156,41 @@ final Map<OpType, Map<LocatorType, OpBehaviour>> Behaviours = {
   },
   OpType.DELETE: {
     LocatorType.FIELD: OpBehaviour(
+      opType: OpType.DELETE,
+      locatorType: LocatorType.FIELD,
       valueIsLocation: false,
       itemIsDeleted: true,
       valueIsDeleted: false,
-      indexValueShifter: null,
-      indexLocationShifter: null,
+      indexShifter: null,
       keyShifter: null,
     ),
     LocatorType.INDEX: OpBehaviour(
+      opType: OpType.DELETE,
+      locatorType: LocatorType.INDEX,
       valueIsLocation: false,
       itemIsDeleted: true,
       valueIsDeleted: false,
-      indexValueShifter: (pb.Op t, pb.Op op) {
-        return deleteShifter(item(t).index.toInt());
-      },
-      indexLocationShifter: (pb.Op t, pb.Op op) {
-        return deleteShifter(item(t).index.toInt());
+      indexShifter: (pb.Op t, PriorityType priority, ShiftDirection direction, ShiftTarget target) {
+        return deleteShifter(item(t).index.toInt(), direction);
       },
       keyShifter: null,
     ),
     LocatorType.KEY: OpBehaviour(
+      opType: OpType.DELETE,
+      locatorType: LocatorType.KEY,
       valueIsLocation: false,
       itemIsDeleted: true,
       valueIsDeleted: false,
-      indexValueShifter: null,
-      indexLocationShifter: null,
+      indexShifter: null,
       keyShifter: null,
     ),
     LocatorType.ONEOF: OpBehaviour(
+      opType: OpType.DELETE,
+      locatorType: LocatorType.ONEOF,
       valueIsLocation: false,
       itemIsDeleted: true,
       valueIsDeleted: false,
-      indexValueShifter: null,
-      indexLocationShifter: null,
+      indexShifter: null,
       keyShifter: null,
     ),
   },

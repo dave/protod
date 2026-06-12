@@ -19,15 +19,24 @@ func Reduce(op *Op) *Op {
 	if len(ops) == 0 {
 		return nil
 	}
-	if len(ops) == 1 {
-		return ops[0]
+
+	// A single pass of reducePass can miss reductions: when the bubbling operation absorbs a later operation by
+	// merging, the merged result is never re-compared against the operations it already bubbled past (e.g. a set
+	// of the root absorbed late in a pass makes every earlier operation redundant, but those operations have
+	// already been emitted into the transformed prefix). Each pass either strictly reduces the number of
+	// operations or finds nothing new, so we simply re-run passes until the count stops shrinking.
+	out := reducePass(ops)
+	for len(out) > 1 {
+		next := reducePass(out)
+		if len(next) >= len(out) {
+			break
+		}
+		out = next
 	}
-	if len(ops) == 2 {
-		op1 := ops[0]
-		op2 := ops[1]
-		_, op1x, op2x := reduce(op1, op2)
-		return Compound(op2x, op1x)
-	}
+	return Compound(out...)
+}
+
+func reducePass(in []*Op) []*Op {
 
 	// We can only reduce operations that happen subsequently, so in the diagram below we can reduce op1 and op2 with
 	// no problems. However, if they are independent, the result of the reduction is still two operations. This means
@@ -53,51 +62,45 @@ func Reduce(op *Op) *Op {
 	//                        \
 	//                         o
 	//
-	// However, we can re-order op1 and op2 by transforming them into op2x and op1x [OR CAN WE?]. We can then reduce
-	// op1x and op3, because they are now subsequent. Using this method, we can iterate until all operations are
-	// reduced with each other.
+	// However, when reduce can't merge op1 and op2, it re-orders them by transforming them into op2x and op1x. We can
+	// then reduce op1x and op3, because they are now subsequent. So we take the first operation and bubble it towards
+	// the end of the list: each pairwise reduce either cancels both operations, merges them into one, or emits the
+	// rebased later operation (op2x) into the transformed prefix and continues bubbling the rebased earlier operation
+	// (op1x). When a pair can't be merged or re-ordered (R_UNCHANGED), reduce returns op1x == op2 and op2x == op1,
+	// which keeps the effective order unchanged - so the loop below doesn't need to treat that case specially. Once
+	// the current operation has bubbled past every other operation, it belongs before the previously completed
+	// operations in out, and we repeat with the transformed prefix.
 
-	panic("not implemented")
-	//	in := &oplist{ops: ops}
-	//	out := &oplist{}
-	//OuterLoop:
-	//	for {
-	//		current := in.shift()
-	//		if current == nil {
-	//			// if we've processed all the operations, we're done!
-	//			break OuterLoop
-	//		}
-	//		transformed := &oplist{}
-	//	ReduceLoop:
-	//		for {
-	//			next := in.shift()
-	//			if next == nil {
-	//				// if there's nothing left to reduce it with, we're done!
-	//				in = transformed
-	//				out.unshift(current)
-	//				break ReduceLoop
-	//			}
-	//			reduced, op1x, op2x := reduce(current, next)
-	//			switch len(reduced) {
-	//			case 0:
-	//				// operations reduced to nothing!
-	//				in.reset()
-	//				continue OuterLoop
-	//			case 1:
-	//				current = reduced[0]
-	//				continue ReduceLoop
-	//			case 2:
-	//				// we didn't manage to reduce the operations, so we invert them to swap the order, and add op2x to
-	//				// the transformed list.
-	//				transformed.push(op2x)
-	//				current = op1x
-	//				continue ReduceLoop
-	//			default:
-	//				panic(fmt.Sprintf("len(reduced) = %d", len(reduced)))
-	//			}
-	//		}
-	//	}
-	//	return Compound(out.ops...)
+	var out []*Op
+	for len(in) > 0 {
+		current := in[0]
+		rest := in[1:]
+		var transformed []*Op
+		cancelled := false
+		for len(rest) > 0 && !cancelled {
+			next := rest[0]
+			rest = rest[1:]
+			outcome, op1x, op2x := reduce(current, next)
+			switch outcome {
+			case R_CANCELLED:
+				cancelled = true
+			case R_MERGED:
+				current = op1x
+			default:
+				transformed = append(transformed, op2x)
+				current = op1x
+			}
+		}
+		if cancelled {
+			// current and next annihilated each other. The transformed prefix and the untouched remainder must be
+			// re-processed from the start, because the cancellation may enable new merges between them.
+			in = append(transformed, rest...)
+			continue
+		}
+		out = append([]*Op{current}, out...)
+		in = transformed
+	}
+	return out
 }
 
 // reduce takes two operations that happen in series, and converts to 0, 1 or 2 operations:
@@ -255,7 +258,12 @@ func rIndependent(op1, op2 *Op) (outcome ReduceOutcome, op1x, op2x *Op) {
 
 	if op2.Type == Op_Rename {
 		switch TreeRelationship(op1.Location, op2.Location) {
-		case TREE_DESCENDENT:
+		case TREE_EQUAL, TREE_DESCENDENT:
+			// TREE_EQUAL was previously not handled here and fell through to rTransposed, which swapped the
+			// operations without updating the key in op1 - so op1 would act on a key that doesn't exist yet.
+			// We can't transpose with a key update either, because op1 might create the key that op2 is renaming
+			// (set creates missing keys, and even an insert-only quill edit creates the key it edits), so if op2
+			// is moved to before op1 it will fail.
 			// op2 is renaming a value that is an ancestor of the value that op1 affected.
 			// XXX NO!!! [We can transpose but we must update the key in op1].
 			// We can't transpose because if op1 is a set it might create the key that op2 is renaming, so if op2 is
@@ -281,7 +289,15 @@ func rIndependent(op1, op2 *Op) (outcome ReduceOutcome, op1x, op2x *Op) {
 		op2xItemPriority, op2xValuePriority := DISABLED, DISABLED
 
 		if useOp1IndexShifter {
-			shifter := op1behaviour.IndexShifter(op1, DISABLED, REVERSE, op2behaviour.ShiftTarget())
+			// The component of op2's location that we're shifting is only op2's own item locator (a gap for
+			// inserts) when op2 acts directly on op1's list. When op2 acts deeper - its location passes through an
+			// element of op1's list - that component is a reference to a concrete element, so it must be tracked
+			// with the VALUE target.
+			target := VALUE
+			if len(op2.Location) == len(op1.Location) {
+				target = op2behaviour.ShiftTarget()
+			}
+			shifter := op1behaviour.IndexShifter(op1, DISABLED, REVERSE, target)
 			index := len(op1.Location) - 1
 			value := op2.GetIndexAt(index)
 			var shifted int64
@@ -306,12 +322,20 @@ func rIndependent(op1, op2 *Op) (outcome ReduceOutcome, op1x, op2x *Op) {
 
 		if useOp2IndexShifter {
 
-			// NOT SURE ABOUT THIS!!!
-			op1xItemPriority := reversePriority(op2xItemPriority)
-			op1xValuePriority := reversePriority(op2xValuePriority)
-			// NOT SURE ABOUT THIS!!!
+			// The shifters only consult priority at the contested gap. For a move that gap is its destination (to)
+			// index, and for an insert it is its item index. In both cases the contest was recorded in step one when
+			// op2's gap index was shifted backwards across op1: that tag is op2xValuePriority (for non-move op2,
+			// op2xValuePriority was set equal to op2xItemPriority above). So the priority for rebasing op1 forward
+			// across op2x is the reverse of op2xValuePriority.
+			op1xPriority := reversePriority(op2xValuePriority)
 
-			shifter := op2behaviour.IndexShifter(op2x, op1xItemPriority, NORMAL, op1behaviour.ShiftTarget())
+			// See the matching comment in the useOp1IndexShifter block: op1's own shift target only applies when
+			// op1 acts directly on op2's list; deeper locations are element references and use VALUE.
+			target := VALUE
+			if len(op1.Location) == len(op2.Location) {
+				target = op1behaviour.ShiftTarget()
+			}
+			shifter := op2behaviour.IndexShifter(op2x, op1xPriority, NORMAL, target)
 			index := len(op2.Location) - 1
 			value := op1.GetIndexAt(index)
 			shifted, _ := shifter(value)
@@ -319,21 +343,13 @@ func rIndependent(op1, op2 *Op) (outcome ReduceOutcome, op1x, op2x *Op) {
 			if op1behaviour.ValueIsLocation && TreeRelationship(op2.Parent(), op1.Parent()) == TREE_EQUAL {
 				// If op1 and op2 both act on values within the same list (have the same parent), AND op1 has a location
 				// at its value, then we update the location using the location shifter. Example is two moves which are
-				// acting on different values within a list.
-				locationShifter := op2behaviour.IndexShifter(op2x, op1xValuePriority, NORMAL, LOCATION)
-				op1ToIndex := op1.ToIndex()
-				var decremented bool
-				if op1.Type == Op_Move && op1.ItemIndex() < op1.ToIndex() {
-					decremented = true
-					op1ToIndex--
-				}
-				shifted, _ = locationShifter(op1ToIndex)
-				if decremented {
-					shifted++
-				}
+				// acting on different values within a list. The to index is a gap index in the same coordinate space
+				// as op1's item index (the original list), and op2x is in that coordinate space too, so it can be
+				// shifted directly.
+				locationShifter := op2behaviour.IndexShifter(op2x, op1xPriority, NORMAL, LOCATION)
+				shifted, _ = locationShifter(op1.ToIndex())
 				op1x.SetToIndex(shifted)
 			}
-			//fmt.Println("op1x", op1x.Debug())
 		}
 		return R_TRANSPOSED, op1x, op2x
 	}
@@ -789,27 +805,19 @@ func rRenameKeyRenameKey(op1, op2 *Op) (outcome ReduceOutcome, op1x, op2x *Op) {
 		return R_TRANSPOSED, op1x, op2x
 
 	case fromTo == TREE_EQUAL && toFrom == TREE_EQUAL:
-		// Op2 is trying to move the value that op1 has already overwritten, and the "to" location is the value that
-		// op1 moved. In order to converge, we must delete both values, so we replace op with a delete that removes at
-		// the From location.
-
-		// TODO: We're returning two operations from this reduce function... What's the point? We're not able to merge,
-		// and we're not really transposing because both returned operations are changed... so perhaps the outcome
-		// would be better as R_UNCHANGED?
-
-		op1x = &Op{
+		// op1 renames A to B (overwriting B), and op2 renames B back to A. The value of A survives the round trip
+		// and ends up back at A, and the value that was at B is destroyed. So the pair is equivalent to a single
+		// delete of B. Note this is sequential logic, not transform logic: op2 moves the value that op1 placed at
+		// B, which is A's original value.
+		return R_MERGED, &Op{
 			Type:     Op_Delete,
-			Location: proto.Clone(op1).(*Op).Location,
-		}
-		op2x = &Op{
-			Type:     Op_Delete,
-			Location: proto.Clone(op2).(*Op).Location,
-		}
-		return R_TRANSPOSED, op1x, op2x
+			Location: proto.Clone(op1).(*Op).To(),
+		}, nil
 
 	case fromTo == TREE_EQUAL:
-		// Op2 is trying to overwrite the key that op1 already moved. Operations are independent.
-		return rTransposed(op1, op2)
+		// Op2 is trying to move another value onto the key that op1 moved away from. The operations can't be
+		// transposed: if op2 ran first, it would overwrite op1's value before op1 had moved it.
+		return rUnchanged(op1, op2)
 	case toFrom == TREE_EQUAL:
 		// Op2 is trying to move the key that op1 already overwrote. We can reduce, but we must turn op1 into a delete
 		// and update the from key:
@@ -967,58 +975,42 @@ func rDeleteIndexMoveIndex(op1, op2 *Op) (outcome ReduceOutcome, op1x, op2x *Op)
 	//panic("rDeleteIndexMoveIndex not implemented")
 }
 func rDeleteKeyEditKey(op1, op2 *Op) (outcome ReduceOutcome, op1x, op2x *Op) {
-	return rIndependent(op1, op2)
-	//panic("rDeleteKeyEditKey not implemented")
+	// Mirrors rDeleteFieldEditField: unlike list indexes, a delete and an edit at the same key act on the same
+	// value (the edit may re-create the deleted key), so the operations can't be merged or transposed.
+	switch TreeRelationship(op1.Location, op2.Location) {
+	case TREE_EQUAL:
+		return rUnchanged(op1, op2)
+	default:
+		return rIndependent(op1, op2)
+	}
 }
 func rDeleteKeySetKey(op1, op2 *Op) (outcome ReduceOutcome, op1x, op2x *Op) {
-	return rIndependent(op1, op2)
-	//panic("rDeleteKeySetKey not implemented")
+	// Mirrors rDeleteFieldSetField.
+	switch TreeRelationship(op1.Location, op2.Location) {
+	case TREE_EQUAL, TREE_DESCENDENT:
+		// op2 sets the value (or an ancestor of the value) that op1 deleted, so the delete is redundant.
+		return R_MERGED, proto.Clone(op2).(*Op), nil
+	case TREE_ANCESTOR:
+		// op2 sets a value inside the value that op1 deleted. The set may re-create the deleted tree, so the
+		// operations can't be merged or transposed.
+		return rUnchanged(op1, op2)
+	default:
+		return rIndependent(op1, op2)
+	}
 }
 func rDeleteKeyRenameKey(op1, op2 *Op) (outcome ReduceOutcome, op1x, op2x *Op) {
-	return rIndependent(op1, op2)
-	//panic("rDeleteKeyRenameKey not implemented")
-}
-
-type oplist struct {
-	ops    []*Op
-	cursor int
-}
-
-func (o *oplist) pop() *Op {
-	return o.ops[len(o.ops)-1]
-}
-
-func (o *oplist) push(op *Op) {
-	o.ops = append(o.ops, op)
-}
-
-// removes an item from the start of the list and returns it
-func (o *oplist) shift() *Op {
-	if len(o.ops) == 0 {
-		return nil
+	from := TreeRelationship(op1.Location, op2.Location)
+	to := TreeRelationship(op1.Location, op2.To())
+	switch {
+	case from == TREE_EQUAL:
+		// op2 is renaming the key that op1 deleted. This will always fail when apply is called, so we can just
+		// return the operations unchanged.
+		return rUnchanged(op1, op2)
+	case to == TREE_EQUAL:
+		// op2 renames another key onto the key that op1 deleted. The rename overwrites its destination anyway, so
+		// the delete is redundant.
+		return R_MERGED, proto.Clone(op2).(*Op), nil
+	default:
+		return rIndependent(op1, op2)
 	}
-	item := o.ops[0]
-	o.ops = o.ops[1:]
-	if o.cursor > 0 {
-		o.cursor--
-	}
-	return item
-}
-
-// adds an item to sthe start of the list
-func (o *oplist) unshift(op *Op) {
-	o.ops = append([]*Op{op}, o.ops...)
-}
-
-func (o *oplist) next() *Op {
-	if o.cursor >= len(o.ops) {
-		return nil
-	}
-	item := o.ops[o.cursor]
-	o.cursor++
-	return item
-}
-
-func (o *oplist) reset() {
-	o.cursor = 0
 }

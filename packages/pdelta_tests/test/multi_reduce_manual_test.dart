@@ -9,8 +9,8 @@ import 'helpers.dart';
 
 void main() {
   init();
-  test("cases_reduce_random", () async {
-    final lines = await File(assetPath("cases_reduce_random.json")).readAsLines();
+  test("cases_multi_reduce_manual", () async {
+    final lines = await File(assetPath("cases_multi_reduce_manual.json")).readAsLines();
     lines.forEach((String str) {
       if (str.startsWith("[")) {
         str = str.substring(1);
