@@ -1,0 +1,8 @@
+.git
+.gitignore
+# test corpora and Dart code are not needed to build the Go server
+packages/pdelta_tests/assets/
+packages/*/lib/
+packages/*/test/
+packages/*/pubspec.*
+CHANGELOG.md

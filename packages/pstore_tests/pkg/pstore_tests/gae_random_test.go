@@ -19,6 +19,8 @@ var count int
 var elapsed int64
 var startTime int64
 
+// SKIP_GAE skips the tests that run against the deployed App Engine service (they need the pserver-testing
+// project deployed and cost real Firestore writes). Set to false to run them.
 const SKIP_GAE = true
 const REPEATS = 20
 
