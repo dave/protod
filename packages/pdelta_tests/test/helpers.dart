@@ -88,6 +88,12 @@ Object process(Object o) {
     if (o == "") {
       return null;
     }
+    if (o == "0") {
+      // 64 bit integers serialize as strings in proto3 JSON, so a zero int64/uint64/sint64/sfixed64/fixed64
+      // arrives here as the string "0". It must be stripped like the numeric zeros above: the Go runtime
+      // treats setting a proto3 scalar to zero as clearing it, but the Dart runtime marks it explicitly set.
+      return null;
+    }
     return o;
   }
   throw Exception("unknown type ${o.runtimeType} in process - need to add case to return null instead of empty value");

@@ -1,7 +1,10 @@
 package fuzzer
 
 import (
+	"fmt"
 	"math/rand"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/dave/protod/packages/pdelta/pkg/pdelta"
@@ -47,10 +50,26 @@ func List(message proto.Message, length int) []*pdelta.Op {
 			count += op.weight()
 			if count >= target {
 				out = append(out, op.op)
+				break
 			}
 		}
 	}
 	return out
+}
+
+// Adjacent returns two operations that are adjacent in the gather order. Adjacent operations frequently act on
+// the same value or the same collection, so this produces many more conflicting pairs than two independent
+// random picks.
+func Adjacent(message proto.Message) []*pdelta.Op {
+	ops := gatherValidOperationsMessage(nil, 0, message.ProtoReflect().Descriptor(), message.ProtoReflect(), SpecMessage{message: message.ProtoReflect()}, true)
+	if len(ops) == 0 {
+		panic("")
+	}
+	if len(ops) == 1 {
+		return []*pdelta.Op{ops[0].op, ops[0].op}
+	}
+	i := rand.Intn(len(ops) - 1)
+	return []*pdelta.Op{ops[i].op, ops[i+1].op}
 }
 
 func All(message proto.Message) []*pdelta.Op {
@@ -314,20 +333,21 @@ func randomProtoValue(location []*pdelta.Locator, set int, field protoreflect.Fi
 //}
 
 // TODO
-//func randomFragmentValue(location []*pdelta.Locator, set int, field protoreflect.FieldDescriptor, spec Spec) *pdelta.Fragment {
-//	val := randomOpValueIgnoreCollection(location, set, field, spec)
-//	switch val := val.(type) {
-//	case *pdelta.Op_Message:
-//		return &pdelta.Object{V: &pdelta.Object_Message{Message: val.Message}}
-//	case *pdelta.Op_Scalar:
-//		return &pdelta.Object{V: &pdelta.Object_Scalar{Scalar: val.Scalar}}
-//	case *pdelta.Op_Object:
-//		// Shouldn't get here because proto collections never contain collections, and randomFragmentValue is
-//		// only used for the values of map / list collections.
-//		return val.Object
+//
+//	func randomFragmentValue(location []*pdelta.Locator, set int, field protoreflect.FieldDescriptor, spec Spec) *pdelta.Fragment {
+//		val := randomOpValueIgnoreCollection(location, set, field, spec)
+//		switch val := val.(type) {
+//		case *pdelta.Op_Message:
+//			return &pdelta.Object{V: &pdelta.Object_Message{Message: val.Message}}
+//		case *pdelta.Op_Scalar:
+//			return &pdelta.Object{V: &pdelta.Object_Scalar{Scalar: val.Scalar}}
+//		case *pdelta.Op_Object:
+//			// Shouldn't get here because proto collections never contain collections, and randomFragmentValue is
+//			// only used for the values of map / list collections.
+//			return val.Object
+//		}
+//		panic(fmt.Sprintf("%T", val))
 //	}
-//	panic(fmt.Sprintf("%T", val))
-//}
 func randomProtoList(location []*pdelta.Locator, set int, field protoreflect.FieldDescriptor, spec Spec) protoreflect.List {
 	list := spec.New().List()
 	childSpec := SpecList{value: list}
@@ -384,7 +404,7 @@ func randomDeltaMap(location []*pdelta.Locator, set int, keyField, valueField pr
 	//case protoreflect.BoolKind:
 	//	m := map[bool]*pdelta.Object{}
 	//	for i := 0; i < rand.Intn(RANDOM_COLLECTION_MAX_ITEMS); i++ {
-	//		key := rand.Intn(1) == 0
+	//		key := rand.Intn(2) == 0
 	//		value := randomObjectValue(pdelta.CopyAndAppendKeyBool(location, key), set, valueField, childSpec)
 	//		m[key] = value
 	//	}
@@ -467,31 +487,31 @@ func randomOpValueIgnoreCollection(location []*pdelta.Locator, set int, field pr
 	case protoreflect.MessageKind:
 		return &pdelta.Op_Message{Message: pdelta.MustMarshalAny(randomMessage(location, set, spec).Interface())}
 	case protoreflect.BoolKind:
-		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Bool{Bool: rand.Intn(1) == 0}}}
+		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Bool{Bool: rand.Intn(2) == 0}}}
 	case protoreflect.Int32Kind:
-		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Int32{Int32: int32(rand.Intn(2048) - 1024)}}}
+		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Int32{Int32: randomInt32()}}}
 	case protoreflect.Sint32Kind:
-		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Sint32{Sint32: int32(rand.Intn(2048) - 1024)}}}
+		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Sint32{Sint32: randomInt32()}}}
 	case protoreflect.Uint32Kind:
-		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Uint32{Uint32: uint32(rand.Intn(1024))}}}
+		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Uint32{Uint32: randomUint32()}}}
 	case protoreflect.Int64Kind:
-		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Int64{Int64: int64(rand.Intn(2048) - 1024)}}}
+		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Int64{Int64: randomInt64()}}}
 	case protoreflect.Sint64Kind:
-		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Sint64{Sint64: int64(rand.Intn(2048) - 1024)}}}
+		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Sint64{Sint64: randomInt64()}}}
 	case protoreflect.Uint64Kind:
-		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Uint64{Uint64: uint64(rand.Intn(1024))}}}
+		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Uint64{Uint64: randomUint64()}}}
 	case protoreflect.Sfixed32Kind:
-		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Sfixed32{Sfixed32: int32(rand.Intn(2048) - 1024)}}}
+		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Sfixed32{Sfixed32: randomInt32()}}}
 	case protoreflect.Fixed32Kind:
-		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Fixed32{Fixed32: uint32(rand.Intn(1024))}}}
+		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Fixed32{Fixed32: randomUint32()}}}
 	case protoreflect.FloatKind:
-		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Float{Float: float32(rand.Intn(2048) - 1024)}}}
+		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Float{Float: randomFloat32()}}}
 	case protoreflect.Sfixed64Kind:
-		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Sfixed64{Sfixed64: int64(rand.Intn(2048) - 1024)}}}
+		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Sfixed64{Sfixed64: randomInt64()}}}
 	case protoreflect.Fixed64Kind:
-		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Fixed64{Fixed64: uint64(rand.Intn(1024))}}}
+		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Fixed64{Fixed64: randomUint64()}}}
 	case protoreflect.DoubleKind:
-		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Double{Double: float64(rand.Intn(2048) - 1024)}}}
+		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_Double{Double: randomFloat64()}}}
 	case protoreflect.StringKind:
 		return &pdelta.Op_Scalar{Scalar: &pdelta.Scalar{V: &pdelta.Scalar_String_{String_: randomString()}}}
 	case protoreflect.BytesKind:
@@ -509,31 +529,31 @@ func randomProtoValueIgnoreCollection(location []*pdelta.Locator, set int, field
 	case protoreflect.MessageKind:
 		return protoreflect.ValueOfMessage(randomMessage(location, set, spec))
 	case protoreflect.BoolKind:
-		return protoreflect.ValueOfBool(rand.Intn(1) == 0)
+		return protoreflect.ValueOfBool(rand.Intn(2) == 0)
 	case protoreflect.Int32Kind:
-		return protoreflect.ValueOfInt32(int32(rand.Intn(2048) - 1024))
+		return protoreflect.ValueOfInt32(randomInt32())
 	case protoreflect.Sint32Kind:
-		return protoreflect.ValueOfInt32(int32(rand.Intn(2048) - 1024))
+		return protoreflect.ValueOfInt32(randomInt32())
 	case protoreflect.Uint32Kind:
-		return protoreflect.ValueOfUint32(uint32(rand.Intn(1024)))
+		return protoreflect.ValueOfUint32(randomUint32())
 	case protoreflect.Int64Kind:
-		return protoreflect.ValueOfInt64(int64(rand.Intn(2048) - 1024))
+		return protoreflect.ValueOfInt64(randomInt64())
 	case protoreflect.Sint64Kind:
-		return protoreflect.ValueOfInt64(int64(rand.Intn(2048) - 1024))
+		return protoreflect.ValueOfInt64(randomInt64())
 	case protoreflect.Uint64Kind:
-		return protoreflect.ValueOfUint64(uint64(rand.Intn(1024)))
+		return protoreflect.ValueOfUint64(randomUint64())
 	case protoreflect.Sfixed32Kind:
-		return protoreflect.ValueOfInt32(int32(rand.Intn(2048) - 1024))
+		return protoreflect.ValueOfInt32(randomInt32())
 	case protoreflect.Fixed32Kind:
-		return protoreflect.ValueOfUint32(uint32(rand.Intn(1024)))
+		return protoreflect.ValueOfUint32(randomUint32())
 	case protoreflect.FloatKind:
-		return protoreflect.ValueOfFloat32(float32(rand.Intn(2048) - 1024))
+		return protoreflect.ValueOfFloat32(randomFloat32())
 	case protoreflect.Sfixed64Kind:
-		return protoreflect.ValueOfInt64(int64(rand.Intn(2048) - 1024))
+		return protoreflect.ValueOfInt64(randomInt64())
 	case protoreflect.Fixed64Kind:
-		return protoreflect.ValueOfUint64(uint64(rand.Intn(1024)))
+		return protoreflect.ValueOfUint64(randomUint64())
 	case protoreflect.DoubleKind:
-		return protoreflect.ValueOfFloat64(float64(rand.Intn(2048) - 1024))
+		return protoreflect.ValueOfFloat64(randomFloat64())
 	case protoreflect.StringKind:
 		return protoreflect.ValueOfString(randomString())
 	case protoreflect.BytesKind:
@@ -547,7 +567,7 @@ func randomProtoValueIgnoreCollection(location []*pdelta.Locator, set int, field
 func getRandomKey(field protoreflect.FieldDescriptor) interface{} {
 	switch field.Kind() {
 	case protoreflect.BoolKind:
-		return rand.Intn(1) == 0
+		return rand.Intn(2) == 0
 	case protoreflect.Int32Kind:
 		return int32(rand.Intn(2048) - 1024)
 	case protoreflect.Int64Kind:
@@ -598,7 +618,28 @@ func deltaMapKey(val interface{}) *pdelta.Key {
 
 const alphanum = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
+// edgeStrings are returned occasionally instead of a plain random string: empty strings, long strings, and
+// multi-byte unicode (string indexes differ between UTF-8 runes, UTF-16 code units and bytes, so unicode is
+// where cross language divergence would hide).
+//
+// KNOWN BUG: astral-plane characters (e.g. emoji "🚀🎉") are excluded, because the Go quill integration counts
+// string positions in runes while the Dart one counts UTF-16 code units. The two agree for all BMP characters
+// (1 rune == 1 UTF-16 unit) but diverge for astral-plane characters (1 rune == 2 UTF-16 units), so a quill
+// edit touching an emoji produces different results in Go and Dart. To fix, standardize on UTF-16 code units
+// (the quill.js convention) in the Go Edit diff and applyDeltaToString, then add emoji here to cover it.
+var edgeStrings = []string{
+	"",
+	"a",
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
+	"héllo wörld",
+	"日本語テキスト",
+	"e\u0301clair", // combining acute accent (BMP, safe)
+}
+
 func randomString() string {
+	if rand.Intn(20) == 0 {
+		return edgeStrings[rand.Intn(len(edgeStrings))]
+	}
 	b := make([]byte, 5)
 	if _, err := rand.Read(b); err != nil {
 		panic(err)
@@ -609,8 +650,68 @@ func randomString() string {
 	return string(b)
 }
 
+func randomInt32() int32 {
+	if rand.Intn(20) == 0 {
+		return []int32{0, 1, -1, 2147483647, -2147483648}[rand.Intn(5)]
+	}
+	return int32(rand.Intn(2048) - 1024)
+}
+
+func randomInt64() int64 {
+	if rand.Intn(20) == 0 {
+		return []int64{0, 1, -1, 9223372036854775807, -9223372036854775808}[rand.Intn(5)]
+	}
+	return int64(rand.Intn(2048) - 1024)
+}
+
+func randomUint32() uint32 {
+	if rand.Intn(20) == 0 {
+		// The maximum edge value is capped at 2^31-1 rather than 2^32-1: the protobuf-dart 1.x runtime
+		// validates fixed32 JSON values with the signed 32 bit check, so larger values fail to parse in Dart.
+		// Raise to 4294967295 after upgrading protobuf-dart.
+		return []uint32{0, 1, 2147483647}[rand.Intn(3)]
+	}
+	return uint32(rand.Intn(1024))
+}
+
+func randomUint64() uint64 {
+	if rand.Intn(20) == 0 {
+		return []uint64{0, 1, 18446744073709551615}[rand.Intn(3)]
+	}
+	return uint64(rand.Intn(1024))
+}
+
+func randomFloat32() float32 {
+	if rand.Intn(4) == 0 {
+		// Fractional values restricted to multiples of 1/4. The Go runtime truncates float fields to float32
+		// and protojson prints the shortest decimal that round trips as float32, but the Dart runtime stores
+		// the parsed double unrounded - so any value whose shortest float32 decimal is not its exact expansion
+		// diverges between the binary (Any packed) and JSON paths in Dart. Quarters print exactly.
+		return float32(rand.Intn(2048*4))/4 - 1024
+	}
+	return float32(rand.Intn(2048) - 1024)
+}
+
+func randomFloat64() float64 {
+	if rand.Intn(4) == 0 {
+		return rand.Float64()*2048 - 1024
+	}
+	return float64(rand.Intn(2048) - 1024)
+}
+
 func init() {
-	rand.Seed(time.Now().Unix())
+	var seed int64
+	if env := os.Getenv("FUZZ_SEED"); env != "" {
+		var err error
+		seed, err = strconv.ParseInt(env, 10, 64)
+		if err != nil {
+			panic("invalid FUZZ_SEED: " + env)
+		}
+	} else {
+		seed = time.Now().UnixNano()
+	}
+	fmt.Printf("fuzzer seed: %d (set FUZZ_SEED=%d to reproduce)\n", seed, seed)
+	rand.Seed(seed)
 }
 
 func shouldIterate(location []*pdelta.Locator, set int) bool {
@@ -696,4 +797,255 @@ type SpecMap struct {
 
 func (s SpecMap) New() protoreflect.Value {
 	return s.value.NewValue()
+}
+
+// GetRelated creates a random op that is valid to apply to message, biased heavily towards ops that conflict
+// with prev: ops acting on the same value, the same collection, prev's destination, or on paths through them.
+// Two independently random ops rarely collide in a large tree, so the conflicting branches of transform and
+// reduce are starved of coverage without this.
+func GetRelated(message proto.Message, prev *pdelta.Op) *pdelta.Op {
+	if prev == nil || pdelta.IsNull(prev) || prev.Type == pdelta.Op_Compound {
+		return Get(message)
+	}
+	all := gatherValidOperationsMessage(nil, 0, message.ProtoReflect().Descriptor(), message.ProtoReflect(), SpecMessage{message: message.ProtoReflect()}, true)
+	if len(all) == 0 {
+		panic("")
+	}
+
+	var related []opData
+	var deep []opData
+	for _, od := range all {
+		if !isRelated(od.op, prev) {
+			continue
+		}
+		related = append(related, od)
+		// ops whose location passes through an element of prev's collection exercise the index shifting of
+		// nested locations, and are very rare because deep locations are heavily pruned during gather - so they
+		// are collected separately and picked with a boosted probability below
+		if len(prev.Location) > 0 && len(od.op.Location) > len(prev.Location) &&
+			pdelta.TreeRelationship(prev.Parent(), od.op.Location) == pdelta.TREE_ANCESTOR {
+			deep = append(deep, od)
+		}
+	}
+	if len(deep) > 0 && rand.Intn(4) == 0 {
+		return deep[rand.Intn(len(deep))].op
+	}
+
+	// Synthesize exact collision variants: candidates in the same collection as prev, with their indexes or keys
+	// overridden to prev's item / destination (and neighbouring indexes). These are the pairings that exercise
+	// the conflicting branches, and they almost never occur with independent random indexes.
+	var synthesized []*pdelta.Op
+	for attempts := 0; attempts < 8 && len(related) > 0; attempts++ {
+		candidate := related[rand.Intn(len(related))].op
+		synth := synthesizeCollision(message, candidate, prev)
+		if synth == nil {
+			continue
+		}
+		// validate by applying to a throwaway clone
+		if err := pdelta.Apply(synth, proto.Clone(message)); err != nil {
+			continue
+		}
+		synthesized = append(synthesized, synth)
+	}
+
+	// weighted pick: synthesized collisions are the most valuable
+	total := float64(len(synthesized))*4 + float64(len(related))
+	if total == 0 {
+		return Get(message)
+	}
+	target := rand.Float64() * total
+	if target < float64(len(synthesized))*4 {
+		return synthesized[int(target/4)]
+	}
+	return related[int(target-float64(len(synthesized))*4)].op
+}
+
+func isRelated(op, prev *pdelta.Op) bool {
+	rel := func(a, b []*pdelta.Locator) bool {
+		switch pdelta.TreeRelationship(a, b) {
+		case pdelta.TREE_EQUAL, pdelta.TREE_ANCESTOR, pdelta.TREE_DESCENDENT:
+			return true
+		}
+		return false
+	}
+	if rel(op.Location, prev.Location) {
+		return true
+	}
+	opB := pdelta.GetBehaviour(op)
+	prevB := pdelta.GetBehaviour(prev)
+	if prevB.ValueIsLocation && rel(op.Location, prev.To()) {
+		return true
+	}
+	if opB.ValueIsLocation && rel(op.To(), prev.Location) {
+		return true
+	}
+	if opB.ValueIsLocation && prevB.ValueIsLocation && rel(op.To(), prev.To()) {
+		return true
+	}
+	if len(op.Location) > 0 && len(prev.Location) > 0 &&
+		pdelta.TreeRelationship(op.Parent(), prev.Parent()) == pdelta.TREE_EQUAL {
+		return true
+	}
+	return false
+}
+
+// synthesizeCollision clones candidate and overrides its item index / key (and for moves and renames,
+// sometimes its destination) to collide with prev's item or destination. Returns nil if the candidate or prev
+// don't have compatible locator types in the same collection, or if the resulting index would be out of range
+// (apply does not validate list bounds, so out of range indexes produce malformed operations).
+func synthesizeCollision(message proto.Message, candidate, prev *pdelta.Op) *pdelta.Op {
+	if len(candidate.Location) == 0 || len(prev.Location) == 0 {
+		return nil
+	}
+	if pdelta.TreeRelationship(candidate.Parent(), prev.Parent()) != pdelta.TREE_EQUAL {
+		return nil
+	}
+	candidateItem := candidate.Item()
+	prevItem := prev.Item()
+	out := proto.Clone(candidate).(*pdelta.Op)
+
+	if _, ok := candidateItem.V.(*pdelta.Locator_Index); ok {
+		if _, ok := prevItem.V.(*pdelta.Locator_Index); !ok {
+			return nil
+		}
+		listLen, ok := listLenAt(message, candidate.Parent())
+		if !ok {
+			return nil
+		}
+		choices := []int64{prev.ItemIndex(), prev.ItemIndex() + 1, prev.ItemIndex() - 1}
+		if pdelta.GetBehaviour(prev).ValueIsLocation {
+			choices = append(choices, prev.ToIndex(), prev.ToIndex()+1, prev.ToIndex()-1)
+		}
+		index := choices[rand.Intn(len(choices))]
+		toGap := false
+		if rand.Intn(2) == 1 && pdelta.GetBehaviour(candidate).ValueIsLocation {
+			toGap = true
+		}
+		// gap indexes (insert location, move destination) may equal the list length; item indexes must be
+		// strictly inside the list
+		max := int64(listLen) - 1
+		if toGap || candidate.Type == pdelta.Op_Insert {
+			max = int64(listLen)
+		}
+		if index < 0 || index > max {
+			return nil
+		}
+		if toGap {
+			out.SetToIndex(index)
+		} else {
+			out.SetItemIndex(index)
+		}
+		return out
+	}
+
+	if _, ok := candidateItem.V.(*pdelta.Locator_Key); ok {
+		if _, ok := prevItem.V.(*pdelta.Locator_Key); !ok {
+			return nil
+		}
+		choices := []*pdelta.Key{prevItem.GetKey()}
+		if prev.Type == pdelta.Op_Rename {
+			choices = append(choices, prev.Value.(*pdelta.Op_Key).Key)
+		}
+		key := proto.Clone(choices[rand.Intn(len(choices))]).(*pdelta.Key)
+		if rand.Intn(2) == 0 || candidate.Type != pdelta.Op_Rename {
+			out.Location[len(out.Location)-1] = &pdelta.Locator{V: &pdelta.Locator_Key{Key: key}}
+		} else {
+			out.Value = &pdelta.Op_Key{Key: key}
+		}
+		return out
+	}
+
+	return nil
+}
+
+// Related reports whether two ops act on related locations (same value, same collection, either one's
+// destination, or paths through them). Used by the corpus writers to preferentially keep conflicting pairs.
+func Related(op1, op2 *pdelta.Op) bool {
+	if op1 == nil || op2 == nil || pdelta.IsNull(op1) || pdelta.IsNull(op2) {
+		return false
+	}
+	if op1.Type == pdelta.Op_Compound || op2.Type == pdelta.Op_Compound {
+		return false
+	}
+	return isRelated(op2, op1)
+}
+
+// listLenAt resolves the list at the given location in message and returns its length. Returns false if the
+// location doesn't resolve to a list.
+func listLenAt(m proto.Message, location []*pdelta.Locator) (int, bool) {
+	var cur interface{} = m.ProtoReflect()
+	for _, loc := range location {
+		switch v := loc.V.(type) {
+		case *pdelta.Locator_Oneof:
+			// oneof locators are markers: the following field locator does the navigation
+			continue
+		case *pdelta.Locator_Field:
+			msg, ok := cur.(protoreflect.Message)
+			if !ok {
+				return 0, false
+			}
+			fd := msg.Descriptor().Fields().ByNumber(protoreflect.FieldNumber(v.Field.Number))
+			if fd == nil {
+				return 0, false
+			}
+			val := msg.Get(fd)
+			switch {
+			case fd.IsList():
+				cur = val.List()
+			case fd.IsMap():
+				cur = val.Map()
+			case fd.Kind() == protoreflect.MessageKind:
+				cur = val.Message()
+			default:
+				return 0, false
+			}
+		case *pdelta.Locator_Index:
+			list, ok := cur.(protoreflect.List)
+			if !ok || int(v.Index) >= list.Len() {
+				return 0, false
+			}
+			msg, ok := list.Get(int(v.Index)).Interface().(protoreflect.Message)
+			if !ok {
+				return 0, false
+			}
+			cur = msg
+		case *pdelta.Locator_Key:
+			mp, ok := cur.(protoreflect.Map)
+			if !ok {
+				return 0, false
+			}
+			val := mp.Get(protoMapKey(keyInterface(v.Key)))
+			if !val.IsValid() {
+				return 0, false
+			}
+			msg, ok := val.Interface().(protoreflect.Message)
+			if !ok {
+				return 0, false
+			}
+			cur = msg
+		}
+	}
+	list, ok := cur.(protoreflect.List)
+	if !ok {
+		return 0, false
+	}
+	return list.Len(), true
+}
+
+func keyInterface(key *pdelta.Key) interface{} {
+	switch v := key.V.(type) {
+	case *pdelta.Key_Bool:
+		return v.Bool
+	case *pdelta.Key_Int32:
+		return v.Int32
+	case *pdelta.Key_Int64:
+		return v.Int64
+	case *pdelta.Key_Uint32:
+		return v.Uint32
+	case *pdelta.Key_Uint64:
+		return v.Uint64
+	case *pdelta.Key_String_:
+		return v.String_
+	}
+	panic("")
 }

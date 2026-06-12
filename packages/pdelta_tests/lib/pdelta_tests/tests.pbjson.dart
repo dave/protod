@@ -26,6 +26,7 @@ const Person$json = const {
     const {'1': 'shirt', '3': 17, '4': 1, '5': 11, '6': '.pdelta_tests_clothes.Shirt', '10': 'shirt'},
     const {'1': 'pants', '3': 18, '4': 1, '5': 11, '6': '.pants.Pants', '10': 'pants'},
     const {'1': 'double', '3': 19, '4': 1, '5': 11, '6': '.pdelta_tests.Person.Embed.Double', '10': 'double'},
+    const {'1': 'sink', '3': 20, '4': 1, '5': 11, '6': '.pdelta_tests.Sink', '10': 'sink'},
   ],
   '3': const [Person_Embed$json, Person_CasesEntry$json, Person_TypeMapEntry$json],
   '4': const [Person_Type$json],
@@ -80,6 +81,40 @@ const Person_Type$json = const {
     const {'1': 'Bravo', '2': 2},
     const {'1': 'Charlie', '2': 3},
   ],
+};
+
+const Sink$json = const {
+  '1': 'Sink',
+  '2': const [
+    const {'1': 'blob', '3': 1, '4': 1, '5': 12, '10': 'blob'},
+    const {'1': 'sint', '3': 2, '4': 1, '5': 17, '10': 'sint'},
+    const {'1': 'sfixed', '3': 3, '4': 1, '5': 16, '10': 'sfixed'},
+    const {'1': 'fixed', '3': 4, '4': 1, '5': 7, '10': 'fixed'},
+    const {'1': 'ulong', '3': 5, '4': 1, '5': 4, '10': 'ulong'},
+    const {'1': 'boolMap', '3': 6, '4': 3, '5': 11, '6': '.pdelta_tests.Sink.BoolMapEntry', '10': 'boolMap'},
+    const {'1': 'uintMap', '3': 7, '4': 3, '5': 11, '6': '.pdelta_tests.Sink.UintMapEntry', '10': 'uintMap'},
+    const {'1': 'dblList', '3': 8, '4': 3, '5': 1, '10': 'dblList'},
+    const {'1': 'boolList', '3': 9, '4': 3, '5': 8, '10': 'boolList'},
+  ],
+  '3': const [Sink_BoolMapEntry$json, Sink_UintMapEntry$json],
+};
+
+const Sink_BoolMapEntry$json = const {
+  '1': 'BoolMapEntry',
+  '2': const [
+    const {'1': 'key', '3': 1, '4': 1, '5': 8, '10': 'key'},
+    const {'1': 'value', '3': 2, '4': 1, '5': 9, '10': 'value'},
+  ],
+  '7': const {'7': true},
+};
+
+const Sink_UintMapEntry$json = const {
+  '1': 'UintMapEntry',
+  '2': const [
+    const {'1': 'key', '3': 1, '4': 1, '5': 13, '10': 'key'},
+    const {'1': 'value', '3': 2, '4': 1, '5': 11, '6': '.pdelta_tests.Item', '10': 'value'},
+  ],
+  '7': const {'7': true},
 };
 
 const Company$json = const {

@@ -49,6 +49,21 @@ message Person {
   pdelta_tests_clothes.Shirt shirt = 17;
   pants.Pants pants = 18;
   Embed.Double double = 19;
+  Sink sink = 20;
+}
+
+// Sink holds the field kinds that don't appear elsewhere in the schema, so the fuzzer exercises them.
+// [proto:data]
+message Sink {
+  bytes blob = 1;
+  sint32 sint = 2;
+  sfixed64 sfixed = 3;
+  fixed32 fixed = 4;
+  uint64 ulong = 5;
+  map<bool, string> boolMap = 6;
+  map<uint32, Item> uintMap = 7;
+  repeated double dblList = 8;
+  repeated bool boolList = 9;
 }
 
 // [proto:data]

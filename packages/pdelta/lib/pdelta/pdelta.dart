@@ -213,6 +213,18 @@ dynamic getValue(dynamic previous, pb.Op op, protobuf.ValueOfFunc valueOf) {
       return scalar.bytes;
     } else if (scalar.hasEnum_16()) {
       return valueOf(scalar.enum_16);
+    } else if (scalar.hasSint32()) {
+      return scalar.sint32;
+    } else if (scalar.hasSint64()) {
+      return scalar.sint64;
+    } else if (scalar.hasFixed32()) {
+      return scalar.fixed32;
+    } else if (scalar.hasFixed64()) {
+      return scalar.fixed64;
+    } else if (scalar.hasSfixed32()) {
+      return scalar.sfixed32;
+    } else if (scalar.hasSfixed64()) {
+      return scalar.sfixed64;
     } else {
       //			//case *Scalar_Sint32, *Scalar_Sint64:
       //			//case *Scalar_Fixed32, *Scalar_Fixed64:
@@ -1094,15 +1106,33 @@ quill.Delta quillFromDelta(pb.QuillDelta d) {
 pb.QuillDelta deltaFromQuill(quill.Delta q) {
   var dlt = pb.QuillDelta();
   q.toList().forEach((op) {
+    pb.Quill next;
     if (op.isInsert) {
-      dlt.ops.add(pb.Quill()..insert = op.data ?? "");
+      next = pb.Quill()..insert = op.data ?? "";
     } else if (op.isDelete) {
-      dlt.ops.add(pb.Quill()..delete = fixnum.Int64(op.length));
+      next = pb.Quill()..delete = fixnum.Int64(op.length);
     } else if (op.isRetain) {
-      dlt.ops.add(pb.Quill()..retain = fixnum.Int64(op.length));
+      next = pb.Quill()..retain = fixnum.Int64(op.length);
     } else {
       throw Exception("invalid quill delta");
     }
+    // Merge adjacent ops of the same kind so the stored format is canonical: the Go and Dart quill libraries
+    // differ in whether compose merges adjacent ops, and the wire format must not depend on which library
+    // produced it. Attributes are not used by pdelta so they don't affect merging.
+    if (dlt.ops.isNotEmpty) {
+      final last = dlt.ops[dlt.ops.length - 1];
+      if (next.hasInsert() && last.hasInsert()) {
+        last.insert = last.insert + next.insert;
+        return;
+      } else if (next.hasDelete() && last.hasDelete()) {
+        last.delete = last.delete + next.delete;
+        return;
+      } else if (next.hasRetain() && last.hasRetain()) {
+        last.retain = last.retain + next.retain;
+        return;
+      }
+    }
+    dlt.ops.add(next);
   });
   return dlt;
 }

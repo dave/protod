@@ -467,10 +467,19 @@ func reflectValueOfScalar(scalar *Scalar) protoreflect.Value {
 		return protoreflect.ValueOfBytes(value.Bytes)
 	case *Scalar_Enum:
 		return protoreflect.ValueOfEnum(protoreflect.EnumNumber(value.Enum))
+	case *Scalar_Sint32:
+		return protoreflect.ValueOfInt32(value.Sint32)
+	case *Scalar_Sint64:
+		return protoreflect.ValueOfInt64(value.Sint64)
+	case *Scalar_Fixed32:
+		return protoreflect.ValueOfUint32(value.Fixed32)
+	case *Scalar_Fixed64:
+		return protoreflect.ValueOfUint64(value.Fixed64)
+	case *Scalar_Sfixed32:
+		return protoreflect.ValueOfInt32(value.Sfixed32)
+	case *Scalar_Sfixed64:
+		return protoreflect.ValueOfInt64(value.Sfixed64)
 	default:
-		//case *Scalar_Sint32, *Scalar_Sint64:
-		//case *Scalar_Fixed32, *Scalar_Fixed64:
-		//case *Scalar_Sfixed32, *Scalar_Sfixed64:
 		panic(fmt.Sprintf("unsupported scalar %T in reflectValueOfScalar", value))
 	}
 }
@@ -497,6 +506,18 @@ func valueOfScalar(scalar *Scalar) interface{} {
 		return value.Bytes
 	case *Scalar_Enum:
 		return protoreflect.EnumNumber(value.Enum)
+	case *Scalar_Sint32:
+		return value.Sint32
+	case *Scalar_Sint64:
+		return value.Sint64
+	case *Scalar_Fixed32:
+		return value.Fixed32
+	case *Scalar_Fixed64:
+		return value.Fixed64
+	case *Scalar_Sfixed32:
+		return value.Sfixed32
+	case *Scalar_Sfixed64:
+		return value.Sfixed64
 	default:
 		panic(fmt.Sprintf("unsupported scalar %T in valueOfScalar", value))
 	}
@@ -1194,18 +1215,42 @@ func (o *Op) To() []*Locator {
 
 func DeltaFromQuill(qd *quill.Delta) *QuillDelta {
 	delta := &QuillDelta{}
-	delta.Ops = make([]*Quill, len(qd.Ops))
-	for i, op := range qd.Ops {
+	for _, op := range qd.Ops {
+		var next *Quill
 		switch {
 		case len(op.Insert) > 0:
-			delta.Ops[i] = &Quill{V: &Quill_Insert{Insert: string(op.Insert)}}
+			next = &Quill{V: &Quill_Insert{Insert: string(op.Insert)}}
 		case op.Delete != nil:
-			delta.Ops[i] = &Quill{V: &Quill_Delete{Delete: int64(*op.Delete)}}
+			next = &Quill{V: &Quill_Delete{Delete: int64(*op.Delete)}}
 		case op.Retain != nil:
-			delta.Ops[i] = &Quill{V: &Quill_Retain{Retain: int64(*op.Retain)}}
+			next = &Quill{V: &Quill_Retain{Retain: int64(*op.Retain)}}
 		default:
 			panic("invalid op in DeltaFromQuill")
 		}
+		// Merge adjacent ops of the same kind so the stored format is canonical: the Go and Dart quill
+		// libraries differ in whether compose merges adjacent ops, and the wire format must not depend on
+		// which library produced it. Attributes are not used by pdelta so they don't affect merging.
+		if len(delta.Ops) > 0 {
+			last := delta.Ops[len(delta.Ops)-1]
+			switch v := next.V.(type) {
+			case *Quill_Insert:
+				if lastV, ok := last.V.(*Quill_Insert); ok {
+					last.V = &Quill_Insert{Insert: lastV.Insert + v.Insert}
+					continue
+				}
+			case *Quill_Delete:
+				if lastV, ok := last.V.(*Quill_Delete); ok {
+					last.V = &Quill_Delete{Delete: lastV.Delete + v.Delete}
+					continue
+				}
+			case *Quill_Retain:
+				if lastV, ok := last.V.(*Quill_Retain); ok {
+					last.V = &Quill_Retain{Retain: lastV.Retain + v.Retain}
+					continue
+				}
+			}
+		}
+		delta.Ops = append(delta.Ops, next)
 	}
 	return delta
 }

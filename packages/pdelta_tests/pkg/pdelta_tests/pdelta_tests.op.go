@@ -36,6 +36,9 @@ func (Op_root_type) Person_Embed() Person_Embed_type {
 func (Op_root_type) Person_Embed_Double() Person_Embed_Double_type {
 	return Person_Embed_Double_type{}
 }
+func (Op_root_type) Sink() Sink_type {
+	return Sink_type{}
+}
 
 type Case_type struct {
 	location []*pdelta.Locator
@@ -1094,6 +1097,9 @@ func (b Person_type) Pants() pants.Pants_type {
 func (b Person_type) Double() Person_Embed_Double_type {
 	return NewPerson_Embed_Double_type(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person", "double", 19))
 }
+func (b Person_type) Sink() Sink_type {
+	return NewSink_type(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Person", "sink", 20))
+}
 
 type Person_list struct {
 	location []*pdelta.Locator
@@ -1865,5 +1871,213 @@ func (b Person_Type_string_map) Delete() *pdelta.Op {
 	return pdelta.Delete(b.location)
 }
 func (b Person_Type_string_map) Set(value map[string]Person_Type) *pdelta.Op {
+	return pdelta.Set(b.location, value)
+}
+
+type Sink_type struct {
+	location []*pdelta.Locator
+}
+
+func (b Sink_type) Location_get() []*pdelta.Locator {
+	return b.location
+}
+func NewSink_type(l []*pdelta.Locator) Sink_type {
+	return Sink_type{location: l}
+}
+func (b Sink_type) Delete() *pdelta.Op {
+	return pdelta.Delete(b.location)
+}
+func (b Sink_type) Set(value *Sink) *pdelta.Op {
+	return pdelta.Set(b.location, value)
+}
+func (b Sink_type) Blob() pdelta.Bytes_scalar {
+	return pdelta.NewBytes_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Sink", "blob", 1))
+}
+func (b Sink_type) Sint() pdelta.Sint32_scalar {
+	return pdelta.NewSint32_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Sink", "sint", 2))
+}
+func (b Sink_type) Sfixed() pdelta.Sfixed64_scalar {
+	return pdelta.NewSfixed64_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Sink", "sfixed", 3))
+}
+func (b Sink_type) Fixed() pdelta.Fixed32_scalar {
+	return pdelta.NewFixed32_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Sink", "fixed", 4))
+}
+func (b Sink_type) Ulong() pdelta.Uint64_scalar {
+	return pdelta.NewUint64_scalar(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Sink", "ulong", 5))
+}
+func (b Sink_type) BoolMap() pdelta.String_bool_map {
+	return pdelta.NewString_bool_map(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Sink", "boolMap", 6))
+}
+func (b Sink_type) UintMap() Item_uint32_map {
+	return NewItem_uint32_map(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Sink", "uintMap", 7))
+}
+func (b Sink_type) DblList() pdelta.Double_list {
+	return pdelta.NewDouble_list(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Sink", "dblList", 8))
+}
+func (b Sink_type) BoolList() pdelta.Bool_list {
+	return pdelta.NewBool_list(pdelta.CopyAndAppendField(b.location, "pdelta_tests.Sink", "boolList", 9))
+}
+
+type Sink_list struct {
+	location []*pdelta.Locator
+}
+
+func (b Sink_list) Location_get() []*pdelta.Locator {
+	return b.location
+}
+func NewSink_list(l []*pdelta.Locator) Sink_list {
+	return Sink_list{location: l}
+}
+func (b Sink_list) Index(i int) Sink_type {
+	return NewSink_type(pdelta.CopyAndAppendIndex(b.location, int64(i)))
+}
+func (b Sink_list) Insert(index int, value *Sink) *pdelta.Op {
+	return pdelta.Insert(pdelta.CopyAndAppendIndex(b.location, int64(index)), value)
+}
+func (b Sink_list) Move(from, to int) *pdelta.Op {
+	return pdelta.Move(pdelta.CopyAndAppendIndex(b.location, int64(from)), int64(to))
+}
+func (b Sink_list) Delete() *pdelta.Op {
+	return pdelta.Delete(b.location)
+}
+func (b Sink_list) Set(value []*Sink) *pdelta.Op {
+	return pdelta.Set(b.location, value)
+}
+
+type Sink_bool_map struct {
+	location []*pdelta.Locator
+}
+
+func (b Sink_bool_map) Location_get() []*pdelta.Locator {
+	return b.location
+}
+func NewSink_bool_map(l []*pdelta.Locator) Sink_bool_map {
+	return Sink_bool_map{location: l}
+}
+func (b Sink_bool_map) Key(key bool) Sink_type {
+	return NewSink_type(pdelta.CopyAndAppendKeyBool(b.location, key))
+}
+func (b Sink_bool_map) Rename(from, to bool) *pdelta.Op {
+	return pdelta.Rename(pdelta.CopyAndAppendKeyBool(b.location, from), to)
+}
+func (b Sink_bool_map) Delete() *pdelta.Op {
+	return pdelta.Delete(b.location)
+}
+func (b Sink_bool_map) Set(value map[bool]*Sink) *pdelta.Op {
+	return pdelta.Set(b.location, value)
+}
+
+type Sink_int32_map struct {
+	location []*pdelta.Locator
+}
+
+func (b Sink_int32_map) Location_get() []*pdelta.Locator {
+	return b.location
+}
+func NewSink_int32_map(l []*pdelta.Locator) Sink_int32_map {
+	return Sink_int32_map{location: l}
+}
+func (b Sink_int32_map) Key(key int) Sink_type {
+	return NewSink_type(pdelta.CopyAndAppendKeyInt32(b.location, int32(key)))
+}
+func (b Sink_int32_map) Rename(from, to int) *pdelta.Op {
+	return pdelta.Rename(pdelta.CopyAndAppendKeyInt32(b.location, int32(from)), int32(to))
+}
+func (b Sink_int32_map) Delete() *pdelta.Op {
+	return pdelta.Delete(b.location)
+}
+func (b Sink_int32_map) Set(value map[int32]*Sink) *pdelta.Op {
+	return pdelta.Set(b.location, value)
+}
+
+type Sink_int64_map struct {
+	location []*pdelta.Locator
+}
+
+func (b Sink_int64_map) Location_get() []*pdelta.Locator {
+	return b.location
+}
+func NewSink_int64_map(l []*pdelta.Locator) Sink_int64_map {
+	return Sink_int64_map{location: l}
+}
+func (b Sink_int64_map) Key(key int) Sink_type {
+	return NewSink_type(pdelta.CopyAndAppendKeyInt64(b.location, int64(key)))
+}
+func (b Sink_int64_map) Rename(from, to int) *pdelta.Op {
+	return pdelta.Rename(pdelta.CopyAndAppendKeyInt64(b.location, int64(from)), int64(to))
+}
+func (b Sink_int64_map) Delete() *pdelta.Op {
+	return pdelta.Delete(b.location)
+}
+func (b Sink_int64_map) Set(value map[int64]*Sink) *pdelta.Op {
+	return pdelta.Set(b.location, value)
+}
+
+type Sink_uint32_map struct {
+	location []*pdelta.Locator
+}
+
+func (b Sink_uint32_map) Location_get() []*pdelta.Locator {
+	return b.location
+}
+func NewSink_uint32_map(l []*pdelta.Locator) Sink_uint32_map {
+	return Sink_uint32_map{location: l}
+}
+func (b Sink_uint32_map) Key(key int) Sink_type {
+	return NewSink_type(pdelta.CopyAndAppendKeyUint32(b.location, uint32(key)))
+}
+func (b Sink_uint32_map) Rename(from, to int) *pdelta.Op {
+	return pdelta.Rename(pdelta.CopyAndAppendKeyUint32(b.location, uint32(from)), uint32(to))
+}
+func (b Sink_uint32_map) Delete() *pdelta.Op {
+	return pdelta.Delete(b.location)
+}
+func (b Sink_uint32_map) Set(value map[uint32]*Sink) *pdelta.Op {
+	return pdelta.Set(b.location, value)
+}
+
+type Sink_uint64_map struct {
+	location []*pdelta.Locator
+}
+
+func (b Sink_uint64_map) Location_get() []*pdelta.Locator {
+	return b.location
+}
+func NewSink_uint64_map(l []*pdelta.Locator) Sink_uint64_map {
+	return Sink_uint64_map{location: l}
+}
+func (b Sink_uint64_map) Key(key int) Sink_type {
+	return NewSink_type(pdelta.CopyAndAppendKeyUint64(b.location, uint64(key)))
+}
+func (b Sink_uint64_map) Rename(from, to int) *pdelta.Op {
+	return pdelta.Rename(pdelta.CopyAndAppendKeyUint64(b.location, uint64(from)), uint64(to))
+}
+func (b Sink_uint64_map) Delete() *pdelta.Op {
+	return pdelta.Delete(b.location)
+}
+func (b Sink_uint64_map) Set(value map[uint64]*Sink) *pdelta.Op {
+	return pdelta.Set(b.location, value)
+}
+
+type Sink_string_map struct {
+	location []*pdelta.Locator
+}
+
+func (b Sink_string_map) Location_get() []*pdelta.Locator {
+	return b.location
+}
+func NewSink_string_map(l []*pdelta.Locator) Sink_string_map {
+	return Sink_string_map{location: l}
+}
+func (b Sink_string_map) Key(key string) Sink_type {
+	return NewSink_type(pdelta.CopyAndAppendKeyString(b.location, key))
+}
+func (b Sink_string_map) Rename(from, to string) *pdelta.Op {
+	return pdelta.Rename(pdelta.CopyAndAppendKeyString(b.location, from), to)
+}
+func (b Sink_string_map) Delete() *pdelta.Op {
+	return pdelta.Delete(b.location)
+}
+func (b Sink_string_map) Set(value map[string]*Sink) *pdelta.Op {
 	return pdelta.Set(b.location, value)
 }

@@ -3,6 +3,7 @@ package pdelta_tests
 import (
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"strings"
 	"testing"
 
@@ -33,7 +34,7 @@ func TestTransformRandomCases(t *testing.T) {
 
 func TestTransformRandom(t *testing.T) {
 
-	const run = false
+	const run = true
 	const write = false
 
 	if run {
@@ -47,7 +48,20 @@ func TestTransformRandom(t *testing.T) {
 	sbj.WriteString("[")
 	for i := 0; i < 10000; i++ {
 
-		ops := fuzzer.List(p, 2)
+		var ops []*pdelta.Op
+		switch rand.Intn(3) {
+		case 0:
+			// two independent random ops
+			ops = fuzzer.List(p, 2)
+		case 1:
+			// two ops adjacent in the gather order - frequently act on the same value or collection
+			ops = fuzzer.Adjacent(p)
+		default:
+			// adversarial mode: op2 biased to conflict with op1. Both ops are valid on the same state, as
+			// transform requires.
+			op1 := fuzzer.Get(p)
+			ops = []*pdelta.Op{op1, fuzzer.GetRelated(p, op1)}
+		}
 
 		testCase := &TransformTestCase{
 			Name: petname.Generate(3, "-"),

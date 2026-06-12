@@ -171,6 +171,7 @@ class Person extends $pb.GeneratedMessage {
     ..aOM<$1.Shirt>(17, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'shirt', subBuilder: $1.Shirt.create)
     ..aOM<$2.Pants>(18, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'pants', subBuilder: $2.Pants.create)
     ..aOM<Person_Embed_Double>(19, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'double', subBuilder: Person_Embed_Double.create)
+    ..aOM<Sink>(20, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'sink', subBuilder: Sink.create)
     ..hasRequiredFields = false
   ;
 
@@ -355,6 +356,112 @@ class Person extends $pb.GeneratedMessage {
   void clearDouble_19() => clearField(19);
   @$pb.TagNumber(19)
   Person_Embed_Double ensureDouble_19() => $_ensure(17);
+
+  @$pb.TagNumber(20)
+  Sink get sink => $_getN(18);
+  @$pb.TagNumber(20)
+  set sink(Sink v) { setField(20, v); }
+  @$pb.TagNumber(20)
+  $core.bool hasSink() => $_has(18);
+  @$pb.TagNumber(20)
+  void clearSink() => clearField(20);
+  @$pb.TagNumber(20)
+  Sink ensureSink() => $_ensure(18);
+}
+
+class Sink extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'Sink', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'pdelta_tests'), createEmptyInstance: create)
+    ..a<$core.List<$core.int>>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'blob', $pb.PbFieldType.OY)
+    ..a<$core.int>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'sint', $pb.PbFieldType.OS3)
+    ..a<$fixnum.Int64>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'sfixed', $pb.PbFieldType.OSF6, defaultOrMaker: $fixnum.Int64.ZERO)
+    ..a<$core.int>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'fixed', $pb.PbFieldType.OF3)
+    ..a<$fixnum.Int64>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'ulong', $pb.PbFieldType.OU6, defaultOrMaker: $fixnum.Int64.ZERO)
+    ..m<$core.bool, $core.String>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'boolMap', protoName: 'boolMap', entryClassName: 'Sink.BoolMapEntry', keyFieldType: $pb.PbFieldType.OB, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('pdelta_tests'))
+    ..m<$core.int, Item>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'uintMap', protoName: 'uintMap', entryClassName: 'Sink.UintMapEntry', keyFieldType: $pb.PbFieldType.OU3, valueFieldType: $pb.PbFieldType.OM, valueCreator: Item.create, packageName: const $pb.PackageName('pdelta_tests'))
+    ..p<$core.double>(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'dblList', $pb.PbFieldType.PD, protoName: 'dblList')
+    ..p<$core.bool>(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'boolList', $pb.PbFieldType.PB, protoName: 'boolList')
+    ..hasRequiredFields = false
+  ;
+
+  Sink._() : super();
+  factory Sink() => create();
+  factory Sink.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory Sink.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  Sink clone() => Sink()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  Sink copyWith(void Function(Sink) updates) => super.copyWith((message) => updates(message as Sink)); // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static Sink create() => Sink._();
+  Sink createEmptyInstance() => create();
+  static $pb.PbList<Sink> createRepeated() => $pb.PbList<Sink>();
+  @$core.pragma('dart2js:noInline')
+  static Sink getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Sink>(create);
+  static Sink _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.List<$core.int> get blob => $_getN(0);
+  @$pb.TagNumber(1)
+  set blob($core.List<$core.int> v) { $_setBytes(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasBlob() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearBlob() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.int get sint => $_getIZ(1);
+  @$pb.TagNumber(2)
+  set sint($core.int v) { $_setSignedInt32(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasSint() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearSint() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $fixnum.Int64 get sfixed => $_getI64(2);
+  @$pb.TagNumber(3)
+  set sfixed($fixnum.Int64 v) { $_setInt64(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasSfixed() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearSfixed() => clearField(3);
+
+  @$pb.TagNumber(4)
+  $core.int get fixed => $_getIZ(3);
+  @$pb.TagNumber(4)
+  set fixed($core.int v) { $_setUnsignedInt32(3, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasFixed() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearFixed() => clearField(4);
+
+  @$pb.TagNumber(5)
+  $fixnum.Int64 get ulong => $_getI64(4);
+  @$pb.TagNumber(5)
+  set ulong($fixnum.Int64 v) { $_setInt64(4, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasUlong() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearUlong() => clearField(5);
+
+  @$pb.TagNumber(6)
+  $core.Map<$core.bool, $core.String> get boolMap => $_getMap(5);
+
+  @$pb.TagNumber(7)
+  $core.Map<$core.int, Item> get uintMap => $_getMap(6);
+
+  @$pb.TagNumber(8)
+  $core.List<$core.double> get dblList => $_getList(7);
+
+  @$pb.TagNumber(9)
+  $core.List<$core.bool> get boolList => $_getList(8);
 }
 
 class Company extends $pb.GeneratedMessage {

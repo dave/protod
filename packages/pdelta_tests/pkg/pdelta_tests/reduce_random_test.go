@@ -58,7 +58,13 @@ func TestRandomMultiReduce(t *testing.T) {
 		numOps := 3 + i%4
 		var ops []*pdelta.Op
 		for j := 0; j < numOps; j++ {
-			op := fuzzer.Get(p)
+			var op *pdelta.Op
+			if j > 0 && rand.Intn(2) == 0 {
+				// adversarial mode: generate an op that is biased to conflict with an earlier op
+				op = fuzzer.GetRelated(p, ops[rand.Intn(j)])
+			} else {
+				op = fuzzer.Get(p)
+			}
 			if err := pdelta.Apply(op, p); err != nil {
 				t.Fatal(err)
 			}
@@ -103,14 +109,20 @@ func TestRandomReduce(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		op2 := fuzzer.Get(p)
+		var op2 *pdelta.Op
+		if rand.Intn(2) == 0 {
+			// adversarial mode: generate an op that is biased to conflict with op1
+			op2 = fuzzer.GetRelated(p, op1)
+		} else {
+			op2 = fuzzer.Get(p)
+		}
 		if err := pdelta.Apply(op2, p); err != nil {
 			t.Fatal(err)
 		}
 
 		opMerged := pdelta.Reduce(pdelta.Compound(op1, op2))
 		if err := pdelta.Apply(opMerged, pAfterMerged); err != nil {
-			t.Fatal(fmt.Sprintf("error applying merged operation: %v\n\nop1: %v\nop2: %v,\nmerged: %v\ndata: %v", err, op1.Debug(), op2.Debug(), opMerged.Debug(), mustJson(pAfterMerged)))
+			t.Fatal(fmt.Sprintf("error applying merged operation: %v\n\nop1: %v\nop2: %v,\nmerged: %v\ndata: %v", err, op1.Debug(), op2.Debug(), opMerged.Debug(), mustJson(pBefore)))
 		}
 
 		var writeThisItem bool
@@ -119,12 +131,14 @@ func TestRandomReduce(t *testing.T) {
 				writeThisItem = true
 				zero++
 			} else if len(opMerged.Flatten()) == 1 {
-				writeThisItem = true
+				writeThisItem = rand.Float64() < 0.3
 				one++
 			} else if len(opMerged.Flatten()) == 2 {
-				if rand.Float64() > 0.9 {
-					// only emit 10% of the instances where the operations weren't merged because there's 10x as many
-					writeThisItem = true
+				if fuzzer.Related(op1, op2) {
+					// keep conflicting pairs preferentially - they exercise the rare branches
+					writeThisItem = rand.Float64() < 0.12
+				} else {
+					writeThisItem = rand.Float64() < 0.04
 				}
 				two++
 			} else {

@@ -34,7 +34,7 @@ func TestRandomApplyCases(t *testing.T) {
 
 func TestRandomApply(t *testing.T) {
 
-	const run = false
+	const run = true
 	const write = false
 
 	if run {

@@ -52,6 +52,9 @@ class Op_root_type {
   Person_Embed_Double_Foo_oneof get person_embed_double_foo {
     return Person_Embed_Double_Foo_oneof([]);
   }
+  Sink_type get sink {
+    return Sink_type([]);
+  }
 }
 
 class Case_type extends pdelta.Location {
@@ -899,6 +902,9 @@ class Person_type extends pdelta.Location {
   Person_Embed_Double_type get double {
     return Person_Embed_Double_type(pdelta.copyAndAppendField(location, "pdelta_tests.Person", "double", 19));
   }
+  Sink_type get sink {
+    return Sink_type(pdelta.copyAndAppendField(location, "pdelta_tests.Person", "sink", 20));
+  }
   pdelta.Op delete() {
     return pdelta.delete(location);
   }
@@ -1539,6 +1545,182 @@ class Person_Type_string_map extends pdelta.Location {
 
 }
 
+class Sink_type extends pdelta.Location {
+  Sink_type(List<pdelta.Locator> location) : super(location);
+  pkg_pdelta_pdelta_pdelta.Bytes_scalar get blob {
+    return pkg_pdelta_pdelta_pdelta.Bytes_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.Sink", "blob", 1));
+  }
+  pkg_pdelta_pdelta_pdelta.Sint32_scalar get sint {
+    return pkg_pdelta_pdelta_pdelta.Sint32_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.Sink", "sint", 2));
+  }
+  pkg_pdelta_pdelta_pdelta.Sfixed64_scalar get sfixed {
+    return pkg_pdelta_pdelta_pdelta.Sfixed64_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.Sink", "sfixed", 3));
+  }
+  pkg_pdelta_pdelta_pdelta.Fixed32_scalar get fixed {
+    return pkg_pdelta_pdelta_pdelta.Fixed32_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.Sink", "fixed", 4));
+  }
+  pkg_pdelta_pdelta_pdelta.Uint64_scalar get ulong {
+    return pkg_pdelta_pdelta_pdelta.Uint64_scalar(pdelta.copyAndAppendField(location, "pdelta_tests.Sink", "ulong", 5));
+  }
+  pkg_pdelta_pdelta_pdelta.String_bool_map get boolMap {
+    return pkg_pdelta_pdelta_pdelta.String_bool_map(pdelta.copyAndAppendField(location, "pdelta_tests.Sink", "boolMap", 6));
+  }
+  Item_uint32_map get uintMap {
+    return Item_uint32_map(pdelta.copyAndAppendField(location, "pdelta_tests.Sink", "uintMap", 7));
+  }
+  pkg_pdelta_pdelta_pdelta.Double_list get dblList {
+    return pkg_pdelta_pdelta_pdelta.Double_list(pdelta.copyAndAppendField(location, "pdelta_tests.Sink", "dblList", 8));
+  }
+  pkg_pdelta_pdelta_pdelta.Bool_list get boolList {
+    return pkg_pdelta_pdelta_pdelta.Bool_list(pdelta.copyAndAppendField(location, "pdelta_tests.Sink", "boolList", 9));
+  }
+  pdelta.Op delete() {
+    return pdelta.delete(location);
+  }
+
+  pdelta.Op set(pb.Sink value) {
+    return pdelta.set(location, value);
+  }
+
+}
+
+class Sink_list extends pdelta.Location {
+  Sink_list(List<pdelta.Locator> location) : super(location);
+  Sink_type index(int i) {
+    return Sink_type(pdelta.copyAndAppendIndex(location, fixnum.Int64(i)));
+  }
+  pdelta.Op insert(int index, pb.Sink value) {
+    return pdelta.insert(pdelta.copyAndAppendIndex(location, fixnum.Int64(index)), value);
+  }
+
+  pdelta.Op move(int from, int to) {
+    return pdelta.move(pdelta.copyAndAppendIndex(location, fixnum.Int64(from)), fixnum.Int64(to));
+  }
+
+  pdelta.Op delete() {
+    return pdelta.delete(location);
+  }
+
+  pdelta.Op set(List<pb.Sink> value) {
+    return pdelta.set(location, value);
+  }
+
+}
+
+class Sink_bool_map extends pdelta.Location {
+  Sink_bool_map(List<pdelta.Locator> location) : super(location);
+  Sink_type key(bool key) {
+    return Sink_type(pdelta.copyAndAppendKeyBool(location, key));
+  }
+  pdelta.Op rename(bool from, bool to) {
+    return pdelta.rename(pdelta.copyAndAppendKeyBool(location, from), pdelta.keyBool(to));
+  }
+
+  pdelta.Op delete() {
+    return pdelta.delete(location);
+  }
+
+  pdelta.Op set(Map<bool, pb.Sink> value) {
+    return pdelta.set(location, value);
+  }
+
+}
+
+class Sink_int32_map extends pdelta.Location {
+  Sink_int32_map(List<pdelta.Locator> location) : super(location);
+  Sink_type key(int key) {
+    return Sink_type(pdelta.copyAndAppendKeyInt32(location, key));
+  }
+  pdelta.Op rename(int from, int to) {
+    return pdelta.rename(pdelta.copyAndAppendKeyInt32(location, from), pdelta.keyInt32(to));
+  }
+
+  pdelta.Op delete() {
+    return pdelta.delete(location);
+  }
+
+  pdelta.Op set(Map<int, pb.Sink> value) {
+    return pdelta.set(location, value);
+  }
+
+}
+
+class Sink_int64_map extends pdelta.Location {
+  Sink_int64_map(List<pdelta.Locator> location) : super(location);
+  Sink_type key(int key) {
+    return Sink_type(pdelta.copyAndAppendKeyInt64(location, fixnum.Int64(key)));
+  }
+  pdelta.Op rename(int from, int to) {
+    return pdelta.rename(pdelta.copyAndAppendKeyInt64(location, fixnum.Int64(from)), pdelta.keyInt64(fixnum.Int64(to)));
+  }
+
+  pdelta.Op delete() {
+    return pdelta.delete(location);
+  }
+
+  pdelta.Op set(Map<fixnum.Int64, pb.Sink> value) {
+    return pdelta.set(location, value);
+  }
+
+}
+
+class Sink_uint32_map extends pdelta.Location {
+  Sink_uint32_map(List<pdelta.Locator> location) : super(location);
+  Sink_type key(int key) {
+    return Sink_type(pdelta.copyAndAppendKeyUint32(location, key));
+  }
+  pdelta.Op rename(int from, int to) {
+    return pdelta.rename(pdelta.copyAndAppendKeyUint32(location, from), pdelta.keyUint32(to));
+  }
+
+  pdelta.Op delete() {
+    return pdelta.delete(location);
+  }
+
+  pdelta.Op set(Map<int, pb.Sink> value) {
+    return pdelta.set(location, value);
+  }
+
+}
+
+class Sink_uint64_map extends pdelta.Location {
+  Sink_uint64_map(List<pdelta.Locator> location) : super(location);
+  Sink_type key(int key) {
+    return Sink_type(pdelta.copyAndAppendKeyUint64(location, fixnum.Int64(key)));
+  }
+  pdelta.Op rename(int from, int to) {
+    return pdelta.rename(pdelta.copyAndAppendKeyUint64(location, fixnum.Int64(from)), pdelta.keyUint64(fixnum.Int64(to)));
+  }
+
+  pdelta.Op delete() {
+    return pdelta.delete(location);
+  }
+
+  pdelta.Op set(Map<fixnum.Int64, pb.Sink> value) {
+    return pdelta.set(location, value);
+  }
+
+}
+
+class Sink_string_map extends pdelta.Location {
+  Sink_string_map(List<pdelta.Locator> location) : super(location);
+  Sink_type key(String key) {
+    return Sink_type(pdelta.copyAndAppendKeyString(location, key));
+  }
+  pdelta.Op rename(String from, String to) {
+    return pdelta.rename(pdelta.copyAndAppendKeyString(location, from), pdelta.keyString(to));
+  }
+
+  pdelta.Op delete() {
+    return pdelta.delete(location);
+  }
+
+  pdelta.Op set(Map<String, pb.Sink> value) {
+    return pdelta.set(location, value);
+  }
+
+}
+
 var _initialised = false;
 void init() {
   if (_initialised) {
@@ -1554,6 +1736,7 @@ void init() {
     pkg_pdelta_tests_pdelta_tests_pdelta_tests.Person(),
     pkg_pdelta_tests_pdelta_tests_pdelta_tests.Person_Embed(),
     pkg_pdelta_tests_pdelta_tests_pdelta_tests.Person_Embed_Double(),
+    pkg_pdelta_tests_pdelta_tests_pdelta_tests.Sink(),
     pkg_pdelta_tests_clothes_pdelta_tests_clothes_pdelta_tests_clothes.Shirt(),
     pkg_pdelta_tests_clothes_pdelta_tests_clothes_pants_pants.Pants(),
   ]);
@@ -1568,6 +1751,7 @@ final typeRegistry = protobuf.TypeRegistry([
   pkg_pdelta_tests_pdelta_tests_pdelta_tests.Person(),
   pkg_pdelta_tests_pdelta_tests_pdelta_tests.Person_Embed(),
   pkg_pdelta_tests_pdelta_tests_pdelta_tests.Person_Embed_Double(),
+  pkg_pdelta_tests_pdelta_tests_pdelta_tests.Sink(),
   pkg_pdelta_tests_clothes_pdelta_tests_clothes_pdelta_tests_clothes.Shirt(),
   pkg_pdelta_tests_clothes_pdelta_tests_clothes_pants_pants.Pants(),
 ]);
