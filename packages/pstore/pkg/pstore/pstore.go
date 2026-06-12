@@ -15,7 +15,7 @@ import (
 type StateId string
 type DocumentId string
 
-// During an edit request we transform the operations in order that client and server both converge on the same value:
+// Edit transforms the operations in order that client and server both converge on the same value:
 //
 //       A (server & client) -> o
 //                             / \
