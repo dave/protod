@@ -1,1 +1,8 @@
-runtime: go111
+runtime: go124
+
+# Required to use the legacy bundled services (memcache) from a second-generation runtime via
+# google.golang.org/appengine/v2. The free shared memcache is available again on modern runtimes.
+app_engine_apis: true
+
+# Path to the main package, relative to the directory containing go.mod (the repository root).
+main: ./packages/pstore_tests/pkg/pstore_tests/main

@@ -7,7 +7,7 @@ import (
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
 	"github.com/dave/protod/packages/perr/pkg/perr"
 	"github.com/dave/protod/packages/pserver/pkg/pserver"
-	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2"
+	taskspb "cloud.google.com/go/cloudtasks/apiv2/cloudtaskspb"
 	"google.golang.org/protobuf/proto"
 )
 

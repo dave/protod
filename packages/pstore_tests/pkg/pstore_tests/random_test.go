@@ -10,7 +10,7 @@ import (
 	"github.com/dave/protod/packages/pdelta/pkg/pdelta"
 	"github.com/dave/protod/packages/pdelta_tests/pkg/pdelta_tests"
 	"github.com/dave/protod/packages/perr/pkg/perr"
-	"github.com/dave/protod/packages/pfuzzer/pkg/pfuzzer"
+	"github.com/dave/protod/packages/pdelta_tests/pkg/pdelta_tests/fuzzer"
 	"github.com/dave/protod/packages/pserver/pkg/pserver"
 	"github.com/dave/protod/packages/pstore/pkg/pstore"
 	"google.golang.org/protobuf/proto"
@@ -84,7 +84,7 @@ func (u *RandomUser) Get(id pstore.DocumentId) {
 func (u *RandomUser) Edit() {
 	var ops []*pdelta.Op
 	for i := 0; i < rand.Intn(RANDOM_MAX_OPS)+1; i++ {
-		op := pfuzzer.Get(u.document)
+		op := fuzzer.Get(u.document)
 		ops = append(ops, op)
 		if err := pdelta.Apply(op, u.document); err != nil {
 			u.t.Fatal(err)

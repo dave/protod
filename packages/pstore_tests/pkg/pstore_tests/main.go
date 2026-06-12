@@ -12,7 +12,7 @@ import (
 	"github.com/dave/protod/packages/perr/pkg/perr"
 	"github.com/dave/protod/packages/pserver/pkg/pserver"
 	"github.com/dave/protod/packages/pstore/pkg/pstore"
-	"google.golang.org/appengine"
+	"google.golang.org/appengine/v2"
 	"google.golang.org/protobuf/proto"
 )
 
