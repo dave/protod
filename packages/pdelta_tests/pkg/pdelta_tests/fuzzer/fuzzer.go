@@ -648,9 +648,8 @@ func randomString() string {
 	return string(b)
 }
 
-// randomBytes is never empty: the protobuf-dart 1.x runtime drops the oneof case when decoding an empty
-// bytes value from JSON, so a scalar op with empty bytes arrives in Dart with no variant set. Allow empty
-// bytes after upgrading protobuf-dart.
+// randomBytes is never empty: the protobuf-dart runtime (still in 2.1) drops the oneof case when decoding an
+// empty bytes value from JSON, so a scalar op with empty bytes arrives in Dart with no variant set.
 func randomBytes() []byte {
 	b := []byte(randomString())
 	if len(b) == 0 {
@@ -675,10 +674,7 @@ func randomInt64() int64 {
 
 func randomUint32() uint32 {
 	if rand.Intn(20) == 0 {
-		// The maximum edge value is capped at 2^31-1 rather than 2^32-1: the protobuf-dart 1.x runtime
-		// validates fixed32 JSON values with the signed 32 bit check, so larger values fail to parse in Dart.
-		// Raise to 4294967295 after upgrading protobuf-dart.
-		return []uint32{0, 1, 2147483647}[rand.Intn(3)]
+		return []uint32{0, 1, 2147483647, 4294967295}[rand.Intn(4)]
 	}
 	return uint32(rand.Intn(1024))
 }
@@ -693,9 +689,10 @@ func randomUint64() uint64 {
 func randomFloat32() float32 {
 	if rand.Intn(4) == 0 {
 		// Fractional values restricted to multiples of 1/4. The Go runtime truncates float fields to float32
-		// and protojson prints the shortest decimal that round trips as float32, but the Dart runtime stores
-		// the parsed double unrounded - so any value whose shortest float32 decimal is not its exact expansion
-		// diverges between the binary (Any packed) and JSON paths in Dart. Quarters print exactly.
+		// and protojson prints the shortest decimal that round trips as float32, but the Dart runtime (still
+		// in protobuf 2.1) stores the parsed double unrounded - so any value whose shortest float32 decimal
+		// is not its exact expansion diverges between the binary (Any packed) and JSON paths in Dart.
+		// Quarters print exactly.
 		return float32(rand.Intn(2048*4))/4 - 1024
 	}
 	return float32(rand.Intn(2048) - 1024)

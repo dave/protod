@@ -6,8 +6,8 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
-  protobuf: ^1.0.1
-  fixnum: ^0.10.11
+  protobuf: ^2.1.0
+  fixnum: ^1.0.0
   hive: ^1.4.1
   pdelta:
     path: ../pdelta

@@ -2,9 +2,13 @@
 //  Generated code. Do not modify.
 //  source: pdelta/pdelta.proto
 //
-// @dart = 2.3
-// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
+// @dart = 2.12
+// ignore_for_file: annotate_overrides,camel_case_types,constant_identifier_names,deprecated_member_use_from_same_package,directives_ordering,library_prefixes,non_constant_identifier_names,prefer_final_fields,return_of_invalid_type,unnecessary_const,unnecessary_import,unnecessary_this,unused_import,unused_shown_name
 
+import 'dart:core' as $core;
+import 'dart:convert' as $convert;
+import 'dart:typed_data' as $typed_data;
+@$core.Deprecated('Use opDescriptor instead')
 const Op$json = const {
   '1': 'Op',
   '2': const [
@@ -24,6 +28,7 @@ const Op$json = const {
   ],
 };
 
+@$core.Deprecated('Use opDescriptor instead')
 const Op_Type$json = const {
   '1': 'Type',
   '2': const [
@@ -38,6 +43,9 @@ const Op_Type$json = const {
   ],
 };
 
+/// Descriptor for `Op`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List opDescriptor = $convert.base64Decode('CgJPcBIjCgR0eXBlGAEgASgOMg8ucGRlbHRhLk9wLlR5cGVSBHR5cGUSKwoIbG9jYXRpb24YAiADKAsyDy5wZGVsdGEuTG9jYXRvclIIbG9jYXRpb24SHAoDb3BzGAMgAygLMgoucGRlbHRhLk9wUgNvcHMSKAoGc2NhbGFyGAQgASgLMg4ucGRlbHRhLlNjYWxhckgAUgZzY2FsYXISMAoHbWVzc2FnZRgGIAEoCzIULmdvb2dsZS5wcm90b2J1Zi5BbnlIAFIHbWVzc2FnZRIuCghmcmFnbWVudBgHIAEoCzIQLnBkZWx0YS5GcmFnbWVudEgAUghmcmFnbWVudBIlCgVkZWx0YRgIIAEoCzINLnBkZWx0YS5EZWx0YUgAUgVkZWx0YRIWCgVpbmRleBgJIAEoA0gAUgVpbmRleBIfCgNrZXkYCiABKAsyCy5wZGVsdGEuS2V5SABSA2tleSJfCgRUeXBlEggKBE51bGwQABIHCgNTZXQQARIICgRFZGl0EAISCgoGSW5zZXJ0EAMSCAoETW92ZRAEEgoKBlJlbmFtZRAFEgoKBkRlbGV0ZRAGEgwKCENvbXBvdW5kEAdCBwoFdmFsdWU=');
+@$core.Deprecated('Use locatorDescriptor instead')
 const Locator$json = const {
   '1': 'Locator',
   '2': const [
@@ -51,6 +59,9 @@ const Locator$json = const {
   ],
 };
 
+/// Descriptor for `Locator`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List locatorDescriptor = $convert.base64Decode('CgdMb2NhdG9yEiUKBWZpZWxkGAEgASgLMg0ucGRlbHRhLkZpZWxkSABSBWZpZWxkEhYKBWluZGV4GAIgASgDSABSBWluZGV4Eh8KA2tleRgDIAEoCzILLnBkZWx0YS5LZXlIAFIDa2V5EiUKBW9uZW9mGAQgASgLMg0ucGRlbHRhLk9uZW9mSABSBW9uZW9mQgMKAXY=');
+@$core.Deprecated('Use keyDescriptor instead')
 const Key$json = const {
   '1': 'Key',
   '2': const [
@@ -66,6 +77,9 @@ const Key$json = const {
   ],
 };
 
+/// Descriptor for `Key`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List keyDescriptor = $convert.base64Decode('CgNLZXkSFAoEYm9vbBgBIAEoCEgAUgRib29sEhYKBWludDMyGAIgASgFSABSBWludDMyEhYKBWludDY0GAMgASgDSABSBWludDY0EhgKBnVpbnQzMhgEIAEoDUgAUgZ1aW50MzISGAoGdWludDY0GAUgASgESABSBnVpbnQ2NBIYCgZzdHJpbmcYBiABKAlIAFIGc3RyaW5nQgMKAXY=');
+@$core.Deprecated('Use fieldDescriptor instead')
 const Field$json = const {
   '1': 'Field',
   '2': const [
@@ -75,6 +89,9 @@ const Field$json = const {
   ],
 };
 
+/// Descriptor for `Field`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List fieldDescriptor = $convert.base64Decode('CgVGaWVsZBISCgRuYW1lGAEgASgJUgRuYW1lEhYKBm51bWJlchgCIAEoBVIGbnVtYmVyEioKEW1lc3NhZ2VfZnVsbF9uYW1lGAMgASgJUg9tZXNzYWdlRnVsbE5hbWU=');
+@$core.Deprecated('Use oneofDescriptor instead')
 const Oneof$json = const {
   '1': 'Oneof',
   '2': const [
@@ -83,6 +100,9 @@ const Oneof$json = const {
   ],
 };
 
+/// Descriptor for `Oneof`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List oneofDescriptor = $convert.base64Decode('CgVPbmVvZhISCgRuYW1lGAEgASgJUgRuYW1lEiUKBmZpZWxkcxgCIAMoCzINLnBkZWx0YS5GaWVsZFIGZmllbGRz');
+@$core.Deprecated('Use scalarDescriptor instead')
 const Scalar$json = const {
   '1': 'Scalar',
   '2': const [
@@ -108,6 +128,9 @@ const Scalar$json = const {
   ],
 };
 
+/// Descriptor for `Scalar`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List scalarDescriptor = $convert.base64Decode('CgZTY2FsYXISGAoGZG91YmxlGAEgASgBSABSBmRvdWJsZRIWCgVmbG9hdBgCIAEoAkgAUgVmbG9hdBIWCgVpbnQzMhgDIAEoBUgAUgVpbnQzMhIWCgVpbnQ2NBgEIAEoA0gAUgVpbnQ2NBIYCgZ1aW50MzIYBSABKA1IAFIGdWludDMyEhgKBnVpbnQ2NBgGIAEoBEgAUgZ1aW50NjQSGAoGc2ludDMyGAcgASgRSABSBnNpbnQzMhIYCgZzaW50NjQYCCABKBJIAFIGc2ludDY0EhoKB2ZpeGVkMzIYCSABKAdIAFIHZml4ZWQzMhIaCgdmaXhlZDY0GAogASgGSABSB2ZpeGVkNjQSHAoIc2ZpeGVkMzIYCyABKA9IAFIIc2ZpeGVkMzISHAoIc2ZpeGVkNjQYDCABKBBIAFIIc2ZpeGVkNjQSFAoEYm9vbBgNIAEoCEgAUgRib29sEhgKBnN0cmluZxgOIAEoCUgAUgZzdHJpbmcSFgoFYnl0ZXMYDyABKAxIAFIFYnl0ZXMSFAoEZW51bRgQIAEoBUgAUgRlbnVtQgMKAXY=');
+@$core.Deprecated('Use deltaDescriptor instead')
 const Delta$json = const {
   '1': 'Delta',
   '2': const [
@@ -118,6 +141,9 @@ const Delta$json = const {
   ],
 };
 
+/// Descriptor for `Delta`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List deltaDescriptor = $convert.base64Decode('CgVEZWx0YRIqCgVxdWlsbBgBIAEoCzISLnBkZWx0YS5RdWlsbERlbHRhSABSBXF1aWxsQgMKAXY=');
+@$core.Deprecated('Use quillDeltaDescriptor instead')
 const QuillDelta$json = const {
   '1': 'QuillDelta',
   '2': const [
@@ -125,6 +151,9 @@ const QuillDelta$json = const {
   ],
 };
 
+/// Descriptor for `QuillDelta`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List quillDeltaDescriptor = $convert.base64Decode('CgpRdWlsbERlbHRhEh8KA29wcxgBIAMoCzINLnBkZWx0YS5RdWlsbFIDb3Bz');
+@$core.Deprecated('Use quillDescriptor instead')
 const Quill$json = const {
   '1': 'Quill',
   '2': const [
@@ -138,6 +167,9 @@ const Quill$json = const {
   ],
 };
 
+/// Descriptor for `Quill`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List quillDescriptor = $convert.base64Decode('CgVRdWlsbBIYCgZpbnNlcnQYASABKAlIAFIGaW5zZXJ0EhgKBnJldGFpbhgCIAEoA0gAUgZyZXRhaW4SGAoGZGVsZXRlGAMgASgDSABSBmRlbGV0ZRI3CgphdHRyaWJ1dGVzGAQgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdFIKYXR0cmlidXRlc0IDCgF2');
+@$core.Deprecated('Use fragmentDescriptor instead')
 const Fragment$json = const {
   '1': 'Fragment',
   '2': const [
@@ -146,3 +178,5 @@ const Fragment$json = const {
   ],
 };
 
+/// Descriptor for `Fragment`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List fragmentDescriptor = $convert.base64Decode('CghGcmFnbWVudBIjCgVmaWVsZBgBIAEoCzINLnBkZWx0YS5GaWVsZFIFZmllbGQSLgoHbWVzc2FnZRgCIAEoCzIULmdvb2dsZS5wcm90b2J1Zi5BbnlSB21lc3NhZ2U=');

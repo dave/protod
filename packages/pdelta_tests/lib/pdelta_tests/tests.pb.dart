@@ -2,8 +2,8 @@
 //  Generated code. Do not modify.
 //  source: pdelta_tests/tests.proto
 //
-// @dart = 2.3
-// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
+// @dart = 2.12
+// ignore_for_file: annotate_overrides,camel_case_types,constant_identifier_names,directives_ordering,library_prefixes,non_constant_identifier_names,prefer_final_fields,return_of_invalid_type,unnecessary_const,unnecessary_import,unnecessary_this,unused_import,unused_shown_name
 
 import 'dart:core' as $core;
 
@@ -41,7 +41,23 @@ class Person_Embed_Double extends $pb.GeneratedMessage {
   ;
 
   Person_Embed_Double._() : super();
-  factory Person_Embed_Double() => create();
+  factory Person_Embed_Double({
+    $core.String? name,
+    $core.String? bar,
+    $fixnum.Int64? baz,
+  }) {
+    final _result = create();
+    if (name != null) {
+      _result.name = name;
+    }
+    if (bar != null) {
+      _result.bar = bar;
+    }
+    if (baz != null) {
+      _result.baz = baz;
+    }
+    return _result;
+  }
   factory Person_Embed_Double.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory Person_Embed_Double.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -53,7 +69,7 @@ class Person_Embed_Double extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Person_Embed_Double copyWith(void Function(Person_Embed_Double) updates) => super.copyWith((message) => updates(message as Person_Embed_Double)); // ignore: deprecated_member_use
+  Person_Embed_Double copyWith(void Function(Person_Embed_Double) updates) => super.copyWith((message) => updates(message as Person_Embed_Double)) as Person_Embed_Double; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Person_Embed_Double create() => Person_Embed_Double._();
@@ -61,9 +77,9 @@ class Person_Embed_Double extends $pb.GeneratedMessage {
   static $pb.PbList<Person_Embed_Double> createRepeated() => $pb.PbList<Person_Embed_Double>();
   @$core.pragma('dart2js:noInline')
   static Person_Embed_Double getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Person_Embed_Double>(create);
-  static Person_Embed_Double _defaultInstance;
+  static Person_Embed_Double? _defaultInstance;
 
-  Person_Embed_Double_Foo whichFoo() => _Person_Embed_Double_FooByTag[$_whichOneof(0)];
+  Person_Embed_Double_Foo whichFoo() => _Person_Embed_Double_FooByTag[$_whichOneof(0)]!;
   void clearFoo() => clearField($_whichOneof(0));
 
   @$pb.TagNumber(1)
@@ -101,7 +117,15 @@ class Person_Embed extends $pb.GeneratedMessage {
   ;
 
   Person_Embed._() : super();
-  factory Person_Embed() => create();
+  factory Person_Embed({
+    $core.String? name,
+  }) {
+    final _result = create();
+    if (name != null) {
+      _result.name = name;
+    }
+    return _result;
+  }
   factory Person_Embed.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory Person_Embed.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -113,7 +137,7 @@ class Person_Embed extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Person_Embed copyWith(void Function(Person_Embed) updates) => super.copyWith((message) => updates(message as Person_Embed)); // ignore: deprecated_member_use
+  Person_Embed copyWith(void Function(Person_Embed) updates) => super.copyWith((message) => updates(message as Person_Embed)) as Person_Embed; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Person_Embed create() => Person_Embed._();
@@ -121,7 +145,7 @@ class Person_Embed extends $pb.GeneratedMessage {
   static $pb.PbList<Person_Embed> createRepeated() => $pb.PbList<Person_Embed>();
   @$core.pragma('dart2js:noInline')
   static Person_Embed getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Person_Embed>(create);
-  static Person_Embed _defaultInstance;
+  static Person_Embed? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get name => $_getSZ(0);
@@ -159,8 +183,8 @@ class Person extends $pb.GeneratedMessage {
     ..aOM<Company>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'company', subBuilder: Company.create)
     ..pPS(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'alias')
     ..e<Person_Type>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'type', $pb.PbFieldType.OE, defaultOrMaker: Person_Type.Null, valueOf: Person_Type.valueOf, enumValues: Person_Type.values)
-    ..pc<Person_Type>(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'typeList', $pb.PbFieldType.PE, protoName: 'typeList', valueOf: Person_Type.valueOf, enumValues: Person_Type.values)
-    ..m<$core.String, Person_Type>(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'typeMap', protoName: 'typeMap', entryClassName: 'Person.TypeMapEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OE, valueOf: Person_Type.valueOf, enumValues: Person_Type.values, packageName: const $pb.PackageName('pdelta_tests'))
+    ..pc<Person_Type>(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'typeList', $pb.PbFieldType.KE, protoName: 'typeList', valueOf: Person_Type.valueOf, enumValues: Person_Type.values, defaultEnumValue: Person_Type.Null)
+    ..m<$core.String, Person_Type>(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'typeMap', protoName: 'typeMap', entryClassName: 'Person.TypeMapEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OE, valueOf: Person_Type.valueOf, enumValues: Person_Type.values, defaultEnumValue: Person_Type.Null, packageName: const $pb.PackageName('pdelta_tests'))
     ..aOM<Person_Embed>(10, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'embedded', subBuilder: Person_Embed.create)
     ..aOS(11, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'str')
     ..a<$core.double>(12, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'dbl', $pb.PbFieldType.OD)
@@ -176,7 +200,87 @@ class Person extends $pb.GeneratedMessage {
   ;
 
   Person._() : super();
-  factory Person() => create();
+  factory Person({
+    $core.String? name,
+    $core.int? age,
+    $core.Map<$core.String, Case>? cases,
+    Company? company,
+    $core.Iterable<$core.String>? alias,
+    Person_Type? type,
+    $core.Iterable<Person_Type>? typeList,
+    $core.Map<$core.String, Person_Type>? typeMap,
+    Person_Embed? embedded,
+    $core.String? str,
+    $core.double? dbl,
+    Item? itm,
+    Case? cas,
+    Chooser? cho,
+    $0.House? house,
+    $1.Shirt? shirt,
+    $2.Pants? pants,
+    Person_Embed_Double? double_19,
+    Sink? sink,
+  }) {
+    final _result = create();
+    if (name != null) {
+      _result.name = name;
+    }
+    if (age != null) {
+      _result.age = age;
+    }
+    if (cases != null) {
+      _result.cases.addAll(cases);
+    }
+    if (company != null) {
+      _result.company = company;
+    }
+    if (alias != null) {
+      _result.alias.addAll(alias);
+    }
+    if (type != null) {
+      _result.type = type;
+    }
+    if (typeList != null) {
+      _result.typeList.addAll(typeList);
+    }
+    if (typeMap != null) {
+      _result.typeMap.addAll(typeMap);
+    }
+    if (embedded != null) {
+      _result.embedded = embedded;
+    }
+    if (str != null) {
+      _result.str = str;
+    }
+    if (dbl != null) {
+      _result.dbl = dbl;
+    }
+    if (itm != null) {
+      _result.itm = itm;
+    }
+    if (cas != null) {
+      _result.cas = cas;
+    }
+    if (cho != null) {
+      _result.cho = cho;
+    }
+    if (house != null) {
+      _result.house = house;
+    }
+    if (shirt != null) {
+      _result.shirt = shirt;
+    }
+    if (pants != null) {
+      _result.pants = pants;
+    }
+    if (double_19 != null) {
+      _result.double_19 = double_19;
+    }
+    if (sink != null) {
+      _result.sink = sink;
+    }
+    return _result;
+  }
   factory Person.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory Person.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -188,7 +292,7 @@ class Person extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Person copyWith(void Function(Person) updates) => super.copyWith((message) => updates(message as Person)); // ignore: deprecated_member_use
+  Person copyWith(void Function(Person) updates) => super.copyWith((message) => updates(message as Person)) as Person; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Person create() => Person._();
@@ -196,9 +300,9 @@ class Person extends $pb.GeneratedMessage {
   static $pb.PbList<Person> createRepeated() => $pb.PbList<Person>();
   @$core.pragma('dart2js:noInline')
   static Person getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Person>(create);
-  static Person _defaultInstance;
+  static Person? _defaultInstance;
 
-  Person_Choice whichChoice() => _Person_ChoiceByTag[$_whichOneof(0)];
+  Person_Choice whichChoice() => _Person_ChoiceByTag[$_whichOneof(0)]!;
   void clearChoice() => clearField($_whichOneof(0));
 
   @$pb.TagNumber(1)
@@ -378,13 +482,53 @@ class Sink extends $pb.GeneratedMessage {
     ..a<$fixnum.Int64>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'ulong', $pb.PbFieldType.OU6, defaultOrMaker: $fixnum.Int64.ZERO)
     ..m<$core.bool, $core.String>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'boolMap', protoName: 'boolMap', entryClassName: 'Sink.BoolMapEntry', keyFieldType: $pb.PbFieldType.OB, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('pdelta_tests'))
     ..m<$core.int, Item>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'uintMap', protoName: 'uintMap', entryClassName: 'Sink.UintMapEntry', keyFieldType: $pb.PbFieldType.OU3, valueFieldType: $pb.PbFieldType.OM, valueCreator: Item.create, packageName: const $pb.PackageName('pdelta_tests'))
-    ..p<$core.double>(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'dblList', $pb.PbFieldType.PD, protoName: 'dblList')
-    ..p<$core.bool>(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'boolList', $pb.PbFieldType.PB, protoName: 'boolList')
+    ..p<$core.double>(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'dblList', $pb.PbFieldType.KD, protoName: 'dblList')
+    ..p<$core.bool>(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'boolList', $pb.PbFieldType.KB, protoName: 'boolList')
     ..hasRequiredFields = false
   ;
 
   Sink._() : super();
-  factory Sink() => create();
+  factory Sink({
+    $core.List<$core.int>? blob,
+    $core.int? sint,
+    $fixnum.Int64? sfixed,
+    $core.int? fixed,
+    $fixnum.Int64? ulong,
+    $core.Map<$core.bool, $core.String>? boolMap,
+    $core.Map<$core.int, Item>? uintMap,
+    $core.Iterable<$core.double>? dblList,
+    $core.Iterable<$core.bool>? boolList,
+  }) {
+    final _result = create();
+    if (blob != null) {
+      _result.blob = blob;
+    }
+    if (sint != null) {
+      _result.sint = sint;
+    }
+    if (sfixed != null) {
+      _result.sfixed = sfixed;
+    }
+    if (fixed != null) {
+      _result.fixed = fixed;
+    }
+    if (ulong != null) {
+      _result.ulong = ulong;
+    }
+    if (boolMap != null) {
+      _result.boolMap.addAll(boolMap);
+    }
+    if (uintMap != null) {
+      _result.uintMap.addAll(uintMap);
+    }
+    if (dblList != null) {
+      _result.dblList.addAll(dblList);
+    }
+    if (boolList != null) {
+      _result.boolList.addAll(boolList);
+    }
+    return _result;
+  }
   factory Sink.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory Sink.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -396,7 +540,7 @@ class Sink extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Sink copyWith(void Function(Sink) updates) => super.copyWith((message) => updates(message as Sink)); // ignore: deprecated_member_use
+  Sink copyWith(void Function(Sink) updates) => super.copyWith((message) => updates(message as Sink)) as Sink; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Sink create() => Sink._();
@@ -404,7 +548,7 @@ class Sink extends $pb.GeneratedMessage {
   static $pb.PbList<Sink> createRepeated() => $pb.PbList<Sink>();
   @$core.pragma('dart2js:noInline')
   static Sink getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Sink>(create);
-  static Sink _defaultInstance;
+  static Sink? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.List<$core.int> get blob => $_getN(0);
@@ -474,7 +618,27 @@ class Company extends $pb.GeneratedMessage {
   ;
 
   Company._() : super();
-  factory Company() => create();
+  factory Company({
+    $core.String? name,
+    $core.double? revenue,
+    $core.Map<$fixnum.Int64, $core.String>? flags,
+    Person? ceo,
+  }) {
+    final _result = create();
+    if (name != null) {
+      _result.name = name;
+    }
+    if (revenue != null) {
+      _result.revenue = revenue;
+    }
+    if (flags != null) {
+      _result.flags.addAll(flags);
+    }
+    if (ceo != null) {
+      _result.ceo = ceo;
+    }
+    return _result;
+  }
   factory Company.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory Company.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -486,7 +650,7 @@ class Company extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Company copyWith(void Function(Company) updates) => super.copyWith((message) => updates(message as Company)); // ignore: deprecated_member_use
+  Company copyWith(void Function(Company) updates) => super.copyWith((message) => updates(message as Company)) as Company; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Company create() => Company._();
@@ -494,7 +658,7 @@ class Company extends $pb.GeneratedMessage {
   static $pb.PbList<Company> createRepeated() => $pb.PbList<Company>();
   @$core.pragma('dart2js:noInline')
   static Company getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Company>(create);
-  static Company _defaultInstance;
+  static Company? _defaultInstance;
 
   @$pb.TagNumber(11)
   $core.String get name => $_getSZ(0);
@@ -538,7 +702,23 @@ class Case extends $pb.GeneratedMessage {
   ;
 
   Case._() : super();
-  factory Case() => create();
+  factory Case({
+    $core.String? name,
+    $core.Iterable<Item>? items,
+    $core.Map<$fixnum.Int64, $core.String>? flags,
+  }) {
+    final _result = create();
+    if (name != null) {
+      _result.name = name;
+    }
+    if (items != null) {
+      _result.items.addAll(items);
+    }
+    if (flags != null) {
+      _result.flags.addAll(flags);
+    }
+    return _result;
+  }
   factory Case.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory Case.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -550,7 +730,7 @@ class Case extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Case copyWith(void Function(Case) updates) => super.copyWith((message) => updates(message as Case)); // ignore: deprecated_member_use
+  Case copyWith(void Function(Case) updates) => super.copyWith((message) => updates(message as Case)) as Case; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Case create() => Case._();
@@ -558,7 +738,7 @@ class Case extends $pb.GeneratedMessage {
   static $pb.PbList<Case> createRepeated() => $pb.PbList<Case>();
   @$core.pragma('dart2js:noInline')
   static Case getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Case>(create);
-  static Case _defaultInstance;
+  static Case? _defaultInstance;
 
   @$pb.TagNumber(21)
   $core.String get name => $_getSZ(0);
@@ -585,7 +765,23 @@ class Item extends $pb.GeneratedMessage {
   ;
 
   Item._() : super();
-  factory Item() => create();
+  factory Item({
+    $core.String? title,
+    $core.bool? done,
+    $core.Iterable<$core.String>? flags,
+  }) {
+    final _result = create();
+    if (title != null) {
+      _result.title = title;
+    }
+    if (done != null) {
+      _result.done = done;
+    }
+    if (flags != null) {
+      _result.flags.addAll(flags);
+    }
+    return _result;
+  }
   factory Item.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory Item.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -597,7 +793,7 @@ class Item extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Item copyWith(void Function(Item) updates) => super.copyWith((message) => updates(message as Item)); // ignore: deprecated_member_use
+  Item copyWith(void Function(Item) updates) => super.copyWith((message) => updates(message as Item)) as Item; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Item create() => Item._();
@@ -605,7 +801,7 @@ class Item extends $pb.GeneratedMessage {
   static $pb.PbList<Item> createRepeated() => $pb.PbList<Item>();
   @$core.pragma('dart2js:noInline')
   static Item getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Item>(create);
-  static Item _defaultInstance;
+  static Item? _defaultInstance;
 
   @$pb.TagNumber(31)
   $core.String get title => $_getSZ(0);
@@ -652,7 +848,23 @@ class Chooser extends $pb.GeneratedMessage {
   ;
 
   Chooser._() : super();
-  factory Chooser() => create();
+  factory Chooser({
+    $core.String? str,
+    $core.double? dbl,
+    Item? itm,
+  }) {
+    final _result = create();
+    if (str != null) {
+      _result.str = str;
+    }
+    if (dbl != null) {
+      _result.dbl = dbl;
+    }
+    if (itm != null) {
+      _result.itm = itm;
+    }
+    return _result;
+  }
   factory Chooser.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory Chooser.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -664,7 +876,7 @@ class Chooser extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Chooser copyWith(void Function(Chooser) updates) => super.copyWith((message) => updates(message as Chooser)); // ignore: deprecated_member_use
+  Chooser copyWith(void Function(Chooser) updates) => super.copyWith((message) => updates(message as Chooser)) as Chooser; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Chooser create() => Chooser._();
@@ -672,9 +884,9 @@ class Chooser extends $pb.GeneratedMessage {
   static $pb.PbList<Chooser> createRepeated() => $pb.PbList<Chooser>();
   @$core.pragma('dart2js:noInline')
   static Chooser getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Chooser>(create);
-  static Chooser _defaultInstance;
+  static Chooser? _defaultInstance;
 
-  Chooser_Choice whichChoice() => _Chooser_ChoiceByTag[$_whichOneof(0)];
+  Chooser_Choice whichChoice() => _Chooser_ChoiceByTag[$_whichOneof(0)]!;
   void clearChoice() => clearField($_whichOneof(0));
 
   @$pb.TagNumber(1)
@@ -718,7 +930,31 @@ class ApplyTestCase extends $pb.GeneratedMessage {
   ;
 
   ApplyTestCase._() : super();
-  factory ApplyTestCase() => create();
+  factory ApplyTestCase({
+    $core.bool? solo,
+    $core.String? name,
+    $3.Op? op,
+    $4.Any? data,
+    $4.Any? expected,
+  }) {
+    final _result = create();
+    if (solo != null) {
+      _result.solo = solo;
+    }
+    if (name != null) {
+      _result.name = name;
+    }
+    if (op != null) {
+      _result.op = op;
+    }
+    if (data != null) {
+      _result.data = data;
+    }
+    if (expected != null) {
+      _result.expected = expected;
+    }
+    return _result;
+  }
   factory ApplyTestCase.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory ApplyTestCase.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -730,7 +966,7 @@ class ApplyTestCase extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  ApplyTestCase copyWith(void Function(ApplyTestCase) updates) => super.copyWith((message) => updates(message as ApplyTestCase)); // ignore: deprecated_member_use
+  ApplyTestCase copyWith(void Function(ApplyTestCase) updates) => super.copyWith((message) => updates(message as ApplyTestCase)) as ApplyTestCase; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static ApplyTestCase create() => ApplyTestCase._();
@@ -738,7 +974,7 @@ class ApplyTestCase extends $pb.GeneratedMessage {
   static $pb.PbList<ApplyTestCase> createRepeated() => $pb.PbList<ApplyTestCase>();
   @$core.pragma('dart2js:noInline')
   static ApplyTestCase getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ApplyTestCase>(create);
-  static ApplyTestCase _defaultInstance;
+  static ApplyTestCase? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.bool get solo => $_getBF(0);
@@ -806,7 +1042,43 @@ class TransformTestCase extends $pb.GeneratedMessage {
   ;
 
   TransformTestCase._() : super();
-  factory TransformTestCase() => create();
+  factory TransformTestCase({
+    $core.bool? solo,
+    $core.String? name,
+    $3.Op? op1,
+    $3.Op? op2,
+    $4.Any? data,
+    $4.Any? expected,
+    $4.Any? expected1,
+    $4.Any? expected2,
+  }) {
+    final _result = create();
+    if (solo != null) {
+      _result.solo = solo;
+    }
+    if (name != null) {
+      _result.name = name;
+    }
+    if (op1 != null) {
+      _result.op1 = op1;
+    }
+    if (op2 != null) {
+      _result.op2 = op2;
+    }
+    if (data != null) {
+      _result.data = data;
+    }
+    if (expected != null) {
+      _result.expected = expected;
+    }
+    if (expected1 != null) {
+      _result.expected1 = expected1;
+    }
+    if (expected2 != null) {
+      _result.expected2 = expected2;
+    }
+    return _result;
+  }
   factory TransformTestCase.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory TransformTestCase.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -818,7 +1090,7 @@ class TransformTestCase extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  TransformTestCase copyWith(void Function(TransformTestCase) updates) => super.copyWith((message) => updates(message as TransformTestCase)); // ignore: deprecated_member_use
+  TransformTestCase copyWith(void Function(TransformTestCase) updates) => super.copyWith((message) => updates(message as TransformTestCase)) as TransformTestCase; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static TransformTestCase create() => TransformTestCase._();
@@ -826,7 +1098,7 @@ class TransformTestCase extends $pb.GeneratedMessage {
   static $pb.PbList<TransformTestCase> createRepeated() => $pb.PbList<TransformTestCase>();
   @$core.pragma('dart2js:noInline')
   static TransformTestCase getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<TransformTestCase>(create);
-  static TransformTestCase _defaultInstance;
+  static TransformTestCase? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.bool get solo => $_getBF(0);
@@ -924,7 +1196,31 @@ class ReduceTestCase extends $pb.GeneratedMessage {
   ;
 
   ReduceTestCase._() : super();
-  factory ReduceTestCase() => create();
+  factory ReduceTestCase({
+    $core.bool? solo,
+    $core.String? name,
+    Person? data,
+    $3.Op? op,
+    $3.Op? reduced,
+  }) {
+    final _result = create();
+    if (solo != null) {
+      _result.solo = solo;
+    }
+    if (name != null) {
+      _result.name = name;
+    }
+    if (data != null) {
+      _result.data = data;
+    }
+    if (op != null) {
+      _result.op = op;
+    }
+    if (reduced != null) {
+      _result.reduced = reduced;
+    }
+    return _result;
+  }
   factory ReduceTestCase.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory ReduceTestCase.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -936,7 +1232,7 @@ class ReduceTestCase extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  ReduceTestCase copyWith(void Function(ReduceTestCase) updates) => super.copyWith((message) => updates(message as ReduceTestCase)); // ignore: deprecated_member_use
+  ReduceTestCase copyWith(void Function(ReduceTestCase) updates) => super.copyWith((message) => updates(message as ReduceTestCase)) as ReduceTestCase; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static ReduceTestCase create() => ReduceTestCase._();
@@ -944,7 +1240,7 @@ class ReduceTestCase extends $pb.GeneratedMessage {
   static $pb.PbList<ReduceTestCase> createRepeated() => $pb.PbList<ReduceTestCase>();
   @$core.pragma('dart2js:noInline')
   static ReduceTestCase getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ReduceTestCase>(create);
-  static ReduceTestCase _defaultInstance;
+  static ReduceTestCase? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.bool get solo => $_getBF(0);
@@ -1003,13 +1299,37 @@ class ShifterTestCase extends $pb.GeneratedMessage {
     ..aOB(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'solo')
     ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'name')
     ..aOM<$3.Op>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'op', subBuilder: $3.Op.create)
-    ..p<$fixnum.Int64>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'locations', $pb.PbFieldType.P6)
-    ..p<$fixnum.Int64>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'values', $pb.PbFieldType.P6)
+    ..p<$fixnum.Int64>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'locations', $pb.PbFieldType.K6)
+    ..p<$fixnum.Int64>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'values', $pb.PbFieldType.K6)
     ..hasRequiredFields = false
   ;
 
   ShifterTestCase._() : super();
-  factory ShifterTestCase() => create();
+  factory ShifterTestCase({
+    $core.bool? solo,
+    $core.String? name,
+    $3.Op? op,
+    $core.Iterable<$fixnum.Int64>? locations,
+    $core.Iterable<$fixnum.Int64>? values,
+  }) {
+    final _result = create();
+    if (solo != null) {
+      _result.solo = solo;
+    }
+    if (name != null) {
+      _result.name = name;
+    }
+    if (op != null) {
+      _result.op = op;
+    }
+    if (locations != null) {
+      _result.locations.addAll(locations);
+    }
+    if (values != null) {
+      _result.values.addAll(values);
+    }
+    return _result;
+  }
   factory ShifterTestCase.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory ShifterTestCase.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -1021,7 +1341,7 @@ class ShifterTestCase extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  ShifterTestCase copyWith(void Function(ShifterTestCase) updates) => super.copyWith((message) => updates(message as ShifterTestCase)); // ignore: deprecated_member_use
+  ShifterTestCase copyWith(void Function(ShifterTestCase) updates) => super.copyWith((message) => updates(message as ShifterTestCase)) as ShifterTestCase; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static ShifterTestCase create() => ShifterTestCase._();
@@ -1029,7 +1349,7 @@ class ShifterTestCase extends $pb.GeneratedMessage {
   static $pb.PbList<ShifterTestCase> createRepeated() => $pb.PbList<ShifterTestCase>();
   @$core.pragma('dart2js:noInline')
   static ShifterTestCase getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ShifterTestCase>(create);
-  static ShifterTestCase _defaultInstance;
+  static ShifterTestCase? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.bool get solo => $_getBF(0);

@@ -2,9 +2,13 @@
 //  Generated code. Do not modify.
 //  source: pserver/pserver.proto
 //
-// @dart = 2.3
-// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
+// @dart = 2.12
+// ignore_for_file: annotate_overrides,camel_case_types,constant_identifier_names,deprecated_member_use_from_same_package,directives_ordering,library_prefixes,non_constant_identifier_names,prefer_final_fields,return_of_invalid_type,unnecessary_const,unnecessary_import,unnecessary_this,unused_import,unused_shown_name
 
+import 'dart:core' as $core;
+import 'dart:convert' as $convert;
+import 'dart:typed_data' as $typed_data;
+@$core.Deprecated('Use snapshotDescriptor instead')
 const Snapshot$json = const {
   '1': 'Snapshot',
   '2': const [
@@ -13,6 +17,9 @@ const Snapshot$json = const {
   ],
 };
 
+/// Descriptor for `Snapshot`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List snapshotDescriptor = $convert.base64Decode('CghTbmFwc2hvdBIUCgVzdGF0ZRgBIAEoA1IFc3RhdGUSIwoFdmFsdWUYAiABKAsyDS5wc2VydmVyLkJsb2JSBXZhbHVl');
+@$core.Deprecated('Use stateDescriptor instead')
 const State$json = const {
   '1': 'State',
   '2': const [
@@ -21,6 +28,9 @@ const State$json = const {
   ],
 };
 
+/// Descriptor for `State`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List stateDescriptor = $convert.base64Decode('CgVTdGF0ZRIUCgVzdGF0ZRgBIAEoA1IFc3RhdGUSHQoCb3AYAiABKAsyDS5wc2VydmVyLkJsb2JSAm9w');
+@$core.Deprecated('Use blobDescriptor instead')
 const Blob$json = const {
   '1': 'Blob',
   '2': const [
@@ -28,3 +38,5 @@ const Blob$json = const {
   ],
 };
 
+/// Descriptor for `Blob`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List blobDescriptor = $convert.base64Decode('CgRCbG9iEhQKBXZhbHVlGAEgASgMUgV2YWx1ZQ==');

@@ -2,8 +2,8 @@
 //  Generated code. Do not modify.
 //  source: pstore/pstore.proto
 //
-// @dart = 2.3
-// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
+// @dart = 2.12
+// ignore_for_file: annotate_overrides,camel_case_types,constant_identifier_names,directives_ordering,library_prefixes,non_constant_identifier_names,prefer_final_fields,return_of_invalid_type,unnecessary_const,unnecessary_import,unnecessary_this,unused_import,unused_shown_name
 
 import 'dart:core' as $core;
 
@@ -22,7 +22,23 @@ class Payload_Get_Request extends $pb.GeneratedMessage {
   ;
 
   Payload_Get_Request._() : super();
-  factory Payload_Get_Request() => create();
+  factory Payload_Get_Request({
+    $core.String? documentType,
+    $core.String? documentId,
+    $core.bool? create_3,
+  }) {
+    final _result = create();
+    if (documentType != null) {
+      _result.documentType = documentType;
+    }
+    if (documentId != null) {
+      _result.documentId = documentId;
+    }
+    if (create_3 != null) {
+      _result.create_3 = create_3;
+    }
+    return _result;
+  }
   factory Payload_Get_Request.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory Payload_Get_Request.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -34,7 +50,7 @@ class Payload_Get_Request extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Payload_Get_Request copyWith(void Function(Payload_Get_Request) updates) => super.copyWith((message) => updates(message as Payload_Get_Request)); // ignore: deprecated_member_use
+  Payload_Get_Request copyWith(void Function(Payload_Get_Request) updates) => super.copyWith((message) => updates(message as Payload_Get_Request)) as Payload_Get_Request; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Payload_Get_Request create() => Payload_Get_Request._();
@@ -42,7 +58,7 @@ class Payload_Get_Request extends $pb.GeneratedMessage {
   static $pb.PbList<Payload_Get_Request> createRepeated() => $pb.PbList<Payload_Get_Request>();
   @$core.pragma('dart2js:noInline')
   static Payload_Get_Request getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Payload_Get_Request>(create);
-  static Payload_Get_Request _defaultInstance;
+  static Payload_Get_Request? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get documentType => $_getSZ(0);
@@ -80,7 +96,19 @@ class Payload_Get_Response extends $pb.GeneratedMessage {
   ;
 
   Payload_Get_Response._() : super();
-  factory Payload_Get_Response() => create();
+  factory Payload_Get_Response({
+    $fixnum.Int64? state,
+    $0.Any? value,
+  }) {
+    final _result = create();
+    if (state != null) {
+      _result.state = state;
+    }
+    if (value != null) {
+      _result.value = value;
+    }
+    return _result;
+  }
   factory Payload_Get_Response.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory Payload_Get_Response.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -92,7 +120,7 @@ class Payload_Get_Response extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Payload_Get_Response copyWith(void Function(Payload_Get_Response) updates) => super.copyWith((message) => updates(message as Payload_Get_Response)); // ignore: deprecated_member_use
+  Payload_Get_Response copyWith(void Function(Payload_Get_Response) updates) => super.copyWith((message) => updates(message as Payload_Get_Response)) as Payload_Get_Response; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Payload_Get_Response create() => Payload_Get_Response._();
@@ -100,7 +128,7 @@ class Payload_Get_Response extends $pb.GeneratedMessage {
   static $pb.PbList<Payload_Get_Response> createRepeated() => $pb.PbList<Payload_Get_Response>();
   @$core.pragma('dart2js:noInline')
   static Payload_Get_Response getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Payload_Get_Response>(create);
-  static Payload_Get_Response _defaultInstance;
+  static Payload_Get_Response? _defaultInstance;
 
   @$pb.TagNumber(1)
   $fixnum.Int64 get state => $_getI64(0);
@@ -141,7 +169,7 @@ class Payload_Get extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Payload_Get copyWith(void Function(Payload_Get) updates) => super.copyWith((message) => updates(message as Payload_Get)); // ignore: deprecated_member_use
+  Payload_Get copyWith(void Function(Payload_Get) updates) => super.copyWith((message) => updates(message as Payload_Get)) as Payload_Get; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Payload_Get create() => Payload_Get._();
@@ -149,7 +177,7 @@ class Payload_Get extends $pb.GeneratedMessage {
   static $pb.PbList<Payload_Get> createRepeated() => $pb.PbList<Payload_Get>();
   @$core.pragma('dart2js:noInline')
   static Payload_Get getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Payload_Get>(create);
-  static Payload_Get _defaultInstance;
+  static Payload_Get? _defaultInstance;
 }
 
 class Payload_Edit_Request extends $pb.GeneratedMessage {
@@ -163,7 +191,31 @@ class Payload_Edit_Request extends $pb.GeneratedMessage {
   ;
 
   Payload_Edit_Request._() : super();
-  factory Payload_Edit_Request() => create();
+  factory Payload_Edit_Request({
+    $core.String? documentType,
+    $core.String? documentId,
+    $core.String? stateId,
+    $fixnum.Int64? state,
+    $1.Op? op,
+  }) {
+    final _result = create();
+    if (documentType != null) {
+      _result.documentType = documentType;
+    }
+    if (documentId != null) {
+      _result.documentId = documentId;
+    }
+    if (stateId != null) {
+      _result.stateId = stateId;
+    }
+    if (state != null) {
+      _result.state = state;
+    }
+    if (op != null) {
+      _result.op = op;
+    }
+    return _result;
+  }
   factory Payload_Edit_Request.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory Payload_Edit_Request.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -175,7 +227,7 @@ class Payload_Edit_Request extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Payload_Edit_Request copyWith(void Function(Payload_Edit_Request) updates) => super.copyWith((message) => updates(message as Payload_Edit_Request)); // ignore: deprecated_member_use
+  Payload_Edit_Request copyWith(void Function(Payload_Edit_Request) updates) => super.copyWith((message) => updates(message as Payload_Edit_Request)) as Payload_Edit_Request; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Payload_Edit_Request create() => Payload_Edit_Request._();
@@ -183,7 +235,7 @@ class Payload_Edit_Request extends $pb.GeneratedMessage {
   static $pb.PbList<Payload_Edit_Request> createRepeated() => $pb.PbList<Payload_Edit_Request>();
   @$core.pragma('dart2js:noInline')
   static Payload_Edit_Request getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Payload_Edit_Request>(create);
-  static Payload_Edit_Request _defaultInstance;
+  static Payload_Edit_Request? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get documentType => $_getSZ(0);
@@ -241,7 +293,19 @@ class Payload_Edit_Response extends $pb.GeneratedMessage {
   ;
 
   Payload_Edit_Response._() : super();
-  factory Payload_Edit_Response() => create();
+  factory Payload_Edit_Response({
+    $fixnum.Int64? state,
+    $1.Op? op,
+  }) {
+    final _result = create();
+    if (state != null) {
+      _result.state = state;
+    }
+    if (op != null) {
+      _result.op = op;
+    }
+    return _result;
+  }
   factory Payload_Edit_Response.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory Payload_Edit_Response.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -253,7 +317,7 @@ class Payload_Edit_Response extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Payload_Edit_Response copyWith(void Function(Payload_Edit_Response) updates) => super.copyWith((message) => updates(message as Payload_Edit_Response)); // ignore: deprecated_member_use
+  Payload_Edit_Response copyWith(void Function(Payload_Edit_Response) updates) => super.copyWith((message) => updates(message as Payload_Edit_Response)) as Payload_Edit_Response; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Payload_Edit_Response create() => Payload_Edit_Response._();
@@ -261,7 +325,7 @@ class Payload_Edit_Response extends $pb.GeneratedMessage {
   static $pb.PbList<Payload_Edit_Response> createRepeated() => $pb.PbList<Payload_Edit_Response>();
   @$core.pragma('dart2js:noInline')
   static Payload_Edit_Response getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Payload_Edit_Response>(create);
-  static Payload_Edit_Response _defaultInstance;
+  static Payload_Edit_Response? _defaultInstance;
 
   @$pb.TagNumber(1)
   $fixnum.Int64 get state => $_getI64(0);
@@ -302,7 +366,7 @@ class Payload_Edit extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Payload_Edit copyWith(void Function(Payload_Edit) updates) => super.copyWith((message) => updates(message as Payload_Edit)); // ignore: deprecated_member_use
+  Payload_Edit copyWith(void Function(Payload_Edit) updates) => super.copyWith((message) => updates(message as Payload_Edit)) as Payload_Edit; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Payload_Edit create() => Payload_Edit._();
@@ -310,7 +374,7 @@ class Payload_Edit extends $pb.GeneratedMessage {
   static $pb.PbList<Payload_Edit> createRepeated() => $pb.PbList<Payload_Edit>();
   @$core.pragma('dart2js:noInline')
   static Payload_Edit getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Payload_Edit>(create);
-  static Payload_Edit _defaultInstance;
+  static Payload_Edit? _defaultInstance;
 }
 
 class Payload_Refresh_Request extends $pb.GeneratedMessage {
@@ -321,7 +385,19 @@ class Payload_Refresh_Request extends $pb.GeneratedMessage {
   ;
 
   Payload_Refresh_Request._() : super();
-  factory Payload_Refresh_Request() => create();
+  factory Payload_Refresh_Request({
+    $core.String? documentType,
+    $core.String? documentId,
+  }) {
+    final _result = create();
+    if (documentType != null) {
+      _result.documentType = documentType;
+    }
+    if (documentId != null) {
+      _result.documentId = documentId;
+    }
+    return _result;
+  }
   factory Payload_Refresh_Request.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory Payload_Refresh_Request.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -333,7 +409,7 @@ class Payload_Refresh_Request extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Payload_Refresh_Request copyWith(void Function(Payload_Refresh_Request) updates) => super.copyWith((message) => updates(message as Payload_Refresh_Request)); // ignore: deprecated_member_use
+  Payload_Refresh_Request copyWith(void Function(Payload_Refresh_Request) updates) => super.copyWith((message) => updates(message as Payload_Refresh_Request)) as Payload_Refresh_Request; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Payload_Refresh_Request create() => Payload_Refresh_Request._();
@@ -341,7 +417,7 @@ class Payload_Refresh_Request extends $pb.GeneratedMessage {
   static $pb.PbList<Payload_Refresh_Request> createRepeated() => $pb.PbList<Payload_Refresh_Request>();
   @$core.pragma('dart2js:noInline')
   static Payload_Refresh_Request getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Payload_Refresh_Request>(create);
-  static Payload_Refresh_Request _defaultInstance;
+  static Payload_Refresh_Request? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get documentType => $_getSZ(0);
@@ -380,7 +456,7 @@ class Payload_Refresh extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Payload_Refresh copyWith(void Function(Payload_Refresh) updates) => super.copyWith((message) => updates(message as Payload_Refresh)); // ignore: deprecated_member_use
+  Payload_Refresh copyWith(void Function(Payload_Refresh) updates) => super.copyWith((message) => updates(message as Payload_Refresh)) as Payload_Refresh; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Payload_Refresh create() => Payload_Refresh._();
@@ -388,7 +464,7 @@ class Payload_Refresh extends $pb.GeneratedMessage {
   static $pb.PbList<Payload_Refresh> createRepeated() => $pb.PbList<Payload_Refresh>();
   @$core.pragma('dart2js:noInline')
   static Payload_Refresh getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Payload_Refresh>(create);
-  static Payload_Refresh _defaultInstance;
+  static Payload_Refresh? _defaultInstance;
 }
 
 class Payload extends $pb.GeneratedMessage {
@@ -409,7 +485,7 @@ class Payload extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Payload copyWith(void Function(Payload) updates) => super.copyWith((message) => updates(message as Payload)); // ignore: deprecated_member_use
+  Payload copyWith(void Function(Payload) updates) => super.copyWith((message) => updates(message as Payload)) as Payload; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Payload create() => Payload._();
@@ -417,6 +493,6 @@ class Payload extends $pb.GeneratedMessage {
   static $pb.PbList<Payload> createRepeated() => $pb.PbList<Payload>();
   @$core.pragma('dart2js:noInline')
   static Payload getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Payload>(create);
-  static Payload _defaultInstance;
+  static Payload? _defaultInstance;
 }
 

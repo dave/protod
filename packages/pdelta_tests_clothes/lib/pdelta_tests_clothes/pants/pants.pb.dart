@@ -2,8 +2,8 @@
 //  Generated code. Do not modify.
 //  source: pdelta_tests_clothes/pants/pants.proto
 //
-// @dart = 2.3
-// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
+// @dart = 2.12
+// ignore_for_file: annotate_overrides,camel_case_types,constant_identifier_names,directives_ordering,library_prefixes,non_constant_identifier_names,prefer_final_fields,return_of_invalid_type,unnecessary_const,unnecessary_import,unnecessary_this,unused_import,unused_shown_name
 
 import 'dart:core' as $core;
 
@@ -18,7 +18,23 @@ class Pants extends $pb.GeneratedMessage {
   ;
 
   Pants._() : super();
-  factory Pants() => create();
+  factory Pants({
+    $core.String? style,
+    $core.int? length,
+    $core.int? waist,
+  }) {
+    final _result = create();
+    if (style != null) {
+      _result.style = style;
+    }
+    if (length != null) {
+      _result.length = length;
+    }
+    if (waist != null) {
+      _result.waist = waist;
+    }
+    return _result;
+  }
   factory Pants.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory Pants.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -30,7 +46,7 @@ class Pants extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Pants copyWith(void Function(Pants) updates) => super.copyWith((message) => updates(message as Pants)); // ignore: deprecated_member_use
+  Pants copyWith(void Function(Pants) updates) => super.copyWith((message) => updates(message as Pants)) as Pants; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Pants create() => Pants._();
@@ -38,7 +54,7 @@ class Pants extends $pb.GeneratedMessage {
   static $pb.PbList<Pants> createRepeated() => $pb.PbList<Pants>();
   @$core.pragma('dart2js:noInline')
   static Pants getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Pants>(create);
-  static Pants _defaultInstance;
+  static Pants? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get style => $_getSZ(0);

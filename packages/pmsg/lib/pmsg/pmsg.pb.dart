@@ -2,8 +2,8 @@
 //  Generated code. Do not modify.
 //  source: pmsg/pmsg.proto
 //
-// @dart = 2.3
-// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
+// @dart = 2.12
+// ignore_for_file: annotate_overrides,camel_case_types,constant_identifier_names,directives_ordering,library_prefixes,non_constant_identifier_names,prefer_final_fields,return_of_invalid_type,unnecessary_const,unnecessary_import,unnecessary_this,unused_import,unused_shown_name
 
 import 'dart:core' as $core;
 
@@ -18,7 +18,15 @@ class Bundle extends $pb.GeneratedMessage {
   ;
 
   Bundle._() : super();
-  factory Bundle() => create();
+  factory Bundle({
+    $core.Map<$core.String, $0.Any>? messages,
+  }) {
+    final _result = create();
+    if (messages != null) {
+      _result.messages.addAll(messages);
+    }
+    return _result;
+  }
   factory Bundle.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory Bundle.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -30,7 +38,7 @@ class Bundle extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Bundle copyWith(void Function(Bundle) updates) => super.copyWith((message) => updates(message as Bundle)); // ignore: deprecated_member_use
+  Bundle copyWith(void Function(Bundle) updates) => super.copyWith((message) => updates(message as Bundle)) as Bundle; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Bundle create() => Bundle._();
@@ -38,7 +46,7 @@ class Bundle extends $pb.GeneratedMessage {
   static $pb.PbList<Bundle> createRepeated() => $pb.PbList<Bundle>();
   @$core.pragma('dart2js:noInline')
   static Bundle getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Bundle>(create);
-  static Bundle _defaultInstance;
+  static Bundle? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.Map<$core.String, $0.Any> get messages => $_getMap(0);

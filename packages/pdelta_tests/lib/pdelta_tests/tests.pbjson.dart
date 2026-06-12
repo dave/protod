@@ -2,9 +2,13 @@
 //  Generated code. Do not modify.
 //  source: pdelta_tests/tests.proto
 //
-// @dart = 2.3
-// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
+// @dart = 2.12
+// ignore_for_file: annotate_overrides,camel_case_types,constant_identifier_names,deprecated_member_use_from_same_package,directives_ordering,library_prefixes,non_constant_identifier_names,prefer_final_fields,return_of_invalid_type,unnecessary_const,unnecessary_import,unnecessary_this,unused_import,unused_shown_name
 
+import 'dart:core' as $core;
+import 'dart:convert' as $convert;
+import 'dart:typed_data' as $typed_data;
+@$core.Deprecated('Use personDescriptor instead')
 const Person$json = const {
   '1': 'Person',
   '2': const [
@@ -35,6 +39,7 @@ const Person$json = const {
   ],
 };
 
+@$core.Deprecated('Use personDescriptor instead')
 const Person_Embed$json = const {
   '1': 'Embed',
   '2': const [
@@ -43,6 +48,7 @@ const Person_Embed$json = const {
   '3': const [Person_Embed_Double$json],
 };
 
+@$core.Deprecated('Use personDescriptor instead')
 const Person_Embed_Double$json = const {
   '1': 'Double',
   '2': const [
@@ -55,6 +61,7 @@ const Person_Embed_Double$json = const {
   ],
 };
 
+@$core.Deprecated('Use personDescriptor instead')
 const Person_CasesEntry$json = const {
   '1': 'CasesEntry',
   '2': const [
@@ -64,6 +71,7 @@ const Person_CasesEntry$json = const {
   '7': const {'7': true},
 };
 
+@$core.Deprecated('Use personDescriptor instead')
 const Person_TypeMapEntry$json = const {
   '1': 'TypeMapEntry',
   '2': const [
@@ -73,6 +81,7 @@ const Person_TypeMapEntry$json = const {
   '7': const {'7': true},
 };
 
+@$core.Deprecated('Use personDescriptor instead')
 const Person_Type$json = const {
   '1': 'Type',
   '2': const [
@@ -83,6 +92,9 @@ const Person_Type$json = const {
   ],
 };
 
+/// Descriptor for `Person`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List personDescriptor = $convert.base64Decode('CgZQZXJzb24SEgoEbmFtZRgBIAEoCVIEbmFtZRIQCgNhZ2UYAiABKA1SA2FnZRI1CgVjYXNlcxgEIAMoCzIfLnBkZWx0YV90ZXN0cy5QZXJzb24uQ2FzZXNFbnRyeVIFY2FzZXMSLwoHY29tcGFueRgFIAEoCzIVLnBkZWx0YV90ZXN0cy5Db21wYW55Ugdjb21wYW55EhQKBWFsaWFzGAYgAygJUgVhbGlhcxItCgR0eXBlGAcgASgOMhkucGRlbHRhX3Rlc3RzLlBlcnNvbi5UeXBlUgR0eXBlEjUKCHR5cGVMaXN0GAggAygOMhkucGRlbHRhX3Rlc3RzLlBlcnNvbi5UeXBlUgh0eXBlTGlzdBI7Cgd0eXBlTWFwGAkgAygLMiEucGRlbHRhX3Rlc3RzLlBlcnNvbi5UeXBlTWFwRW50cnlSB3R5cGVNYXASNgoIZW1iZWRkZWQYCiABKAsyGi5wZGVsdGFfdGVzdHMuUGVyc29uLkVtYmVkUghlbWJlZGRlZBISCgNzdHIYCyABKAlIAFIDc3RyEhIKA2RibBgMIAEoAUgAUgNkYmwSJgoDaXRtGA0gASgLMhIucGRlbHRhX3Rlc3RzLkl0ZW1IAFIDaXRtEiYKA2NhcxgOIAEoCzISLnBkZWx0YV90ZXN0cy5DYXNlSABSA2NhcxIpCgNjaG8YDyABKAsyFS5wZGVsdGFfdGVzdHMuQ2hvb3NlckgAUgNjaG8SKQoFaG91c2UYECABKAsyEy5wZGVsdGFfdGVzdHMuSG91c2VSBWhvdXNlEjEKBXNoaXJ0GBEgASgLMhsucGRlbHRhX3Rlc3RzX2Nsb3RoZXMuU2hpcnRSBXNoaXJ0EiIKBXBhbnRzGBIgASgLMgwucGFudHMuUGFudHNSBXBhbnRzEjkKBmRvdWJsZRgTIAEoCzIhLnBkZWx0YV90ZXN0cy5QZXJzb24uRW1iZWQuRG91YmxlUgZkb3VibGUSJgoEc2luaxgUIAEoCzISLnBkZWx0YV90ZXN0cy5TaW5rUgRzaW5rGmgKBUVtYmVkEhIKBG5hbWUYASABKAlSBG5hbWUaSwoGRG91YmxlEhIKBG5hbWUYASABKAlSBG5hbWUSEgoDYmFyGAIgASgJSABSA2JhchISCgNiYXoYAyABKANIAFIDYmF6QgUKA2ZvbxpMCgpDYXNlc0VudHJ5EhAKA2tleRgBIAEoCVIDa2V5EigKBXZhbHVlGAIgASgLMhIucGRlbHRhX3Rlc3RzLkNhc2VSBXZhbHVlOgI4ARpVCgxUeXBlTWFwRW50cnkSEAoDa2V5GAEgASgJUgNrZXkSLwoFdmFsdWUYAiABKA4yGS5wZGVsdGFfdGVzdHMuUGVyc29uLlR5cGVSBXZhbHVlOgI4ASIzCgRUeXBlEggKBE51bGwQABIJCgVBbHBoYRABEgkKBUJyYXZvEAISCwoHQ2hhcmxpZRADQggKBmNob2ljZQ==');
+@$core.Deprecated('Use sinkDescriptor instead')
 const Sink$json = const {
   '1': 'Sink',
   '2': const [
@@ -99,6 +111,7 @@ const Sink$json = const {
   '3': const [Sink_BoolMapEntry$json, Sink_UintMapEntry$json],
 };
 
+@$core.Deprecated('Use sinkDescriptor instead')
 const Sink_BoolMapEntry$json = const {
   '1': 'BoolMapEntry',
   '2': const [
@@ -108,6 +121,7 @@ const Sink_BoolMapEntry$json = const {
   '7': const {'7': true},
 };
 
+@$core.Deprecated('Use sinkDescriptor instead')
 const Sink_UintMapEntry$json = const {
   '1': 'UintMapEntry',
   '2': const [
@@ -117,6 +131,9 @@ const Sink_UintMapEntry$json = const {
   '7': const {'7': true},
 };
 
+/// Descriptor for `Sink`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List sinkDescriptor = $convert.base64Decode('CgRTaW5rEhIKBGJsb2IYASABKAxSBGJsb2ISEgoEc2ludBgCIAEoEVIEc2ludBIWCgZzZml4ZWQYAyABKBBSBnNmaXhlZBIUCgVmaXhlZBgEIAEoB1IFZml4ZWQSFAoFdWxvbmcYBSABKARSBXVsb25nEjkKB2Jvb2xNYXAYBiADKAsyHy5wZGVsdGFfdGVzdHMuU2luay5Cb29sTWFwRW50cnlSB2Jvb2xNYXASOQoHdWludE1hcBgHIAMoCzIfLnBkZWx0YV90ZXN0cy5TaW5rLlVpbnRNYXBFbnRyeVIHdWludE1hcBIYCgdkYmxMaXN0GAggAygBUgdkYmxMaXN0EhoKCGJvb2xMaXN0GAkgAygIUghib29sTGlzdBo6CgxCb29sTWFwRW50cnkSEAoDa2V5GAEgASgIUgNrZXkSFAoFdmFsdWUYAiABKAlSBXZhbHVlOgI4ARpOCgxVaW50TWFwRW50cnkSEAoDa2V5GAEgASgNUgNrZXkSKAoFdmFsdWUYAiABKAsyEi5wZGVsdGFfdGVzdHMuSXRlbVIFdmFsdWU6AjgB');
+@$core.Deprecated('Use companyDescriptor instead')
 const Company$json = const {
   '1': 'Company',
   '2': const [
@@ -128,6 +145,7 @@ const Company$json = const {
   '3': const [Company_FlagsEntry$json],
 };
 
+@$core.Deprecated('Use companyDescriptor instead')
 const Company_FlagsEntry$json = const {
   '1': 'FlagsEntry',
   '2': const [
@@ -137,6 +155,9 @@ const Company_FlagsEntry$json = const {
   '7': const {'7': true},
 };
 
+/// Descriptor for `Company`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List companyDescriptor = $convert.base64Decode('CgdDb21wYW55EhIKBG5hbWUYCyABKAlSBG5hbWUSGAoHcmV2ZW51ZRgMIAEoAlIHcmV2ZW51ZRI2CgVmbGFncxgNIAMoCzIgLnBkZWx0YV90ZXN0cy5Db21wYW55LkZsYWdzRW50cnlSBWZsYWdzEiYKA2NlbxgOIAEoCzIULnBkZWx0YV90ZXN0cy5QZXJzb25SA2Nlbxo4CgpGbGFnc0VudHJ5EhAKA2tleRgBIAEoA1IDa2V5EhQKBXZhbHVlGAIgASgJUgV2YWx1ZToCOAE=');
+@$core.Deprecated('Use caseDescriptor instead')
 const Case$json = const {
   '1': 'Case',
   '2': const [
@@ -147,6 +168,7 @@ const Case$json = const {
   '3': const [Case_FlagsEntry$json],
 };
 
+@$core.Deprecated('Use caseDescriptor instead')
 const Case_FlagsEntry$json = const {
   '1': 'FlagsEntry',
   '2': const [
@@ -156,6 +178,9 @@ const Case_FlagsEntry$json = const {
   '7': const {'7': true},
 };
 
+/// Descriptor for `Case`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List caseDescriptor = $convert.base64Decode('CgRDYXNlEhIKBG5hbWUYFSABKAlSBG5hbWUSKAoFaXRlbXMYFiADKAsyEi5wZGVsdGFfdGVzdHMuSXRlbVIFaXRlbXMSMwoFZmxhZ3MYFyADKAsyHS5wZGVsdGFfdGVzdHMuQ2FzZS5GbGFnc0VudHJ5UgVmbGFncxo4CgpGbGFnc0VudHJ5EhAKA2tleRgBIAEoA1IDa2V5EhQKBXZhbHVlGAIgASgJUgV2YWx1ZToCOAE=');
+@$core.Deprecated('Use itemDescriptor instead')
 const Item$json = const {
   '1': 'Item',
   '2': const [
@@ -165,6 +190,9 @@ const Item$json = const {
   ],
 };
 
+/// Descriptor for `Item`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List itemDescriptor = $convert.base64Decode('CgRJdGVtEhQKBXRpdGxlGB8gASgJUgV0aXRsZRISCgRkb25lGCIgASgIUgRkb25lEhQKBWZsYWdzGCMgAygJUgVmbGFncw==');
+@$core.Deprecated('Use chooserDescriptor instead')
 const Chooser$json = const {
   '1': 'Chooser',
   '2': const [
@@ -177,6 +205,9 @@ const Chooser$json = const {
   ],
 };
 
+/// Descriptor for `Chooser`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List chooserDescriptor = $convert.base64Decode('CgdDaG9vc2VyEhIKA3N0chgBIAEoCUgAUgNzdHISEgoDZGJsGAIgASgBSABSA2RibBImCgNpdG0YAyABKAsyEi5wZGVsdGFfdGVzdHMuSXRlbUgAUgNpdG1CCAoGY2hvaWNl');
+@$core.Deprecated('Use applyTestCaseDescriptor instead')
 const ApplyTestCase$json = const {
   '1': 'ApplyTestCase',
   '2': const [
@@ -188,6 +219,9 @@ const ApplyTestCase$json = const {
   ],
 };
 
+/// Descriptor for `ApplyTestCase`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List applyTestCaseDescriptor = $convert.base64Decode('Cg1BcHBseVRlc3RDYXNlEhIKBHNvbG8YASABKAhSBHNvbG8SEgoEbmFtZRgCIAEoCVIEbmFtZRIaCgJvcBgDIAEoCzIKLnBkZWx0YS5PcFICb3ASKAoEZGF0YRgEIAEoCzIULmdvb2dsZS5wcm90b2J1Zi5BbnlSBGRhdGESMAoIZXhwZWN0ZWQYBSABKAsyFC5nb29nbGUucHJvdG9idWYuQW55UghleHBlY3RlZA==');
+@$core.Deprecated('Use transformTestCaseDescriptor instead')
 const TransformTestCase$json = const {
   '1': 'TransformTestCase',
   '2': const [
@@ -202,6 +236,9 @@ const TransformTestCase$json = const {
   ],
 };
 
+/// Descriptor for `TransformTestCase`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List transformTestCaseDescriptor = $convert.base64Decode('ChFUcmFuc2Zvcm1UZXN0Q2FzZRISCgRzb2xvGAEgASgIUgRzb2xvEhIKBG5hbWUYAiABKAlSBG5hbWUSHAoDb3AxGAMgASgLMgoucGRlbHRhLk9wUgNvcDESHAoDb3AyGAQgASgLMgoucGRlbHRhLk9wUgNvcDISKAoEZGF0YRgFIAEoCzIULmdvb2dsZS5wcm90b2J1Zi5BbnlSBGRhdGESMAoIZXhwZWN0ZWQYBiABKAsyFC5nb29nbGUucHJvdG9idWYuQW55UghleHBlY3RlZBIyCglleHBlY3RlZDEYByABKAsyFC5nb29nbGUucHJvdG9idWYuQW55UglleHBlY3RlZDESMgoJZXhwZWN0ZWQyGAggASgLMhQuZ29vZ2xlLnByb3RvYnVmLkFueVIJZXhwZWN0ZWQy');
+@$core.Deprecated('Use reduceTestCaseDescriptor instead')
 const ReduceTestCase$json = const {
   '1': 'ReduceTestCase',
   '2': const [
@@ -213,6 +250,9 @@ const ReduceTestCase$json = const {
   ],
 };
 
+/// Descriptor for `ReduceTestCase`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List reduceTestCaseDescriptor = $convert.base64Decode('Cg5SZWR1Y2VUZXN0Q2FzZRISCgRzb2xvGAEgASgIUgRzb2xvEhIKBG5hbWUYAiABKAlSBG5hbWUSKAoEZGF0YRgDIAEoCzIULnBkZWx0YV90ZXN0cy5QZXJzb25SBGRhdGESGgoCb3AYBCABKAsyCi5wZGVsdGEuT3BSAm9wEiQKB3JlZHVjZWQYBSABKAsyCi5wZGVsdGEuT3BSB3JlZHVjZWQ=');
+@$core.Deprecated('Use shifterTestCaseDescriptor instead')
 const ShifterTestCase$json = const {
   '1': 'ShifterTestCase',
   '2': const [
@@ -224,3 +264,5 @@ const ShifterTestCase$json = const {
   ],
 };
 
+/// Descriptor for `ShifterTestCase`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List shifterTestCaseDescriptor = $convert.base64Decode('Cg9TaGlmdGVyVGVzdENhc2USEgoEc29sbxgBIAEoCFIEc29sbxISCgRuYW1lGAIgASgJUgRuYW1lEhoKAm9wGAMgASgLMgoucGRlbHRhLk9wUgJvcBIcCglsb2NhdGlvbnMYBCADKANSCWxvY2F0aW9ucxIWCgZ2YWx1ZXMYBSADKANSBnZhbHVlcw==');
